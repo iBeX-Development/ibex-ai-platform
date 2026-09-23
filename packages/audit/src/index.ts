@@ -100,7 +100,64 @@ export interface UntrustedOrchestratorBoundaryAuditEvent extends OrchestratorAud
 export type OrchestratorAuditEvent =
   TrustedOrchestratorAuditEvent | UntrustedOrchestratorBoundaryAuditEvent;
 
-export type AuditRecord = AuditEvent | GatewaySecurityAuditEvent | OrchestratorAuditEvent;
+export type ModelGatewayAuditStage =
+  | 'boundary_context'
+  | 'boundary_trace'
+  | 'request_validation'
+  | 'policy'
+  | 'provider_invocation'
+  | 'response_validation'
+  | 'metrics';
+
+interface ModelGatewayAuditEventBase {
+  readonly schema_version: '1.0';
+  readonly event_type: 'model_gateway.invocation.outcome';
+  readonly timestamp: string;
+  readonly trace_id: string;
+  readonly service: string;
+  readonly environment: string;
+  readonly outcome: 'succeeded' | 'rejected' | 'error';
+  readonly stage: ModelGatewayAuditStage;
+  readonly agent_id?: string;
+  readonly capability?: string;
+  readonly confidentiality_class?: string;
+  readonly prompt_version?: string;
+  readonly policy_version?: string;
+  readonly provider_id?: string;
+  readonly model_id?: string;
+  readonly model_version?: string;
+  readonly attempt?: number;
+  readonly fallback_used?: boolean;
+  readonly input_tokens?: number;
+  readonly output_tokens?: number;
+  readonly estimated_cost?: number;
+  readonly latency_ms?: number;
+  readonly error_code?: string;
+}
+
+export interface TrustedModelGatewayAuditEvent extends ModelGatewayAuditEventBase {
+  readonly context_status: 'trusted';
+  readonly request_id: string;
+  readonly correlation_id: string;
+  readonly tenant_id: string;
+  readonly user_id: string;
+  readonly role: string;
+  readonly session_id: string;
+  readonly permission_refs: readonly string[];
+  readonly entitlement_refs: readonly string[];
+}
+
+export interface UntrustedModelGatewayBoundaryAuditEvent extends ModelGatewayAuditEventBase {
+  readonly context_status: 'unavailable';
+  readonly outcome: 'rejected' | 'error';
+  readonly stage: 'boundary_context' | 'boundary_trace';
+}
+
+export type ModelGatewayAuditEvent =
+  TrustedModelGatewayAuditEvent | UntrustedModelGatewayBoundaryAuditEvent;
+
+export type AuditRecord =
+  AuditEvent | GatewaySecurityAuditEvent | OrchestratorAuditEvent | ModelGatewayAuditEvent;
 
 export interface AuditEventSink {
   emit(event: AuditRecord): Promise<void>;
@@ -194,6 +251,85 @@ export function createOrchestratorAuditEvent(input: {
     }
     if (input.stage !== 'boundary_context' && input.stage !== 'boundary_trace') {
       throw new Error('Trusted context is required for orchestrator audit events');
+    }
+    return Object.freeze({
+      ...base,
+      outcome: input.outcome,
+      stage: input.stage,
+      context_status: 'unavailable'
+    });
+  }
+
+  return Object.freeze({
+    ...base,
+    context_status: 'trusted',
+    request_id: input.context.request_id,
+    correlation_id: input.context.correlation_id,
+    tenant_id: input.context.tenant_id,
+    user_id: input.context.user_id,
+    role: input.context.role,
+    session_id: input.context.session_id,
+    permission_refs: Object.freeze([...input.context.permissions]),
+    entitlement_refs: Object.freeze([...input.context.entitlements])
+  });
+}
+
+export function createModelGatewayAuditEvent(input: {
+  readonly traceId: string;
+  readonly service: string;
+  readonly environment: string;
+  readonly context?: TrustedRequestContext;
+  readonly outcome: ModelGatewayAuditEvent['outcome'];
+  readonly stage: ModelGatewayAuditStage;
+  readonly timestamp: Date;
+  readonly agentId?: string;
+  readonly capability?: string;
+  readonly confidentialityClass?: string;
+  readonly promptVersion?: string;
+  readonly policyVersion?: string;
+  readonly providerId?: string;
+  readonly modelId?: string;
+  readonly modelVersion?: string;
+  readonly attempt?: number;
+  readonly fallbackUsed?: boolean;
+  readonly inputTokens?: number;
+  readonly outputTokens?: number;
+  readonly estimatedCost?: number;
+  readonly latencyMs?: number;
+  readonly errorCode?: string;
+}): ModelGatewayAuditEvent {
+  const base = {
+    schema_version: '1.0',
+    event_type: 'model_gateway.invocation.outcome',
+    timestamp: input.timestamp.toISOString(),
+    trace_id: input.traceId,
+    service: input.service,
+    environment: input.environment,
+    outcome: input.outcome,
+    stage: input.stage,
+    ...(input.agentId ? { agent_id: input.agentId } : {}),
+    ...(input.capability ? { capability: input.capability } : {}),
+    ...(input.confidentialityClass ? { confidentiality_class: input.confidentialityClass } : {}),
+    ...(input.promptVersion ? { prompt_version: input.promptVersion } : {}),
+    ...(input.policyVersion ? { policy_version: input.policyVersion } : {}),
+    ...(input.providerId ? { provider_id: input.providerId } : {}),
+    ...(input.modelId ? { model_id: input.modelId } : {}),
+    ...(input.modelVersion ? { model_version: input.modelVersion } : {}),
+    ...(input.attempt !== undefined ? { attempt: input.attempt } : {}),
+    ...(input.fallbackUsed !== undefined ? { fallback_used: input.fallbackUsed } : {}),
+    ...(input.inputTokens !== undefined ? { input_tokens: input.inputTokens } : {}),
+    ...(input.outputTokens !== undefined ? { output_tokens: input.outputTokens } : {}),
+    ...(input.estimatedCost !== undefined ? { estimated_cost: input.estimatedCost } : {}),
+    ...(input.latencyMs !== undefined ? { latency_ms: input.latencyMs } : {}),
+    ...(input.errorCode ? { error_code: input.errorCode } : {})
+  } as const;
+
+  if (!input.context) {
+    if (input.outcome !== 'rejected' && input.outcome !== 'error') {
+      throw new Error('Trusted context is required for Model Gateway audit events');
+    }
+    if (input.stage !== 'boundary_context' && input.stage !== 'boundary_trace') {
+      throw new Error('Trusted context is required for Model Gateway audit events');
     }
     return Object.freeze({
       ...base,

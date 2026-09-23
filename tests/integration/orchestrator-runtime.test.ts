@@ -78,12 +78,12 @@ describe('Gate P3 shared agent runtime', () => {
       })
     ]);
     const [event] = auditEvents;
-    if (!event || !('context_status' in event)) {
+    if (!event || !('prompt_hierarchy' in event)) {
       throw new Error('Expected orchestrator audit evidence');
     }
     expect(Object.isFrozen(event)).toBe(true);
     expect(Object.isFrozen(event.prompt_hierarchy)).toBe(true);
-    expect(Object.isFrozen(event.prompt_hierarchy?.master_policy)).toBe(true);
+    expect(Object.isFrozen(event.prompt_hierarchy.master_policy)).toBe(true);
     if (event.context_status !== 'trusted') throw new Error('Expected trusted audit context');
     expect(Object.isFrozen(event.permission_refs)).toBe(true);
     expect(Object.isFrozen(event.entitlement_refs)).toBe(true);

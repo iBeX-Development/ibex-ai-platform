@@ -23,6 +23,14 @@ restricted by registry status, domain, intent, permissions, entitlements, and de
 RAG scopes, Tool candidates, model policy aliases, and prompt versions must remain within approved
 registry allowlists. Unknown intent returns a safe fallback and ambiguous routing fails closed.
 
+Phase 4 centralizes model access behind the Model Gateway. It validates the approved policy
+version, agent capability, invoke permission, tenant entitlement, confidentiality class, context
+limit, provider/model lifecycle, environment, and provider health before invocation. Fallback
+reuses the same policy-filtered candidate set and cannot weaken tenant, confidentiality,
+entitlement, capability, or enablement requirements. Live adapters require approved HTTPS
+configuration and injected secrets; provider credentials never enter agent code, prompts, audit,
+metrics, or source control.
+
 ## Data and actions
 
 - Do not connect directly to the Core iBeX database.
