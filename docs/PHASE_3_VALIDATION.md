@@ -21,22 +21,25 @@ Phase 3 is limited to the Shared Agent Runtime and routing foundation.
 
 ## Gate P3 results
 
-| Gate                                            | Result |
-| ----------------------------------------------- | ------ |
-| Correct domain route                            | PASS   |
-| Unauthorized agent route denied                 | PASS   |
-| Unknown intent safe fallback                    | PASS   |
-| Prompt hierarchy preserved                      | PASS   |
-| RAG, Tool, and model policy allowlists enforced | PASS   |
-| Cancellation and context controls               | PASS   |
-| Request, tenant, trace, and audit correlation   | PASS   |
-| Phase 1 regression: 6 files / 25 tests          | PASS   |
-| Phase 2 regression: 3 files / 16 tests          | PASS   |
-| Gate P3 focused: 4 files / 21 tests             | PASS   |
-| Full suite: 16 files / 69 tests                 | PASS   |
-| Format, lint, typecheck, and build              | PASS   |
-| Dependency audit: 0 known vulnerabilities       | PASS   |
-| Secret, direct Core DB, and provider scans      | PASS   |
+| Gate                                              | Result |
+| ------------------------------------------------- | ------ |
+| Correct domain route                              | PASS   |
+| Unauthorized agent route denied                   | PASS   |
+| Unknown intent safe fallback                      | PASS   |
+| Prompt hierarchy preserved                        | PASS   |
+| RAG, Tool, and model policy allowlists enforced   | PASS   |
+| Cancellation and context controls                 | PASS   |
+| Request, tenant, trace, and audit correlation     | PASS   |
+| Early boundary rejection trace and audit evidence | PASS   |
+| Mandatory trusted audit context                   | PASS   |
+| Prompt identifier, version, and hash evidence     | PASS   |
+| Phase 1 regression: 6 files / 25 tests            | PASS   |
+| Phase 2 regression: 3 files / 16 tests            | PASS   |
+| Gate P3 focused: 4 files / 25 tests               | PASS   |
+| Full suite: 16 files / 73 tests                   | PASS   |
+| Format, lint, typecheck, and build                | PASS   |
+| Dependency audit: 0 known vulnerabilities         | PASS   |
+| Secret, direct Core DB, and provider scans        | PASS   |
 
 ## Approved exclusions preserved
 

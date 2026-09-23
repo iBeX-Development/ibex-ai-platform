@@ -46,15 +46,121 @@ describe('Gate P3 shared agent runtime', () => {
     expect(auditEvents).toEqual([
       expect.objectContaining({
         event_type: 'orchestrator.routing.outcome',
+        context_status: 'trusted',
         tenant_id: 'tenant-a',
+        user_id: 'user-1',
+        role: 'operator',
+        session_id: 'session-1',
+        permission_refs: ['maintenance:read'],
+        entitlement_refs: ['ai:general'],
         request_id: 'request-1',
+        correlation_id: 'correlation-1',
         trace_id: 'trace-1',
         outcome: 'routed',
         selected_agent: 'maintenance',
-        prompt_versions: ['1.0', '1.0', '1.0']
+        prompt_hierarchy: {
+          master_policy: {
+            prompt_id: 'master-policy',
+            prompt_version: '1.0',
+            content_hash: 'master-hash-v1'
+          },
+          orchestrator_prompt: {
+            prompt_id: 'orchestrator-routing',
+            prompt_version: '1.0',
+            content_hash: 'orchestrator-hash-v1'
+          },
+          domain_prompt: {
+            prompt_id: 'maintenance-domain',
+            prompt_version: '1.0',
+            content_hash: 'maintenance-hash-v1'
+          }
+        }
       })
     ]);
+    const [event] = auditEvents;
+    if (!event || !('context_status' in event)) {
+      throw new Error('Expected orchestrator audit evidence');
+    }
+    expect(Object.isFrozen(event)).toBe(true);
+    expect(Object.isFrozen(event.prompt_hierarchy)).toBe(true);
+    expect(Object.isFrozen(event.prompt_hierarchy?.master_policy)).toBe(true);
+    if (event.context_status !== 'trusted') throw new Error('Expected trusted audit context');
+    expect(Object.isFrozen(event.permission_refs)).toBe(true);
+    expect(Object.isFrozen(event.entitlement_refs)).toBe(true);
   });
+
+  it('audits malformed trusted context without trusting or leaking rejected values', async () => {
+    const auditEvents: AuditRecord[] = [];
+    const classify = vi.fn();
+    const runtime = createRuntime(auditEvents, { classifier: { classify } });
+    const rejectedSecret = 'credential-that-must-not-appear';
+
+    await expect(
+      runtime.route(
+        runtimeRequest({
+          context: { ...runtimeContext, tenant_id: '', authorization: rejectedSecret }
+        }),
+        runtimeValidationTime
+      )
+    ).rejects.toMatchObject({
+      code: 'TENANT_CONTEXT_ERROR',
+      publicMessage: 'Trusted request context is invalid',
+      traceId: 'trace-1'
+    });
+
+    expect(classify).not.toHaveBeenCalled();
+    expect(auditEvents).toEqual([
+      expect.objectContaining({
+        event_type: 'orchestrator.routing.outcome',
+        context_status: 'unavailable',
+        outcome: 'rejected',
+        stage: 'boundary_context',
+        trace_id: 'trace-1',
+        error_code: 'TENANT_CONTEXT_ERROR'
+      })
+    ]);
+    expect(auditEvents[0]).not.toHaveProperty('tenant_id');
+    expect(auditEvents[0]).not.toHaveProperty('user_id');
+    expect(JSON.stringify(auditEvents)).not.toContain(rejectedSecret);
+  });
+
+  it.each([
+    ['empty', ''],
+    ['separator controls', 'trace\ncredential'],
+    ['non-string', 42]
+  ])(
+    'replaces %s trace data and audits the normalized boundary rejection',
+    async (_name, traceId) => {
+      const auditEvents: AuditRecord[] = [];
+      const classify = vi.fn();
+      const runtime = createRuntime(auditEvents, { classifier: { classify } });
+
+      await expect(
+        runtime.route(runtimeRequest({ trace_id: traceId }), runtimeValidationTime)
+      ).rejects.toMatchObject({
+        code: 'VALIDATION_ERROR',
+        publicMessage: 'Runtime request is invalid',
+        traceId: 'runtime-generated-trace-1',
+        trustedRequestId: 'request-1'
+      });
+
+      expect(classify).not.toHaveBeenCalled();
+      expect(auditEvents).toEqual([
+        expect.objectContaining({
+          event_type: 'orchestrator.routing.outcome',
+          context_status: 'trusted',
+          outcome: 'rejected',
+          stage: 'boundary_trace',
+          trace_id: 'runtime-generated-trace-1',
+          request_id: 'request-1',
+          role: 'operator',
+          session_id: 'session-1',
+          error_code: 'VALIDATION_ERROR'
+        })
+      ]);
+      if (String(traceId)) expect(JSON.stringify(auditEvents)).not.toContain(String(traceId));
+    }
+  );
 
   it('never routes an agent when required permissions are absent', async () => {
     const auditEvents: AuditRecord[] = [];

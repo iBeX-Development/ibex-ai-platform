@@ -1,8 +1,10 @@
+import { randomUUID } from 'node:crypto';
 import { SpanStatusCode } from '@opentelemetry/api';
 import {
   createOrchestratorAuditEvent,
   type AuditEventSink,
-  type OrchestratorAuditStage
+  type OrchestratorAuditStage,
+  type PromptHierarchyAuditEvidence
 } from '../../audit/src/index.js';
 import { PlatformError } from '../../errors/src/index.js';
 import { tracer } from '../../observability/src/index.js';
@@ -44,6 +46,54 @@ export interface SharedAgentRuntimeDependencies {
   readonly audit: AuditEventSink;
   readonly service: string;
   readonly environment: string;
+  readonly traceIdFactory?: () => string;
+}
+
+const maximumTraceIdLength = 256;
+
+function readTraceId(request: unknown): unknown {
+  if (typeof request !== 'object' || request === null || !('trace_id' in request)) return undefined;
+  return request.trace_id;
+}
+
+function validatedTraceId(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  let containsControlCharacter = false;
+  for (let index = 0; index < trimmed.length; index += 1) {
+    const codeUnit = trimmed.charCodeAt(index);
+    if (codeUnit <= 31 || codeUnit === 127) {
+      containsControlCharacter = true;
+      break;
+    }
+  }
+  if (!trimmed || trimmed.length > maximumTraceIdLength || containsControlCharacter) {
+    return undefined;
+  }
+  return trimmed;
+}
+
+function createBoundaryTraceId(factory: () => string): string {
+  try {
+    return validatedTraceId(factory()) ?? randomUUID();
+  } catch {
+    return randomUUID();
+  }
+}
+
+function promptAuditEvidence(hierarchy: PromptHierarchy): PromptHierarchyAuditEvidence {
+  const [masterPolicy, orchestratorPrompt, domainPrompt] = hierarchy.layers;
+  const reference = (prompt: (typeof hierarchy.layers)[number]) =>
+    Object.freeze({
+      prompt_id: prompt.prompt_id,
+      prompt_version: prompt.prompt_version,
+      content_hash: prompt.content_hash
+    });
+  return Object.freeze({
+    master_policy: reference(masterPolicy),
+    orchestrator_prompt: reference(orchestratorPrompt),
+    domain_prompt: reference(domainPrompt)
+  });
 }
 
 function isSubset(values: readonly string[], allowed: readonly string[]): boolean {
@@ -101,40 +151,57 @@ export class SharedAgentRuntime {
   constructor(private readonly dependencies: SharedAgentRuntimeDependencies) {}
 
   async route(request: OrchestratorRequest, now: Date = new Date()): Promise<OrchestratorResult> {
-    if (!request.trace_id.trim()) {
-      throw new PlatformError('VALIDATION_ERROR', 'Runtime request is invalid', 400);
-    }
-    const boundRequest: OrchestratorRequest = Object.freeze({
-      context: createTrustedRequestContext(request.context),
-      trace_id: request.trace_id,
-      input: request.input,
-      ...(request.requested_agent ? { requested_agent: request.requested_agent } : {}),
-      ...(request.signal ? { signal: request.signal } : {})
-    });
+    const inboundRequest: unknown = request;
+    const suppliedTraceId = validatedTraceId(readTraceId(inboundRequest));
+    const traceId =
+      suppliedTraceId ?? createBoundaryTraceId(this.dependencies.traceIdFactory ?? randomUUID);
 
     return tracer.startActiveSpan('orchestrator.route', async (span) => {
-      let stage: OrchestratorAuditStage = 'input_budget';
+      let stage: OrchestratorAuditStage = 'boundary_context';
+      let trustedContext: OrchestratorRequest['context'] | undefined;
       let classification: Extract<IntentClassification, { status: 'classified' }> | undefined;
       let selectedAgent: AgentDefinition | undefined;
       let promptHierarchy: PromptHierarchy | undefined;
-      span.setAttributes({
-        'ibex.gateway.trace_id': boundRequest.trace_id,
-        'ibex.request_id': boundRequest.context.request_id,
-        'ibex.correlation_id': boundRequest.context.correlation_id,
-        'ibex.tenant_id': boundRequest.context.tenant_id,
-        'ibex.user_id': boundRequest.context.user_id
-      });
+      span.setAttribute('ibex.orchestrator.trace_id', traceId);
 
       try {
+        if (typeof inboundRequest !== 'object' || inboundRequest === null) {
+          throw new PlatformError('VALIDATION_ERROR', 'Runtime request is invalid', 400);
+        }
+        const candidateRequest = inboundRequest as OrchestratorRequest;
+        trustedContext = createTrustedRequestContext(candidateRequest.context);
+        span.setAttributes({
+          'ibex.request_id': trustedContext.request_id,
+          'ibex.correlation_id': trustedContext.correlation_id,
+          'ibex.tenant_id': trustedContext.tenant_id,
+          'ibex.user_id': trustedContext.user_id
+        });
+
+        stage = 'boundary_trace';
+        if (!suppliedTraceId) {
+          throw new PlatformError('VALIDATION_ERROR', 'Runtime request is invalid', 400);
+        }
+
+        const validatedRequest: OrchestratorRequest = Object.freeze({
+          context: trustedContext,
+          trace_id: suppliedTraceId,
+          input: candidateRequest.input,
+          ...(candidateRequest.requested_agent
+            ? { requested_agent: candidateRequest.requested_agent }
+            : {}),
+          ...(candidateRequest.signal ? { signal: candidateRequest.signal } : {})
+        });
+
+        stage = 'input_budget';
         const result = await runWithRuntimeDeadline(
           async (signal) => {
-            assertContextBudget(boundRequest.input, this.dependencies.controls);
+            assertContextBudget(validatedRequest.input, this.dependencies.controls);
             throwIfCancelled(signal);
 
             stage = 'intent_classification';
             const rawClassification = await this.dependencies.classifier.classify({
-              context: boundRequest.context,
-              input: boundRequest.input,
+              context: validatedRequest.context,
+              input: validatedRequest.input,
               signal
             });
             throwIfCancelled(signal);
@@ -154,12 +221,12 @@ export class SharedAgentRuntime {
                   status: 'fallback',
                   reason: 'unknown_intent',
                   message: 'Unable to route this request safely',
-                  request_id: boundRequest.context.request_id,
-                  correlation_id: boundRequest.context.correlation_id,
-                  trace_id: boundRequest.trace_id
+                  request_id: validatedRequest.context.request_id,
+                  correlation_id: validatedRequest.context.correlation_id,
+                  trace_id: validatedRequest.trace_id
                 })
               );
-              await this.emitOutcome(boundRequest, 'fallback', stage, now);
+              await this.emitOutcome(validatedRequest, 'fallback', stage, now);
               return fallback;
             }
             classification = freezeClassification(parsedClassification.data);
@@ -171,7 +238,7 @@ export class SharedAgentRuntime {
             stage = 'agent_selection';
             selectedAgent = this.dependencies.agents.select(
               classification,
-              boundRequest.requested_agent
+              validatedRequest.requested_agent
             );
             if (!selectedAgent) {
               stage = 'audit';
@@ -180,19 +247,19 @@ export class SharedAgentRuntime {
                   status: 'fallback',
                   reason: 'no_matching_agent',
                   message: 'Unable to route this request safely',
-                  request_id: boundRequest.context.request_id,
-                  correlation_id: boundRequest.context.correlation_id,
-                  trace_id: boundRequest.trace_id
+                  request_id: validatedRequest.context.request_id,
+                  correlation_id: validatedRequest.context.correlation_id,
+                  trace_id: validatedRequest.trace_id
                 })
               );
-              await this.emitOutcome(boundRequest, 'fallback', stage, now, classification);
+              await this.emitOutcome(validatedRequest, 'fallback', stage, now, classification);
               return fallback;
             }
             span.setAttribute('ibex.orchestrator.selected_agent', selectedAgent.agent_id);
 
             stage = 'authorization';
             this.dependencies.agents.authorize(
-              boundRequest.context,
+              validatedRequest.context,
               selectedAgent,
               classification.required_capabilities
             );
@@ -205,7 +272,7 @@ export class SharedAgentRuntime {
             );
 
             const plannerRequest = planningRequest(
-              boundRequest,
+              validatedRequest,
               classification,
               selectedAgent,
               this.dependencies.controls,
@@ -271,9 +338,9 @@ export class SharedAgentRuntime {
               evaluation_profile: selectedAgent.evaluation_profile,
               prompt_hierarchy: promptHierarchy,
               runtime_controls: this.dependencies.controls,
-              request_id: boundRequest.context.request_id,
-              correlation_id: boundRequest.context.correlation_id,
-              trace_id: boundRequest.trace_id
+              request_id: validatedRequest.context.request_id,
+              correlation_id: validatedRequest.context.correlation_id,
+              trace_id: validatedRequest.trace_id
             });
             const routed = freezeResult(
               orchestratorResultSchema.parse({ status: 'routed', decision })
@@ -281,7 +348,7 @@ export class SharedAgentRuntime {
 
             stage = 'audit';
             await this.emitOutcome(
-              boundRequest,
+              validatedRequest,
               'routed',
               stage,
               now,
@@ -292,7 +359,7 @@ export class SharedAgentRuntime {
             return routed;
           },
           this.dependencies.controls,
-          boundRequest.signal
+          validatedRequest.signal
         );
         span.setStatus({ code: SpanStatusCode.OK });
         return result;
@@ -306,8 +373,8 @@ export class SharedAgentRuntime {
           source.publicMessage,
           source.statusCode,
           undefined,
-          boundRequest.trace_id,
-          boundRequest.context.request_id
+          traceId,
+          trustedContext?.request_id
         );
         const outcome = correlated.statusCode >= 500 ? 'error' : 'rejected';
         span.setAttributes({
@@ -319,7 +386,7 @@ export class SharedAgentRuntime {
         span.setStatus({ code: SpanStatusCode.ERROR });
         try {
           await this.emitOutcome(
-            boundRequest,
+            { trace_id: traceId, ...(trustedContext ? { context: trustedContext } : {}) },
             outcome,
             stage,
             now,
@@ -339,7 +406,7 @@ export class SharedAgentRuntime {
   }
 
   private emitOutcome(
-    request: OrchestratorRequest,
+    request: Readonly<{ trace_id: string; context?: OrchestratorRequest['context'] }>,
     outcome: 'routed' | 'fallback' | 'rejected' | 'error',
     stage: OrchestratorAuditStage,
     now: Date,
@@ -353,15 +420,13 @@ export class SharedAgentRuntime {
         traceId: request.trace_id,
         service: this.dependencies.service,
         environment: this.dependencies.environment,
-        context: request.context,
         outcome,
         stage,
         timestamp: now,
         ...(classification ? { intent: classification.intent, domain: classification.domain } : {}),
         ...(agent ? { selectedAgent: agent.agent_id, agentVersion: agent.version } : {}),
-        ...(hierarchy
-          ? { promptVersions: hierarchy.layers.map((layer) => layer.prompt_version) }
-          : {}),
+        ...(request.context ? { context: request.context } : {}),
+        ...(hierarchy ? { promptHierarchy: promptAuditEvidence(hierarchy) } : {}),
         ...(errorCode ? { errorCode } : {})
       })
     );

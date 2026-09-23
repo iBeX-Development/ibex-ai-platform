@@ -132,6 +132,7 @@ export function runtimeDependencies(
     },
     service: 'orchestrator-test',
     environment: 'test',
+    traceIdFactory: () => 'runtime-generated-trace-1',
     ...overrides
   };
 }
