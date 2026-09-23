@@ -6,7 +6,7 @@ Standalone, tenant-safe AI platform foundation for iBeX. The approved boundary i
 Core iBeX → AI Gateway → iBeX Hybrid Intelligent AI Platform
 ```
 
-Core iBeX remains the system of record. This platform has no direct Core database access. Live operational data must use approved Tool/APIs, while approved document knowledge uses RAG. Phase 1 adds the trusted security and tenant boundary foundation; agents, RAG retrieval, model routing, Core integrations, and actions remain placeholders.
+Core iBeX remains the system of record. This platform has no direct Core database access. Live operational data must use approved Tool/APIs, while approved document knowledge uses RAG. Phase 2 adds the authenticated AI Gateway contract boundary, schema and payload validation, entitlement and authorization handoff, rate limiting, response/error envelopes, and request tracing. Agents, RAG retrieval, model routing, Tool execution, approval runtime, Core production integrations, and actions remain placeholders.
 
 ## Requirements
 
@@ -57,3 +57,4 @@ Never commit `.env`, API keys, access tokens, passwords, or production endpoints
 - [TD-01 Pilot technology decision](docs/decisions/TD-01-pilot-technology-baseline.md)
 - [Phase 0 validation](docs/PHASE_0_VALIDATION.md)
 - [Phase 1 validation](docs/PHASE_1_VALIDATION.md)
+- [Phase 2 validation](docs/PHASE_2_VALIDATION.md)

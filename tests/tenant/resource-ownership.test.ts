@@ -14,6 +14,7 @@ const context = createTrustedRequestContext({
   session_id: gatewayIdentity.session_id,
   request_id: gatewayIdentity.request_id,
   correlation_id: gatewayIdentity.correlation_id,
+  channel: gatewayIdentity.channel,
   locale: gatewayIdentity.locale
 });
 const resource = { type: 'asset', id: 'asset-123' };

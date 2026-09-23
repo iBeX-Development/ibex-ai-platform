@@ -4,16 +4,84 @@ import type { TrustedRequestContext } from '../../security/src/index.js';
 
 export type AuditEvent = Readonly<z.infer<typeof auditEventSchema>>;
 
+export type GatewayAuditStage =
+  | 'payload_size'
+  | 'endpoint'
+  | 'authentication'
+  | 'tenant_context'
+  | 'payload_schema'
+  | 'entitlement'
+  | 'rate_limit'
+  | 'authorization'
+  | 'audit'
+  | 'platform'
+  | 'response_schema';
+
+export interface GatewaySecurityAuditEvent {
+  readonly schema_version: '1.0';
+  readonly event_type: 'gateway.request.outcome';
+  readonly timestamp: string;
+  readonly trace_id: string;
+  readonly service: string;
+  readonly environment: string;
+  readonly outcome: 'accepted' | 'rejected' | 'error';
+  readonly stage: GatewayAuditStage;
+  readonly error_code?: string;
+  readonly trusted_context?: Readonly<{
+    tenant_id: string;
+    user_id: string;
+    session_id: string;
+    request_id: string;
+    correlation_id: string;
+  }>;
+}
+
+export type AuditRecord = AuditEvent | GatewaySecurityAuditEvent;
+
 export interface AuditEventSink {
-  emit(event: AuditEvent): Promise<void>;
+  emit(event: AuditRecord): Promise<void>;
 }
 
 export class UnconfiguredAuditEventSink implements AuditEventSink {
-  emit(event: AuditEvent): Promise<void> {
+  emit(event: AuditRecord): Promise<void> {
     return Promise.reject(
       new Error(`Audit event sink is not configured for event type: ${event.event_type}`)
     );
   }
+}
+
+export function createGatewaySecurityAuditEvent(input: {
+  readonly traceId: string;
+  readonly service: string;
+  readonly environment: string;
+  readonly outcome: GatewaySecurityAuditEvent['outcome'];
+  readonly stage: GatewayAuditStage;
+  readonly timestamp: Date;
+  readonly errorCode?: string;
+  readonly context?: TrustedRequestContext;
+}): GatewaySecurityAuditEvent {
+  const trustedContext = input.context
+    ? Object.freeze({
+        tenant_id: input.context.tenant_id,
+        user_id: input.context.user_id,
+        session_id: input.context.session_id,
+        request_id: input.context.request_id,
+        correlation_id: input.context.correlation_id
+      })
+    : undefined;
+
+  return Object.freeze({
+    schema_version: '1.0',
+    event_type: 'gateway.request.outcome',
+    timestamp: input.timestamp.toISOString(),
+    trace_id: input.traceId,
+    service: input.service,
+    environment: input.environment,
+    outcome: input.outcome,
+    stage: input.stage,
+    ...(input.errorCode ? { error_code: input.errorCode } : {}),
+    ...(trustedContext ? { trusted_context: trustedContext } : {})
+  });
 }
 
 export function createSecurityAuditEvent(
