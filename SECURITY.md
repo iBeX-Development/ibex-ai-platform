@@ -18,6 +18,11 @@ strictly schema validated, payload limited, entitlement checked, server authoriz
 audit correlated, and forwarded through an abstract platform adapter. `/tools` and `/approvals`
 provide contract boundaries only and contain no execution or approval runtime.
 
+Phase 3 revalidates and freezes trusted context at the shared runtime boundary. Agent selection is
+restricted by registry status, domain, intent, permissions, entitlements, and declared capability.
+RAG scopes, Tool candidates, model policy aliases, and prompt versions must remain within approved
+registry allowlists. Unknown intent returns a safe fallback and ambiguous routing fails closed.
+
 ## Data and actions
 
 - Do not connect directly to the Core iBeX database.
