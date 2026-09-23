@@ -13,8 +13,11 @@ Phase 2 is limited to AI Gateway integration and contract-boundary behavior.
 - Authentication handoff, capability entitlement enforcement, deterministic server-side
   authorization handoff, payload size validation, and tenant/user/capability rate limiting.
 - Standard public error mapping without diagnostics or stack traces.
-- OpenTelemetry request span plus request, correlation, tenant, and endpoint attributes.
-- Audit correlation and abstract forwarding into a future shared runtime adapter.
+- OpenTelemetry request span and internal trace correlation established before Gateway security
+  checks, with trusted request, correlation, tenant, and user attributes added after binding.
+- Sanitized accepted and rejected request audit outcomes plus abstract forwarding into a future
+  shared runtime adapter.
+- Collision-safe canonical rate-limit keys for tenant, user, capability, and endpoint dimensions.
 - Contract-only `/tools` and `/approvals` behavior without Tool execution or approval runtime.
 
 ## Gate P2 results
@@ -28,10 +31,12 @@ Phase 2 is limited to AI Gateway integration and contract-boundary behavior.
 | Capability outside authenticated entitlement          | REJECTED                  |
 | Oversized payload                                     | REJECTED                  |
 | Request and audit correlation                         | PASS                      |
+| Rejected-request trace and sanitized audit outcomes   | PASS                      |
+| Separator-safe tenant/user rate-limit isolation       | PASS                      |
 | End-to-end trace propagation                          | PASS                      |
 | `/tools` and `/approvals` contract boundary only      | PASS                      |
 | Format, lint, static type check, build                | PASS                      |
-| Complete test suite                                   | PASS — 12 files, 44 tests |
+| Complete test suite                                   | PASS — 12 files, 48 tests |
 | Dependency audit                                      | PASS — 0 vulnerabilities  |
 | Secret, direct Core database, provider coupling scans | PASS — 0 findings         |
 

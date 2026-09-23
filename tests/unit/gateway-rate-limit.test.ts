@@ -26,4 +26,43 @@ describe('Gateway rate limiting', () => {
     });
     await expect(limiter.consume(request, new Date(1_000))).resolves.toBeUndefined();
   });
+
+  it.each([
+    [
+      { tenant_id: 'tenant:a', user_id: 'user' },
+      { tenant_id: 'tenant', user_id: 'a:user' }
+    ],
+    [
+      { tenant_id: 'tenant', user_id: 'user:a' },
+      { tenant_id: 'tenant:user', user_id: 'a' }
+    ]
+  ])(
+    'does not collide when tenant or user identifiers contain separators',
+    async (firstIdentity, secondIdentity) => {
+      const limiter = new FixedWindowGatewayRateLimiter(1, 1_000);
+      const firstContext = createTrustedRequestContext({
+        ...context,
+        ...firstIdentity,
+        request_id: 'request-first'
+      });
+      const secondContext = createTrustedRequestContext({
+        ...context,
+        ...secondIdentity,
+        request_id: 'request-second'
+      });
+
+      await expect(
+        limiter.consume(
+          { context: firstContext, endpoint: 'chat', capability: 'ai:general' },
+          new Date(0)
+        )
+      ).resolves.toBeUndefined();
+      await expect(
+        limiter.consume(
+          { context: secondContext, endpoint: 'chat', capability: 'ai:general' },
+          new Date(0)
+        )
+      ).resolves.toBeUndefined();
+    }
+  );
 });

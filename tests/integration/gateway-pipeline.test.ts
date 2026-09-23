@@ -1,11 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { AuditEvent } from '../../packages/audit/src/index.js';
+import type { AuditRecord } from '../../packages/audit/src/index.js';
 import {
   AiGatewayService,
   FixedWindowGatewayRateLimiter,
   type GatewayPlatformRequest,
   type GatewayServiceDependencies
 } from '../../packages/gateway/src/index.js';
+import { PlatformError } from '../../packages/errors/src/index.js';
 import {
   authenticatorReturning,
   gatewayEnvelope,
@@ -14,7 +15,7 @@ import {
 } from '../testing/security-fixtures.js';
 
 function createDependencies(overrides: Partial<GatewayServiceDependencies> = {}) {
-  const auditEvents: AuditEvent[] = [];
+  const auditEvents: AuditRecord[] = [];
   const forward = vi.fn((request: GatewayPlatformRequest) => {
     return Promise.resolve({
       status: 'success' as const,
@@ -55,6 +56,7 @@ function createDependencies(overrides: Partial<GatewayServiceDependencies> = {})
     service: 'ai-gateway-test',
     environment: 'test',
     maximumPayloadBytes: 4_096,
+    traceIdFactory: () => 'gateway-trace-1',
     ...overrides
   };
   return { dependencies, auditEvents, forward, authorize };
@@ -73,17 +75,24 @@ describe('Gate P2 AI Gateway pipeline', () => {
     const service = new AiGatewayService(fixture.dependencies);
     const response = await service.execute(request('chat'), validationTime);
 
-    expect(response).toMatchObject({ request_id: 'request-1', trace_id: 'correlation-1' });
+    expect(response).toMatchObject({ request_id: 'request-1', trace_id: 'gateway-trace-1' });
     const forwarded = fixture.forward.mock.calls[0]?.[0];
     expect(forwarded?.endpoint).toBe('chat');
-    expect(forwarded?.trace_id).toBe('correlation-1');
+    expect(forwarded?.trace_id).toBe('gateway-trace-1');
     expect(forwarded?.context).toMatchObject({ tenant_id: 'tenant-a', request_id: 'request-1' });
     expect(fixture.auditEvents).toEqual([
       expect.objectContaining({
-        event_type: 'gateway.request.accepted',
-        tenant_id: 'tenant-a',
-        request_id: 'request-1',
-        correlation_id: 'correlation-1'
+        event_type: 'gateway.request.outcome',
+        trace_id: 'gateway-trace-1',
+        outcome: 'accepted',
+        stage: 'authorization',
+        trusted_context: {
+          tenant_id: 'tenant-a',
+          user_id: 'user-1',
+          session_id: 'session-1',
+          request_id: 'request-1',
+          correlation_id: 'correlation-1'
+        }
       })
     ]);
   });
@@ -99,6 +108,21 @@ describe('Gate P2 AI Gateway pipeline', () => {
     ).rejects.toMatchObject({ code: 'VALIDATION_ERROR', statusCode: 400 });
     expect(fixture.authorize).not.toHaveBeenCalled();
     expect(fixture.forward).not.toHaveBeenCalled();
+    expect(fixture.auditEvents).toContainEqual(
+      expect.objectContaining({
+        trace_id: 'gateway-trace-1',
+        outcome: 'rejected',
+        stage: 'payload_schema',
+        error_code: 'VALIDATION_ERROR',
+        trusted_context: {
+          tenant_id: 'tenant-a',
+          user_id: 'user-1',
+          session_id: 'session-1',
+          request_id: 'request-1',
+          correlation_id: 'correlation-1'
+        }
+      })
+    );
   });
 
   it('rejects a tenant mismatch before forwarding', async () => {
@@ -111,6 +135,15 @@ describe('Gate P2 AI Gateway pipeline', () => {
       )
     ).rejects.toMatchObject({ code: 'TENANT_CONTEXT_ERROR' });
     expect(fixture.forward).not.toHaveBeenCalled();
+    expect(fixture.auditEvents).toEqual([
+      expect.objectContaining({
+        trace_id: 'gateway-trace-1',
+        outcome: 'rejected',
+        stage: 'tenant_context',
+        error_code: 'TENANT_CONTEXT_ERROR'
+      })
+    ]);
+    expect(fixture.auditEvents[0]).not.toHaveProperty('trusted_context');
   });
 
   it('rejects an unauthorized requested agent without leaking policy details', async () => {
@@ -131,6 +164,21 @@ describe('Gate P2 AI Gateway pipeline', () => {
       )
     ).rejects.toMatchObject({ code: 'PERMISSION_DENIED', publicMessage: 'Access denied' });
     expect(fixture.forward).not.toHaveBeenCalled();
+    expect(fixture.auditEvents).toContainEqual(
+      expect.objectContaining({
+        trace_id: 'gateway-trace-1',
+        outcome: 'rejected',
+        stage: 'authorization',
+        error_code: 'PERMISSION_DENIED',
+        trusted_context: {
+          tenant_id: 'tenant-a',
+          user_id: 'user-1',
+          session_id: 'session-1',
+          request_id: 'request-1',
+          correlation_id: 'correlation-1'
+        }
+      })
+    );
   });
 
   it('rejects a capability outside authenticated entitlements', async () => {
@@ -143,6 +191,87 @@ describe('Gate P2 AI Gateway pipeline', () => {
       )
     ).rejects.toMatchObject({ code: 'PERMISSION_DENIED' });
     expect(fixture.authorize).not.toHaveBeenCalled();
+    expect(fixture.auditEvents).toContainEqual(
+      expect.objectContaining({
+        trace_id: 'gateway-trace-1',
+        outcome: 'rejected',
+        stage: 'entitlement',
+        error_code: 'PERMISSION_DENIED',
+        trusted_context: {
+          tenant_id: 'tenant-a',
+          user_id: 'user-1',
+          session_id: 'session-1',
+          request_id: 'request-1',
+          correlation_id: 'correlation-1'
+        }
+      })
+    );
+  });
+
+  it('correlates and audits a rate-limit rejection with trusted context only', async () => {
+    const fixture = createDependencies({
+      rateLimiter: {
+        consume: () =>
+          Promise.reject(new PlatformError('RATE_LIMIT_ERROR', 'Rate limit exceeded', 429))
+      }
+    });
+    const service = new AiGatewayService(fixture.dependencies);
+
+    await expect(service.execute(request('chat'), validationTime)).rejects.toMatchObject({
+      code: 'RATE_LIMIT_ERROR',
+      publicMessage: 'Rate limit exceeded',
+      traceId: 'gateway-trace-1',
+      trustedRequestId: 'request-1'
+    });
+    expect(fixture.auditEvents).toEqual([
+      expect.objectContaining({
+        trace_id: 'gateway-trace-1',
+        outcome: 'rejected',
+        stage: 'rate_limit',
+        error_code: 'RATE_LIMIT_ERROR',
+        trusted_context: {
+          tenant_id: 'tenant-a',
+          user_id: 'user-1',
+          session_id: 'session-1',
+          request_id: 'request-1',
+          correlation_id: 'correlation-1'
+        }
+      })
+    ]);
+    expect(fixture.authorize).not.toHaveBeenCalled();
+    expect(fixture.forward).not.toHaveBeenCalled();
+  });
+
+  it('correlates and audits authentication rejection without trusting request context', async () => {
+    const fixture = createDependencies({
+      authenticator: {
+        authenticate: () =>
+          Promise.reject(
+            new PlatformError('AUTHENTICATION_ERROR', 'Authentication failed', 401, {
+              credential: 'credential detail must remain private'
+            })
+          )
+      }
+    });
+    const service = new AiGatewayService(fixture.dependencies);
+
+    await expect(service.execute(request('chat'), validationTime)).rejects.toMatchObject({
+      code: 'AUTHENTICATION_ERROR',
+      publicMessage: 'Authentication failed',
+      traceId: 'gateway-trace-1'
+    });
+    expect(fixture.auditEvents).toEqual([
+      expect.objectContaining({
+        event_type: 'gateway.request.outcome',
+        trace_id: 'gateway-trace-1',
+        outcome: 'rejected',
+        stage: 'authentication',
+        error_code: 'AUTHENTICATION_ERROR'
+      })
+    ]);
+    expect(fixture.auditEvents[0]).not.toHaveProperty('trusted_context');
+    expect(JSON.stringify(fixture.auditEvents)).not.toContain('credential detail');
+    expect(fixture.forward).not.toHaveBeenCalled();
   });
 
   it('rejects an oversized body before authentication', async () => {

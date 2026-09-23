@@ -31,12 +31,12 @@ export class FixedWindowGatewayRateLimiter implements GatewayRateLimiter {
   }
 
   consume(request: GatewayRateLimitRequest, now: Date = new Date()): Promise<void> {
-    const key = [
+    const key = JSON.stringify([
       request.context.tenant_id,
       request.context.user_id,
       request.capability,
       request.endpoint
-    ].join(':');
+    ]);
     const currentTime = now.getTime();
     const current = this.windows.get(key);
     const state =

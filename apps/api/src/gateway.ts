@@ -41,19 +41,6 @@ async function readJsonBody(request: IncomingMessage, maximumPayloadBytes: numbe
   }
 }
 
-function requestIdFrom(envelope: unknown): string | undefined {
-  if (
-    typeof envelope === 'object' &&
-    envelope !== null &&
-    'request_id' in envelope &&
-    typeof envelope.request_id === 'string' &&
-    envelope.request_id.trim()
-  ) {
-    return envelope.request_id;
-  }
-  return undefined;
-}
-
 function sendJson(response: ServerResponse, statusCode: number, value: unknown): void {
   response.writeHead(statusCode, { 'content-type': 'application/json' });
   response.end(JSON.stringify(value));
@@ -74,20 +61,18 @@ export function createGatewayHttpHandler(service: AiGatewayService, maximumPaylo
       return true;
     }
 
-    let envelope: unknown;
     try {
       const body = await readJsonBody(request, maximumPayloadBytes);
-      envelope = body.envelope;
       const result = await service.execute({
         endpoint,
         payload_bytes: body.bytes,
         headers: normalizeHeaders(request.headers),
-        envelope
+        envelope: body.envelope
       });
       sendJson(response, result.status === 'rejected' ? 403 : 200, result);
     } catch (error) {
       const statusCode = error instanceof PlatformError ? error.statusCode : 500;
-      sendJson(response, statusCode, toErrorEnvelope(error, requestIdFrom(envelope)));
+      sendJson(response, statusCode, toErrorEnvelope(error));
     }
     return true;
   };

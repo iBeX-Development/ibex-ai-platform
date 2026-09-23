@@ -18,7 +18,9 @@ export class PlatformError extends Error {
     public readonly code: ErrorCode,
     public readonly publicMessage: string,
     public readonly statusCode: number,
-    public readonly diagnostics?: unknown
+    public readonly diagnostics?: unknown,
+    public readonly traceId?: string,
+    public readonly trustedRequestId?: string
   ) {
     super(publicMessage);
     this.name = 'PlatformError';
@@ -36,6 +38,7 @@ export interface ErrorEnvelope {
     readonly code: ErrorCode;
     readonly message: string;
     readonly request_id?: string;
+    readonly trace_id?: string;
   };
 }
 
@@ -44,11 +47,13 @@ export function toErrorEnvelope(error: unknown, requestId?: string): ErrorEnvelo
     error instanceof PlatformError
       ? error
       : new PlatformError('INTERNAL_ERROR', 'An internal error occurred', 500);
+  const safeRequestId = requestId ?? platformError.trustedRequestId;
   return {
     error: {
       code: platformError.code,
       message: platformError.publicMessage,
-      ...(requestId ? { request_id: requestId } : {})
+      ...(safeRequestId ? { request_id: safeRequestId } : {}),
+      ...(platformError.traceId ? { trace_id: platformError.traceId } : {})
     }
   };
 }
