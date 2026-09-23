@@ -156,8 +156,68 @@ export interface UntrustedModelGatewayBoundaryAuditEvent extends ModelGatewayAud
 export type ModelGatewayAuditEvent =
   TrustedModelGatewayAuditEvent | UntrustedModelGatewayBoundaryAuditEvent;
 
+export type ToolRuntimeAuditStage =
+  | 'boundary_context'
+  | 'boundary_trace'
+  | 'request_validation'
+  | 'registry'
+  | 'input_schema'
+  | 'authorization'
+  | 'tenant_ownership'
+  | 'execution'
+  | 'response_schema'
+  | 'audit';
+
+interface ToolRuntimeAuditEventBase {
+  readonly schema_version: '1.0';
+  readonly event_type: 'tool_runtime.execution.outcome';
+  readonly timestamp: string;
+  readonly trace_id: string;
+  readonly service: string;
+  readonly environment: string;
+  readonly outcome: 'started' | 'succeeded' | 'proposed' | 'rejected' | 'error';
+  readonly stage: ToolRuntimeAuditStage;
+  readonly tool_id?: string;
+  readonly tool_version?: string;
+  readonly agent_id?: string;
+  readonly prompt_version?: string;
+  readonly action_class?: 'read' | 'proposal';
+  readonly requested_operation?: 'read' | 'propose';
+  readonly permission_decision?: 'allowed' | 'denied';
+  readonly approval_policy?: string;
+  readonly approval_state?: 'not_required' | 'required_not_executed';
+  readonly attempt?: number;
+  readonly latency_ms?: number;
+  readonly error_code?: string;
+}
+
+export interface TrustedToolRuntimeAuditEvent extends ToolRuntimeAuditEventBase {
+  readonly context_status: 'trusted';
+  readonly request_id: string;
+  readonly correlation_id: string;
+  readonly tenant_id: string;
+  readonly user_id: string;
+  readonly role: string;
+  readonly session_id: string;
+  readonly permission_refs: readonly string[];
+  readonly entitlement_refs: readonly string[];
+}
+
+export interface UntrustedToolRuntimeBoundaryAuditEvent extends ToolRuntimeAuditEventBase {
+  readonly context_status: 'unavailable';
+  readonly outcome: 'rejected' | 'error';
+  readonly stage: 'boundary_context' | 'boundary_trace';
+}
+
+export type ToolRuntimeAuditEvent =
+  TrustedToolRuntimeAuditEvent | UntrustedToolRuntimeBoundaryAuditEvent;
+
 export type AuditRecord =
-  AuditEvent | GatewaySecurityAuditEvent | OrchestratorAuditEvent | ModelGatewayAuditEvent;
+  | AuditEvent
+  | GatewaySecurityAuditEvent
+  | OrchestratorAuditEvent
+  | ModelGatewayAuditEvent
+  | ToolRuntimeAuditEvent;
 
 export interface AuditEventSink {
   emit(event: AuditRecord): Promise<void>;
@@ -330,6 +390,79 @@ export function createModelGatewayAuditEvent(input: {
     }
     if (input.stage !== 'boundary_context' && input.stage !== 'boundary_trace') {
       throw new Error('Trusted context is required for Model Gateway audit events');
+    }
+    return Object.freeze({
+      ...base,
+      outcome: input.outcome,
+      stage: input.stage,
+      context_status: 'unavailable'
+    });
+  }
+
+  return Object.freeze({
+    ...base,
+    context_status: 'trusted',
+    request_id: input.context.request_id,
+    correlation_id: input.context.correlation_id,
+    tenant_id: input.context.tenant_id,
+    user_id: input.context.user_id,
+    role: input.context.role,
+    session_id: input.context.session_id,
+    permission_refs: Object.freeze([...input.context.permissions]),
+    entitlement_refs: Object.freeze([...input.context.entitlements])
+  });
+}
+
+export function createToolRuntimeAuditEvent(input: {
+  readonly traceId: string;
+  readonly service: string;
+  readonly environment: string;
+  readonly context?: TrustedRequestContext;
+  readonly outcome: ToolRuntimeAuditEvent['outcome'];
+  readonly stage: ToolRuntimeAuditStage;
+  readonly timestamp: Date;
+  readonly toolId?: string;
+  readonly toolVersion?: string;
+  readonly agentId?: string;
+  readonly promptVersion?: string;
+  readonly actionClass?: 'read' | 'proposal';
+  readonly requestedOperation?: 'read' | 'propose';
+  readonly permissionDecision?: 'allowed' | 'denied';
+  readonly approvalPolicy?: string;
+  readonly approvalState?: 'not_required' | 'required_not_executed';
+  readonly attempt?: number;
+  readonly latencyMs?: number;
+  readonly errorCode?: string;
+}): ToolRuntimeAuditEvent {
+  const base = {
+    schema_version: '1.0',
+    event_type: 'tool_runtime.execution.outcome',
+    timestamp: input.timestamp.toISOString(),
+    trace_id: input.traceId,
+    service: input.service,
+    environment: input.environment,
+    outcome: input.outcome,
+    stage: input.stage,
+    ...(input.toolId ? { tool_id: input.toolId } : {}),
+    ...(input.toolVersion ? { tool_version: input.toolVersion } : {}),
+    ...(input.agentId ? { agent_id: input.agentId } : {}),
+    ...(input.promptVersion ? { prompt_version: input.promptVersion } : {}),
+    ...(input.actionClass ? { action_class: input.actionClass } : {}),
+    ...(input.requestedOperation ? { requested_operation: input.requestedOperation } : {}),
+    ...(input.permissionDecision ? { permission_decision: input.permissionDecision } : {}),
+    ...(input.approvalPolicy ? { approval_policy: input.approvalPolicy } : {}),
+    ...(input.approvalState ? { approval_state: input.approvalState } : {}),
+    ...(input.attempt !== undefined ? { attempt: input.attempt } : {}),
+    ...(input.latencyMs !== undefined ? { latency_ms: input.latencyMs } : {}),
+    ...(input.errorCode ? { error_code: input.errorCode } : {})
+  } as const;
+
+  if (!input.context) {
+    if (input.outcome !== 'rejected' && input.outcome !== 'error') {
+      throw new Error('Trusted context is required for Tool Runtime audit events');
+    }
+    if (input.stage !== 'boundary_context' && input.stage !== 'boundary_trace') {
+      throw new Error('Trusted context is required for Tool Runtime audit events');
     }
     return Object.freeze({
       ...base,

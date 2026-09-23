@@ -31,6 +31,14 @@ entitlement, capability, or enablement requirements. Live adapters require appro
 configuration and injected secrets; provider credentials never enter agent code, prompts, audit,
 metrics, or source control.
 
+Phase 5 centralizes live-data access behind the Tool Runtime. Tool input cannot supply trusted
+tenant, identity, permission, entitlement, session, request, correlation, or authorization
+context. Registry enablement, environment, strict input/output schemas, server authorization,
+and resource ownership checks all fail closed before adapter invocation. Only safe idempotent
+Read Tools may use bounded retries. Action Tools produce approval-required proposals and never
+perform authoritative writes. No live Core adapter is enabled until its endpoint, service
+identity, authentication, resource-scope, and versioned schema contracts are explicitly approved.
+
 ## Data and actions
 
 - Do not connect directly to the Core iBeX database.
