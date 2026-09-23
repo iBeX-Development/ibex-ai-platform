@@ -13,6 +13,7 @@ import { createTrustedRequestContext, type TrustedRequestContext } from './conte
 export interface BoundGatewayRequest {
   readonly context: TrustedRequestContext;
   readonly payload: unknown;
+  readonly requested_capability?: string;
   readonly received_at: string;
 }
 
@@ -38,6 +39,7 @@ function assertIdentityBinding(
     envelope.session_id === identity.session_id &&
     envelope.request_id === identity.request_id &&
     envelope.correlation_id === identity.correlation_id &&
+    envelope.channel === identity.channel &&
     envelope.locale === identity.locale &&
     sameValues(envelope.permissions, identity.permissions) &&
     sameValues(envelope.entitlements, identity.entitlements);
@@ -70,12 +72,16 @@ export class TrustedGatewayBoundary {
       session_id: identity.session_id,
       request_id: identity.request_id,
       correlation_id: identity.correlation_id,
+      channel: identity.channel,
       locale: identity.locale
     });
 
     return Object.freeze({
       context,
       payload: envelopeResult.data.payload,
+      ...(envelopeResult.data.requested_capability
+        ? { requested_capability: envelopeResult.data.requested_capability }
+        : {}),
       received_at: now.toISOString()
     });
   }

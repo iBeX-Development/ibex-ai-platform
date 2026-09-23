@@ -25,6 +25,7 @@ describe('trusted AI Gateway boundary', () => {
       session_id: 'session-1',
       request_id: 'request-1',
       correlation_id: 'correlation-1',
+      channel: 'web',
       locale: 'mn'
     });
     expect(Object.isFrozen(bound)).toBe(true);

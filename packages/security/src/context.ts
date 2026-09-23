@@ -23,6 +23,7 @@ export const trustedRequestContextSchema = z
     session_id: nonEmpty,
     request_id: nonEmpty,
     correlation_id: nonEmpty,
+    channel: z.enum(['web', 'mobile', 'system']),
     locale: nonEmpty
   })
   .strict()

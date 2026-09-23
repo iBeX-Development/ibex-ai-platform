@@ -13,6 +13,7 @@ export const gatewayIdentity: AuthenticatedGatewayIdentity = {
   session_id: 'session-1',
   request_id: 'request-1',
   correlation_id: 'correlation-1',
+  channel: 'web',
   locale: 'mn',
   authenticated_at: '2026-09-23T00:00:00.000Z',
   expires_at: '2026-09-23T01:00:00.000Z'
@@ -29,6 +30,7 @@ export const gatewayEnvelope = {
   entitlements: gatewayIdentity.entitlements,
   session_id: gatewayIdentity.session_id,
   timestamp: '2026-09-23T00:00:00.000Z',
+  channel: gatewayIdentity.channel,
   locale: gatewayIdentity.locale,
   payload: { message: 'show my assets' }
 };

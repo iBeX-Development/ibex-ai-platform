@@ -23,7 +23,12 @@ export const gatewayRequestEnvelopeSchema = z
     entitlements: z.array(nonEmpty).readonly(),
     session_id: nonEmpty,
     timestamp: z.string().datetime(),
+    channel: z.enum(['web', 'mobile', 'system']),
     locale: nonEmpty,
+    requested_capability: nonEmpty.optional(),
+    source_module: nonEmpty.optional(),
+    source_entity_type: nonEmpty.optional(),
+    source_entity_id: nonEmpty.optional(),
     payload: z.unknown()
   })
   .strict()
@@ -36,6 +41,32 @@ export const apiResponseEnvelopeSchema = z
     payload: z.unknown().optional()
   })
   .strict();
+
+export const gatewayResponseEnvelopeSchema = z
+  .object({
+    contract_version: contractVersionSchema,
+    request_id: nonEmpty,
+    status: z.enum(['success', 'partial', 'rejected', 'error']),
+    response: z.unknown().optional(),
+    agent: nonEmpty.optional(),
+    sources: z.array(z.object({ source_id: nonEmpty, version: nonEmpty }).strict()).readonly(),
+    tools_used: z.array(z.object({ tool_id: nonEmpty, version: nonEmpty }).strict()).readonly(),
+    action_type: z.enum(['informational', 'recommendation', 'proposed_action']),
+    approval_required: z.boolean(),
+    warnings: z.array(nonEmpty).readonly(),
+    trace_id: nonEmpty
+  })
+  .strict()
+  .readonly()
+  .superRefine((value, context) => {
+    if (value.action_type === 'proposed_action' && !value.approval_required) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['approval_required'],
+        message: 'proposed actions require approval'
+      });
+    }
+  });
 
 export const toolRequestSchema = z
   .object({
@@ -108,3 +139,4 @@ export const auditEventSchema = z
 export type ApiRequestEnvelope = z.infer<typeof apiRequestEnvelopeSchema>;
 export type ApiResponseEnvelope = z.infer<typeof apiResponseEnvelopeSchema>;
 export type GatewayRequestEnvelope = Readonly<z.infer<typeof gatewayRequestEnvelopeSchema>>;
+export type GatewayResponseEnvelope = Readonly<z.infer<typeof gatewayResponseEnvelopeSchema>>;

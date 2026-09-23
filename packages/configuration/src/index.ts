@@ -16,6 +16,7 @@ const envSchema = z
     IBEX_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
     IBEX_MAX_RETRIES: z.coerce.number().int().min(0).max(5).default(2),
     IBEX_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(60),
+    IBEX_GATEWAY_MAX_PAYLOAD_BYTES: z.coerce.number().int().positive().default(1_048_576),
     IBEX_AI_GATEWAY_BASE_URL: z.string().url().optional(),
     IBEX_MODEL_GATEWAY_BASE_URL: z.string().url().optional(),
     IBEX_RAG_SERVICE_BASE_URL: z.string().url().optional(),
@@ -60,7 +61,10 @@ function toConfig(env: z.infer<typeof envSchema>) {
       port: env.IBEX_PORT
     }),
     logging: Object.freeze({ level: env.IBEX_LOG_LEVEL }),
-    aiGateway: Object.freeze({ baseUrl: env.IBEX_AI_GATEWAY_BASE_URL }),
+    aiGateway: Object.freeze({
+      baseUrl: env.IBEX_AI_GATEWAY_BASE_URL,
+      maximumPayloadBytes: env.IBEX_GATEWAY_MAX_PAYLOAD_BYTES
+    }),
     tenantSecurity: Object.freeze({ requireTrustedContext: true, crossTenantDefaultDeny: true }),
     modelGateway: Object.freeze({ baseUrl: env.IBEX_MODEL_GATEWAY_BASE_URL }),
     rag: Object.freeze({ baseUrl: env.IBEX_RAG_SERVICE_BASE_URL }),

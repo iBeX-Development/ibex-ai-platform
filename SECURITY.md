@@ -13,6 +13,11 @@ interfaces, immutable request binding, resource ownership enforcement, and fail-
 Production adapters must authenticate the approved Core/AI Gateway channel and delegate final
 authorization and ownership decisions to approved server-side sources.
 
+Phase 2 preserves this binding through the AI Gateway contract boundary. Gateway requests are
+strictly schema validated, payload limited, entitlement checked, server authorized, rate limited,
+audit correlated, and forwarded through an abstract platform adapter. `/tools` and `/approvals`
+provide contract boundaries only and contain no execution or approval runtime.
+
 ## Data and actions
 
 - Do not connect directly to the Core iBeX database.

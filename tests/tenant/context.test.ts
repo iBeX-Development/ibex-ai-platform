@@ -13,6 +13,7 @@ const input = {
   session_id: 's-1',
   request_id: 'r-1',
   correlation_id: 'c-1',
+  channel: 'web',
   locale: 'mn'
 };
 describe('trusted tenant context', () => {

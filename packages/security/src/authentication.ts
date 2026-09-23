@@ -14,6 +14,7 @@ export const authenticatedGatewayIdentitySchema = z
     session_id: nonEmpty,
     request_id: nonEmpty,
     correlation_id: nonEmpty,
+    channel: z.enum(['web', 'mobile', 'system']),
     locale: nonEmpty,
     authenticated_at: z.string().datetime(),
     expires_at: z.string().datetime()
