@@ -7,7 +7,7 @@ import {
 const input = {
   tenant_id: 'tenant-a',
   user_id: 'user-1',
-  roles: ['operator'],
+  role: 'operator',
   permissions: [],
   entitlements: [],
   session_id: 's-1',

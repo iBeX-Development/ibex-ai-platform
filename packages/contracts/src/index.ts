@@ -8,6 +8,26 @@ export const apiRequestEnvelopeSchema = z
     payload: z.unknown()
   })
   .strict();
+
+const nonEmpty = z.string().trim().min(1);
+
+export const gatewayRequestEnvelopeSchema = z
+  .object({
+    contract_version: contractVersionSchema,
+    request_id: nonEmpty,
+    correlation_id: nonEmpty,
+    tenant_id: nonEmpty,
+    user_id: nonEmpty,
+    role: nonEmpty,
+    permissions: z.array(nonEmpty).readonly(),
+    entitlements: z.array(nonEmpty).readonly(),
+    session_id: nonEmpty,
+    timestamp: z.string().datetime(),
+    locale: nonEmpty,
+    payload: z.unknown()
+  })
+  .strict()
+  .readonly();
 export const apiResponseEnvelopeSchema = z
   .object({
     contract_version: contractVersionSchema,
@@ -87,3 +107,4 @@ export const auditEventSchema = z
 
 export type ApiRequestEnvelope = z.infer<typeof apiRequestEnvelopeSchema>;
 export type ApiResponseEnvelope = z.infer<typeof apiResponseEnvelopeSchema>;
+export type GatewayRequestEnvelope = Readonly<z.infer<typeof gatewayRequestEnvelopeSchema>>;

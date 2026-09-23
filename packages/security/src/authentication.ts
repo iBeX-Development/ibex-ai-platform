@@ -1,0 +1,65 @@
+import { z } from 'zod';
+import { PlatformError } from '../../errors/src/index.js';
+
+const nonEmpty = z.string().trim().min(1);
+
+export const authenticatedGatewayIdentitySchema = z
+  .object({
+    gateway_id: nonEmpty,
+    tenant_id: nonEmpty,
+    user_id: nonEmpty,
+    role: nonEmpty,
+    permissions: z.array(nonEmpty).readonly(),
+    entitlements: z.array(nonEmpty).readonly(),
+    session_id: nonEmpty,
+    request_id: nonEmpty,
+    correlation_id: nonEmpty,
+    locale: nonEmpty,
+    authenticated_at: z.string().datetime(),
+    expires_at: z.string().datetime()
+  })
+  .strict()
+  .readonly();
+
+export type AuthenticatedGatewayIdentity = Readonly<
+  z.infer<typeof authenticatedGatewayIdentitySchema>
+>;
+
+export interface InboundAuthenticationRequest {
+  readonly headers: Readonly<Record<string, string | readonly string[] | undefined>>;
+  readonly envelope: unknown;
+}
+
+/** Implemented by the approved Core/AI Gateway authentication adapter. */
+export interface GatewayAuthenticator {
+  authenticate(request: InboundAuthenticationRequest): Promise<unknown>;
+}
+
+export async function authenticateGatewayRequest(
+  authenticator: GatewayAuthenticator,
+  request: InboundAuthenticationRequest,
+  now: Date = new Date()
+): Promise<AuthenticatedGatewayIdentity> {
+  let rawIdentity: unknown;
+  try {
+    rawIdentity = await authenticator.authenticate(request);
+  } catch {
+    throw new PlatformError('AUTHENTICATION_ERROR', 'Authentication failed', 401);
+  }
+
+  const result = authenticatedGatewayIdentitySchema.safeParse(rawIdentity);
+  if (
+    !result.success ||
+    Date.parse(result.data.authenticated_at) > now.getTime() ||
+    Date.parse(result.data.expires_at) <= now.getTime() ||
+    Date.parse(result.data.authenticated_at) >= Date.parse(result.data.expires_at)
+  ) {
+    throw new PlatformError('AUTHENTICATION_ERROR', 'Authentication failed', 401);
+  }
+
+  return Object.freeze({
+    ...result.data,
+    permissions: Object.freeze([...result.data.permissions]),
+    entitlements: Object.freeze([...result.data.entitlements])
+  });
+}

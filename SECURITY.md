@@ -8,7 +8,10 @@
 - Keep trusted request context immutable after validation and preserve it across module boundaries.
 - Enforce authorization on the server. Agents cannot infer or expand roles, permissions, or entitlements.
 
-Phase 0 supplies validated context types and a default-deny tenant guard. Full authentication and authorization enforcement belongs to Phase 1.
+Phase 1 supplies the trusted Gateway boundary, authentication and authoritative authorization
+interfaces, immutable request binding, resource ownership enforcement, and fail-closed guards.
+Production adapters must authenticate the approved Core/AI Gateway channel and delegate final
+authorization and ownership decisions to approved server-side sources.
 
 ## Data and actions
 

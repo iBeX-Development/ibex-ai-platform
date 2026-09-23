@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { apiRequestEnvelopeSchema } from '../../packages/contracts/src/index.js';
+import {
+  apiRequestEnvelopeSchema,
+  gatewayRequestEnvelopeSchema
+} from '../../packages/contracts/src/index.js';
+import { gatewayEnvelope } from '../testing/security-fixtures.js';
 
 describe('versioned contracts', () => {
   it('accepts the canonical API envelope', () => {
@@ -17,5 +21,8 @@ describe('versioned contracts', () => {
         tenant_id: 'untrusted'
       })
     ).toThrow();
+  });
+  it('accepts the canonical authenticated Gateway envelope', () => {
+    expect(gatewayRequestEnvelopeSchema.parse(gatewayEnvelope).tenant_id).toBe('tenant-a');
   });
 });
