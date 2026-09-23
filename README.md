@@ -6,7 +6,7 @@ Standalone, tenant-safe AI platform foundation for iBeX. The approved boundary i
 Core iBeX → AI Gateway → iBeX Hybrid Intelligent AI Platform
 ```
 
-Core iBeX remains the system of record. This platform has no direct Core database access. Live operational data must use approved Tool/APIs, while approved document knowledge uses RAG. Phase 0 contains engineering foundations only; agents, RAG retrieval, model routing, Core integrations, and actions are placeholders.
+Core iBeX remains the system of record. This platform has no direct Core database access. Live operational data must use approved Tool/APIs, while approved document knowledge uses RAG. Phase 1 adds the trusted security and tenant boundary foundation; agents, RAG retrieval, model routing, Core integrations, and actions remain placeholders.
 
 ## Requirements
 
@@ -36,13 +36,13 @@ The service exposes `GET /health` on `http://localhost:3000`. Node does not load
 
 | Command             | Purpose                             |
 | ------------------- | ----------------------------------- |
-| `pnpm dev`          | Start the Phase 0 API skeleton      |
+| `pnpm dev`          | Start the API skeleton              |
 | `pnpm build`        | Compile TypeScript to `dist/`       |
 | `pnpm start`        | Start the compiled API              |
 | `pnpm format:check` | Verify formatting                   |
 | `pnpm lint`         | Run strict ESLint checks            |
 | `pnpm typecheck`    | Run TypeScript static checks        |
-| `pnpm test`         | Run all Phase 0 tests               |
+| `pnpm test`         | Run all tests                       |
 | `pnpm validate`     | Run the complete local quality gate |
 
 ## Environment and secrets
@@ -56,3 +56,4 @@ Never commit `.env`, API keys, access tokens, passwords, or production endpoints
 - [Approved architecture baseline](docs/ARCHITECTURE_REFERENCE.md)
 - [TD-01 Pilot technology decision](docs/decisions/TD-01-pilot-technology-baseline.md)
 - [Phase 0 validation](docs/PHASE_0_VALIDATION.md)
+- [Phase 1 validation](docs/PHASE_1_VALIDATION.md)

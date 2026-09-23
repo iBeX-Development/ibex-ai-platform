@@ -5,7 +5,7 @@ const nonEmpty = z.string().trim().min(1);
 const tenantContextShape = { tenant_id: nonEmpty };
 const identityContextShape = {
   user_id: nonEmpty,
-  roles: z.array(nonEmpty).min(1).readonly()
+  role: nonEmpty
 };
 const authorizationContextShape = {
   permissions: z.array(nonEmpty).readonly(),
@@ -45,7 +45,6 @@ export function createTrustedRequestContext(serverSupplied: unknown): TrustedReq
     );
   return Object.freeze({
     ...result.data,
-    roles: Object.freeze([...result.data.roles]),
     permissions: Object.freeze([...result.data.permissions]),
     entitlements: Object.freeze([...result.data.entitlements])
   });
