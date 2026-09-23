@@ -1,0 +1,1 @@
+# Warehouse agent placeholder

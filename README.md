@@ -1,15 +1,58 @@
 # iBeX Hybrid Intelligent AI Platform
 
-This repository is reserved for the AI Platform, separated from Core iBeX by the AI Gateway. Phase 0 implementation is pending access to the approved Technical Design v1.0 and Implementation Plan v1.0. No runtime or service stack has been selected in this repository.
+Standalone, tenant-safe AI platform foundation for iBeX. The approved boundary is:
 
-## Architecture boundary
+```text
+Core iBeX → AI Gateway → iBeX Hybrid Intelligent AI Platform
+```
 
-Core iBeX → AI Gateway → iBeX Hybrid Intelligent AI Platform. The platform must not connect directly to the Core iBeX database. Live Core data must pass through approved Tool/APIs; approved document knowledge must pass through RAG. Tenant context must originate from trusted Core or AI Gateway context, never a user prompt. See [SECURITY.md](SECURITY.md).
+Core iBeX remains the system of record. This platform has no direct Core database access. Live operational data must use approved Tool/APIs, while approved document knowledge uses RAG. Phase 0 contains engineering foundations only; agents, RAG retrieval, model routing, Core integrations, and actions are placeholders.
+
+## Requirements
+
+- Node.js 22 or later
+- Corepack and pnpm 11.19.0
+- Docker Compose is optional for container-based local execution
 
 ## Local setup
 
-There are no dependencies or runnable services yet. Runtime, environment configuration, start commands, and test commands will be documented after the approved design and plan are available. Do not add real credentials to this repository.
+```bash
+corepack enable
+pnpm install --frozen-lockfile
+cp .env.example .env
+pnpm validate
+pnpm dev
+```
 
-## Project status
+PowerShell equivalent for the configuration file:
 
-See [Phase 0 validation](docs/PHASE_0_VALIDATION.md) for the current gate and decisions required before implementation proceeds.
+```powershell
+Copy-Item .env.example .env
+```
+
+The service exposes `GET /health` on `http://localhost:3000`. Node does not load `.env` automatically; export the `.env.example` values in the shell when running directly, or use Docker Compose, which loads `.env`.
+
+## Commands
+
+| Command             | Purpose                             |
+| ------------------- | ----------------------------------- |
+| `pnpm dev`          | Start the Phase 0 API skeleton      |
+| `pnpm build`        | Compile TypeScript to `dist/`       |
+| `pnpm start`        | Start the compiled API              |
+| `pnpm format:check` | Verify formatting                   |
+| `pnpm lint`         | Run strict ESLint checks            |
+| `pnpm typecheck`    | Run TypeScript static checks        |
+| `pnpm test`         | Run all Phase 0 tests               |
+| `pnpm validate`     | Run the complete local quality gate |
+
+## Environment and secrets
+
+Configuration is validated centrally with Zod and fails during startup when required values are missing or invalid. Supported environments are `local`, `development`, `test`, `staging`, and `production`. Local development may read secret values from environment variables. Staging and production require the external secret-provider abstraction and must not use repository files for credentials.
+
+Never commit `.env`, API keys, access tokens, passwords, or production endpoints. See [SECURITY.md](SECURITY.md).
+
+## References
+
+- [Approved architecture baseline](docs/ARCHITECTURE_REFERENCE.md)
+- [TD-01 Pilot technology decision](docs/decisions/TD-01-pilot-technology-baseline.md)
+- [Phase 0 validation](docs/PHASE_0_VALIDATION.md)

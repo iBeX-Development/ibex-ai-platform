@@ -1,0 +1,16 @@
+export const validTestEnvironment = Object.freeze({
+  IBEX_CONFIG_VERSION: '1',
+  IBEX_ENVIRONMENT: 'test',
+  IBEX_SERVICE_NAME: 'test-service',
+  IBEX_HOST: '127.0.0.1',
+  IBEX_PORT: '3001',
+  IBEX_LOG_LEVEL: 'info',
+  IBEX_SECRET_SOURCE: 'environment',
+  IBEX_REQUEST_TIMEOUT_MS: '1000',
+  IBEX_MAX_RETRIES: '0',
+  IBEX_RATE_LIMIT_PER_MINUTE: '60',
+  IBEX_FEATURE_AGENTS_ENABLED: 'false',
+  IBEX_FEATURE_RAG_ENABLED: 'false',
+  IBEX_FEATURE_TOOLS_ENABLED: 'false',
+  IBEX_FEATURE_MODEL_GATEWAY_ENABLED: 'false'
+});
