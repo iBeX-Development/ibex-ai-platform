@@ -1,0 +1,54 @@
+export const errorCodes = [
+  'VALIDATION_ERROR',
+  'AUTHENTICATION_ERROR',
+  'AUTHORIZATION_ERROR',
+  'TENANT_CONTEXT_ERROR',
+  'PERMISSION_DENIED',
+  'CONFIGURATION_ERROR',
+  'DEPENDENCY_ERROR',
+  'TIMEOUT_ERROR',
+  'RATE_LIMIT_ERROR',
+  'APPROVAL_REQUIRED',
+  'INTERNAL_ERROR'
+] as const;
+export type ErrorCode = (typeof errorCodes)[number];
+
+export class PlatformError extends Error {
+  constructor(
+    public readonly code: ErrorCode,
+    public readonly publicMessage: string,
+    public readonly statusCode: number,
+    public readonly diagnostics?: unknown
+  ) {
+    super(publicMessage);
+    this.name = 'PlatformError';
+  }
+}
+
+export class ConfigurationError extends PlatformError {
+  constructor(message: string, diagnostics?: unknown) {
+    super('CONFIGURATION_ERROR', message, 500, diagnostics);
+  }
+}
+
+export interface ErrorEnvelope {
+  readonly error: {
+    readonly code: ErrorCode;
+    readonly message: string;
+    readonly request_id?: string;
+  };
+}
+
+export function toErrorEnvelope(error: unknown, requestId?: string): ErrorEnvelope {
+  const platformError =
+    error instanceof PlatformError
+      ? error
+      : new PlatformError('INTERNAL_ERROR', 'An internal error occurred', 500);
+  return {
+    error: {
+      code: platformError.code,
+      message: platformError.publicMessage,
+      ...(requestId ? { request_id: requestId } : {})
+    }
+  };
+}

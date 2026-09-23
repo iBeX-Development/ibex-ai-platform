@@ -1,23 +1,7 @@
 # Architecture reference
 
-The following approved v1.0 documents are mandatory implementation baselines. Their contents are not stored in this repository or otherwise available in the current workspace. This file does not replace or override them.
+The source of truth is the approved and active v1.0 package in [`docs/baseline/`](baseline/README.md). It contains all 17 mandatory documents, from Master AI Policy v1.0 through Implementation Plan v1.0.
 
-1. Master AI Policy
-2. Tenant Security Contract
-3. Agent Architecture
-4. AI Gateway Contract
-5. Tool/API Contract
-6. RAG Architecture
-7. Model Gateway Architecture
-8. Audit & Observability Architecture
-9. Evaluation Framework
-10. Pilot Domain Specifications
-11. General iBeX Agent Specification
-12. Maintenance Agent Specification
-13. Asset Agent Specification
-14. Warehouse Agent Specification
-15. Implementation Readiness Review
-16. Technical Design
-17. Implementation Plan
+Implementation must follow their dependency order and must not amend or override them. Missing or conflicting requirements are recorded as blockers or decisions required. Implementation-level decisions are kept separately in [`docs/decisions/`](decisions/) and do not modify architecture v1.0.
 
-Implementation decisions must be checked against these documents. A missing or conflicting requirement is a decision required; it is not permission to alter the architecture.
+Phase 0 implements the repository and engineering foundation defined by Implementation Plan v1.0 section 8. It does not implement Phase 1 security enforcement or later business capabilities.
