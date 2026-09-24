@@ -56,6 +56,7 @@ export const warehouseAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['inventory.stock'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['inventory.stock', 'WAREHOUSE_LOOKUP'],
       proposal_only: false
@@ -66,6 +67,7 @@ export const warehouseAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['PART_LOOKUP'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['PART_LOOKUP', 'ASSET_PART_LOOKUP'],
       proposal_only: false
@@ -76,6 +78,7 @@ export const warehouseAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['WO_MATERIAL_LOOKUP'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['WO_MATERIAL_LOOKUP', 'inventory.stock'],
       proposal_only: false
@@ -86,6 +89,7 @@ export const warehouseAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['ISSUE_LOOKUP'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['RECEIPT_LOOKUP', 'ISSUE_LOOKUP'],
       proposal_only: false
@@ -96,6 +100,7 @@ export const warehouseAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'rag',
       required_permissions: [],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: ragScopes,
       tool_capability_classes: [],
       proposal_only: false
@@ -106,6 +111,7 @@ export const warehouseAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['inventory.prepare_issue'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['inventory.prepare_issue'],
       proposal_only: true
@@ -116,6 +122,7 @@ export const warehouseAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'none',
       required_permissions: [],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: [],
       handoff_domain: 'orchestrator',

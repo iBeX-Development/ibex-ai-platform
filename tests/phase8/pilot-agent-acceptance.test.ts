@@ -5,9 +5,10 @@ import {
   pilotDomainPromptRecords
 } from '../../agents/index.js';
 import { AgentRegistry, PromptRegistry } from '../../packages/runtime/src/index.js';
+import { pilotAgentProfileSchema } from '../../packages/pilot-agents/src/index.js';
 
 describe('Phase 8 Pilot Agent Acceptance', () => {
-  it('registers all four agents in the approved sequential set with deterministic routing', () => {
+  it('registers all four agents disabled until authorization mappings are approved', () => {
     const registry = new AgentRegistry(pilotAgentDefinitions);
     for (const definition of pilotAgentDefinitions) {
       const intent = definition.supported_intents[0];
@@ -19,11 +20,12 @@ describe('Phase 8 Pilot Agent Acceptance', () => {
           intent: intent ?? '',
           required_capabilities: [`intent:${intent ?? ''}`]
         })
-      ).toMatchObject({ agent_id: definition.agent_id, version: '1.0.0' });
+      ).toBeUndefined();
+      expect(definition.status).toBe('disabled');
     }
     expect(pilotAgentDefinitions.map((agent) => agent.agent_id)).toEqual([
       'general_ibex',
-      'maintenance',
+      'maintenance-agent',
       'asset',
       'warehouse'
     ]);
@@ -78,6 +80,8 @@ describe('Phase 8 Pilot Agent Acceptance', () => {
     for (const profile of pilotAgentProfiles) {
       expect(profile.live_capabilities_enabled).toBe(false);
       for (const tool of profile.tool_allowlist) expect(tool.enabled).toBe(false);
+      for (const intent of profile.intents)
+        expect(intent.authorization_status).toBe('blocked_pending_approved_mapping');
     }
   });
 
@@ -103,5 +107,17 @@ describe('Phase 8 Pilot Agent Acceptance', () => {
       expect(profile.versions.evaluation_dataset).toBe('1.0.0');
       expect(profile.rag_scopes.length).toBeGreaterThan(0);
     }
+  });
+  it('rejects an enabled intent that has no explicit permission or entitlement mapping', () => {
+    const profile = pilotAgentProfiles[0];
+    if (!profile) throw new Error('Expected a Pilot profile');
+    expect(() =>
+      pilotAgentProfileSchema.parse({
+        ...profile,
+        intents: profile.intents.map((intent, index) =>
+          index === 0 ? { ...intent, authorization_status: 'approved' } : intent
+        )
+      })
+    ).toThrow();
   });
 });

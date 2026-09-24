@@ -54,6 +54,7 @@ export const generalAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'rag',
       required_permissions: [],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: ragScopes,
       tool_capability_classes: [],
       proposal_only: false
@@ -64,6 +65,7 @@ export const generalAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'rag',
       required_permissions: [],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: ['general-user-guides', 'module-documentation'],
       tool_capability_classes: [],
       proposal_only: false
@@ -74,6 +76,7 @@ export const generalAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'rag',
       required_permissions: [],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: ['workflow-documentation', 'approved-procedures'],
       tool_capability_classes: [],
       proposal_only: false
@@ -84,6 +87,7 @@ export const generalAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['PERMITTED_RECORD_SEARCH'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['PERMITTED_RECORD_SEARCH'],
       proposal_only: false
@@ -94,6 +98,7 @@ export const generalAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['USER_CONTEXT_READ'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['USER_CONTEXT_READ'],
       proposal_only: false
@@ -104,6 +109,7 @@ export const generalAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['PERMITTED_RECORD_SUMMARY'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['PERMITTED_RECORD_SUMMARY'],
       proposal_only: false
@@ -114,6 +120,7 @@ export const generalAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'none',
       required_permissions: [],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: [],
       handoff_domain: 'orchestrator',

@@ -93,6 +93,19 @@ interface OrchestratorAuditEventBase {
   readonly agent_version?: string;
   readonly prompt_hierarchy?: PromptHierarchyAuditEvidence;
   readonly error_code?: string;
+  readonly sources_used?: readonly Readonly<{
+    source_id: string;
+    version: string;
+    reference: string;
+  }>[];
+  readonly tools_used?: readonly Readonly<{
+    tool_id: string;
+    version: string;
+    reference: string;
+  }>[];
+  readonly evidence_status?: 'sufficient' | 'insufficient';
+  readonly response_status?: 'success' | 'rejected';
+  readonly approval_state?: 'not_required' | 'required_not_executed';
 }
 
 export interface TrustedOrchestratorAuditEvent extends OrchestratorAuditEventBase {
@@ -413,6 +426,15 @@ export function createOrchestratorAuditEvent(input: {
   readonly agentVersion?: string;
   readonly promptHierarchy?: PromptHierarchyAuditEvidence;
   readonly errorCode?: string;
+  readonly sourcesUsed?: readonly Readonly<{
+    source_id: string;
+    version: string;
+    reference: string;
+  }>[];
+  readonly toolsUsed?: readonly Readonly<{ tool_id: string; version: string; reference: string }>[];
+  readonly evidenceStatus?: 'sufficient' | 'insufficient';
+  readonly responseStatus?: 'success' | 'rejected';
+  readonly approvalState?: 'not_required' | 'required_not_executed';
 }): OrchestratorAuditEvent {
   const base = {
     schema_version: '1.0',
@@ -436,7 +458,16 @@ export function createOrchestratorAuditEvent(input: {
           })
         }
       : {}),
-    ...(input.errorCode ? { error_code: input.errorCode } : {})
+    ...(input.errorCode ? { error_code: input.errorCode } : {}),
+    ...(input.sourcesUsed
+      ? { sources_used: Object.freeze(input.sourcesUsed.map((item) => Object.freeze({ ...item }))) }
+      : {}),
+    ...(input.toolsUsed
+      ? { tools_used: Object.freeze(input.toolsUsed.map((item) => Object.freeze({ ...item }))) }
+      : {}),
+    ...(input.evidenceStatus ? { evidence_status: input.evidenceStatus } : {}),
+    ...(input.responseStatus ? { response_status: input.responseStatus } : {}),
+    ...(input.approvalState ? { approval_state: input.approvalState } : {})
   } as const;
 
   if (!input.context) {

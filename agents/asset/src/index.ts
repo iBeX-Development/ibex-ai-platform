@@ -60,6 +60,7 @@ export const assetAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['asset.get'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['asset.get', 'asset.search'],
       proposal_only: false
@@ -70,6 +71,7 @@ export const assetAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['asset.get_hierarchy'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['asset.get_hierarchy', 'asset.get_children', 'asset.get_parent'],
       proposal_only: false
@@ -80,6 +82,7 @@ export const assetAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['asset.get_location'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['asset.get_location'],
       proposal_only: false
@@ -90,6 +93,7 @@ export const assetAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['asset.get_related_work_orders'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['asset.get_related_work_orders'],
       proposal_only: false
@@ -100,6 +104,7 @@ export const assetAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['asset.get_related_work_orders'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: [
         'asset.get_related_work_orders',
@@ -114,6 +119,7 @@ export const assetAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['asset.get_parts'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['asset.get_parts'],
       proposal_only: false
@@ -124,6 +130,7 @@ export const assetAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'rag',
       required_permissions: [],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: ragScopes,
       tool_capability_classes: [],
       proposal_only: false
@@ -134,6 +141,7 @@ export const assetAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool_and_rag',
       required_permissions: ['asset.get'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: ['approved-asset-manuals'],
       tool_capability_classes: ['asset.get'],
       proposal_only: false
@@ -144,6 +152,7 @@ export const assetAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'none',
       required_permissions: [],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: [],
       handoff_domain: 'orchestrator',

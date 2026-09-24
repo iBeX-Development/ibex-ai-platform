@@ -35,7 +35,7 @@ const ragScopes = [
 ] as const;
 
 export const maintenanceAgentProfile = pilotAgentProfileSchema.parse({
-  agent_id: 'maintenance',
+  agent_id: 'maintenance-agent',
   domain: 'maintenance',
   specification: 'Maintenance Agent Specification v1.0',
   deployment_stage: 'evaluation',
@@ -61,6 +61,7 @@ export const maintenanceAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['WORK_ORDER_GET'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['WORK_ORDER_GET'],
       proposal_only: false
@@ -71,6 +72,7 @@ export const maintenanceAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['MAINTENANCE_HISTORY_READ'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['MAINTENANCE_HISTORY_READ'],
       proposal_only: false
@@ -81,6 +83,7 @@ export const maintenanceAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['FAILURE_HISTORY_READ'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['FAILURE_HISTORY_READ'],
       proposal_only: false
@@ -91,6 +94,7 @@ export const maintenanceAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool_and_rag',
       required_permissions: ['WORK_ORDER_GET'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: ['approved-maintenance-procedures'],
       tool_capability_classes: ['WORK_ORDER_GET'],
       proposal_only: false
@@ -101,6 +105,7 @@ export const maintenanceAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'rag',
       required_permissions: [],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: ragScopes,
       tool_capability_classes: [],
       proposal_only: false
@@ -111,6 +116,7 @@ export const maintenanceAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool_and_rag',
       required_permissions: ['CHECKLIST_READ'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: ['approved-maintenance-procedures'],
       tool_capability_classes: ['CHECKLIST_READ'],
       proposal_only: false
@@ -121,6 +127,7 @@ export const maintenanceAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['MAINTENANCE_HISTORY_READ', 'FAILURE_HISTORY_READ'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['MAINTENANCE_HISTORY_READ', 'FAILURE_HISTORY_READ'],
       proposal_only: false
@@ -131,6 +138,7 @@ export const maintenanceAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'tool',
       required_permissions: ['WORK_REQUEST_DRAFT'],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: ['WORK_REQUEST_DRAFT'],
       proposal_only: true
@@ -141,6 +149,7 @@ export const maintenanceAgentProfile = pilotAgentProfileSchema.parse({
       evidence: 'none',
       required_permissions: [],
       required_entitlements: [],
+      authorization_status: 'blocked_pending_approved_mapping',
       rag_scopes: [],
       tool_capability_classes: [],
       handoff_domain: 'orchestrator',

@@ -33,14 +33,21 @@ function definitionFor(profile: PilotAgentProfile): AgentDefinition {
     // Phase 8 has no approved runtime Tool IDs. Conceptual capability classes stay in the profile.
     allowed_tools: Object.freeze([]),
     allowed_rag_scopes: Object.freeze([...profile.rag_scopes]),
-    required_permissions: Object.freeze([]),
-    required_entitlements: Object.freeze([]),
+    required_permissions: Object.freeze([
+      ...new Set(profile.intents.flatMap((policy) => policy.required_permissions))
+    ]),
+    required_entitlements: Object.freeze([
+      ...new Set(profile.intents.flatMap((policy) => policy.required_entitlements))
+    ]),
     model_policy: Object.freeze({
       default_policy: profile.model_policy,
       fallback_policies: Object.freeze([])
     }),
     evaluation_profile: `${profile.agent_id}-evaluation-${profile.versions.evaluation_dataset}`,
-    status: 'active'
+    // Pilot definitions remain unavailable until every required authorization mapping is approved.
+    status: profile.intents.every((policy) => policy.authorization_status === 'approved')
+      ? 'active'
+      : 'disabled'
   });
 }
 

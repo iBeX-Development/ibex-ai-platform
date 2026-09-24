@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import type { TrustedRequestContext } from '../../security/src/index.js';
+import type { ToolExecutionResponse } from '../../tool-runtime/src/index.js';
+import type { KnowledgeChunk, RagRetrievalResponse } from '../../rag-runtime/src/index.js';
 
 const nonEmpty = z.string().trim().min(1);
 const stringList = z.array(nonEmpty).readonly();
@@ -21,6 +23,7 @@ export const pilotIntentPolicySchema = z
     evidence: evidenceRequirementSchema,
     required_permissions: stringList,
     required_entitlements: stringList,
+    authorization_status: z.enum(['approved', 'blocked_pending_approved_mapping']),
     rag_scopes: stringList,
     tool_capability_classes: stringList,
     handoff_domain: nonEmpty.optional(),
@@ -29,39 +32,44 @@ export const pilotIntentPolicySchema = z
   .strict()
   .readonly()
   .superRefine((value, context) => {
-    if (value.evidence === 'rag' && value.rag_scopes.length === 0) {
+    if (
+      value.authorization_status === 'approved' &&
+      value.required_permissions.length === 0 &&
+      value.required_entitlements.length === 0
+    )
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['authorization_status'],
+        message: 'Approved intents require an explicit authorization mapping'
+      });
+    if (value.evidence === 'rag' && value.rag_scopes.length === 0)
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['rag_scopes'],
         message: 'RAG evidence requires a scope'
       });
-    }
-    if (value.evidence === 'tool' && value.tool_capability_classes.length === 0) {
+    if (value.evidence === 'tool' && value.tool_capability_classes.length === 0)
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['tool_capability_classes'],
         message: 'Tool evidence requires a capability class'
       });
-    }
     if (
       value.evidence === 'tool_and_rag' &&
       (value.rag_scopes.length === 0 || value.tool_capability_classes.length === 0)
-    ) {
+    )
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['evidence'],
         message: 'Combined evidence requires both RAG and Tool configuration'
       });
-    }
-    if (value.response_type === 'proposed_action' && !value.proposal_only) {
+    if (value.response_type === 'proposed_action' && !value.proposal_only)
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['proposal_only'],
         message: 'Actions must remain proposals'
       });
-    }
   });
-
 export type PilotIntentPolicy = Readonly<z.infer<typeof pilotIntentPolicySchema>>;
 
 const componentVersionsSchema = z
@@ -78,13 +86,26 @@ const componentVersionsSchema = z
   .readonly();
 
 const toolCapabilitySchema = z
-  .object({
-    capability_class: nonEmpty,
-    classification: z.enum(['read', 'proposal']),
-    live_binding: z.literal('blocked_pending_approved_core_contract'),
-    enabled: z.literal(false)
-  })
-  .strict()
+  .union([
+    z
+      .object({
+        capability_class: nonEmpty,
+        classification: z.enum(['read', 'proposal']),
+        live_binding: z.literal('blocked_pending_approved_core_contract'),
+        enabled: z.literal(false)
+      })
+      .strict()
+      .readonly(),
+    z
+      .object({
+        capability_class: nonEmpty,
+        classification: z.enum(['read', 'proposal']),
+        live_binding: z.literal('deterministic_test_adapter'),
+        enabled: z.literal(true)
+      })
+      .strict()
+      .readonly()
+  ])
   .readonly();
 
 export const pilotAgentProfileSchema = z
@@ -112,81 +133,83 @@ export const pilotAgentProfileSchema = z
     const configuredScopes = new Set(value.rag_scopes);
     const configuredTools = new Set(value.tool_allowlist.map((entry) => entry.capability_class));
     for (const [index, intent] of value.intents.entries()) {
-      if (intent.rag_scopes.some((scope) => !configuredScopes.has(scope))) {
+      if (intent.rag_scopes.some((scope) => !configuredScopes.has(scope)))
         context.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['intents', index, 'rag_scopes'],
           message: 'Intent scope is not allowlisted'
         });
-      }
-      if (intent.tool_capability_classes.some((tool) => !configuredTools.has(tool))) {
+      if (intent.tool_capability_classes.some((tool) => !configuredTools.has(tool)))
         context.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['intents', index, 'tool_capability_classes'],
           message: 'Intent tool capability is not allowlisted'
         });
-      }
     }
   });
-
 export type PilotAgentProfile = Readonly<z.infer<typeof pilotAgentProfileSchema>>;
 
-const citationShape = {
-  source_type: z.enum(['rag', 'tool']),
-  source_id: nonEmpty,
-  source_version: nonEmpty,
-  source_reference: nonEmpty,
-  content_hash: nonEmpty.optional(),
-  citation_evidence_hash: nonEmpty.optional()
-} as const;
-
-export const agentCitationSchema = z.object(citationShape).strict().readonly();
-
-export type AgentCitation = Readonly<z.infer<typeof agentCitationSchema>>;
-
-export const agentEvidenceSchema = z
+export const pilotAgentExecutionRequestSchema = z
   .object({
-    tenant_id: nonEmpty,
-    user_id: nonEmpty,
-    session_id: nonEmpty,
-    request_id: nonEmpty,
-    correlation_id: nonEmpty,
-    trace_id: nonEmpty,
-    trust: z.literal('trusted_internal_runtime'),
-    tool_execution_mode: z.enum(['deterministic_test', 'live_core']),
-    rag_citations: z
-      .array(
-        z
-          .object({
-            ...citationShape,
-            source_type: z.literal('rag'),
-            producer: z.literal('rag_runtime'),
-            scope: nonEmpty,
-            content_hash: nonEmpty,
-            citation_evidence_hash: nonEmpty
-          })
-          .strict()
-          .readonly()
-      )
-      .readonly(),
-    tool_citations: z
-      .array(
-        z
-          .object({
-            ...citationShape,
-            source_type: z.literal('tool'),
-            producer: z.literal('tool_runtime'),
-            capability_class: nonEmpty
-          })
-          .strict()
-          .readonly()
-      )
-      .readonly()
+    context: z.unknown(),
+    trace_id: nonEmpty.max(256),
+    agent_id: nonEmpty,
+    agent_version: nonEmpty,
+    domain: nonEmpty,
+    intent: nonEmpty,
+    requested_rag_scopes: stringList,
+    requested_tool_capabilities: stringList
   })
   .strict()
   .readonly();
 
-export type AgentEvidence = Readonly<z.infer<typeof agentEvidenceSchema>>;
+export interface PilotAgentExecutionRequest {
+  readonly context: TrustedRequestContext;
+  readonly trace_id: string;
+  readonly agent_id: string;
+  readonly agent_version: string;
+  readonly domain: string;
+  readonly intent: string;
+  readonly requested_rag_scopes: readonly string[];
+  readonly requested_tool_capabilities: readonly string[];
+}
+
+export interface VerifiedRagEvidence {
+  readonly response: RagRetrievalResponse;
+  readonly chunks: readonly KnowledgeChunk[];
+}
+export interface PilotGroundingEvidence {
+  readonly answer: string;
+  readonly tool_responses: readonly ToolExecutionResponse[];
+  readonly rag: readonly VerifiedRagEvidence[];
+}
+export interface PilotAgentGroundingPort {
+  resolve(
+    request: Readonly<{
+      context: TrustedRequestContext;
+      trace_id: string;
+      agent_id: string;
+      agent_version: string;
+      domain: string;
+      intent: string;
+      rag_scopes: readonly string[];
+      tool_capabilities: readonly string[];
+    }>
+  ): Promise<PilotGroundingEvidence>;
+}
+
+export const agentCitationSchema = z
+  .object({
+    source_type: z.enum(['rag', 'tool']),
+    source_id: nonEmpty,
+    source_version: nonEmpty,
+    source_reference: nonEmpty,
+    content_hash: nonEmpty.optional(),
+    citation_evidence_hash: nonEmpty.optional()
+  })
+  .strict()
+  .readonly();
+export type AgentCitation = Readonly<z.infer<typeof agentCitationSchema>>;
 
 export const pilotAgentResponseSchema = z
   .object({
@@ -215,52 +238,7 @@ export const pilotAgentResponseSchema = z
   })
   .strict()
   .readonly();
-
 export type PilotAgentResponse = Readonly<z.infer<typeof pilotAgentResponseSchema>>;
-
-export const pilotAgentAuditEventSchema = z
-  .object({
-    event_type: z.literal('pilot_agent_execution'),
-    trust: z.literal('trusted_context_bound'),
-    timestamp: z.string().datetime(),
-    tenant_id: nonEmpty,
-    user_id: nonEmpty,
-    role: nonEmpty,
-    session_id: nonEmpty,
-    request_id: nonEmpty,
-    correlation_id: nonEmpty,
-    trace_id: nonEmpty,
-    agent_id: nonEmpty,
-    agent_version: nonEmpty,
-    prompt_version: nonEmpty,
-    permission_references: stringList,
-    entitlement_references: stringList,
-    intent: nonEmpty,
-    outcome: z.enum(['allowed', 'abstained', 'denied']),
-    evidence_references: stringList,
-    approval_state: z.enum(['not_required', 'required_not_executed'])
-  })
-  .strict()
-  .readonly();
-
-export type PilotAgentAuditEvent = Readonly<z.infer<typeof pilotAgentAuditEventSchema>>;
-
-export interface PilotAgentAuditPort {
-  emit(event: PilotAgentAuditEvent): void;
-}
-
-export interface PilotAgentExecutionRequest {
-  readonly context: TrustedRequestContext;
-  readonly trace_id: string;
-  readonly agent_id: string;
-  readonly agent_version: string;
-  readonly domain: string;
-  readonly intent: string;
-  readonly requested_rag_scopes: readonly string[];
-  readonly requested_tool_capabilities: readonly string[];
-  readonly candidate_answer: string;
-  readonly evidence: AgentEvidence;
-}
 
 export const evaluationCaseSchema = z
   .object({
@@ -282,5 +260,4 @@ export const evaluationCaseSchema = z
   })
   .strict()
   .readonly();
-
 export type EvaluationCase = Readonly<z.infer<typeof evaluationCaseSchema>>;
