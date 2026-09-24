@@ -8,6 +8,7 @@ import {
   type SharedAgentRuntimeDependencies
 } from '../../packages/runtime/src/index.js';
 import { createTrustedRequestContext } from '../../packages/security/src/index.js';
+import { enabledTestFeatureControls } from '../../packages/testing/src/index.js';
 
 export const runtimeValidationTime = new Date('2026-09-23T00:30:00.000Z');
 
@@ -87,6 +88,7 @@ export function runtimeDependencies(
   overrides: Partial<SharedAgentRuntimeDependencies> = {}
 ): SharedAgentRuntimeDependencies {
   return {
+    featureControls: enabledTestFeatureControls,
     classifier: {
       classify: () =>
         Promise.resolve({

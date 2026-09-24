@@ -10,6 +10,7 @@ import {
   type AuditEventSink
 } from '../../audit/src/index.js';
 import { PlatformError, type ErrorCode } from '../../errors/src/index.js';
+import type { FeatureControls } from '../../configuration/src/index.js';
 import { tracer } from '../../observability/src/index.js';
 import {
   createTrustedRequestContext,
@@ -67,6 +68,7 @@ export interface ApprovalRuntimeOptions {
 }
 
 export interface ApprovalRuntimeDependencies {
+  readonly featureControls: FeatureControls;
   readonly registry: ApprovalActionRegistry;
   readonly store: ApprovalRecordStore;
   readonly decisionSource: ApprovalDecisionSource;
@@ -469,6 +471,12 @@ export class ApprovalRuntime {
       let stage: ApprovalRuntimeAuditStage = 'execution_revalidation';
       let approval: ApprovalRecord | undefined;
       try {
+        if (
+          !this.dependencies.featureControls.aiPlatform ||
+          !this.dependencies.featureControls.actionTools
+        ) {
+          throw new PlatformError('SERVICE_UNAVAILABLE', 'Approved execution is unavailable', 503);
+        }
         approval = await this.requireApproval(request.approval_id, established.context);
         const action = this.requireAvailableAction(approval.action_type, approval.action_version);
         this.verifyStoredIntegrity(approval);

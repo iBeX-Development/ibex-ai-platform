@@ -7,6 +7,7 @@ import {
   type PromptHierarchyAuditEvidence
 } from '../../audit/src/index.js';
 import { PlatformError } from '../../errors/src/index.js';
+import { agentFeatureEnabled, type FeatureControls } from '../../configuration/src/index.js';
 import { tracer } from '../../observability/src/index.js';
 import { createTrustedRequestContext } from '../../security/src/index.js';
 import {
@@ -35,6 +36,7 @@ import type { PromptHierarchyConfiguration, PromptRegistry } from './prompts.js'
 import type { AgentRegistry } from './registry.js';
 
 export interface SharedAgentRuntimeDependencies {
+  readonly featureControls: FeatureControls;
   readonly classifier: IntentClassifier;
   readonly ragPlanning: RagPlanningPort;
   readonly toolPlanning: ToolPlanningPort;
@@ -165,6 +167,12 @@ export class SharedAgentRuntime {
       span.setAttribute('ibex.orchestrator.trace_id', traceId);
 
       try {
+        if (
+          !this.dependencies.featureControls.aiPlatform ||
+          !this.dependencies.featureControls.agents
+        ) {
+          throw new PlatformError('SERVICE_UNAVAILABLE', 'AI runtime is unavailable', 503);
+        }
         if (typeof inboundRequest !== 'object' || inboundRequest === null) {
           throw new PlatformError('VALIDATION_ERROR', 'Runtime request is invalid', 400);
         }
@@ -255,6 +263,9 @@ export class SharedAgentRuntime {
               await this.emitOutcome(validatedRequest, 'fallback', stage, now, classification);
               return fallback;
             }
+            if (!agentFeatureEnabled(this.dependencies.featureControls, selectedAgent.agent_id)) {
+              throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
+            }
             span.setAttribute('ibex.orchestrator.selected_agent', selectedAgent.agent_id);
 
             stage = 'authorization';
@@ -290,6 +301,9 @@ export class SharedAgentRuntime {
             if (!isSubset(ragResult.data.scopes, selectedAgent.allowed_rag_scopes)) {
               throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
             }
+            if (ragResult.data.required && !this.dependencies.featureControls.rag) {
+              throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
+            }
 
             stage = 'tool_planning';
             const toolResult = toolPlanSchema.safeParse(
@@ -302,8 +316,20 @@ export class SharedAgentRuntime {
             if (!isSubset(toolResult.data.candidates, selectedAgent.allowed_tools)) {
               throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
             }
+            if (toolResult.data.candidates.length > 0 && !this.dependencies.featureControls.tools) {
+              throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
+            }
+            if (
+              toolResult.data.action_class === 'proposed_action' &&
+              !this.dependencies.featureControls.actionTools
+            ) {
+              throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
+            }
 
             stage = 'model_policy';
+            if (!this.dependencies.featureControls.modelGateway) {
+              throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
+            }
             const modelResult = modelPolicySelectionSchema.safeParse(
               await this.dependencies.modelPolicy.select(plannerRequest)
             );
@@ -317,6 +343,7 @@ export class SharedAgentRuntime {
             }
             const modelAllowed = modelResult.data.fallback
               ? this.dependencies.controls.model_fallback_allowed &&
+                this.dependencies.featureControls.modelFallback &&
                 selectedAgent.model_policy.fallback_policies.includes(modelResult.data.policy_id)
               : modelResult.data.policy_id === selectedAgent.model_policy.default_policy;
             if (!modelAllowed) throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);

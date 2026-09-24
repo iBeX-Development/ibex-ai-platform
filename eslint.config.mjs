@@ -3,7 +3,15 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'eslint.config.mjs'] },
+  {
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'coverage/**',
+      'eslint.config.mjs',
+      'scripts/phase10-scan.mjs'
+    ]
+  },
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   {

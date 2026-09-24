@@ -17,8 +17,27 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm format:check
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm test
-      - run: pnpm build
+      - name: Formatting
+        run: pnpm format:check
+      - name: Lint
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Evidence-derived Critical Safety and quality gates
+        run: pnpm evaluate:phase10
+      - name: Full regression and Phase 10 evidence gates
+        run: pnpm test
+      - name: Build
+        run: pnpm build
+      - name: Dependency audit
+        run: pnpm scan:dependency
+      - name: Secret scan
+        run: pnpm scan:secret
+      - name: Direct Core database scan
+        run: pnpm scan:direct-core-db
+      - name: Provider coupling scan
+        run: pnpm scan:provider-coupling
+      - name: Evaluation leakage scan
+        run: pnpm scan:evaluation-leakage
+      - name: Phase 11 scope scan
+        run: pnpm scan:phase11-scope

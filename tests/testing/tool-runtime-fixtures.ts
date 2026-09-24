@@ -9,6 +9,7 @@ import {
   type ToolRuntimeDependencies
 } from '../../packages/tool-runtime/src/index.js';
 import { createTrustedRequestContext } from '../../packages/security/src/index.js';
+import { enabledTestFeatureControls } from '../../packages/testing/src/index.js';
 
 export const toolValidationTime = new Date('2026-09-23T10:00:00.000Z');
 
@@ -133,6 +134,7 @@ export function createToolRuntime(
   overrides: Partial<ToolRuntimeDependencies> = {}
 ): ToolRuntimeService {
   return new ToolRuntimeService({
+    featureControls: enabledTestFeatureControls,
     registry: new ToolRegistry([readToolRegistration, proposalToolRegistration]),
     adapters: [successfulToolAdapter()],
     authorization: {

@@ -19,6 +19,8 @@ import {
   type SecurityObservation
 } from '../../packages/audit/src/index.js';
 import { createTrustedRequestContext } from '../../packages/security/src/index.js';
+import { enabledTestFeatureControls } from '../../packages/testing/src/index.js';
+import type { FeatureControls } from '../../packages/configuration/src/index.js';
 
 export const approvalValidationTime = new Date('2026-09-24T04:00:00.000Z');
 export const approvalBoundaryIdentity = Object.freeze({
@@ -192,6 +194,7 @@ export function createApprovalHarness(
     environment?: string;
     allowDeterministic?: boolean;
     ownershipTenant?: string | null;
+    featureControls?: FeatureControls;
   } = {}
 ) {
   const store = new InMemoryApprovalRecordStore();
@@ -236,6 +239,7 @@ export function createApprovalHarness(
   let id = 0;
   const runtime = new ApprovalRuntime(
     {
+      featureControls: options.featureControls ?? enabledTestFeatureControls,
       registry: new ApprovalActionRegistry(options.actions ?? [testApprovalAction]),
       store,
       decisionSource,

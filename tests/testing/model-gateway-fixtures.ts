@@ -9,6 +9,7 @@ import {
   type ProviderDefinition
 } from '../../packages/model-gateway/src/index.js';
 import { createTrustedRequestContext } from '../../packages/security/src/index.js';
+import { enabledTestFeatureControls } from '../../packages/testing/src/index.js';
 
 export const modelGatewayValidationTime = new Date('2026-09-23T06:00:00.000Z');
 
@@ -112,6 +113,7 @@ export function createModelGateway(
   overrides: Partial<ModelGatewayDependencies> = {}
 ): ModelGatewayService {
   const dependencies: ModelGatewayDependencies = {
+    featureControls: enabledTestFeatureControls,
     registry: new ModelRegistry([primaryProvider, fallbackProvider], [primaryModel, fallbackModel]),
     adapters: [
       successfulAdapter(primaryProvider.adapter_id),

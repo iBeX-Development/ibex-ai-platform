@@ -1,3 +1,19 @@
+import { featureControls } from '../../configuration/src/index.js';
+
+export const enabledTestFeatureControls = featureControls({
+  aiPlatform: true,
+  agents: true,
+  generalAgent: true,
+  maintenanceAgent: true,
+  assetAgent: true,
+  warehouseAgent: true,
+  rag: true,
+  tools: true,
+  actionTools: true,
+  modelGateway: true,
+  modelFallback: true
+});
+
 export const validTestEnvironment = Object.freeze({
   IBEX_CONFIG_VERSION: '1',
   IBEX_ENVIRONMENT: 'test',

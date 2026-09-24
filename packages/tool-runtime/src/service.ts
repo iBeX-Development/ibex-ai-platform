@@ -6,6 +6,7 @@ import {
   type ToolRuntimeAuditStage
 } from '../../audit/src/index.js';
 import { PlatformError, type ErrorCode } from '../../errors/src/index.js';
+import type { FeatureControls } from '../../configuration/src/index.js';
 import { tracer } from '../../observability/src/index.js';
 import {
   createTrustedRequestContext,
@@ -29,6 +30,7 @@ import {
 import { toolKey, type ToolRegistry } from './registry.js';
 
 export interface ToolRuntimeDependencies {
+  readonly featureControls: FeatureControls;
   readonly registry: ToolRegistry;
   readonly adapters: readonly ToolAdapter[];
   readonly authorization: ServerAuthorizationPolicy;
@@ -190,6 +192,12 @@ export class ToolRuntimeService {
       span.setAttribute('ibex.tool.trace_id', traceId);
 
       try {
+        if (
+          !this.dependencies.featureControls.aiPlatform ||
+          !this.dependencies.featureControls.tools
+        ) {
+          throw new PlatformError('TOOL_DISABLED', 'Tool is not available', 403);
+        }
         if (typeof inbound !== 'object' || inbound === null) {
           throw new PlatformError('VALIDATION_ERROR', 'Tool request is invalid', 400);
         }
@@ -243,6 +251,12 @@ export class ToolRuntimeService {
           'ibex.tool.version': metadata.version
         });
         if (!metadata.enabled || !metadata.environments.includes(this.dependencies.environment)) {
+          throw new PlatformError('TOOL_DISABLED', 'Tool is not available', 403);
+        }
+        if (
+          metadata.read_write_class === 'proposal' &&
+          !this.dependencies.featureControls.actionTools
+        ) {
           throw new PlatformError('TOOL_DISABLED', 'Tool is not available', 403);
         }
         if (

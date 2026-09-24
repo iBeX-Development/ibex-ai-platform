@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  assetAgentProfile,
-  assetEvaluationDataset,
-  assetPrompt
-} from '../../agents/asset/src/index.js';
+import { assetAgentProfile, assetPrompt } from '../../agents/asset/src/index.js';
 import {
   createPilotHarness,
   pilotContext,
@@ -16,7 +12,7 @@ import {
 describe('Phase 8 Asset Agent acceptance', () => {
   it('keeps versioned scope and evaluation coverage', () => {
     expect(assetPrompt.prompt_version).toBe('1.0.0');
-    expect(new Set(assetEvaluationDataset.map((item) => item.category)).size).toBe(10);
+    expect(assetAgentProfile.versions.evaluation_dataset).toBe('1.0.0');
   });
   it('uses verified approved technical knowledge', async () => {
     const { runtime } = createPilotHarness(assetAgentProfile, {

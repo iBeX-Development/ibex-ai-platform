@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  maintenanceAgentProfile,
-  maintenanceEvaluationDataset,
-  maintenancePrompt
-} from '../../agents/maintenance/src/index.js';
+import { maintenanceAgentProfile, maintenancePrompt } from '../../agents/maintenance/src/index.js';
 import {
   createPilotHarness,
   pilotContext,
@@ -17,7 +13,7 @@ describe('Phase 8 Maintenance Agent acceptance', () => {
   it('uses the approved identity and versioned acceptance assets', () => {
     expect(maintenanceAgentProfile.agent_id).toBe('maintenance-agent');
     expect(maintenancePrompt.prompt_version).toBe('1.0.0');
-    expect(new Set(maintenanceEvaluationDataset.map((item) => item.category)).size).toBe(10);
+    expect(maintenanceAgentProfile.versions.evaluation_dataset).toBe('1.0.0');
   });
   it('accepts verified RAG procedure evidence in the synthetic test profile', async () => {
     const { runtime, audits } = createPilotHarness(maintenanceAgentProfile, {
