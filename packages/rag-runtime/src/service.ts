@@ -40,6 +40,8 @@ import {
 } from './contracts.js';
 import {
   calculateDocumentChecksum,
+  citationEvidenceHash,
+  citationEvidenceHashForStoredChunk,
   sha256Evidence,
   stableChunkId,
   stableChunkIdForStoredChunk
@@ -384,6 +386,20 @@ export class RagRuntimeService {
                 content: section.content,
                 content_hash: contentHash,
                 document_checksum: metadata.checksum,
+                citation_evidence_hash: citationEvidenceHash({
+                  document_id: metadata.document_id,
+                  document_version: metadata.document_version,
+                  tenant_scope: metadata.tenant_scope,
+                  ...(metadata.tenant_id ? { tenant_id: metadata.tenant_id } : {}),
+                  section: section.location.section,
+                  reference: section.location.reference,
+                  ...(section.location.page !== undefined ? { page: section.location.page } : {}),
+                  ordinal: section.location.ordinal,
+                  content_hash: contentHash,
+                  source_uri: metadata.source_uri,
+                  title: metadata.title,
+                  document_checksum: metadata.checksum
+                }),
                 embedding: parsedEmbedding.data
               })
             )
@@ -607,7 +623,8 @@ export class RagRuntimeService {
           parsedCandidates.data.some(
             (chunk) =>
               sha256Evidence(chunk.content) !== chunk.content_hash ||
-              stableChunkIdForStoredChunk(chunk) !== chunk.chunk_id
+              stableChunkIdForStoredChunk(chunk) !== chunk.chunk_id ||
+              citationEvidenceHashForStoredChunk(chunk) !== chunk.citation_evidence_hash
           )
         ) {
           throw new PlatformError(
@@ -715,6 +732,22 @@ export class RagRuntimeService {
           documentVersions: selectedChunks.map(({ document_version }) => document_version),
           chunkIds: selectedChunks.map(({ chunk_id }) => chunk_id),
           retrievalScores: ranked.data,
+          retrievalResults: ranked.data.map((ranking) => {
+            const chunk = candidateMap.get(ranking.chunk_id);
+            if (!chunk) {
+              throw new PlatformError('INVALID_RESPONSE', 'RAG ranking response is invalid', 502);
+            }
+            return {
+              document_id: chunk.document_id,
+              document_version: chunk.document_version,
+              chunk_id: chunk.chunk_id,
+              citation_evidence_hash: chunk.citation_evidence_hash,
+              source_location: chunk.source_location,
+              score: ranking.score,
+              semantic_score: ranking.semantic_score,
+              keyword_score: ranking.keyword_score
+            };
+          }),
           embeddingModel: embedding.model_id,
           embeddingModelVersion: embedding.model_version,
           retrievalVersion: this.dependencies.policy.retrieval_version,
@@ -795,6 +828,7 @@ export class RagRuntimeService {
       documentVersions: [],
       chunkIds: [],
       retrievalScores: [],
+      retrievalResults: [],
       retrievalVersion: this.dependencies.policy.retrieval_version,
       resultCount: 0,
       latencyMs: this.clock() - input.startedAt
@@ -836,7 +870,8 @@ export class RagRuntimeService {
             source_uri: chunk.source_uri,
             source_location: chunk.source_location,
             content_hash: chunk.content_hash,
-            document_checksum: chunk.document_checksum
+            document_checksum: chunk.document_checksum,
+            citation_evidence_hash: chunk.citation_evidence_hash
           }
         };
       })
@@ -879,6 +914,16 @@ export class RagRuntimeService {
     readonly documentVersions?: readonly string[];
     readonly chunkIds?: readonly string[];
     readonly retrievalScores?: readonly RankedChunkReference[];
+    readonly retrievalResults?: readonly {
+      readonly document_id: string;
+      readonly document_version: string;
+      readonly chunk_id: string;
+      readonly citation_evidence_hash: string;
+      readonly source_location: KnowledgeChunk['source_location'];
+      readonly score: number;
+      readonly semantic_score: number;
+      readonly keyword_score: number;
+    }[];
     readonly embeddingModel?: string;
     readonly embeddingModelVersion?: string;
     readonly retrievalVersion?: string;
@@ -904,6 +949,7 @@ export class RagRuntimeService {
         ...(input.documentVersions ? { documentVersions: input.documentVersions } : {}),
         ...(input.chunkIds ? { chunkIds: input.chunkIds } : {}),
         ...(input.retrievalScores ? { retrievalScores: input.retrievalScores } : {}),
+        ...(input.retrievalResults ? { retrievalResults: input.retrievalResults } : {}),
         ...(input.embeddingModel ? { embeddingModel: input.embeddingModel } : {}),
         ...(input.embeddingModelVersion
           ? { embeddingModelVersion: input.embeddingModelVersion }

@@ -62,3 +62,52 @@ export function stableChunkIdForStoredChunk(chunk: KnowledgeChunk): `sha256:${st
     content_hash: chunk.content_hash
   });
 }
+
+export function citationEvidenceHash(input: {
+  readonly document_id: string;
+  readonly document_version: string;
+  readonly tenant_scope: string;
+  readonly tenant_id?: string;
+  readonly section: string;
+  readonly reference: string;
+  readonly page?: number;
+  readonly ordinal: number;
+  readonly content_hash: string;
+  readonly source_uri: string;
+  readonly title: string;
+  readonly document_checksum: string;
+}): `sha256:${string}` {
+  return sha256Evidence(
+    JSON.stringify([
+      input.document_id,
+      input.document_version,
+      input.tenant_scope,
+      input.tenant_id ?? null,
+      input.section,
+      input.reference,
+      input.page ?? null,
+      input.ordinal,
+      input.content_hash,
+      input.source_uri,
+      input.title,
+      input.document_checksum
+    ])
+  );
+}
+
+export function citationEvidenceHashForStoredChunk(chunk: KnowledgeChunk): `sha256:${string}` {
+  return citationEvidenceHash({
+    document_id: chunk.document_id,
+    document_version: chunk.document_version,
+    tenant_scope: chunk.tenant_scope,
+    ...(chunk.tenant_id ? { tenant_id: chunk.tenant_id } : {}),
+    section: chunk.source_location.section,
+    reference: chunk.source_location.reference,
+    ...(chunk.source_location.page !== undefined ? { page: chunk.source_location.page } : {}),
+    ordinal: chunk.source_location.ordinal,
+    content_hash: chunk.content_hash,
+    source_uri: chunk.source_uri,
+    title: chunk.title,
+    document_checksum: chunk.document_checksum
+  });
+}

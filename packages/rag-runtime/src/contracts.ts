@@ -175,6 +175,7 @@ export const knowledgeChunkSchema = z
     content: nonEmpty,
     content_hash: sha256,
     document_checksum: sha256,
+    citation_evidence_hash: sha256,
     embedding: embeddingEvidenceSchema
   })
   .strict()
@@ -292,7 +293,8 @@ const citationSchema = z
     source_uri: nonEmpty,
     source_location: sourceLocationSchema,
     content_hash: sha256,
-    document_checksum: sha256
+    document_checksum: sha256,
+    citation_evidence_hash: sha256
   })
   .strict()
   .readonly();

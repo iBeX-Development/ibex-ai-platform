@@ -245,6 +245,7 @@ interface RagRuntimeAuditEventBase {
   readonly document_versions?: readonly string[];
   readonly chunk_ids?: readonly string[];
   readonly retrieval_scores?: readonly RagRetrievalScoreAuditEvidence[];
+  readonly retrieval_results?: readonly RagRetrievalResultAuditEvidence[];
   readonly embedding_model?: string;
   readonly embedding_model_version?: string;
   readonly retrieval_version?: string;
@@ -258,6 +259,18 @@ export interface RagRetrievalScoreAuditEvidence {
   readonly score: number;
   readonly semantic_score: number;
   readonly keyword_score: number;
+}
+
+export interface RagRetrievalResultAuditEvidence extends RagRetrievalScoreAuditEvidence {
+  readonly document_id: string;
+  readonly document_version: string;
+  readonly citation_evidence_hash: string;
+  readonly source_location: Readonly<{
+    readonly section: string;
+    readonly reference: string;
+    readonly page?: number | undefined;
+    readonly ordinal: number;
+  }>;
 }
 
 export interface TrustedRagRuntimeAuditEvent extends RagRuntimeAuditEventBase {
@@ -573,6 +586,7 @@ export function createRagRuntimeAuditEvent(input: {
   readonly documentVersions?: readonly string[];
   readonly chunkIds?: readonly string[];
   readonly retrievalScores?: readonly RagRetrievalScoreAuditEvidence[];
+  readonly retrievalResults?: readonly RagRetrievalResultAuditEvidence[];
   readonly embeddingModel?: string;
   readonly embeddingModelVersion?: string;
   readonly retrievalVersion?: string;
@@ -605,6 +619,18 @@ export function createRagRuntimeAuditEvent(input: {
       ? {
           retrieval_scores: Object.freeze(
             input.retrievalScores.map((score) => Object.freeze({ ...score }))
+          )
+        }
+      : {}),
+    ...(input.retrievalResults
+      ? {
+          retrieval_results: Object.freeze(
+            input.retrievalResults.map((result) =>
+              Object.freeze({
+                ...result,
+                source_location: Object.freeze({ ...result.source_location })
+              })
+            )
           )
         }
       : {}),

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   calculateDocumentChecksum,
+  citationEvidenceHash,
   matchesRagSecurityFilter,
   sha256Evidence,
   stableChunkId,
@@ -35,6 +36,32 @@ describe('Phase 6 chunk integrity and access filtering', () => {
     expect(calculateDocumentChecksum(makeDocument({}, 'changed content'))).not.toBe(
       calculateDocumentChecksum(makeDocument())
     );
+  });
+
+  it('binds citation evidence to source URI, title, and document checksum', () => {
+    const base = {
+      document_id: 'doc',
+      document_version: '1',
+      tenant_scope: 'tenant_private',
+      tenant_id: 'tenant-a',
+      section: 's',
+      reference: 'r',
+      ordinal: 0,
+      content_hash: sha256Evidence('content'),
+      source_uri: 'knowledge://doc/1',
+      title: 'Document title',
+      document_checksum: sha256Evidence('document')
+    };
+    expect(citationEvidenceHash(base)).toBe(citationEvidenceHash(base));
+    expect(citationEvidenceHash({ ...base, source_uri: 'knowledge://other/1' })).not.toBe(
+      citationEvidenceHash(base)
+    );
+    expect(citationEvidenceHash({ ...base, title: 'Other title' })).not.toBe(
+      citationEvidenceHash(base)
+    );
+    expect(
+      citationEvidenceHash({ ...base, document_checksum: sha256Evidence('other document') })
+    ).not.toBe(citationEvidenceHash(base));
   });
 
   it('binds stable chunk identity to document, location, and content evidence', () => {

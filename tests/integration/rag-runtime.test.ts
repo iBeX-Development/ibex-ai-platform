@@ -6,7 +6,10 @@ import type {
   KnowledgeStorePort,
   RetrievalRankerPort
 } from '../../packages/rag-runtime/src/index.js';
-import { stableChunkIdForStoredChunk } from '../../packages/rag-runtime/src/index.js';
+import {
+  citationEvidenceHashForStoredChunk,
+  stableChunkIdForStoredChunk
+} from '../../packages/rag-runtime/src/index.js';
 import {
   DeterministicKnowledgeStore,
   createRagRuntime,
@@ -132,7 +135,8 @@ describe('Gate P6 RAG Runtime', () => {
         chunk_id: chunk.chunk_id,
         source_location: { reference: 'section-6.4' },
         content_hash: chunk.content_hash,
-        document_checksum: chunk.document_checksum
+        document_checksum: chunk.document_checksum,
+        citation_evidence_hash: chunk.citation_evidence_hash
       }
     });
     const result = response.results[0];
@@ -149,10 +153,23 @@ describe('Gate P6 RAG Runtime', () => {
             semantic_score: result?.semantic_score,
             keyword_score: result?.keyword_score
           }
+        ],
+        retrieval_results: [
+          {
+            document_id: chunk.document_id,
+            document_version: chunk.document_version,
+            chunk_id: chunk.chunk_id,
+            citation_evidence_hash: chunk.citation_evidence_hash,
+            source_location: chunk.source_location,
+            score: result?.score,
+            semantic_score: result?.semantic_score,
+            keyword_score: result?.keyword_score
+          }
         ]
       })
     );
     expect(JSON.stringify(audits)).not.toContain(chunk.content);
+    expect(JSON.stringify(audits)).not.toContain('bearing vibration lubrication');
   });
 
   it('fails closed before store access when server authorization denies retrieval', async () => {
@@ -346,6 +363,27 @@ describe('Gate P6 RAG Runtime', () => {
         ...chunk,
         chunk_id: `sha256:${'f'.repeat(64)}`
       })
+    ],
+    [
+      'source URI',
+      (chunk: Awaited<ReturnType<typeof indexedChunk>>) => ({
+        ...chunk,
+        source_uri: 'knowledge://tampered/source'
+      })
+    ],
+    [
+      'title',
+      (chunk: Awaited<ReturnType<typeof indexedChunk>>) => ({
+        ...chunk,
+        title: 'Tampered title'
+      })
+    ],
+    [
+      'document checksum',
+      (chunk: Awaited<ReturnType<typeof indexedChunk>>) => ({
+        ...chunk,
+        document_checksum: `sha256:${'e'.repeat(64)}`
+      })
     ]
   ])('rejects tampered %s evidence before ranking', async (_label, tamper) => {
     const chunk = await indexedChunk();
@@ -372,7 +410,8 @@ describe('Gate P6 RAG Runtime', () => {
     const crossTenantEvidence = { ...tenantAChunk, tenant_id: 'tenant-b' } as KnowledgeChunk;
     const tenantBChunk: KnowledgeChunk = {
       ...crossTenantEvidence,
-      chunk_id: stableChunkIdForStoredChunk(crossTenantEvidence)
+      chunk_id: stableChunkIdForStoredChunk(crossTenantEvidence),
+      citation_evidence_hash: citationEvidenceHashForStoredChunk(crossTenantEvidence)
     };
     const rank = vi.fn<RetrievalRankerPort['rank']>();
     const runtime = createRagRuntime([], {

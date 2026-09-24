@@ -10,7 +10,8 @@ Phase 6 is limited to the approved-document RAG Runtime foundation.
   and response contracts.
 - Authoritative server-side ingestion governance rather than trusting document-declared approval.
 - Stable chunk identity bound to document/version, source location, ordinal, and content hash.
-- Document checksum and chunk content-integrity evidence preserved through retrieval citations.
+- Canonical citation evidence binds source URI, title, document checksum, chunk identity inputs,
+  and content integrity, and is recomputed before citation generation.
 - Provider-neutral embedding, filtered knowledge-store, and hybrid ranking ports with deterministic
   test implementations only.
 - Tenant, permission, entitlement, role, approval, lifecycle, access-scope, agent, knowledge-scope,
@@ -20,8 +21,8 @@ Phase 6 is limited to the approved-document RAG Runtime foundation.
 - Stored stable chunk identity recomputed before ranking to bind document/version, tenant scope,
   source location, ordinal, and content integrity evidence.
 - Retrieved content explicitly marked as untrusted data with no instruction authority.
-- Sanitized ranking-score audit evidence and OpenTelemetry correlation without raw queries or
-  document content.
+- Structured per-result audit evidence preserves the exact document/version/chunk/source-location
+  and ranking-score association without raw queries or document content.
 
 ## Gate P6 results
 
@@ -37,14 +38,16 @@ Phase 6 is limited to the approved-document RAG Runtime foundation.
 | Trusted routing scope and caller scope-widening rejection         | PASS   |
 | Stored chunk and citation identity recomputation                  | PASS   |
 | Sanitized retrieval/ranking score evidence                        | PASS   |
+| Citation metadata tamper rejection                                | PASS   |
+| Structured audit source reconstruction evidence                   | PASS   |
 | Provider-neutral ports and deterministic test adapters            | PASS   |
-| Gate P6 focused: 4 files / 46 tests                               | PASS   |
+| Gate P6 focused: 4 files / 50 tests                               | PASS   |
 | Phase 1 regression: 6 files / 25 tests                            | PASS   |
 | Phase 2 regression: 3 files / 16 tests                            | PASS   |
 | Phase 3 regression: 4 files / 25 tests                            | PASS   |
 | Phase 4 regression: 4 files / 28 tests                            | PASS   |
 | Phase 5 regression: 4 files / 29 tests                            | PASS   |
-| Full suite: 28 files / 176 tests                                  | PASS   |
+| Full suite: 28 files / 180 tests                                  | PASS   |
 | Format, lint, typecheck, and build                                | PASS   |
 | Dependency audit: 0 known vulnerabilities                         | PASS   |
 | Secret, direct Core DB, provider/vector, and Phase 7 scope scans  | PASS   |
