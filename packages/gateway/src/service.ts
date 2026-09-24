@@ -74,6 +74,7 @@ export interface GatewayServiceDependencies {
   readonly environment: string;
   readonly maximumPayloadBytes: number;
   readonly traceIdFactory?: () => string;
+  readonly clock?: () => number;
 }
 
 function freezeResponse(result: GatewayResponseEnvelope): GatewayResponseEnvelope {
@@ -103,6 +104,7 @@ export class AiGatewayService {
     now: Date = new Date()
   ): Promise<GatewayResponseEnvelope> {
     const traceId = (this.dependencies.traceIdFactory ?? randomUUID)();
+    const startedAt = (this.dependencies.clock ?? Date.now)();
     return tracer.startActiveSpan('ai-gateway.request', async (span) => {
       let stage: GatewayAuditStage = 'payload_size';
       let trustedContext: TrustedRequestContext | undefined;
@@ -203,6 +205,26 @@ export class AiGatewayService {
           warnings: platformResult.warnings ?? [],
           trace_id: traceId
         });
+        stage = 'response';
+        await this.dependencies.audit.emit(
+          createGatewaySecurityAuditEvent({
+            traceId,
+            service: this.dependencies.service,
+            environment: this.dependencies.environment,
+            outcome: 'accepted',
+            stage,
+            timestamp: now,
+            context: trustedContext,
+            ...(platformResult.agent ? { agent: platformResult.agent } : {}),
+            sourcesUsed: platformResult.sources ?? [],
+            toolsUsed: platformResult.tools_used ?? [],
+            approvalState: platformResult.approval_required
+              ? 'required_not_executed'
+              : 'not_required',
+            responseStatus: platformResult.status,
+            latencyMs: Math.max(0, Math.round((this.dependencies.clock ?? Date.now)() - startedAt))
+          })
+        );
         span.setStatus({ code: SpanStatusCode.OK });
         return freezeResponse(response);
       } catch (error) {

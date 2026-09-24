@@ -93,6 +93,15 @@ describe('Gate P2 AI Gateway pipeline', () => {
           request_id: 'request-1',
           correlation_id: 'correlation-1'
         }
+      }),
+      expect.objectContaining({
+        event_type: 'gateway.request.outcome',
+        trace_id: 'gateway-trace-1',
+        outcome: 'accepted',
+        stage: 'response',
+        request_id: 'request-1',
+        correlation_id: 'correlation-1',
+        tenant_id: 'tenant-a'
       })
     ]);
   });

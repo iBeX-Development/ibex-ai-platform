@@ -15,7 +15,8 @@ export type GatewayAuditStage =
   | 'authorization'
   | 'audit'
   | 'platform'
-  | 'response_schema';
+  | 'response_schema'
+  | 'response';
 
 export interface GatewaySecurityAuditEvent {
   readonly schema_version: '1.0';
@@ -27,6 +28,21 @@ export interface GatewaySecurityAuditEvent {
   readonly outcome: 'accepted' | 'rejected' | 'error';
   readonly stage: GatewayAuditStage;
   readonly error_code?: string;
+  readonly context_status: 'trusted' | 'unavailable';
+  readonly request_id?: string;
+  readonly correlation_id?: string;
+  readonly tenant_id?: string;
+  readonly user_id?: string;
+  readonly role?: string;
+  readonly session_id?: string;
+  readonly permission_refs?: readonly string[];
+  readonly entitlement_refs?: readonly string[];
+  readonly agent?: string;
+  readonly sources_used?: readonly Readonly<{ source_id: string; version: string }>[];
+  readonly tools_used?: readonly Readonly<{ tool_id: string; version: string }>[];
+  readonly approval_state?: 'not_required' | 'required_not_executed';
+  readonly response_status?: 'success' | 'partial' | 'rejected' | 'error';
+  readonly latency_ms?: number;
   readonly trusted_context?: Readonly<{
     tenant_id: string;
     user_id: string;
@@ -323,6 +339,12 @@ export function createGatewaySecurityAuditEvent(input: {
   readonly timestamp: Date;
   readonly errorCode?: string;
   readonly context?: TrustedRequestContext;
+  readonly agent?: string;
+  readonly sourcesUsed?: readonly Readonly<{ source_id: string; version: string }>[];
+  readonly toolsUsed?: readonly Readonly<{ tool_id: string; version: string }>[];
+  readonly approvalState?: 'not_required' | 'required_not_executed';
+  readonly responseStatus?: 'success' | 'partial' | 'rejected' | 'error';
+  readonly latencyMs?: number;
 }): GatewaySecurityAuditEvent {
   const trustedContext = input.context
     ? Object.freeze({
@@ -343,10 +365,39 @@ export function createGatewaySecurityAuditEvent(input: {
     environment: input.environment,
     outcome: input.outcome,
     stage: input.stage,
+    context_status: input.context ? 'trusted' : 'unavailable',
+    ...(input.context
+      ? {
+          request_id: input.context.request_id,
+          correlation_id: input.context.correlation_id,
+          tenant_id: input.context.tenant_id,
+          user_id: input.context.user_id,
+          role: input.context.role,
+          session_id: input.context.session_id,
+          permission_refs: Object.freeze([...input.context.permissions]),
+          entitlement_refs: Object.freeze([...input.context.entitlements])
+        }
+      : {}),
     ...(input.errorCode ? { error_code: input.errorCode } : {}),
+    ...(input.agent ? { agent: input.agent } : {}),
+    ...(input.sourcesUsed
+      ? {
+          sources_used: Object.freeze(
+            input.sourcesUsed.map((source) => Object.freeze({ ...source }))
+          )
+        }
+      : {}),
+    ...(input.toolsUsed
+      ? { tools_used: Object.freeze(input.toolsUsed.map((tool) => Object.freeze({ ...tool }))) }
+      : {}),
+    ...(input.approvalState ? { approval_state: input.approvalState } : {}),
+    ...(input.responseStatus ? { response_status: input.responseStatus } : {}),
+    ...(input.latencyMs !== undefined ? { latency_ms: input.latencyMs } : {}),
     ...(trustedContext ? { trusted_context: trustedContext } : {})
   });
 }
+
+export * from './pipeline.js';
 
 export function createOrchestratorAuditEvent(input: {
   readonly traceId: string;
@@ -678,6 +729,7 @@ export function createSecurityAuditEvent(
   service: string,
   environment: string,
   eventType: string,
+  traceId: string,
   timestamp: Date = new Date()
 ): AuditEvent {
   return Object.freeze(
@@ -685,10 +737,15 @@ export function createSecurityAuditEvent(
       schema_version: '1.0',
       event_type: eventType,
       timestamp: timestamp.toISOString(),
+      trace_id: traceId,
       request_id: context.request_id,
       correlation_id: context.correlation_id,
       tenant_id: context.tenant_id,
       user_id: context.user_id,
+      role: context.role,
+      session_id: context.session_id,
+      permission_refs: context.permissions,
+      entitlement_refs: context.entitlements,
       service,
       environment
     })

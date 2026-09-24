@@ -6,7 +6,7 @@ Standalone, tenant-safe AI platform foundation for iBeX. The approved boundary i
 Core iBeX → AI Gateway → iBeX Hybrid Intelligent AI Platform
 ```
 
-Core iBeX remains the system of record. This platform has no direct Core database access. Live operational data must use approved Tool/APIs, while approved document knowledge uses RAG. Phase 6 adds controlled approved-document ingestion, stable and traceable chunks, tenant and access filtering before ranking, provider-neutral embedding and knowledge-store ports, citations, and sanitized audit/tracing. No production embedding provider, vector store, document connector, or live Core integration is selected. Domain reasoning, approval runtime, authoritative actions, and later operational capabilities remain later work.
+Core iBeX remains the system of record. This platform has no direct Core database access. Live operational data must use approved Tool/APIs, while approved document knowledge uses RAG. Phase 7 adds a canonical, versioned audit envelope, end-to-end request correlation, security severity records, bounded-cardinality metrics, recursive telemetry redaction, and fail-safe exporter/storage interfaces. No production telemetry, SIEM, audit-store, or dashboard vendor is selected. Domain reasoning, approval runtime, authoritative actions, and later operational capabilities remain later work.
 
 ## Requirements
 
@@ -62,3 +62,4 @@ Never commit `.env`, API keys, access tokens, passwords, or production endpoints
 - [Phase 4 validation](docs/PHASE_4_VALIDATION.md)
 - [Phase 5 validation](docs/PHASE_5_VALIDATION.md)
 - [Phase 6 validation](docs/PHASE_6_VALIDATION.md)
+- [Phase 7 validation](docs/PHASE_7_VALIDATION.md)
