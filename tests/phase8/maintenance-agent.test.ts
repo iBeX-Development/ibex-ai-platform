@@ -138,7 +138,7 @@ describe('Phase 8 Maintenance Agent acceptance', () => {
     ).rejects.toMatchObject({ code: 'PERMISSION_DENIED' });
     await expect(
       runtime.execute(
-        pilotRequest(maintenanceAgentProfile, { agent_id: 'maintenance' }),
+        pilotRequest(maintenanceAgentProfile, { agent_id: 'maintenance-agent-spoof' }),
         pilotValidationTime
       )
     ).rejects.toMatchObject({ code: 'TENANT_CONTEXT_ERROR' });

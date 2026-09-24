@@ -52,7 +52,7 @@ Exact Core Tool/API identifiers, endpoints, schemas, service identities, authent
 
 - Trusted tenant, user, session, request, correlation, and trace bindings are validated against server-resolved Tool/RAG evidence.
 - A server-generated boundary trace, request, and correlation identity plus an OpenTelemetry span are established before caller data is parsed; malformed correlation values are never reflected into audit evidence or public errors.
-- The canonical Maintenance Agent identity is `maintenance-agent` across Pilot configuration, shared routing/RAG fixtures, evaluation tests, and audit evidence; `maintenance` remains only the domain name or an explicit negative spoof input.
+- The canonical Maintenance Agent identity is `maintenance-agent` across Pilot configuration, shared routing/RAG fixtures, evaluation tests, and audit evidence; `maintenance` remains only the domain name.
 - Production agent definitions and intents remain disabled while authorization mappings are unapproved; explicit deterministic capabilities exist only in test fixtures.
 - Per-intent permissions, entitlements, Tool capability classes, and RAG scopes fail closed on missing or widened requests.
 - RAG-backed responses require source, content, and citation-integrity evidence; Tool-backed evaluation responses require trusted deterministic Tool evidence.
