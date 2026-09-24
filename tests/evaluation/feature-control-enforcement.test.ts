@@ -13,6 +13,16 @@ import {
   toolRequest,
   toolValidationTime
 } from '../testing/tool-runtime-fixtures.js';
+import {
+  createRagRuntime,
+  retrievalRequest,
+  ragValidationTime
+} from '../testing/rag-runtime-fixtures.js';
+import {
+  approvalContext,
+  approvalValidationTime,
+  createApprovalHarness
+} from '../testing/approval-runtime-fixtures.js';
 
 describe('Phase 10 runtime feature controls', () => {
   it('blocks Model Gateway before provider invocation when disabled', async () => {
@@ -74,5 +84,52 @@ describe('Phase 10 runtime feature controls', () => {
         toolValidationTime
       )
     ).rejects.toMatchObject({ code: 'TOOL_DISABLED' });
+  });
+
+  it('blocks direct RAG Runtime invocation when platform or RAG controls are disabled', async () => {
+    for (const controls of [
+      featureControls({ ...enabledTestFeatureControls, aiPlatform: false }),
+      featureControls({ ...enabledTestFeatureControls, rag: false })
+    ]) {
+      const audits: Parameters<typeof createRagRuntime>[0] = [];
+      const runtime = createRagRuntime(audits, { featureControls: controls });
+      await expect(
+        runtime.retrieve(retrievalRequest(), {}, ragValidationTime)
+      ).rejects.toMatchObject({
+        code: 'SERVICE_UNAVAILABLE'
+      });
+      expect(audits).toEqual([
+        expect.objectContaining({ outcome: 'error', error_code: 'SERVICE_UNAVAILABLE' })
+      ]);
+    }
+  });
+
+  it('blocks direct protected approval execution before state or adapter access', async () => {
+    for (const controls of [
+      featureControls({ ...enabledTestFeatureControls, aiPlatform: false }),
+      featureControls({ ...enabledTestFeatureControls, actionTools: false })
+    ]) {
+      const harness = createApprovalHarness({ featureControls: controls });
+      await expect(
+        harness.runtime.execute(
+          {
+            context: approvalContext(),
+            trace_id: 'trace-p10-disabled-execution',
+            approval_id: 'approval-does-not-need-to-exist'
+          },
+          approvalValidationTime
+        )
+      ).rejects.toMatchObject({ code: 'SERVICE_UNAVAILABLE' });
+      expect(harness.adapter.calls).toBe(0);
+      expect(harness.audits).toEqual([
+        expect.objectContaining({
+          outcome: 'error',
+          error_code: 'SERVICE_UNAVAILABLE',
+          request_id: approvalContext().request_id,
+          correlation_id: approvalContext().correlation_id,
+          trace_id: 'trace-p10-disabled-execution'
+        })
+      ]);
+    }
   });
 });

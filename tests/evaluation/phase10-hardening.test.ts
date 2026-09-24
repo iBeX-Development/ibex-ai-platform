@@ -22,7 +22,7 @@ import {
   summarizeDeterministicMeasurement,
   type EvaluationObservation
 } from './support/release-gate.js';
-import { executePhase10Evaluation } from './support/runtime-evaluator.js';
+import { executeEvaluationCase, executePhase10Evaluation } from './support/runtime-evaluator.js';
 
 let observations: readonly EvaluationObservation[] = [];
 
@@ -94,19 +94,38 @@ describe('Phase 10 hardening gate', () => {
     expect(new Set(observations.map((item) => item.evaluation_run_id))).toEqual(
       new Set(['phase10-runtime-evaluation-v1.0.0'])
     );
-    expect(new Set(observations.flatMap((item) => item.audit_correlation.event_ids)).size).toBe(
-      observations.flatMap((item) => item.audit_correlation.event_ids).length
+    expect(
+      new Set(
+        observations.flatMap((item) => item.audit_correlation.events.map((event) => event.event_id))
+      ).size
+    ).toBe(
+      observations.flatMap((item) => item.audit_correlation.events.map((event) => event.event_id))
+        .length
     );
     for (const record of observations) {
       expect(record.audit_correlation).toMatchObject({
         request_id: record.request_id,
         correlation_id: record.correlation_id,
-        trace_id: record.trace_id,
-        trusted_context_bound: true
+        trace_id: record.trace_id
       });
       expect(record.expected_result_reference.case_id).toBe(record.case_id);
-      expect(record.evaluator.mechanism).toBe('executed-pilot-agent-runtime');
+      expect(record.evaluator.mechanism).toBe('executed-pilot-agent-and-tool-runtime');
       expect(record.measurement.source).toBe('deterministic_simulation');
+      expect(record.audit_correlation.events.length).toBeGreaterThan(0);
+      for (const event of record.audit_correlation.events) {
+        expect(event).toMatchObject({
+          request_id: record.request_id,
+          correlation_id: record.correlation_id,
+          trace_id: record.trace_id,
+          context_status: record.test_scope.context_status
+        });
+        if (event.context_status === 'trusted') {
+          expect(event.tenant_id).toBe(record.test_scope.tenant_id);
+          expect(event.user_id).toBeTruthy();
+          expect(event.role).toBeTruthy();
+          expect(event.session_id).toBeTruthy();
+        }
+      }
       expect(JSON.stringify(record)).not.toMatch(/rawPrompt|toolInput|chain.of.thought/i);
     }
     const artifact = JSON.parse(
@@ -131,10 +150,51 @@ describe('Phase 10 hardening gate', () => {
       ...first,
       audit_correlation: { ...first.audit_correlation, trace_id: 'conflicting-trace' }
     } as EvaluationObservation;
+    const firstEvent = first.audit_correlation.events[0];
+    if (!firstEvent) throw new Error('Expected normalized audit evidence');
+    const duplicatedAudit = {
+      ...first,
+      audit_correlation: {
+        ...first.audit_correlation,
+        events: [...first.audit_correlation.events, firstEvent]
+      }
+    } as EvaluationObservation;
+    const inconsistentTenant = {
+      ...first,
+      test_scope: { ...first.test_scope, tenant_id: 'tenant-conflict' }
+    } as EvaluationObservation;
+    const untrustedAudit = {
+      ...first,
+      audit_correlation: {
+        ...first.audit_correlation,
+        events: first.audit_correlation.events.map((event) => ({
+          ...event,
+          context_status: 'unavailable' as const
+        }))
+      }
+    } as EvaluationObservation;
+    const multiEventIndex = observations.findIndex(
+      (item) => item.audit_correlation.events.length > 1
+    );
+    const multiEventObservation = observations[multiEventIndex];
+    if (!multiEventObservation) throw new Error('Expected multi-event normalized audit evidence');
+    const inconsistentRole = {
+      ...multiEventObservation,
+      audit_correlation: {
+        ...multiEventObservation.audit_correlation,
+        events: multiEventObservation.audit_correlation.events.map((event, index) =>
+          index === 0 ? { ...event, role: 'conflicting-role' } : event
+        )
+      }
+    } as EvaluationObservation;
     for (const invalid of [
       observations.slice(1),
       [...observations, first],
-      observations.map((item, index) => (index === 0 ? inconsistent : item))
+      observations.map((item, index) => (index === 0 ? inconsistent : item)),
+      observations.map((item, index) => (index === 0 ? duplicatedAudit : item)),
+      observations.map((item, index) => (index === 0 ? inconsistentTenant : item)),
+      observations.map((item, index) => (index === 0 ? untrustedAudit : item)),
+      observations.map((item, index) => (index === multiEventIndex ? inconsistentRole : item))
     ]) {
       const result = evaluatePhase10Gate({
         cases: phase10GoldenDataset.cases,
@@ -144,6 +204,61 @@ describe('Phase 10 hardening gate', () => {
       expect(result.status).toBe('FAIL');
       expect(result.blocking_findings).toContain('EVALUATION_EVIDENCE_INTEGRITY');
     }
+  });
+
+  it('derives Tool selection and parameter scores from executed Tool Runtime evidence', () => {
+    const toolCases = phase10GoldenDataset.cases.filter(
+      (item) => item.category === 'tool' || item.category === 'tool_parameter'
+    );
+    expect(toolCases).toHaveLength(8);
+    for (const caseItem of toolCases) {
+      const record = observations.find((item) => item.case_id === caseItem.case_id);
+      expect(record?.tool_execution).toMatchObject({
+        tool_id: caseItem.expected_tool?.tool_id,
+        tool_version: caseItem.expected_tool?.tool_version,
+        input_schema_id: caseItem.expected_tool?.input_schema_id
+      });
+      expect(record?.tool_execution?.observed_input_hash).toBe(
+        record?.tool_execution?.expected_input_hash
+      );
+      expect(
+        record?.audit_correlation.events.some(
+          (event) =>
+            event.event_type === 'tool_runtime.execution.outcome' &&
+            event.outcome === 'succeeded' &&
+            event.tool_id === caseItem.expected_tool?.tool_id &&
+            event.tool_version === caseItem.expected_tool?.tool_version
+        )
+      ).toBe(true);
+    }
+  });
+
+  it('keeps expected Tool labels out of runtime selection and input execution', async () => {
+    const source = phase10GoldenDataset.cases.find((item) => item.category === 'tool');
+    if (!source?.expected_tool || !source.tool_request)
+      throw new Error('Expected a Tool evaluation case');
+    const alteredExpectation = {
+      ...source,
+      expected_tool: {
+        ...source.expected_tool,
+        tool_id: 'golden-label-must-not-select-this-tool',
+        input: {
+          resource_id: 'golden-label-must-not-be-runtime-input',
+          include_status: true as const
+        }
+      }
+    };
+    const observed = await executeEvaluationCase(alteredExpectation, 0);
+    expect(observed.tool_execution).toMatchObject({
+      tool_id: source.tool_request.capability_class
+    });
+    expect(observed.tool_execution?.observed_input_hash).not.toBe(
+      observed.tool_execution?.expected_input_hash
+    );
+    expect(
+      evaluatePhase10Gate({ cases: [alteredExpectation], observations: [observed], findings: [] })
+        .failed_case_ids
+    ).toEqual([source.case_id]);
   });
 
   it('never conditionally accepts failed runtime evidence or unresolved High findings', () => {

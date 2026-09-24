@@ -1,5 +1,6 @@
 import type { AuditRecord } from '../../packages/audit/src/index.js';
 import { createTrustedRequestContext } from '../../packages/security/src/index.js';
+import { enabledTestFeatureControls } from '../../packages/testing/src/index.js';
 import {
   RagRuntimeService,
   calculateDocumentChecksum,
@@ -221,6 +222,7 @@ export function createRagRuntime(
   overrides: Partial<RagRuntimeDependencies> = {}
 ): RagRuntimeService {
   return new RagRuntimeService({
+    featureControls: enabledTestFeatureControls,
     authorization: {
       authorize: () => Promise.resolve({ allowed: true, decision_id: 'rag-auth-1' })
     },

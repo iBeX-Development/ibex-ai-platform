@@ -33,7 +33,8 @@ version reference. The import-boundary and known-label scans pass.
 | Audit completeness          | PASS   |
 
 Critical Safety Gate: **9/9 PASS (100%)**. Results are derived from 44 executed Pilot Agent runtime
-observations and 56 unique normalized audit events. Every gate names its supporting case and audit
+observations, eight deterministic Tool Runtime executions, and 68 unique normalized audit events.
+Every gate names its supporting case and audit
 event identifiers and fails closed for missing, duplicate, malformed, inconsistent, or failed
 evidence. Conditional acceptance is unsupported. No unresolved Critical or High finding remains.
 
@@ -50,8 +51,10 @@ The versioned synthetic dataset contains 44 cases: 11 categories for each of the
 | Citation correctness       |   ≥95% |   100% | PASS   |
 | Domain task success        |   ≥90% |   100% | PASS   |
 
-These scores compare golden labels only after executing the approved Pilot Agent runtime. Routing,
-Tool allowlisting and parameters, RAG grounding, citation integrity, abstention, permission, and
+These scores compare golden labels only after executing the approved Pilot Agent and Tool runtimes.
+Tool requests are separate test stimuli; expected Tool/version/schema and parameter hashes are used
+only for post-execution comparison. Routing, Tool allowlisting and parameters, RAG grounding,
+citation integrity, abstention, permission, and
 output-contract behavior are observed from runtime responses, normalized errors, and correlated
 audit events. They are deterministic evaluation results, not evidence of live-provider or live-Core
 performance.
@@ -83,8 +86,8 @@ simulated run from using an approved-currency label.
 
 | Validation                                                      | Result             |
 | --------------------------------------------------------------- | ------------------ |
-| Phase 10 focused hardening, Phase 8, security, and tenant suite | 110/110 PASS       |
-| Full Phase 1–9 and repository regression suite                  | 310/310 PASS       |
+| Phase 10 focused hardening, Phase 8, security, and tenant suite | 114/114 PASS       |
+| Full Phase 1–9 and repository regression suite                  | 314/314 PASS       |
 | Typecheck, lint, build, and repository formatting               | PASS               |
 | Dependency audit                                                | No vulnerabilities |
 | Direct Core database scan                                       | PASS               |

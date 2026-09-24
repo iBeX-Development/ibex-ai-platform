@@ -48,7 +48,9 @@ console.log(
       quality_scores: result.quality_scores,
       observation_count: observations.length,
       unique_audit_event_count: new Set(
-        observations.flatMap((record) => record.audit_correlation.event_ids)
+        observations.flatMap((record) =>
+          record.audit_correlation.events.map((event) => event.event_id)
+        )
       ).size,
       failed_case_ids: result.failed_case_ids,
       blocking_findings: result.blocking_findings,

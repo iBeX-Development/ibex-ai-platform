@@ -36,16 +36,66 @@ export type CriticalGateName = (typeof criticalGateNames)[number];
 const nonEmpty = z.string().trim().min(1);
 const outcomeSchema = z.enum(['allow', 'route', 'abstain', 'deny']);
 const metricScoresSchema = z.record(qualityMetricSchema, z.number().min(0).max(1));
+const normalizedAuditEvidenceSchema = z
+  .object({
+    event_id: nonEmpty,
+    event_type: nonEmpty,
+    outcome: nonEmpty,
+    stage: nonEmpty,
+    error_code: nonEmpty.optional(),
+    request_id: nonEmpty,
+    correlation_id: nonEmpty,
+    trace_id: nonEmpty,
+    context_status: z.enum(['trusted', 'unavailable']),
+    tenant_id: nonEmpty.optional(),
+    user_id: nonEmpty.optional(),
+    role: nonEmpty.optional(),
+    session_id: nonEmpty.optional(),
+    permission_refs: z.array(nonEmpty).readonly(),
+    entitlement_refs: z.array(nonEmpty).readonly(),
+    tool_id: nonEmpty.optional(),
+    tool_version: nonEmpty.optional()
+  })
+  .strict()
+  .readonly()
+  .superRefine((value, context) => {
+    const trustedFields = [value.tenant_id, value.user_id, value.role, value.session_id];
+    if (value.context_status === 'trusted' && trustedFields.some((field) => !field))
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['context_status'],
+        message: 'Trusted normalized audit evidence is missing mandatory context'
+      });
+    if (value.context_status === 'unavailable' && trustedFields.some(Boolean))
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['context_status'],
+        message: 'Unavailable audit context cannot assert trusted identity fields'
+      });
+  });
+
+const toolExecutionEvidenceSchema = z
+  .object({
+    tool_id: nonEmpty,
+    tool_version: nonEmpty,
+    input_schema_id: nonEmpty,
+    expected_input_hash: z.string().regex(/^sha256:[a-f0-9]{64}$/),
+    observed_input_hash: z.string().regex(/^sha256:[a-f0-9]{64}$/),
+    audit_event_ids: z.array(nonEmpty).min(1).readonly()
+  })
+  .strict()
+  .readonly();
 
 export const evaluationObservationSchema = z
   .object({
     evaluation_run_id: nonEmpty,
     case_id: nonEmpty,
-    trusted_test_scope: z
+    test_scope: z
       .object({
-        tenant_id: nonEmpty,
         scope_id: nonEmpty,
-        classification: z.literal('synthetic_test_only')
+        classification: z.literal('synthetic_test_only'),
+        context_status: z.enum(['trusted', 'unavailable']),
+        tenant_id: nonEmpty.optional()
       })
       .strict()
       .readonly(),
@@ -69,6 +119,7 @@ export const evaluationObservationSchema = z
       .strict()
       .readonly(),
     observed_result: outcomeSchema,
+    tool_execution: toolExecutionEvidenceSchema.optional(),
     metric_scores: metricScoresSchema.readonly(),
     validated_controls: z.array(z.enum(criticalGateNames)).min(1).readonly(),
     failure: z
@@ -97,11 +148,10 @@ export const evaluationObservationSchema = z
       .readonly(),
     audit_correlation: z
       .object({
-        event_ids: z.array(nonEmpty).min(1).readonly(),
+        events: z.array(normalizedAuditEvidenceSchema).min(1).readonly(),
         request_id: nonEmpty,
         correlation_id: nonEmpty,
-        trace_id: nonEmpty,
-        trusted_context_bound: z.literal(true)
+        trace_id: nonEmpty
       })
       .strict()
       .readonly()
@@ -118,6 +168,70 @@ export const evaluationObservationSchema = z
         code: z.ZodIssueCode.custom,
         path: ['audit_correlation'],
         message: 'Evaluation audit binding is inconsistent'
+      });
+    const auditEvents = value.audit_correlation.events;
+    if (new Set(auditEvents.map((event) => event.event_id)).size !== auditEvents.length)
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['audit_correlation', 'events'],
+        message: 'Evaluation audit evidence contains duplicated events'
+      });
+    if (
+      auditEvents.some(
+        (event) =>
+          event.request_id !== value.request_id ||
+          event.correlation_id !== value.correlation_id ||
+          event.trace_id !== value.trace_id
+      )
+    )
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['audit_correlation', 'events'],
+        message: 'Normalized audit evidence binding is inconsistent'
+      });
+    const statuses = new Set(auditEvents.map((event) => event.context_status));
+    if (statuses.size !== 1 || !statuses.has(value.test_scope.context_status))
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['test_scope', 'context_status'],
+        message: 'Evaluation scope is inconsistent with normalized audit context'
+      });
+    const trustedTenant = auditEvents[0]?.tenant_id;
+    if (
+      value.test_scope.context_status === 'trusted' &&
+      (!trustedTenant ||
+        value.test_scope.tenant_id !== trustedTenant ||
+        auditEvents.some((event) => event.tenant_id !== trustedTenant))
+    )
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['test_scope', 'tenant_id'],
+        message: 'Evaluation tenant scope is not bound to normalized audit evidence'
+      });
+    const trustedContext = auditEvents[0];
+    const canonicalRefs = (values: readonly string[]) => JSON.stringify([...values].sort());
+    if (
+      value.test_scope.context_status === 'trusted' &&
+      trustedContext &&
+      auditEvents.some(
+        (event) =>
+          event.user_id !== trustedContext.user_id ||
+          event.role !== trustedContext.role ||
+          event.session_id !== trustedContext.session_id ||
+          canonicalRefs(event.permission_refs) !== canonicalRefs(trustedContext.permission_refs) ||
+          canonicalRefs(event.entitlement_refs) !== canonicalRefs(trustedContext.entitlement_refs)
+      )
+    )
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['audit_correlation', 'events'],
+        message: 'Normalized trusted audit identity or authorization context is inconsistent'
+      });
+    if (value.test_scope.context_status === 'unavailable' && value.test_scope.tenant_id)
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['test_scope', 'tenant_id'],
+        message: 'Untrusted evaluation context cannot assert a tenant scope'
       });
     if (value.case_id !== value.expected_result_reference.case_id)
       context.addIssue({
@@ -203,7 +317,9 @@ function deriveCriticalEvidence(
         (item) => categories === 'all' || categories.includes(item.category)
       );
       const records = selected.map((item) => observations.get(item.case_id));
-      const auditEventIds = records.flatMap((record) => record?.audit_correlation.event_ids ?? []);
+      const auditEventIds = records.flatMap(
+        (record) => record?.audit_correlation.events.map((event) => event.event_id) ?? []
+      );
       const passed =
         selected.length > 0 &&
         records.every(
@@ -211,7 +327,7 @@ function deriveCriticalEvidence(
             record !== undefined &&
             !record.failure &&
             record.validated_controls.includes(gate) &&
-            record.audit_correlation.trusted_context_bound
+            record.audit_correlation.events.length > 0
         );
       return Object.freeze({
         gate,
@@ -238,7 +354,9 @@ export function evaluatePhase10Gate(
     .map((item) => item.data);
   const caseIds = input.cases.map((item) => item.case_id);
   const observationIds = validObservations.map((item) => item.case_id);
-  const auditEventIds = validObservations.flatMap((item) => item.audit_correlation.event_ids);
+  const auditEventIds = validObservations.flatMap((item) =>
+    item.audit_correlation.events.map((event) => event.event_id)
+  );
   const caseIdSet = new Set(caseIds);
   const observationIdSet = new Set(observationIds);
   const evaluationIntegrityFailure =
@@ -250,7 +368,18 @@ export function evaluatePhase10Gate(
     caseIds.some((caseId) => !observationIdSet.has(caseId));
   const observations = new Map(validObservations.map((item) => [item.case_id, item]));
   const failedCaseIds = input.cases
-    .filter((item) => observations.get(item.case_id)?.observed_result !== item.expected)
+    .filter((item) => {
+      const observation = observations.get(item.case_id);
+      if (observation?.observed_result !== item.expected) return true;
+      if (!item.expected_tool) return false;
+      return (
+        observation.tool_execution?.tool_id !== item.expected_tool.tool_id ||
+        observation.tool_execution.tool_version !== item.expected_tool.tool_version ||
+        observation.tool_execution.input_schema_id !== item.expected_tool.input_schema_id ||
+        observation.tool_execution.expected_input_hash !==
+          observation.tool_execution.observed_input_hash
+      );
+    })
     .map((item) => item.case_id);
   const qualityScores = Object.fromEntries(
     qualityMetricSchema.options.map((metric) => [metric, score(input.cases, observations, metric)])

@@ -7,6 +7,7 @@ import {
   type RagRuntimeAuditStage
 } from '../../audit/src/index.js';
 import { PlatformError } from '../../errors/src/index.js';
+import type { FeatureControls } from '../../configuration/src/index.js';
 import { tracer } from '../../observability/src/index.js';
 import {
   createTrustedRequestContext,
@@ -78,6 +79,7 @@ export interface RagRuntimePolicy {
 }
 
 export interface RagRuntimeDependencies {
+  readonly featureControls: FeatureControls;
   readonly authorization: ServerAuthorizationPolicy;
   readonly retrievalScope: RagRetrievalScopePort;
   readonly governance: KnowledgeGovernancePort;
@@ -237,6 +239,12 @@ export class RagRuntimeService {
       span.setAttribute('ibex.rag.trace_id', traceId);
 
       try {
+        if (
+          !this.dependencies.featureControls.aiPlatform ||
+          !this.dependencies.featureControls.rag
+        ) {
+          throw new PlatformError('SERVICE_UNAVAILABLE', 'RAG service is unavailable', 503);
+        }
         if (typeof inbound !== 'object' || inbound === null) {
           throw new PlatformError('VALIDATION_ERROR', 'RAG ingestion request is invalid', 400);
         }
@@ -499,6 +507,12 @@ export class RagRuntimeService {
       span.setAttribute('ibex.rag.trace_id', traceId);
 
       try {
+        if (
+          !this.dependencies.featureControls.aiPlatform ||
+          !this.dependencies.featureControls.rag
+        ) {
+          throw new PlatformError('SERVICE_UNAVAILABLE', 'RAG service is unavailable', 503);
+        }
         if (typeof inbound !== 'object' || inbound === null) {
           throw new PlatformError('VALIDATION_ERROR', 'RAG retrieval request is invalid', 400);
         }
