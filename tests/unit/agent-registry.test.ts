@@ -12,18 +12,18 @@ const classification = {
 describe('Agent registry', () => {
   it('selects one active matching agent deterministically', () => {
     const registry = new AgentRegistry([maintenanceAgent]);
-    expect(registry.select(classification)?.agent_id).toBe('maintenance');
+    expect(registry.select(classification)?.agent_id).toBe('maintenance-agent');
   });
 
   it('does not route a disabled requested agent', () => {
     const registry = new AgentRegistry([{ ...maintenanceAgent, status: 'disabled' }]);
-    expect(() => registry.select(classification, 'maintenance')).toThrow('Access denied');
+    expect(() => registry.select(classification, 'maintenance-agent')).toThrow('Access denied');
   });
 
   it('fails closed for ambiguous active routes', () => {
     const registry = new AgentRegistry([
       maintenanceAgent,
-      { ...maintenanceAgent, agent_id: 'maintenance-secondary' }
+      { ...maintenanceAgent, agent_id: 'maintenance-agent-secondary' }
     ]);
     expect(() => registry.select(classification)).toThrow('Agent routing is ambiguous');
   });

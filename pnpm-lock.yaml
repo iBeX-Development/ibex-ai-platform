@@ -64,6 +64,8 @@ importers:
 
   packages/observability: {}
 
+  packages/pilot-agents: {}
+
   packages/rag-runtime: {}
 
   packages/runtime: {}

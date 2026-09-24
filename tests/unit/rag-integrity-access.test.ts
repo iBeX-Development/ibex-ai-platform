@@ -20,7 +20,7 @@ const filter = (): RagSecurityFilter => ({
   role: ragContext.role,
   permissions: ragContext.permissions,
   entitlements: ragContext.entitlements,
-  agent_id: 'maintenance',
+  agent_id: 'maintenance-agent',
   domain: 'maintenance',
   knowledge_scopes: ['maintenance-manuals'],
   approval_status: 'approved',

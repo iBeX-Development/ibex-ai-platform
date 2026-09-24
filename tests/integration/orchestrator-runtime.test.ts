@@ -25,7 +25,7 @@ describe('Gate P3 shared agent runtime', () => {
       decision: {
         intent: 'maintenance_lookup',
         domain: 'maintenance',
-        selected_agent: 'maintenance',
+        selected_agent: 'maintenance-agent',
         required_capabilities: ['maintenance:read'],
         rag_required: true,
         rag_scopes: ['maintenance-approved'],
@@ -57,7 +57,7 @@ describe('Gate P3 shared agent runtime', () => {
         correlation_id: 'correlation-1',
         trace_id: 'trace-1',
         outcome: 'routed',
-        selected_agent: 'maintenance',
+        selected_agent: 'maintenance-agent',
         prompt_hierarchy: {
           master_policy: {
             prompt_id: 'master-policy',
@@ -344,7 +344,7 @@ describe('Gate P3 shared agent runtime', () => {
     const runtime = createRuntime(auditEvents, {
       agents: new AgentRegistry([
         maintenanceAgent,
-        { ...maintenanceAgent, agent_id: 'maintenance-secondary' }
+        { ...maintenanceAgent, agent_id: 'maintenance-agent-secondary' }
       ])
     });
 

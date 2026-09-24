@@ -379,6 +379,8 @@ export function normalizeAuditEvent(
   const requestId = optionalString(source.request_id) ?? optionalString(nested?.request_id);
   const correlationId =
     optionalString(source.correlation_id) ?? optionalString(nested?.correlation_id);
+  const boundaryRequestId = optionalString(source.boundary_request_id);
+  const boundaryCorrelationId = optionalString(source.boundary_correlation_id);
   if (
     (optionalString(source.request_id) &&
       optionalString(nested?.request_id) &&
@@ -400,6 +402,8 @@ export function normalizeAuditEvent(
     'session_id',
     'request_id',
     'correlation_id',
+    'boundary_request_id',
+    'boundary_correlation_id',
     'permission_refs',
     'entitlement_refs',
     'trusted_context'
@@ -409,8 +413,8 @@ export function normalizeAuditEvent(
       ? Object.fromEntries(Object.entries(source).filter(([key]) => !untrustedContextKeys.has(key)))
       : { ...source };
   const evidence = immutableCopy(evidenceSource);
-  const boundRequestId = context.status === 'trusted' ? requestId : undefined;
-  const boundCorrelationId = context.status === 'trusted' ? correlationId : undefined;
+  const boundRequestId = context.status === 'trusted' ? requestId : boundaryRequestId;
+  const boundCorrelationId = context.status === 'trusted' ? correlationId : boundaryCorrelationId;
   return Object.freeze({
     schema_version: '1.0',
     event_version: '1.0',

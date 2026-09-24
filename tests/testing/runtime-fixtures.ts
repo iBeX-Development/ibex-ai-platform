@@ -25,7 +25,7 @@ export const runtimeContext = createTrustedRequestContext({
 });
 
 export const maintenanceAgent: AgentDefinition = {
-  agent_id: 'maintenance',
+  agent_id: 'maintenance-agent',
   version: '1.0',
   domain: 'maintenance',
   supported_intents: ['maintenance_lookup'],
@@ -71,7 +71,7 @@ export const approvedPrompts = [
   {
     prompt_id: 'maintenance-domain',
     prompt_version: '1.0',
-    agent_id: 'maintenance',
+    agent_id: 'maintenance-agent',
     layer: 'domain',
     status: 'approved',
     effective_date: '2026-09-01T00:00:00.000Z',

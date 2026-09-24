@@ -56,7 +56,7 @@ export function makeDocument(
     tenant_id: 'tenant-a',
     domains: ['maintenance'],
     knowledge_scopes: ['maintenance-manuals'],
-    allowed_agents: ['maintenance'],
+    allowed_agents: ['maintenance-agent'],
     classification: 'tenant_confidential',
     approval_status: 'approved',
     effective_date: '2026-01-01T00:00:00.000Z',
@@ -83,7 +83,7 @@ export function ingestionRequest(overrides: Record<string, unknown> = {}): Recor
   return {
     context: ragContext,
     trace_id: 'rag-trace-1',
-    agent_id: 'maintenance',
+    agent_id: 'maintenance-agent',
     document: makeDocument(),
     ...overrides
   };
@@ -205,7 +205,7 @@ export function approvedRetrievalScope(
           user_id: context.user_id,
           request_id: context.request_id,
           correlation_id: context.correlation_id,
-          agent_id: 'maintenance',
+          agent_id: 'maintenance-agent',
           agent_version: '1.0',
           domain: 'maintenance',
           knowledge_scopes: ['maintenance-manuals'],
