@@ -28,4 +28,31 @@ describe('sensitive logging', () => {
     expect(output).not.toContain('token-value');
     expect(output).toContain('[REDACTED]');
   });
+
+  it('recursively minimizes AI content and confidential reasoning', async () => {
+    let output = '';
+    const destination = new Writable({
+      write(chunk: Buffer, _encoding, callback) {
+        output += chunk.toString('utf8');
+        callback();
+      }
+    });
+    const logger = createLogger(loadConfig(validTestEnvironment), destination);
+    logger.info({
+      operation: {
+        prompt: 'raw prompt value',
+        retrieved_content: 'confidential document text',
+        tool_payload: { asset: 'private tool value' },
+        chain_of_thought: 'private reasoning',
+        prompt_version: 'approved-v1',
+        content_hash: 'sha256:safe-reference'
+      }
+    });
+    await new Promise((resolve) => destination.end(resolve));
+    expect(output).not.toMatch(
+      /raw prompt value|confidential document text|private tool value|private reasoning/
+    );
+    expect(output).toContain('approved-v1');
+    expect(output).toContain('sha256:safe-reference');
+  });
 });

@@ -41,6 +41,7 @@ describe('Phase 1 security pipeline', () => {
       'ai-runtime-test',
       'test',
       'security.authorization.allowed',
+      'trace-security-1',
       validationTime
     );
     expect(audit).toMatchObject({
@@ -48,6 +49,13 @@ describe('Phase 1 security pipeline', () => {
       user_id: 'user-1',
       request_id: 'request-1',
       correlation_id: 'correlation-1'
+    });
+    expect(audit).toMatchObject({
+      trace_id: 'trace-security-1',
+      role: 'operator',
+      session_id: 'session-1',
+      permission_refs: ['asset:read'],
+      entitlement_refs: ['ai:general']
     });
   });
 });

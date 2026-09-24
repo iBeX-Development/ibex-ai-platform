@@ -127,10 +127,15 @@ export const auditEventSchema = z
     schema_version: z.literal('1.0'),
     event_type: z.string().min(1),
     timestamp: z.string().datetime(),
+    trace_id: z.string().min(1),
     request_id: z.string().min(1),
     correlation_id: z.string().min(1),
     tenant_id: z.string().min(1),
     user_id: z.string().min(1),
+    role: z.string().min(1),
+    session_id: z.string().min(1),
+    permission_refs: z.array(z.string().min(1)).readonly(),
+    entitlement_refs: z.array(z.string().min(1)).readonly(),
     service: z.string().min(1),
     environment: z.string().min(1)
   })

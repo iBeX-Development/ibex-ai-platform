@@ -22,13 +22,58 @@ const redactPaths = [
   'headers.cookie'
 ];
 
+const sensitiveTelemetryKeys = new Set([
+  'password',
+  'secret',
+  'api_key',
+  'apikey',
+  'token',
+  'access_token',
+  'authorization',
+  'authorization_header',
+  'cookie',
+  'credential',
+  'credentials',
+  'private_key',
+  'prompt',
+  'raw_prompt',
+  'response',
+  'retrieved_content',
+  'content',
+  'tool_payload',
+  'payload',
+  'chain_of_thought',
+  'reasoning'
+]);
+
+export function sanitizeTelemetryValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(sanitizeTelemetryValue);
+  if (!value || typeof value !== 'object' || value instanceof Date || Buffer.isBuffer(value)) {
+    return value;
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([key, child]) => [
+      key,
+      sensitiveTelemetryKeys.has(key.toLowerCase()) ? '[REDACTED]' : sanitizeTelemetryValue(child)
+    ])
+  );
+}
+
 export function createLogger(config: AppConfig, destination?: DestinationStream): Logger {
   return pino(
     {
       level: config.logging.level,
       base: { service: config.runtime.serviceName, environment: config.environment },
       timestamp: pino.stdTimeFunctions.isoTime,
-      redact: { paths: redactPaths, censor: '[REDACTED]' }
+      redact: { paths: redactPaths, censor: '[REDACTED]' },
+      hooks: {
+        logMethod(args, method) {
+          method.apply(
+            this,
+            args.map(sanitizeTelemetryValue) as [unknown, string | undefined, ...unknown[]]
+          );
+        }
+      }
     },
     destination
   );

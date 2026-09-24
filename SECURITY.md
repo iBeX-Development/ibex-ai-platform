@@ -47,6 +47,14 @@ the returned chunks again. Retrieved text remains untrusted data with no authori
 instruction authority. Live Core transactions, secrets, unrestricted dumps, and revoked or
 unapproved documents are excluded from the knowledge store.
 
+Phase 7 normalizes service audit records into a canonical versioned envelope while retaining each
+service's mandatory evidence. Trusted tenant, user, role, session, permission, entitlement,
+request, correlation, and trace bindings are validated before export. Audit, security, metrics,
+health, and durable evidence-store adapters remain vendor-neutral. Delivery failures fail closed,
+produce sanitized critical health/security evidence, and leave the pipeline degraded. Metrics use
+explicit bounded label allowlists and never use tenant, user, request, correlation, session, or
+trace identifiers as labels.
+
 ## Data and actions
 
 - Do not connect directly to the Core iBeX database.
@@ -59,6 +67,7 @@ unapproved documents are excluded from the knowledge store.
 - Never commit `.env`, passwords, tokens, API keys, credentials, or production secrets.
 - Local development may use environment variables. Staging and production require an external secret provider.
 - Structured logs redact common credential fields. Add new sensitive field names to the central redaction policy before logging related objects.
+- Central telemetry sanitization recursively redacts raw prompts, model responses, retrieved content, tool payloads, credentials, confidential reasoning, and chain-of-thought.
 - Public error envelopes exclude diagnostics and stack traces. Internal diagnostics remain server-side.
 
 Report suspected credential exposure through the organization's approved private security channel and rotate affected credentials immediately.
