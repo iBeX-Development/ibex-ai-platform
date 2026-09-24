@@ -7,6 +7,7 @@ import {
 } from '../../agents/general/src/index.js';
 import {
   createPilotHarness,
+  pilotBoundaryIdentity,
   pilotContext,
   pilotRequest,
   pilotValidationTime,
@@ -135,36 +136,89 @@ describe('Phase 8 General iBeX Agent acceptance', () => {
     );
     expect(answer.response_type).toBe('abstain');
   });
-  it('rejects server evidence with inconsistent request correlation', async () => {
+  it('rejects server evidence with inconsistent trace or correlation binding', async () => {
     const evidence = ragGrounding(generalAgentProfile, 'ibex-handbook');
     const item = evidence.rag[0];
     if (!item) throw new Error('Expected deterministic RAG evidence');
-    const forged = {
-      ...evidence,
-      rag: [{ ...item, response: { ...item.response, correlation_id: 'foreign-correlation' } }]
-    };
-    const runtime = createPilotHarness(generalAgentProfile, { grounding: forged }).runtime;
-    const answer = await runtime.execute(
-      pilotRequest(generalAgentProfile, {
-        intent: 'GENERAL_KNOWLEDGE',
-        requested_rag_scopes: ['ibex-handbook']
-      }),
+    for (const responseOverride of [
+      { correlation_id: 'foreign-correlation' },
+      { trace_id: 'foreign-trace' }
+    ]) {
+      const forged = {
+        ...evidence,
+        rag: [{ ...item, response: { ...item.response, ...responseOverride } }]
+      };
+      const runtime = createPilotHarness(generalAgentProfile, { grounding: forged }).runtime;
+      const answer = await runtime.execute(
+        pilotRequest(generalAgentProfile, {
+          intent: 'GENERAL_KNOWLEDGE',
+          requested_rag_scopes: ['ibex-handbook']
+        }),
+        pilotValidationTime
+      );
+      expect(answer.response_type).toBe('abstain');
+    }
+  });
+  it('records malformed requests with server-generated Phase 7 correlation evidence', async () => {
+    const { runtime, audits, exported } = createPilotHarness(generalAgentProfile);
+    const rejection = runtime.execute(
+      { trace_id: '', candidate_answer: 'secret' },
       pilotValidationTime
     );
-    expect(answer.response_type).toBe('abstain');
-  });
-  it('records malformed requests through normalized Phase 7 audit evidence', async () => {
-    const { runtime, audits, exported } = createPilotHarness(generalAgentProfile);
-    await expect(
-      runtime.execute({ trace_id: '', candidate_answer: 'secret' }, pilotValidationTime)
-    ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
+    await expect(rejection).rejects.toMatchObject({
+      code: 'VALIDATION_ERROR',
+      traceId: pilotBoundaryIdentity.trace_id,
+      trustedRequestId: pilotBoundaryIdentity.request_id
+    });
     expect(audits[0]).toMatchObject({
       event_type: 'orchestrator.routing.outcome',
       outcome: 'rejected',
-      error_code: 'VALIDATION_ERROR'
+      error_code: 'VALIDATION_ERROR',
+      trace_id: pilotBoundaryIdentity.trace_id,
+      request_id: pilotBoundaryIdentity.request_id,
+      correlation_id: pilotBoundaryIdentity.correlation_id,
+      context: { status: 'unavailable' }
     });
     expect(exported).toHaveLength(1);
     expect(JSON.stringify(exported)).not.toContain('secret');
+  });
+  it('does not reflect malformed or spoofed caller correlation into audit or public errors', async () => {
+    const base = pilotRequest(generalAgentProfile);
+    const cases: unknown[] = [
+      { ...base, trace_id: 'trace\nspoof' },
+      { ...base, context: { ...base.context, request_id: 'request\u0000spoof' } },
+      { ...base, context: { ...base.context, correlation_id: 'correlation\rspoof' } },
+      { ...base, correlation_id: 'conflicting-top-level-correlation' },
+      {
+        ...base,
+        trace_id: 'attacker-trace',
+        context: {
+          ...base.context,
+          tenant_id: '',
+          request_id: 'attacker-request',
+          correlation_id: 'attacker-correlation'
+        }
+      }
+    ];
+
+    for (const request of cases) {
+      const { runtime, audits } = createPilotHarness(generalAgentProfile);
+      await expect(runtime.execute(request, pilotValidationTime)).rejects.toMatchObject({
+        traceId: pilotBoundaryIdentity.trace_id,
+        trustedRequestId: pilotBoundaryIdentity.request_id
+      });
+      expect(audits).toHaveLength(1);
+      expect(audits[0]).toMatchObject({
+        trace_id: pilotBoundaryIdentity.trace_id,
+        request_id: pilotBoundaryIdentity.request_id,
+        correlation_id: pilotBoundaryIdentity.correlation_id,
+        context: { status: 'unavailable' }
+      });
+      const serialized = JSON.stringify(audits);
+      expect(serialized).not.toContain('spoof');
+      expect(serialized).not.toContain('conflicting-top-level-correlation');
+      expect(serialized).not.toContain('attacker-');
+    }
   });
   it('preserves prompt and RAG source reconstruction evidence in the normalized event', async () => {
     const { runtime, audits } = createPilotHarness(generalAgentProfile, {

@@ -116,7 +116,7 @@ describe('Gate P6 RAG Runtime', () => {
     expect(store.filters).toHaveLength(1);
     expect(store.filters[0]).toMatchObject({
       tenant_id: 'tenant-a',
-      agent_id: 'maintenance',
+      agent_id: 'maintenance-agent',
       domain: 'maintenance',
       approval_status: 'approved',
       latest_approved_only: true
@@ -215,7 +215,7 @@ describe('Gate P6 RAG Runtime', () => {
                 user_id: context.user_id,
                 request_id: context.request_id,
                 correlation_id: context.correlation_id,
-                agent_id: 'maintenance',
+                agent_id: 'maintenance-agent',
                 agent_version: '1.0',
                 domain: 'maintenance',
                 knowledge_scopes: ['maintenance-manuals']

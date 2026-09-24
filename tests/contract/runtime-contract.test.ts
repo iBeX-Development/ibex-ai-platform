@@ -8,7 +8,7 @@ import { maintenanceAgent } from '../testing/runtime-fixtures.js';
 
 describe('Shared runtime contracts', () => {
   it('accepts versioned agent definitions and rejects unknown fields', () => {
-    expect(agentDefinitionSchema.parse(maintenanceAgent).agent_id).toBe('maintenance');
+    expect(agentDefinitionSchema.parse(maintenanceAgent).agent_id).toBe('maintenance-agent');
     expect(() =>
       agentDefinitionSchema.parse({ ...maintenanceAgent, provider: 'unapproved' })
     ).toThrow();

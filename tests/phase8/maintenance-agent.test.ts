@@ -20,7 +20,7 @@ describe('Phase 8 Maintenance Agent acceptance', () => {
     expect(new Set(maintenanceEvaluationDataset.map((item) => item.category)).size).toBe(10);
   });
   it('accepts verified RAG procedure evidence in the synthetic test profile', async () => {
-    const { runtime } = createPilotHarness(maintenanceAgentProfile, {
+    const { runtime, audits } = createPilotHarness(maintenanceAgentProfile, {
       grounding: ragGrounding(maintenanceAgentProfile, 'approved-maintenance-procedures')
     });
     const response = await runtime.execute(
@@ -31,6 +31,14 @@ describe('Phase 8 Maintenance Agent acceptance', () => {
       pilotValidationTime
     );
     expect(response).toMatchObject({ response_type: 'knowledge', agent_id: 'maintenance-agent' });
+    expect(audits[0]).toMatchObject({
+      evidence: {
+        selected_agent: 'maintenance-agent',
+        prompt_hierarchy: {
+          domain_prompt: { prompt_id: 'maintenance-domain' }
+        }
+      }
+    });
   });
   it('accepts only server-side deterministic Tool evidence in test fixtures', async () => {
     const capability = 'FAILURE_HISTORY_READ';

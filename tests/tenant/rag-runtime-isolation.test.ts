@@ -23,7 +23,7 @@ describe('Gate P6 RAG tenant isolation', () => {
         {
           context: ragContext,
           trace_id: 'rag-cross-tenant-ingest',
-          agent_id: 'maintenance',
+          agent_id: 'maintenance-agent',
           document
         },
         {},

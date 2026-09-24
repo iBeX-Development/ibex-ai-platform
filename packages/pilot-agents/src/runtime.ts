@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+import { SpanStatusCode, type Span } from '@opentelemetry/api';
 import { PlatformError } from '../../errors/src/index.js';
 import {
   createOrchestratorAuditEvent,
@@ -12,6 +14,7 @@ import {
   sha256Evidence
 } from '../../rag-runtime/src/index.js';
 import { createTrustedRequestContext } from '../../security/src/index.js';
+import { tracer } from '../../observability/src/index.js';
 import { toolExecutionResponseSchema } from '../../tool-runtime/src/index.js';
 import {
   pilotAgentExecutionRequestSchema,
@@ -32,6 +35,17 @@ export interface PilotAgentRuntimeOptions {
   readonly environment: string;
   readonly promptHierarchy: PromptHierarchyAuditEvidence;
   readonly allowDeterministicTestAdapters?: boolean;
+  readonly boundaryIdentityFactory?: () => Readonly<{
+    trace_id: string;
+    request_id: string;
+    correlation_id: string;
+  }>;
+}
+
+interface PilotBoundaryIdentity {
+  readonly trace_id: string;
+  readonly request_id: string;
+  readonly correlation_id: string;
 }
 
 function hasAll(actual: readonly string[], required: readonly string[]): boolean {
@@ -50,11 +64,38 @@ function record(value: unknown): Record<string, unknown> {
   return typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : {};
 }
 
-function traceFrom(value: unknown): string {
-  const trace = record(value).trace_id;
-  return typeof trace === 'string' && trace.trim().length > 0 && trace.length <= 256
-    ? trace
-    : 'unavailable';
+function validatedCorrelationIdentifier(value: unknown): string | undefined {
+  if (typeof value !== 'string' || value.length === 0 || value.length > 256) return undefined;
+  if (value.trim() !== value) return undefined;
+  for (let index = 0; index < value.length; index += 1) {
+    const codeUnit = value.charCodeAt(index);
+    if (codeUnit <= 31 || codeUnit === 127) return undefined;
+  }
+  return value;
+}
+
+function createBoundaryIdentity(factory?: PilotAgentRuntimeOptions['boundaryIdentityFactory']) {
+  const fallback = (): PilotBoundaryIdentity =>
+    Object.freeze({
+      trace_id: randomUUID(),
+      request_id: randomUUID(),
+      correlation_id: randomUUID()
+    });
+  if (!factory) return fallback();
+  try {
+    const candidate = factory();
+    const traceId = validatedCorrelationIdentifier(candidate.trace_id);
+    const requestId = validatedCorrelationIdentifier(candidate.request_id);
+    const correlationId = validatedCorrelationIdentifier(candidate.correlation_id);
+    if (!traceId || !requestId || !correlationId) return fallback();
+    return Object.freeze({
+      trace_id: traceId,
+      request_id: requestId,
+      correlation_id: correlationId
+    });
+  } catch {
+    return fallback();
+  }
 }
 
 export class PilotAgentRuntime {
@@ -70,21 +111,90 @@ export class PilotAgentRuntime {
   }
 
   async execute(rawRequest: unknown, now = new Date()): Promise<PilotAgentResponse> {
-    const boundaryTrace = traceFrom(rawRequest);
+    const boundary = createBoundaryIdentity(this.options.boundaryIdentityFactory);
+    return tracer.startActiveSpan('pilot-agent.execute', async (span) => {
+      span.setAttributes({
+        'ibex.pilot.boundary_trace_id': boundary.trace_id,
+        'ibex.pilot.boundary_request_id': boundary.request_id,
+        'ibex.pilot.boundary_correlation_id': boundary.correlation_id,
+        'ibex.pilot.agent_id': this.profile.agent_id
+      });
+      try {
+        const response = await this.executeWithinBoundary(rawRequest, boundary, span, now);
+        span.setAttribute('ibex.pilot.outcome', response.response_type);
+        span.setStatus({ code: SpanStatusCode.OK });
+        return response;
+      } catch (error) {
+        span.setAttribute('ibex.pilot.outcome', 'rejected');
+        span.recordException(new Error('Pilot Agent request rejected'));
+        span.setStatus({ code: SpanStatusCode.ERROR });
+        throw error;
+      } finally {
+        span.end();
+      }
+    });
+  }
+
+  private async executeWithinBoundary(
+    rawRequest: unknown,
+    boundary: PilotBoundaryIdentity,
+    span: Span,
+    now: Date
+  ): Promise<PilotAgentResponse> {
     let parsed: ReturnType<typeof pilotAgentExecutionRequestSchema.parse>;
     try {
       parsed = pilotAgentExecutionRequestSchema.parse(rawRequest);
     } catch {
       await this.emitAudit(
         undefined,
-        boundaryTrace,
+        boundary.trace_id,
         'rejected',
         'boundary_context',
         'VALIDATION_ERROR',
         undefined,
-        now
+        now,
+        [],
+        'insufficient',
+        false,
+        boundary
       );
-      throw new PlatformError('VALIDATION_ERROR', 'Request is invalid', 400);
+      throw new PlatformError(
+        'VALIDATION_ERROR',
+        'Request is invalid',
+        400,
+        undefined,
+        boundary.trace_id,
+        boundary.request_id
+      );
+    }
+
+    const raw = record(rawRequest);
+    const rawContext = record(raw.context);
+    const suppliedTraceId = validatedCorrelationIdentifier(raw.trace_id);
+    const suppliedRequestId = validatedCorrelationIdentifier(rawContext.request_id);
+    const suppliedCorrelationId = validatedCorrelationIdentifier(rawContext.correlation_id);
+    if (!suppliedTraceId || !suppliedRequestId || !suppliedCorrelationId) {
+      await this.emitAudit(
+        undefined,
+        boundary.trace_id,
+        'rejected',
+        'boundary_trace',
+        'VALIDATION_ERROR',
+        undefined,
+        now,
+        [],
+        'insufficient',
+        false,
+        boundary
+      );
+      throw new PlatformError(
+        'VALIDATION_ERROR',
+        'Request is invalid',
+        400,
+        undefined,
+        boundary.trace_id,
+        boundary.request_id
+      );
     }
 
     let context: ReturnType<typeof createTrustedRequestContext>;
@@ -93,16 +203,34 @@ export class PilotAgentRuntime {
     } catch {
       await this.emitAudit(
         undefined,
-        parsed.trace_id,
+        boundary.trace_id,
         'rejected',
         'boundary_context',
         'TENANT_CONTEXT_ERROR',
-        parsed.intent,
-        now
+        undefined,
+        now,
+        [],
+        'insufficient',
+        false,
+        boundary
       );
-      throw new PlatformError('TENANT_CONTEXT_ERROR', 'Request context is invalid', 403);
+      throw new PlatformError(
+        'TENANT_CONTEXT_ERROR',
+        'Request context is invalid',
+        403,
+        undefined,
+        boundary.trace_id,
+        boundary.request_id
+      );
     }
-    const request: PilotAgentExecutionRequest = { ...parsed, context };
+    span.setAttributes({
+      'ibex.request_id': context.request_id,
+      'ibex.correlation_id': context.correlation_id,
+      'ibex.tenant_id': context.tenant_id,
+      'ibex.user_id': context.user_id,
+      'ibex.pilot.supplied_trace_id': suppliedTraceId
+    });
+    const request: PilotAgentExecutionRequest = { ...parsed, trace_id: suppliedTraceId, context };
 
     if (
       request.agent_id !== this.profile.agent_id ||
@@ -406,13 +534,14 @@ export class PilotAgentRuntime {
     context: ReturnType<typeof createTrustedRequestContext> | undefined,
     traceId: string,
     outcome: 'routed' | 'fallback' | 'rejected' | 'error',
-    stage: 'boundary_context' | 'authorization' | 'output_validation',
+    stage: 'boundary_context' | 'boundary_trace' | 'authorization' | 'output_validation',
     errorCode: string | undefined,
     intent: string | undefined,
     now: Date,
     citations: readonly AgentCitation[] = [],
     evidenceStatus: 'sufficient' | 'insufficient' = 'insufficient',
-    approvalRequired = false
+    approvalRequired = false,
+    boundary?: PilotBoundaryIdentity
   ): Promise<void> {
     return this.audit.emit(
       createOrchestratorAuditEvent({
@@ -445,6 +574,12 @@ export class PilotAgentRuntime {
         evidenceStatus,
         responseStatus: outcome === 'routed' ? 'success' : 'rejected',
         approvalState: approvalRequired ? 'required_not_executed' : 'not_required',
+        ...(boundary
+          ? {
+              boundaryRequestId: boundary.request_id,
+              boundaryCorrelationId: boundary.correlation_id
+            }
+          : {}),
         ...(errorCode ? { errorCode } : {})
       })
     );

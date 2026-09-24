@@ -124,6 +124,8 @@ export interface UntrustedOrchestratorBoundaryAuditEvent extends OrchestratorAud
   readonly context_status: 'unavailable';
   readonly outcome: 'rejected' | 'error';
   readonly stage: 'boundary_context' | 'boundary_trace';
+  readonly boundary_request_id?: string;
+  readonly boundary_correlation_id?: string;
 }
 
 export type OrchestratorAuditEvent =
@@ -435,6 +437,8 @@ export function createOrchestratorAuditEvent(input: {
   readonly evidenceStatus?: 'sufficient' | 'insufficient';
   readonly responseStatus?: 'success' | 'rejected';
   readonly approvalState?: 'not_required' | 'required_not_executed';
+  readonly boundaryRequestId?: string;
+  readonly boundaryCorrelationId?: string;
 }): OrchestratorAuditEvent {
   const base = {
     schema_version: '1.0',
@@ -481,7 +485,11 @@ export function createOrchestratorAuditEvent(input: {
       ...base,
       outcome: input.outcome,
       stage: input.stage,
-      context_status: 'unavailable'
+      context_status: 'unavailable',
+      ...(input.boundaryRequestId ? { boundary_request_id: input.boundaryRequestId } : {}),
+      ...(input.boundaryCorrelationId
+        ? { boundary_correlation_id: input.boundaryCorrelationId }
+        : {})
     });
   }
 

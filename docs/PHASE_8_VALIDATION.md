@@ -30,12 +30,12 @@ Exact Core Tool/API identifiers, endpoints, schemas, service identities, authent
 
 | Gate                                                               | Result |
 | ------------------------------------------------------------------ | ------ |
-| General iBeX Agent acceptance: 1 file / 10 tests                   | PASS   |
+| General iBeX Agent acceptance: 1 file / 11 tests                   | PASS   |
 | Maintenance Agent acceptance: 1 file / 7 tests                     | PASS   |
 | Asset Agent acceptance: 1 file / 6 tests                           | PASS   |
 | Warehouse Agent acceptance: 1 file / 6 tests                       | PASS   |
 | Integrated Pilot Agent acceptance: 1 file / 6 tests                | PASS   |
-| Gate P8 focused: 5 files / 35 tests                                | PASS   |
+| Gate P8 focused: 5 files / 36 tests                                | PASS   |
 | Phase 1 regression: 6 files / 25 tests                             | PASS   |
 | Phase 2 regression: 3 files / 16 tests                             | PASS   |
 | Phase 3 regression: 4 files / 25 tests                             | PASS   |
@@ -43,7 +43,7 @@ Exact Core Tool/API identifiers, endpoints, schemas, service identities, authent
 | Phase 5 regression: 4 files / 29 tests                             | PASS   |
 | Phase 6 regression: 4 files / 50 tests                             | PASS   |
 | Phase 7 regression: 3 files / 36 tests                             | PASS   |
-| Full suite: 35 files / 250 tests                                   | PASS   |
+| Full suite: 35 files / 251 tests                                   | PASS   |
 | Formatting, lint, typecheck, and build                             | PASS   |
 | Dependency audit: 0 known vulnerabilities                          | PASS   |
 | Secret, direct Core DB, provider coupling, and Phase 9 scope scans | PASS   |
@@ -51,6 +51,8 @@ Exact Core Tool/API identifiers, endpoints, schemas, service identities, authent
 ## Acceptance evidence
 
 - Trusted tenant, user, session, request, correlation, and trace bindings are validated against server-resolved Tool/RAG evidence.
+- A server-generated boundary trace, request, and correlation identity plus an OpenTelemetry span are established before caller data is parsed; malformed correlation values are never reflected into audit evidence or public errors.
+- The canonical Maintenance Agent identity is `maintenance-agent` across Pilot configuration, shared routing/RAG fixtures, evaluation tests, and audit evidence; `maintenance` remains only the domain name or an explicit negative spoof input.
 - Production agent definitions and intents remain disabled while authorization mappings are unapproved; explicit deterministic capabilities exist only in test fixtures.
 - Per-intent permissions, entitlements, Tool capability classes, and RAG scopes fail closed on missing or widened requests.
 - RAG-backed responses require source, content, and citation-integrity evidence; Tool-backed evaluation responses require trusted deterministic Tool evidence.

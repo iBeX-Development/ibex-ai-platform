@@ -20,6 +20,11 @@ import {
 import { createTrustedRequestContext } from '../../packages/security/src/index.js';
 
 export const pilotValidationTime = new Date('2026-09-24T02:00:00.000Z');
+export const pilotBoundaryIdentity = Object.freeze({
+  trace_id: 'server-p8-trace-1',
+  request_id: 'server-p8-request-1',
+  correlation_id: 'server-p8-correlation-1'
+});
 
 export function pilotContext(overrides: Record<string, unknown> = {}) {
   return createTrustedRequestContext({
@@ -212,7 +217,11 @@ export class ControlledGrounding implements PilotAgentGroundingPort {
 
 export function createPilotHarness(
   profile: PilotAgentProfile,
-  options: { synthetic?: boolean; grounding?: PilotGroundingEvidence } = {}
+  options: {
+    synthetic?: boolean;
+    grounding?: PilotGroundingEvidence;
+    boundaryIdentity?: typeof pilotBoundaryIdentity;
+  } = {}
 ) {
   const selected = options.synthetic === false ? profile : syntheticProfile(profile);
   const grounding = new ControlledGrounding();
@@ -238,6 +247,7 @@ export function createPilotHarness(
     service: 'pilot-agent-test',
     environment: 'test',
     allowDeterministicTestAdapters: true,
+    boundaryIdentityFactory: () => options.boundaryIdentity ?? pilotBoundaryIdentity,
     promptHierarchy: {
       master_policy: {
         prompt_id: 'master-policy',
