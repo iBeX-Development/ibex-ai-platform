@@ -23,10 +23,17 @@ const envSchema = z
     IBEX_TOOL_SERVICE_BASE_URL: z.string().url().optional(),
     IBEX_AUDIT_ENDPOINT: z.string().url().optional(),
     IBEX_OTEL_EXPORTER_ENDPOINT: z.string().url().optional(),
+    IBEX_AI_PLATFORM_ENABLED: booleanString.default('false'),
     IBEX_FEATURE_AGENTS_ENABLED: booleanString.default('false'),
+    IBEX_GENERAL_AGENT_ENABLED: booleanString.default('false'),
+    IBEX_MAINTENANCE_AGENT_ENABLED: booleanString.default('false'),
+    IBEX_ASSET_AGENT_ENABLED: booleanString.default('false'),
+    IBEX_WAREHOUSE_AGENT_ENABLED: booleanString.default('false'),
     IBEX_FEATURE_RAG_ENABLED: booleanString.default('false'),
     IBEX_FEATURE_TOOLS_ENABLED: booleanString.default('false'),
-    IBEX_FEATURE_MODEL_GATEWAY_ENABLED: booleanString.default('false')
+    IBEX_ACTION_TOOLS_ENABLED: booleanString.default('false'),
+    IBEX_FEATURE_MODEL_GATEWAY_ENABLED: booleanString.default('false'),
+    IBEX_MODEL_FALLBACK_ENABLED: booleanString.default('false')
   })
   .superRefine((value, context) => {
     if (
@@ -81,10 +88,17 @@ function toConfig(env: z.infer<typeof envSchema>) {
     }),
     rateLimits: Object.freeze({ requestsPerMinute: env.IBEX_RATE_LIMIT_PER_MINUTE }),
     features: Object.freeze({
+      aiPlatform: env.IBEX_AI_PLATFORM_ENABLED,
       agents: env.IBEX_FEATURE_AGENTS_ENABLED,
+      generalAgent: env.IBEX_GENERAL_AGENT_ENABLED,
+      maintenanceAgent: env.IBEX_MAINTENANCE_AGENT_ENABLED,
+      assetAgent: env.IBEX_ASSET_AGENT_ENABLED,
+      warehouseAgent: env.IBEX_WAREHOUSE_AGENT_ENABLED,
       rag: env.IBEX_FEATURE_RAG_ENABLED,
       tools: env.IBEX_FEATURE_TOOLS_ENABLED,
-      modelGateway: env.IBEX_FEATURE_MODEL_GATEWAY_ENABLED
+      actionTools: env.IBEX_ACTION_TOOLS_ENABLED,
+      modelGateway: env.IBEX_FEATURE_MODEL_GATEWAY_ENABLED,
+      modelFallback: env.IBEX_MODEL_FALLBACK_ENABLED
     })
   });
 }

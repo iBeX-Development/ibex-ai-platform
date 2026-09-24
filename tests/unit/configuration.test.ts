@@ -12,4 +12,19 @@ describe('configuration', () => {
   it('requires external secrets in production', () => {
     expect(() => loadConfig({ ...validTestEnvironment, IBEX_ENVIRONMENT: 'production' })).toThrow();
   });
+  it('keeps every rollout and rollback feature disabled by default', () => {
+    expect(loadConfig(validTestEnvironment).features).toEqual({
+      aiPlatform: false,
+      agents: false,
+      generalAgent: false,
+      maintenanceAgent: false,
+      assetAgent: false,
+      warehouseAgent: false,
+      rag: false,
+      tools: false,
+      actionTools: false,
+      modelGateway: false,
+      modelFallback: false
+    });
+  });
 });

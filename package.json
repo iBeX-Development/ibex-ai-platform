@@ -20,6 +20,7 @@
     "test:unit": "vitest run tests/unit",
     "test:contract": "vitest run tests/contract",
     "test:security": "vitest run tests/security tests/tenant",
+    "test:phase10": "vitest run tests/evaluation tests/phase8 tests/security tests/tenant",
     "validate": "corepack pnpm format:check && corepack pnpm lint && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build"
   },
   "dependencies": {

@@ -1,10 +1,6 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import {
-  generalAgentProfile,
-  generalEvaluationDataset,
-  generalPrompt
-} from '../../agents/general/src/index.js';
+import { generalAgentProfile, generalPrompt } from '../../agents/general/src/index.js';
 import {
   createPilotHarness,
   pilotBoundaryIdentity,
@@ -15,11 +11,11 @@ import {
 } from '../testing/pilot-agent-fixtures.js';
 
 describe('Phase 8 General iBeX Agent acceptance', () => {
-  it('keeps the approved prompt and evaluation dataset versioned', () => {
+  it('keeps the approved prompt and evaluation dataset reference versioned', () => {
     expect(generalPrompt.content_hash).toBe(
       `sha256:${createHash('sha256').update(generalPrompt.content).digest('hex')}`
     );
-    expect(new Set(generalEvaluationDataset.map((item) => item.category)).size).toBe(10);
+    expect(generalAgentProfile.versions.evaluation_dataset).toBe('1.0.0');
   });
   it('returns only server-grounded, integrity-verified RAG knowledge', async () => {
     const evidence = ragGrounding(generalAgentProfile, 'ibex-handbook');

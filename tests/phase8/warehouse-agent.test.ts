@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  warehouseAgentProfile,
-  warehouseEvaluationDataset,
-  warehousePrompt
-} from '../../agents/warehouse/src/index.js';
+import { warehouseAgentProfile, warehousePrompt } from '../../agents/warehouse/src/index.js';
 import {
   createPilotHarness,
   pilotContext,
@@ -16,7 +12,7 @@ import {
 describe('Phase 8 Warehouse Agent acceptance', () => {
   it('keeps versioned scope and evaluation coverage', () => {
     expect(warehousePrompt.prompt_version).toBe('1.0.0');
-    expect(new Set(warehouseEvaluationDataset.map((item) => item.category)).size).toBe(10);
+    expect(warehouseAgentProfile.versions.evaluation_dataset).toBe('1.0.0');
   });
   it('uses verified warehouse procedure evidence', async () => {
     const { runtime } = createPilotHarness(warehouseAgentProfile, {

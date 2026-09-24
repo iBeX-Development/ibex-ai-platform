@@ -239,25 +239,3 @@ export const pilotAgentResponseSchema = z
   .strict()
   .readonly();
 export type PilotAgentResponse = Readonly<z.infer<typeof pilotAgentResponseSchema>>;
-
-export const evaluationCaseSchema = z
-  .object({
-    case_id: nonEmpty,
-    category: z.enum([
-      'scope',
-      'routing',
-      'permission',
-      'tenant',
-      'rag',
-      'tool',
-      'citation',
-      'abstention',
-      'prompt_injection',
-      'action_boundary'
-    ]),
-    intent: nonEmpty,
-    expected: z.enum(['allow', 'route', 'abstain', 'deny'])
-  })
-  .strict()
-  .readonly();
-export type EvaluationCase = Readonly<z.infer<typeof evaluationCaseSchema>>;
