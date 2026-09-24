@@ -212,12 +212,73 @@ export interface UntrustedToolRuntimeBoundaryAuditEvent extends ToolRuntimeAudit
 export type ToolRuntimeAuditEvent =
   TrustedToolRuntimeAuditEvent | UntrustedToolRuntimeBoundaryAuditEvent;
 
+export type RagRuntimeAuditStage =
+  | 'boundary_context'
+  | 'boundary_trace'
+  | 'request_validation'
+  | 'authorization'
+  | 'governance'
+  | 'integrity'
+  | 'audit'
+  | 'embedding'
+  | 'security_filter'
+  | 'semantic_search'
+  | 'result_validation'
+  | 'indexing';
+
+interface RagRuntimeAuditEventBase {
+  readonly schema_version: '1.0';
+  readonly event_type: 'rag_runtime.operation.outcome';
+  readonly timestamp: string;
+  readonly trace_id: string;
+  readonly service: string;
+  readonly environment: string;
+  readonly operation: 'ingest' | 'retrieve';
+  readonly outcome: 'started' | 'succeeded' | 'rejected' | 'error';
+  readonly stage: RagRuntimeAuditStage;
+  readonly agent_id?: string;
+  readonly domain?: string;
+  readonly knowledge_scopes?: readonly string[];
+  readonly query_hash?: string;
+  readonly document_ids?: readonly string[];
+  readonly document_versions?: readonly string[];
+  readonly chunk_ids?: readonly string[];
+  readonly embedding_model?: string;
+  readonly embedding_model_version?: string;
+  readonly retrieval_version?: string;
+  readonly result_count?: number;
+  readonly latency_ms?: number;
+  readonly error_code?: string;
+}
+
+export interface TrustedRagRuntimeAuditEvent extends RagRuntimeAuditEventBase {
+  readonly context_status: 'trusted';
+  readonly request_id: string;
+  readonly correlation_id: string;
+  readonly tenant_id: string;
+  readonly user_id: string;
+  readonly role: string;
+  readonly session_id: string;
+  readonly permission_refs: readonly string[];
+  readonly entitlement_refs: readonly string[];
+}
+
+export interface UntrustedRagRuntimeBoundaryAuditEvent extends RagRuntimeAuditEventBase {
+  readonly context_status: 'unavailable';
+  readonly outcome: 'rejected' | 'error';
+  readonly stage: 'boundary_context' | 'boundary_trace';
+}
+
+export type RagRuntimeAuditEvent =
+  TrustedRagRuntimeAuditEvent | UntrustedRagRuntimeBoundaryAuditEvent;
+
 export type AuditRecord =
   | AuditEvent
   | GatewaySecurityAuditEvent
   | OrchestratorAuditEvent
   | ModelGatewayAuditEvent
-  | ToolRuntimeAuditEvent;
+  | ToolRuntimeAuditEvent
+  | RagRuntimeAuditEvent;
 
 export interface AuditEventSink {
   emit(event: AuditRecord): Promise<void>;
@@ -463,6 +524,89 @@ export function createToolRuntimeAuditEvent(input: {
     }
     if (input.stage !== 'boundary_context' && input.stage !== 'boundary_trace') {
       throw new Error('Trusted context is required for Tool Runtime audit events');
+    }
+    return Object.freeze({
+      ...base,
+      outcome: input.outcome,
+      stage: input.stage,
+      context_status: 'unavailable'
+    });
+  }
+
+  return Object.freeze({
+    ...base,
+    context_status: 'trusted',
+    request_id: input.context.request_id,
+    correlation_id: input.context.correlation_id,
+    tenant_id: input.context.tenant_id,
+    user_id: input.context.user_id,
+    role: input.context.role,
+    session_id: input.context.session_id,
+    permission_refs: Object.freeze([...input.context.permissions]),
+    entitlement_refs: Object.freeze([...input.context.entitlements])
+  });
+}
+
+export function createRagRuntimeAuditEvent(input: {
+  readonly traceId: string;
+  readonly service: string;
+  readonly environment: string;
+  readonly context?: TrustedRequestContext;
+  readonly operation: RagRuntimeAuditEvent['operation'];
+  readonly outcome: RagRuntimeAuditEvent['outcome'];
+  readonly stage: RagRuntimeAuditStage;
+  readonly timestamp: Date;
+  readonly agentId?: string;
+  readonly domain?: string;
+  readonly knowledgeScopes?: readonly string[];
+  readonly queryHash?: string;
+  readonly documentIds?: readonly string[];
+  readonly documentVersions?: readonly string[];
+  readonly chunkIds?: readonly string[];
+  readonly embeddingModel?: string;
+  readonly embeddingModelVersion?: string;
+  readonly retrievalVersion?: string;
+  readonly resultCount?: number;
+  readonly latencyMs?: number;
+  readonly errorCode?: string;
+}): RagRuntimeAuditEvent {
+  const base = {
+    schema_version: '1.0',
+    event_type: 'rag_runtime.operation.outcome',
+    timestamp: input.timestamp.toISOString(),
+    trace_id: input.traceId,
+    service: input.service,
+    environment: input.environment,
+    operation: input.operation,
+    outcome: input.outcome,
+    stage: input.stage,
+    ...(input.agentId ? { agent_id: input.agentId } : {}),
+    ...(input.domain ? { domain: input.domain } : {}),
+    ...(input.knowledgeScopes
+      ? { knowledge_scopes: Object.freeze([...input.knowledgeScopes]) }
+      : {}),
+    ...(input.queryHash ? { query_hash: input.queryHash } : {}),
+    ...(input.documentIds ? { document_ids: Object.freeze([...input.documentIds]) } : {}),
+    ...(input.documentVersions
+      ? { document_versions: Object.freeze([...input.documentVersions]) }
+      : {}),
+    ...(input.chunkIds ? { chunk_ids: Object.freeze([...input.chunkIds]) } : {}),
+    ...(input.embeddingModel ? { embedding_model: input.embeddingModel } : {}),
+    ...(input.embeddingModelVersion
+      ? { embedding_model_version: input.embeddingModelVersion }
+      : {}),
+    ...(input.retrievalVersion ? { retrieval_version: input.retrievalVersion } : {}),
+    ...(input.resultCount !== undefined ? { result_count: input.resultCount } : {}),
+    ...(input.latencyMs !== undefined ? { latency_ms: input.latencyMs } : {}),
+    ...(input.errorCode ? { error_code: input.errorCode } : {})
+  } as const;
+
+  if (!input.context) {
+    if (input.outcome !== 'rejected' && input.outcome !== 'error') {
+      throw new Error('Trusted context is required for RAG Runtime audit events');
+    }
+    if (input.stage !== 'boundary_context' && input.stage !== 'boundary_trace') {
+      throw new Error('Trusted context is required for RAG Runtime audit events');
     }
     return Object.freeze({
       ...base,
