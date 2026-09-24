@@ -39,6 +39,14 @@ Read Tools may use bounded retries. Action Tools produce approval-required propo
 perform authoritative writes. No live Core adapter is enabled until its endpoint, service
 identity, authentication, resource-scope, and versioned schema contracts are explicitly approved.
 
+Phase 6 restricts RAG to approved document knowledge. Ingestion requires trusted context,
+server authorization, an authoritative governance decision, tenant binding, active approval state,
+and matching content-integrity evidence. Retrieval applies tenant, permission, entitlement, role,
+approval, lifecycle, access-scope, agent, and domain filters before semantic ranking, then verifies
+the returned chunks again. Retrieved text remains untrusted data with no authorization or
+instruction authority. Live Core transactions, secrets, unrestricted dumps, and revoked or
+unapproved documents are excluded from the knowledge store.
+
 ## Data and actions
 
 - Do not connect directly to the Core iBeX database.
