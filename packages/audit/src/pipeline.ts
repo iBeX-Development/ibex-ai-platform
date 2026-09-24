@@ -311,6 +311,15 @@ const invalidToolInvocationStages = new Set([
   'request_validation',
   'input_schema'
 ]);
+const invalidApprovalInvocationStages = new Set([
+  'boundary_context',
+  'boundary_trace',
+  'request_validation',
+  'proposal_validation',
+  'decision',
+  'integrity',
+  'execution_revalidation'
+]);
 const providerFailureCodes = new Set([
   'PROVIDER_TIMEOUT',
   'PROVIDER_ERROR',
@@ -336,10 +345,17 @@ function categoryFor(event: AuditRecord): AuditCategory {
     providerFailureCodes.has(errorCode) &&
     typeof source.stage === 'string' &&
     providerFailureStages.has(source.stage);
+  const invalidApprovalInvocation =
+    event.event_type === 'approval_runtime.lifecycle.outcome' &&
+    errorCode !== undefined &&
+    invalidToolInvocationCodes.has(errorCode) &&
+    typeof source.stage === 'string' &&
+    invalidApprovalInvocationStages.has(source.stage);
   if (
     event.event_type.includes('security') ||
     (errorCode !== undefined && securityCodes.has(errorCode)) ||
     invalidToolInvocation ||
+    invalidApprovalInvocation ||
     providerFailure
   ) {
     return 'security';
@@ -482,6 +498,7 @@ const boundedEventTypes = new Set([
   'model_gateway.invocation.outcome',
   'tool_runtime.execution.outcome',
   'rag_runtime.operation.outcome',
+  'approval_runtime.lifecycle.outcome',
   'gateway.feedback.outcome',
   'evaluation.outcome'
 ]);
@@ -510,7 +527,13 @@ function metric(
         'started',
         'succeeded',
         'proposed',
+        'pending',
+        'approved',
         'rejected',
+        'cancelled',
+        'expired',
+        'executing',
+        'executed',
         'error'
       ].includes(event.outcome ?? '')
         ? (event.outcome ?? 'unknown')

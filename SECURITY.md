@@ -55,6 +55,20 @@ produce sanitized critical health/security evidence, and leave the pipeline degr
 explicit bounded label allowlists and never use tenant, user, request, correlation, session, or
 trace identifiers as labels.
 
+Phase 8 keeps every Pilot Agent disabled until its authorization mappings are approved. Agent
+outputs require server-side verified Tool/RAG evidence, strict Tool and RAG allowlists, safe
+abstention, and canonical Phase 7 audit evidence. Live Core capabilities remain disabled where
+their exact contracts are unapproved.
+
+Phase 9 separates AI proposals from authoritative human decisions. Callers cannot submit approval
+decisions or approver identity through the runtime contract. Decisions come from a server-side
+Core/workflow authority, and every protected execution revalidates the current authoritative
+decision, tenant, permission, entitlement, ownership, target state, approval validity, proposal
+integrity, and idempotency. Rejected, cancelled, revoked, expired, unavailable, or conflicting
+authority state fails closed. Action execution is single-attempt. Live approval, target-state, and
+execution adapters remain disabled until their contracts, service identities, authentication,
+roles, and workflow rules are approved.
+
 ## Data and actions
 
 - Do not connect directly to the Core iBeX database.

@@ -50,6 +50,8 @@ importers:
 
   apps/worker: {}
 
+  packages/approval-runtime: {}
+
   packages/audit: {}
 
   packages/configuration: {}
