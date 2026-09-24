@@ -325,13 +325,85 @@ export interface UntrustedRagRuntimeBoundaryAuditEvent extends RagRuntimeAuditEv
 export type RagRuntimeAuditEvent =
   TrustedRagRuntimeAuditEvent | UntrustedRagRuntimeBoundaryAuditEvent;
 
+export type ApprovalRuntimeAuditStage =
+  | 'boundary_context'
+  | 'boundary_trace'
+  | 'request_validation'
+  | 'proposal_validation'
+  | 'authorization'
+  | 'tenant_ownership'
+  | 'target_state'
+  | 'decision'
+  | 'integrity'
+  | 'execution_revalidation'
+  | 'execution'
+  | 'audit';
+
+interface ApprovalRuntimeAuditEventBase {
+  readonly schema_version: '1.0';
+  readonly event_type: 'approval_runtime.lifecycle.outcome';
+  readonly timestamp: string;
+  readonly trace_id: string;
+  readonly service: string;
+  readonly environment: string;
+  readonly operation: 'propose' | 'synchronize_decision' | 'execute';
+  readonly outcome:
+    'pending' | 'approved' | 'rejected' | 'expired' | 'executing' | 'executed' | 'error';
+  readonly stage: ApprovalRuntimeAuditStage;
+  readonly approval_id?: string;
+  readonly proposal_id?: string;
+  readonly action_id?: string;
+  readonly action_type?: string;
+  readonly target_type?: string;
+  readonly target_reference_hash?: string;
+  readonly target_object?: Readonly<{ type: string; reference_hash: string }>;
+  readonly proposed_change_hash?: string;
+  readonly proposal_integrity_hash?: string;
+  readonly approval_policy?: string;
+  readonly approval_state?:
+    'required_not_executed' | 'approved' | 'rejected' | 'expired' | 'executing' | 'executed';
+  readonly approver_user_id?: string;
+  readonly approver_role?: string;
+  readonly decision?: 'approve' | 'reject';
+  readonly requested_at?: string;
+  readonly decision_at?: string;
+  readonly execution_status?: 'not_started' | 'in_progress' | 'succeeded' | 'failed';
+  readonly executed?: boolean;
+  readonly idempotency_key_hash?: string;
+  readonly error_code?: string;
+}
+
+export interface TrustedApprovalRuntimeAuditEvent extends ApprovalRuntimeAuditEventBase {
+  readonly context_status: 'trusted';
+  readonly request_id: string;
+  readonly correlation_id: string;
+  readonly tenant_id: string;
+  readonly user_id: string;
+  readonly role: string;
+  readonly session_id: string;
+  readonly permission_refs: readonly string[];
+  readonly entitlement_refs: readonly string[];
+}
+
+export interface UntrustedApprovalRuntimeBoundaryAuditEvent extends ApprovalRuntimeAuditEventBase {
+  readonly context_status: 'unavailable';
+  readonly outcome: 'error';
+  readonly stage: 'boundary_context' | 'boundary_trace' | 'request_validation';
+  readonly boundary_request_id: string;
+  readonly boundary_correlation_id: string;
+}
+
+export type ApprovalRuntimeAuditEvent =
+  TrustedApprovalRuntimeAuditEvent | UntrustedApprovalRuntimeBoundaryAuditEvent;
+
 export type AuditRecord =
   | AuditEvent
   | GatewaySecurityAuditEvent
   | OrchestratorAuditEvent
   | ModelGatewayAuditEvent
   | ToolRuntimeAuditEvent
-  | RagRuntimeAuditEvent;
+  | RagRuntimeAuditEvent
+  | ApprovalRuntimeAuditEvent;
 
 export interface AuditEventSink {
   emit(event: AuditRecord): Promise<void>;
@@ -642,6 +714,120 @@ export function createToolRuntimeAuditEvent(input: {
       outcome: input.outcome,
       stage: input.stage,
       context_status: 'unavailable'
+    });
+  }
+
+  return Object.freeze({
+    ...base,
+    context_status: 'trusted',
+    request_id: input.context.request_id,
+    correlation_id: input.context.correlation_id,
+    tenant_id: input.context.tenant_id,
+    user_id: input.context.user_id,
+    role: input.context.role,
+    session_id: input.context.session_id,
+    permission_refs: Object.freeze([...input.context.permissions]),
+    entitlement_refs: Object.freeze([...input.context.entitlements])
+  });
+}
+
+export function createApprovalRuntimeAuditEvent(input: {
+  readonly traceId: string;
+  readonly service: string;
+  readonly environment: string;
+  readonly context?: TrustedRequestContext;
+  readonly operation: ApprovalRuntimeAuditEvent['operation'];
+  readonly outcome: ApprovalRuntimeAuditEvent['outcome'];
+  readonly stage: ApprovalRuntimeAuditStage;
+  readonly timestamp: Date;
+  readonly boundaryRequestId?: string;
+  readonly boundaryCorrelationId?: string;
+  readonly approvalId?: string;
+  readonly proposalId?: string;
+  readonly actionId?: string;
+  readonly actionType?: string;
+  readonly targetType?: string;
+  readonly targetReferenceHash?: string;
+  readonly proposedChangeHash?: string;
+  readonly proposalIntegrityHash?: string;
+  readonly approvalPolicy?: string;
+  readonly approverUserId?: string;
+  readonly approverRole?: string;
+  readonly decision?: 'approve' | 'reject';
+  readonly requestedAt?: string;
+  readonly decisionAt?: string;
+  readonly executionStatus?: 'not_started' | 'in_progress' | 'succeeded' | 'failed';
+  readonly executed?: boolean;
+  readonly idempotencyKeyHash?: string;
+  readonly errorCode?: string;
+}): ApprovalRuntimeAuditEvent {
+  const approvalState: ApprovalRuntimeAuditEventBase['approval_state'] =
+    input.outcome === 'pending'
+      ? 'required_not_executed'
+      : input.outcome === 'approved' ||
+          input.outcome === 'rejected' ||
+          input.outcome === 'expired' ||
+          input.outcome === 'executing' ||
+          input.outcome === 'executed'
+        ? input.outcome
+        : undefined;
+  const base = {
+    schema_version: '1.0',
+    event_type: 'approval_runtime.lifecycle.outcome',
+    timestamp: input.timestamp.toISOString(),
+    trace_id: input.traceId,
+    service: input.service,
+    environment: input.environment,
+    operation: input.operation,
+    outcome: input.outcome,
+    stage: input.stage,
+    ...(input.approvalId ? { approval_id: input.approvalId } : {}),
+    ...(input.proposalId ? { proposal_id: input.proposalId } : {}),
+    ...(input.actionId ? { action_id: input.actionId } : {}),
+    ...(input.actionType ? { action_type: input.actionType } : {}),
+    ...(input.targetType ? { target_type: input.targetType } : {}),
+    ...(input.targetReferenceHash ? { target_reference_hash: input.targetReferenceHash } : {}),
+    ...(input.targetType && input.targetReferenceHash
+      ? {
+          target_object: Object.freeze({
+            type: input.targetType,
+            reference_hash: input.targetReferenceHash
+          })
+        }
+      : {}),
+    ...(input.proposedChangeHash ? { proposed_change_hash: input.proposedChangeHash } : {}),
+    ...(input.proposalIntegrityHash
+      ? { proposal_integrity_hash: input.proposalIntegrityHash }
+      : {}),
+    ...(input.approvalPolicy ? { approval_policy: input.approvalPolicy } : {}),
+    ...(approvalState ? { approval_state: approvalState } : {}),
+    ...(input.approverUserId ? { approver_user_id: input.approverUserId } : {}),
+    ...(input.approverRole ? { approver_role: input.approverRole } : {}),
+    ...(input.decision ? { decision: input.decision } : {}),
+    ...(input.requestedAt ? { requested_at: input.requestedAt } : {}),
+    ...(input.decisionAt ? { decision_at: input.decisionAt } : {}),
+    ...(input.executionStatus ? { execution_status: input.executionStatus } : {}),
+    ...(input.executed !== undefined ? { executed: input.executed } : {}),
+    ...(input.idempotencyKeyHash ? { idempotency_key_hash: input.idempotencyKeyHash } : {}),
+    ...(input.errorCode ? { error_code: input.errorCode } : {})
+  } as const;
+
+  if (!input.context) {
+    if (
+      input.outcome !== 'error' ||
+      !['boundary_context', 'boundary_trace', 'request_validation'].includes(input.stage) ||
+      !input.boundaryRequestId ||
+      !input.boundaryCorrelationId
+    ) {
+      throw new Error('Trusted context is required for approval audit events');
+    }
+    return Object.freeze({
+      ...base,
+      outcome: 'error',
+      stage: input.stage as 'boundary_context' | 'boundary_trace' | 'request_validation',
+      context_status: 'unavailable',
+      boundary_request_id: input.boundaryRequestId,
+      boundary_correlation_id: input.boundaryCorrelationId
     });
   }
 
