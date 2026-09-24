@@ -126,9 +126,13 @@ export const approvalDecisionEvidenceSchema = z
     proposal_id: nonEmpty,
     action_id: nonEmpty,
     tenant_id: nonEmpty,
-    decision: z.enum(['approve', 'reject']),
+    decision: z.enum(['approve', 'reject', 'cancel', 'revoke', 'expire']),
     approver_user_id: nonEmpty,
     approver_role: nonEmpty,
+    request_id: nonEmpty,
+    correlation_id: nonEmpty,
+    target: resourceReferenceSchema,
+    target_state_hash: evidenceHash,
     proposed_change_hash: evidenceHash,
     proposal_integrity_hash: evidenceHash,
     authorization_decision_id: nonEmpty,
@@ -162,6 +166,7 @@ export const approvalStatusSchema = z.enum([
   'pending',
   'approved',
   'rejected',
+  'cancelled',
   'expired',
   'executing',
   'executed',
@@ -201,7 +206,7 @@ export const approvalRecordSchema = z
     approver_role: nonEmpty.optional(),
     authorization_decision_id: nonEmpty.optional(),
     decision_at: z.string().datetime().optional(),
-    decision: z.enum(['approve', 'reject']).optional(),
+    decision: z.enum(['approve', 'reject', 'cancel', 'revoke', 'expire']).optional(),
     decision_evidence_hash: evidenceHash.optional(),
     idempotency_key: nonEmpty.optional(),
     execution_receipt: actionExecutionReceiptSchema.optional()
@@ -210,7 +215,7 @@ export const approvalRecordSchema = z
   .readonly()
   .superRefine((value, context) => {
     if (
-      ['approved', 'rejected', 'executing', 'executed', 'execution_failed'].includes(
+      ['approved', 'rejected', 'cancelled', 'executing', 'executed', 'execution_failed'].includes(
         value.status
       ) &&
       (!value.approver_user_id ||
@@ -231,6 +236,17 @@ export const approvalRecordSchema = z
         code: z.ZodIssueCode.custom,
         path: ['decision'],
         message: 'Rejected state requires a reject decision'
+      });
+    }
+    if (
+      value.status === 'cancelled' &&
+      value.decision !== 'cancel' &&
+      value.decision !== 'revoke'
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['decision'],
+        message: 'Cancelled state requires a cancel or revoke decision'
       });
     }
     if (
@@ -291,7 +307,7 @@ export const approvalDecisionResponseSchema = z
     request_id: nonEmpty,
     correlation_id: nonEmpty,
     trace_id: nonEmpty,
-    status: z.enum(['approved', 'rejected', 'expired']),
+    status: z.enum(['approved', 'rejected', 'cancelled', 'expired']),
     decision_at: z.string().datetime().optional()
   })
   .strict()

@@ -334,6 +334,7 @@ export type ApprovalRuntimeAuditStage =
   | 'tenant_ownership'
   | 'target_state'
   | 'decision'
+  | 'authoritative_revalidation'
   | 'integrity'
   | 'execution_revalidation'
   | 'execution'
@@ -348,7 +349,14 @@ interface ApprovalRuntimeAuditEventBase {
   readonly environment: string;
   readonly operation: 'propose' | 'synchronize_decision' | 'execute';
   readonly outcome:
-    'pending' | 'approved' | 'rejected' | 'expired' | 'executing' | 'executed' | 'error';
+    | 'pending'
+    | 'approved'
+    | 'rejected'
+    | 'cancelled'
+    | 'expired'
+    | 'executing'
+    | 'executed'
+    | 'error';
   readonly stage: ApprovalRuntimeAuditStage;
   readonly approval_id?: string;
   readonly proposal_id?: string;
@@ -361,10 +369,16 @@ interface ApprovalRuntimeAuditEventBase {
   readonly proposal_integrity_hash?: string;
   readonly approval_policy?: string;
   readonly approval_state?:
-    'required_not_executed' | 'approved' | 'rejected' | 'expired' | 'executing' | 'executed';
+    | 'required_not_executed'
+    | 'approved'
+    | 'rejected'
+    | 'cancelled'
+    | 'expired'
+    | 'executing'
+    | 'executed';
   readonly approver_user_id?: string;
   readonly approver_role?: string;
-  readonly decision?: 'approve' | 'reject';
+  readonly decision?: 'approve' | 'reject' | 'cancel' | 'revoke' | 'expire';
   readonly requested_at?: string;
   readonly decision_at?: string;
   readonly execution_status?: 'not_started' | 'in_progress' | 'succeeded' | 'failed';
@@ -751,9 +765,17 @@ export function createApprovalRuntimeAuditEvent(input: {
   readonly proposedChangeHash?: string;
   readonly proposalIntegrityHash?: string;
   readonly approvalPolicy?: string;
+  readonly approvalState?:
+    | 'required_not_executed'
+    | 'approved'
+    | 'rejected'
+    | 'cancelled'
+    | 'expired'
+    | 'executing'
+    | 'executed';
   readonly approverUserId?: string;
   readonly approverRole?: string;
-  readonly decision?: 'approve' | 'reject';
+  readonly decision?: 'approve' | 'reject' | 'cancel' | 'revoke' | 'expire';
   readonly requestedAt?: string;
   readonly decisionAt?: string;
   readonly executionStatus?: 'not_started' | 'in_progress' | 'succeeded' | 'failed';
@@ -762,15 +784,17 @@ export function createApprovalRuntimeAuditEvent(input: {
   readonly errorCode?: string;
 }): ApprovalRuntimeAuditEvent {
   const approvalState: ApprovalRuntimeAuditEventBase['approval_state'] =
-    input.outcome === 'pending'
+    input.approvalState ??
+    (input.outcome === 'pending'
       ? 'required_not_executed'
       : input.outcome === 'approved' ||
           input.outcome === 'rejected' ||
+          input.outcome === 'cancelled' ||
           input.outcome === 'expired' ||
           input.outcome === 'executing' ||
           input.outcome === 'executed'
         ? input.outcome
-        : undefined;
+        : undefined);
   const base = {
     schema_version: '1.0',
     event_type: 'approval_runtime.lifecycle.outcome',

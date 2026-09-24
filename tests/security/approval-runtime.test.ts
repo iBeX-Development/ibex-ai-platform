@@ -94,6 +94,10 @@ describe('Phase 9 critical approval enforcement', () => {
     ['tenant_id', 'tenant-b'],
     ['approver_user_id', 'impersonated-user'],
     ['approver_role', 'impersonated-role'],
+    ['request_id', 'conflicting-request'],
+    ['correlation_id', 'conflicting-correlation'],
+    ['target', { type: 'asset', id: 'asset-b' }],
+    ['target_state_hash', `sha256:${'d'.repeat(64)}`],
     ['proposed_change_hash', `sha256:${'f'.repeat(64)}`],
     ['proposal_integrity_hash', `sha256:${'e'.repeat(64)}`]
   ])('rejects spoofed authoritative decision field %s', async (field, value) => {

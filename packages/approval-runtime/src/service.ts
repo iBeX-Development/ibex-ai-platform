@@ -30,6 +30,7 @@ import {
   approvalReferenceRequestSchema,
   targetStateEvidenceSchema,
   type ApprovalActionDefinition,
+  type ApprovalDecisionEvidence,
   type ApprovalDecisionResponse,
   type ApprovalExecutionResponse,
   type ApprovalProposalRequest,
@@ -126,11 +127,42 @@ function errorCode(error: unknown): ErrorCode {
   return error instanceof PlatformError ? error.code : 'INTERNAL_ERROR';
 }
 
-function statusForDecision(recordValue: ApprovalRecord): 'approved' | 'rejected' | 'expired' {
-  if (recordValue.status === 'approved' || recordValue.status === 'rejected') {
+function statusForDecision(
+  recordValue: ApprovalRecord
+): 'approved' | 'rejected' | 'cancelled' | 'expired' {
+  if (
+    recordValue.status === 'approved' ||
+    recordValue.status === 'rejected' ||
+    recordValue.status === 'cancelled'
+  ) {
     return recordValue.status;
   }
   return 'expired';
+}
+
+function statusForAuthoritativeDecision(
+  decision: ApprovalDecisionEvidence['decision']
+): 'approved' | 'rejected' | 'cancelled' | 'expired' {
+  if (decision === 'approve') return 'approved';
+  if (decision === 'reject') return 'rejected';
+  if (decision === 'expire') return 'expired';
+  return 'cancelled';
+}
+
+function auditApprovalState(
+  recordValue: ApprovalRecord
+):
+  | 'required_not_executed'
+  | 'approved'
+  | 'rejected'
+  | 'cancelled'
+  | 'expired'
+  | 'executing'
+  | 'executed'
+  | undefined {
+  if (recordValue.status === 'pending') return 'required_not_executed';
+  if (recordValue.status === 'execution_failed') return undefined;
+  return recordValue.status;
 }
 
 export class ApprovalRuntime {
@@ -337,10 +369,10 @@ export class ApprovalRuntime {
           established.context,
           approval.target
         );
-        if (approval.status !== 'pending') {
-          if (['approved', 'rejected', 'expired'].includes(approval.status)) {
-            return this.decisionResponse(approval, established.context, established.traceId);
-          }
+        if (['rejected', 'cancelled', 'expired'].includes(approval.status)) {
+          return this.decisionResponse(approval, established.context, established.traceId);
+        }
+        if (approval.status !== 'pending' && approval.status !== 'approved') {
           throw new PlatformError('CONFLICT', 'Approval is not pending', 409);
         }
         if (new Date(approval.expires_at).getTime() <= now.getTime()) {
@@ -357,31 +389,32 @@ export class ApprovalRuntime {
           });
           return this.decisionResponse(expired, established.context, established.traceId);
         }
-        stage = 'decision';
-        this.assertDecisionSourceAllowed();
-        const decision = approvalDecisionEvidenceSchema.parse(
-          await this.dependencies.decisionSource.getDecision({
-            context: established.context,
-            approval
-          })
+        stage = approval.status === 'approved' ? 'authoritative_revalidation' : 'decision';
+        const decision = await this.readAuthoritativeDecision(
+          approval,
+          established.context,
+          now,
+          approval.status === 'pending'
         );
         if (
-          decision.approval_id !== approval.approval_id ||
-          decision.proposal_id !== approval.proposal_id ||
-          decision.action_id !== approval.action_id ||
-          decision.tenant_id !== approval.tenant_id ||
-          decision.approver_user_id !== established.context.user_id ||
-          decision.approver_role !== established.context.role ||
-          decision.proposed_change_hash !== approval.proposed_change_hash ||
-          decision.proposal_integrity_hash !== approval.proposal_integrity_hash ||
-          new Date(decision.decision_at).getTime() < new Date(approval.requested_at).getTime() ||
-          new Date(decision.decision_at).getTime() > now.getTime() ||
-          new Date(decision.decision_at).getTime() > new Date(approval.expires_at).getTime()
+          approval.status === 'approved' &&
+          decision.decision === 'approve' &&
+          approvalEvidenceHash(decision) === approval.decision_evidence_hash
         ) {
-          throw new PlatformError('POLICY_DENIED', 'Approval evidence is invalid', 403);
+          await this.emitAudit({
+            operation: 'synchronize_decision',
+            outcome: 'approved',
+            stage: 'authoritative_revalidation',
+            context: established.context,
+            traceId: established.traceId,
+            now,
+            approval,
+            executionStatus: 'not_started'
+          });
+          return this.decisionResponse(approval, established.context, established.traceId);
         }
         const decided = await this.transition(approval, {
-          status: decision.decision === 'approve' ? 'approved' : 'rejected',
+          status: statusForAuthoritativeDecision(decision.decision),
           approver_user_id: decision.approver_user_id,
           approver_role: decision.approver_role,
           authorization_decision_id: decision.authorization_decision_id,
@@ -391,8 +424,8 @@ export class ApprovalRuntime {
         });
         await this.emitAudit({
           operation: 'synchronize_decision',
-          outcome: decided.status === 'approved' ? 'approved' : 'rejected',
-          stage: 'decision',
+          outcome: statusForDecision(decided),
+          stage,
           context: established.context,
           traceId: established.traceId,
           now,
@@ -453,6 +486,7 @@ export class ApprovalRuntime {
           established.context,
           approval.target
         );
+        stage = 'execution_revalidation';
         if (
           approval.status === 'executed' &&
           approval.execution_receipt &&
@@ -479,6 +513,48 @@ export class ApprovalRuntime {
         if (new Date(approval.expires_at).getTime() <= now.getTime()) {
           throw new PlatformError('CONFLICT', 'Approval has expired', 409);
         }
+        stage = 'authoritative_revalidation';
+        const authoritativeDecision = await this.readAuthoritativeDecision(
+          approval,
+          established.context,
+          now,
+          false
+        );
+        if (authoritativeDecision.decision !== 'approve') {
+          approval = await this.transition(approval, {
+            status: statusForAuthoritativeDecision(authoritativeDecision.decision),
+            approver_user_id: authoritativeDecision.approver_user_id,
+            approver_role: authoritativeDecision.approver_role,
+            authorization_decision_id: authoritativeDecision.authorization_decision_id,
+            decision_at: authoritativeDecision.decision_at,
+            decision: authoritativeDecision.decision,
+            decision_evidence_hash: approvalEvidenceHash(authoritativeDecision)
+          });
+          await this.emitAudit({
+            operation: 'execute',
+            outcome: statusForDecision(approval),
+            stage: 'authoritative_revalidation',
+            context: established.context,
+            traceId: established.traceId,
+            now,
+            approval,
+            executionStatus: 'not_started'
+          });
+          throw new PlatformError('PERMISSION_DENIED', 'Approved execution is unavailable', 403);
+        }
+        if (approvalEvidenceHash(authoritativeDecision) !== approval.decision_evidence_hash) {
+          throw new PlatformError('POLICY_DENIED', 'Approval evidence is invalid', 403);
+        }
+        await this.emitAudit({
+          operation: 'execute',
+          outcome: 'approved',
+          stage: 'authoritative_revalidation',
+          context: established.context,
+          traceId: established.traceId,
+          now,
+          approval,
+          executionStatus: 'not_started'
+        });
         stage = 'target_state';
         this.assertTargetStateResolverAllowed();
         const targetState = targetStateEvidenceSchema.parse(
@@ -677,6 +753,9 @@ export class ApprovalRuntime {
     errorCode?: ErrorCode;
   }): Promise<void> {
     const approval = input.approval;
+    const approvalState = approval ? auditApprovalState(approval) : undefined;
+    const executionStatus =
+      input.executionStatus ?? (input.operation === 'execute' ? 'not_started' : undefined);
     try {
       await this.dependencies.audit.emit(
         createApprovalRuntimeAuditEvent({
@@ -699,6 +778,7 @@ export class ApprovalRuntime {
                 proposedChangeHash: approval.proposed_change_hash,
                 proposalIntegrityHash: approval.proposal_integrity_hash,
                 approvalPolicy: approval.approval_policy,
+                ...(approvalState ? { approvalState } : {}),
                 requestedAt: approval.requested_at,
                 ...(approval.approver_user_id ? { approverUserId: approval.approver_user_id } : {}),
                 ...(approval.approver_role ? { approverRole: approval.approver_role } : {}),
@@ -709,8 +789,8 @@ export class ApprovalRuntime {
                   : {})
               }
             : {}),
-          ...(input.executionStatus ? { executionStatus: input.executionStatus } : {}),
-          ...(input.executionStatus ? { executed: input.executionStatus === 'succeeded' } : {}),
+          ...(executionStatus ? { executionStatus } : {}),
+          ...(executionStatus ? { executed: executionStatus === 'succeeded' } : {}),
           ...(input.errorCode ? { errorCode: input.errorCode } : {})
         })
       );
@@ -729,6 +809,59 @@ export class ApprovalRuntime {
       throw new PlatformError('PERMISSION_DENIED', 'Approval is unavailable', 403);
     }
     return immutable(parsed.data);
+  }
+
+  private async readAuthoritativeDecision(
+    approval: ApprovalRecord,
+    context: TrustedRequestContext,
+    now: Date,
+    requireCurrentApprover: boolean
+  ): Promise<ApprovalDecisionEvidence> {
+    this.assertDecisionSourceAllowed();
+    let rawDecision: unknown;
+    try {
+      rawDecision = await this.dependencies.decisionSource.getDecision({ context, approval });
+    } catch {
+      throw new PlatformError(
+        'DEPENDENCY_ERROR',
+        'Authoritative approval status is unavailable',
+        503
+      );
+    }
+    const parsed = approvalDecisionEvidenceSchema.safeParse(rawDecision);
+    if (!parsed.success) {
+      throw new PlatformError('POLICY_DENIED', 'Approval evidence is invalid', 403);
+    }
+    const decision = parsed.data;
+    const invalidBinding =
+      decision.approval_id !== approval.approval_id ||
+      decision.proposal_id !== approval.proposal_id ||
+      decision.action_id !== approval.action_id ||
+      decision.tenant_id !== approval.tenant_id ||
+      decision.request_id !== approval.request_id ||
+      decision.correlation_id !== approval.correlation_id ||
+      approvalEvidenceHash(decision.target) !== approvalEvidenceHash(approval.target) ||
+      decision.target_state_hash !== approval.target_state_hash ||
+      decision.proposed_change_hash !== approval.proposed_change_hash ||
+      decision.proposal_integrity_hash !== approval.proposal_integrity_hash ||
+      new Date(decision.decision_at).getTime() < new Date(approval.requested_at).getTime() ||
+      new Date(decision.decision_at).getTime() > now.getTime() ||
+      new Date(decision.decision_at).getTime() > new Date(approval.expires_at).getTime() ||
+      (requireCurrentApprover &&
+        (decision.approver_user_id !== context.user_id || decision.approver_role !== context.role));
+    if (invalidBinding) {
+      throw new PlatformError('POLICY_DENIED', 'Approval evidence is invalid', 403);
+    }
+    if (
+      approval.status === 'approved' &&
+      decision.decision === 'approve' &&
+      (decision.approver_user_id !== approval.approver_user_id ||
+        decision.approver_role !== approval.approver_role ||
+        approvalEvidenceHash(decision) !== approval.decision_evidence_hash)
+    ) {
+      throw new PlatformError('POLICY_DENIED', 'Approval evidence is invalid', 403);
+    }
+    return decision;
   }
 
   private verifyStoredIntegrity(approval: ApprovalRecord): void {
@@ -753,6 +886,10 @@ export class ApprovalRuntime {
         decision: approval.decision,
         approver_user_id: approval.approver_user_id,
         approver_role: approval.approver_role,
+        request_id: approval.request_id,
+        correlation_id: approval.correlation_id,
+        target: approval.target,
+        target_state_hash: approval.target_state_hash,
         proposed_change_hash: approval.proposed_change_hash,
         proposal_integrity_hash: approval.proposal_integrity_hash,
         authorization_decision_id: approval.authorization_decision_id,

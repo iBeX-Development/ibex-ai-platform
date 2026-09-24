@@ -124,10 +124,14 @@ export class InMemoryApprovalRecordStore implements ApprovalRecordStore {
 
 export class DeterministicDecisionSource implements ApprovalDecisionSource {
   readonly mode = 'deterministic_test' as const;
-  decision: 'approve' | 'reject' = 'approve';
+  decision: 'approve' | 'reject' | 'cancel' | 'revoke' | 'expire' = 'approve';
   overrides: Record<string, unknown> = {};
+  unavailable = false;
+  calls = 0;
 
   getDecision(input: Parameters<ApprovalDecisionSource['getDecision']>[0]): Promise<unknown> {
+    this.calls += 1;
+    if (this.unavailable) return Promise.reject(new Error('Synthetic authority unavailable'));
     return Promise.resolve(
       approvalDecisionEvidenceSchema.parse({
         approval_id: input.approval.approval_id,
@@ -135,8 +139,12 @@ export class DeterministicDecisionSource implements ApprovalDecisionSource {
         action_id: input.approval.action_id,
         tenant_id: input.approval.tenant_id,
         decision: this.decision,
-        approver_user_id: input.context.user_id,
-        approver_role: input.context.role,
+        approver_user_id: input.approval.approver_user_id ?? input.context.user_id,
+        approver_role: input.approval.approver_role ?? input.context.role,
+        request_id: input.approval.request_id,
+        correlation_id: input.approval.correlation_id,
+        target: input.approval.target,
+        target_state_hash: input.approval.target_state_hash,
         proposed_change_hash: input.approval.proposed_change_hash,
         proposal_integrity_hash: input.approval.proposal_integrity_hash,
         authorization_decision_id: 'authorization-decision-p9-1',

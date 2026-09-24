@@ -97,6 +97,114 @@ describe('Gate P9 Human Approval Runtime', () => {
       harness.runtime.execute(reference(proposal.approval_id), approvalValidationTime)
     ).rejects.toMatchObject({ code: 'PERMISSION_DENIED' });
     expect(harness.adapter.calls).toBe(0);
+    expect(
+      harness.audits.find(
+        (event) => event.outcome === 'error' && event.stage === 'execution_revalidation'
+      )?.evidence
+    ).toMatchObject({
+      approval_id: proposal.approval_id,
+      approval_state: 'rejected',
+      decision: 'reject',
+      executed: false,
+      error_code: 'PERMISSION_DENIED'
+    });
+  });
+
+  it.each([
+    ['revoke', 'cancelled'],
+    ['reject', 'rejected'],
+    ['expire', 'expired']
+  ] as const)(
+    'revalidates an approved decision and denies execution after authoritative %s',
+    async (authoritativeDecision, expectedStatus) => {
+      const { harness, proposal } = await pendingApproval();
+      await harness.runtime.synchronizeDecision(
+        reference(proposal.approval_id),
+        approvalValidationTime
+      );
+      harness.decisionSource.decision = authoritativeDecision;
+      await expect(
+        harness.runtime.execute(reference(proposal.approval_id), approvalValidationTime)
+      ).rejects.toMatchObject({ code: 'PERMISSION_DENIED' });
+      expect(harness.adapter.calls).toBe(0);
+      expect(harness.decisionSource.calls).toBe(2);
+      expect(storedApproval(harness.store, proposal.approval_id).status).toBe(expectedStatus);
+      expect(
+        harness.audits.find(
+          (event) =>
+            event.outcome === expectedStatus && event.stage === 'authoritative_revalidation'
+        )?.evidence
+      ).toMatchObject({
+        approval_id: proposal.approval_id,
+        approval_state: expectedStatus,
+        decision: authoritativeDecision,
+        executed: false
+      });
+    }
+  );
+
+  it('does not trust a stale local approved decision during synchronization or execution', async () => {
+    const { harness, proposal } = await pendingApproval();
+    await harness.runtime.synchronizeDecision(
+      reference(proposal.approval_id),
+      approvalValidationTime
+    );
+    harness.decisionSource.decision = 'cancel';
+    const cancelled = await harness.runtime.synchronizeDecision(
+      reference(proposal.approval_id),
+      approvalValidationTime
+    );
+    expect(cancelled.status).toBe('cancelled');
+    const authorityCalls = harness.decisionSource.calls;
+    expect(
+      await harness.runtime.synchronizeDecision(
+        reference(proposal.approval_id),
+        approvalValidationTime
+      )
+    ).toMatchObject({ status: 'cancelled' });
+    expect(harness.decisionSource.calls).toBe(authorityCalls);
+    await expect(
+      harness.runtime.execute(reference(proposal.approval_id), approvalValidationTime)
+    ).rejects.toMatchObject({ code: 'PERMISSION_DENIED' });
+    expect(harness.adapter.calls).toBe(0);
+    expect(
+      harness.audits.find(
+        (event) => event.outcome === 'error' && event.stage === 'execution_revalidation'
+      )?.evidence
+    ).toMatchObject({
+      approval_id: proposal.approval_id,
+      approval_state: 'cancelled',
+      decision: 'cancel',
+      executed: false,
+      error_code: 'PERMISSION_DENIED'
+    });
+  });
+
+  it('fails closed when authoritative approval revalidation is unavailable', async () => {
+    const { harness, proposal } = await pendingApproval();
+    await harness.runtime.synchronizeDecision(
+      reference(proposal.approval_id),
+      approvalValidationTime
+    );
+    harness.decisionSource.unavailable = true;
+    await expect(
+      harness.runtime.execute(reference(proposal.approval_id), approvalValidationTime)
+    ).rejects.toMatchObject({ code: 'DEPENDENCY_ERROR' });
+    expect(harness.adapter.calls).toBe(0);
+    expect(storedApproval(harness.store, proposal.approval_id).status).toBe('approved');
+  });
+
+  it('fails closed on conflicting authoritative approval evidence', async () => {
+    const { harness, proposal } = await pendingApproval();
+    await harness.runtime.synchronizeDecision(
+      reference(proposal.approval_id),
+      approvalValidationTime
+    );
+    harness.decisionSource.overrides = { correlation_id: 'conflicting-correlation' };
+    await expect(
+      harness.runtime.execute(reference(proposal.approval_id), approvalValidationTime)
+    ).rejects.toMatchObject({ code: 'POLICY_DENIED' });
+    expect(harness.adapter.calls).toBe(0);
   });
 
   it('never executes a pending or expired approval', async () => {
@@ -198,7 +306,7 @@ describe('Gate P9 Human Approval Runtime', () => {
       harness.runtime.execute(reference(proposal.approval_id), approvalValidationTime)
     ).rejects.toMatchObject({ code: 'DEPENDENCY_ERROR' });
     expect(harness.adapter.calls).toBe(0);
-    expect(storedApproval(harness.store, proposal.approval_id).status).toBe('executing');
+    expect(storedApproval(harness.store, proposal.approval_id).status).toBe('approved');
   });
 
   it('keeps live Core proposal and execution paths disabled', async () => {

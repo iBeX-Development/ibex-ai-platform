@@ -62,10 +62,12 @@ their exact contracts are unapproved.
 
 Phase 9 separates AI proposals from authoritative human decisions. Callers cannot submit approval
 decisions or approver identity through the runtime contract. Decisions come from a server-side
-Core/workflow authority, and execution revalidates tenant, permission, entitlement, ownership,
-target state, approval validity, proposal integrity, and idempotency. Action execution is
-single-attempt and fail closed. Live approval, target-state, and execution adapters remain disabled
-until their contracts, service identities, authentication, roles, and workflow rules are approved.
+Core/workflow authority, and every protected execution revalidates the current authoritative
+decision, tenant, permission, entitlement, ownership, target state, approval validity, proposal
+integrity, and idempotency. Rejected, cancelled, revoked, expired, unavailable, or conflicting
+authority state fails closed. Action execution is single-attempt. Live approval, target-state, and
+execution adapters remain disabled until their contracts, service identities, authentication,
+roles, and workflow rules are approved.
 
 ## Data and actions
 

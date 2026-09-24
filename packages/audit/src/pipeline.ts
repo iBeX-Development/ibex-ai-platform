@@ -530,6 +530,7 @@ function metric(
         'pending',
         'approved',
         'rejected',
+        'cancelled',
         'expired',
         'executing',
         'executed',
