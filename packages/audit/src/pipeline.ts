@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { PlatformError } from '../../errors/src/index.js';
+import { isSensitiveTelemetryKey } from '../../observability/src/index.js';
 import type { AuditEventSink, AuditRecord } from './index.js';
 
 export type AuditCategory = 'application' | 'security' | 'audit';
@@ -184,25 +185,6 @@ export class AuditDeliveryError extends PlatformError {
   }
 }
 
-const forbiddenEvidenceKeys = new Set([
-  'prompt',
-  'raw_prompt',
-  'response',
-  'retrieved_content',
-  'content',
-  'tool_payload',
-  'payload',
-  'secret',
-  'credential',
-  'credentials',
-  'authorization_header',
-  'access_token',
-  'password',
-  'private_key',
-  'chain_of_thought',
-  'reasoning'
-]);
-
 function assertMinimized(value: unknown, path = 'event'): void {
   if (Array.isArray(value)) {
     for (const [index, item] of value.entries()) {
@@ -212,7 +194,7 @@ function assertMinimized(value: unknown, path = 'event'): void {
   }
   if (!value || typeof value !== 'object') return;
   for (const [key, child] of Object.entries(value)) {
-    if (forbiddenEvidenceKeys.has(key.toLowerCase())) {
+    if (isSensitiveTelemetryKey(key)) {
       throw new PlatformError('VALIDATION_ERROR', 'Audit evidence contains prohibited data', 500);
     }
     assertMinimized(child, `${path}.${key}`);
@@ -306,26 +288,59 @@ function contextFor(event: AuditRecord): CanonicalAuditContext {
   });
 }
 
+const securityCodes = new Set([
+  'AUTHENTICATION_ERROR',
+  'AUTHORIZATION_ERROR',
+  'TENANT_CONTEXT_ERROR',
+  'TENANT_SCOPE_VIOLATION',
+  'PERMISSION_DENIED',
+  'RATE_LIMIT_ERROR',
+  'RATE_LIMITED',
+  'POLICY_DENIED',
+  'MODEL_NOT_ALLOWED',
+  'TOOL_NOT_ALLOWED',
+  'TOOL_DISABLED',
+  'PROVIDER_ERROR',
+  'MODEL_UNAVAILABLE'
+]);
+
+const invalidToolInvocationCodes = new Set(['INVALID_INPUT', 'VALIDATION_ERROR']);
+const invalidToolInvocationStages = new Set([
+  'boundary_context',
+  'boundary_trace',
+  'request_validation',
+  'input_schema'
+]);
+const providerFailureCodes = new Set([
+  'PROVIDER_TIMEOUT',
+  'PROVIDER_ERROR',
+  'MODEL_UNAVAILABLE',
+  'INVALID_RESPONSE',
+  'UPSTREAM_TIMEOUT',
+  'SERVICE_UNAVAILABLE'
+]);
+const providerFailureStages = new Set(['provider_invocation', 'response_validation']);
+
 function categoryFor(event: AuditRecord): AuditCategory {
   const source = record(event);
-  const securityCodes = new Set([
-    'AUTHENTICATION_ERROR',
-    'AUTHORIZATION_ERROR',
-    'TENANT_CONTEXT_ERROR',
-    'TENANT_SCOPE_VIOLATION',
-    'PERMISSION_DENIED',
-    'RATE_LIMIT_ERROR',
-    'RATE_LIMITED',
-    'POLICY_DENIED',
-    'MODEL_NOT_ALLOWED',
-    'TOOL_NOT_ALLOWED',
-    'TOOL_DISABLED',
-    'PROVIDER_ERROR',
-    'MODEL_UNAVAILABLE'
-  ]);
+  const errorCode = typeof source.error_code === 'string' ? source.error_code : undefined;
+  const invalidToolInvocation =
+    event.event_type === 'tool_runtime.execution.outcome' &&
+    errorCode !== undefined &&
+    invalidToolInvocationCodes.has(errorCode) &&
+    typeof source.stage === 'string' &&
+    invalidToolInvocationStages.has(source.stage);
+  const providerFailure =
+    event.event_type === 'model_gateway.invocation.outcome' &&
+    errorCode !== undefined &&
+    providerFailureCodes.has(errorCode) &&
+    typeof source.stage === 'string' &&
+    providerFailureStages.has(source.stage);
   if (
     event.event_type.includes('security') ||
-    (typeof source.error_code === 'string' && securityCodes.has(source.error_code))
+    (errorCode !== undefined && securityCodes.has(errorCode)) ||
+    invalidToolInvocation ||
+    providerFailure
   ) {
     return 'security';
   }
@@ -698,8 +713,27 @@ export class AuditTelemetryPipeline implements AuditEventSink {
 export function assertEndToEndAuditTrace(events: readonly CanonicalAuditEvent[]): void {
   const [first] = events;
   if (!first) throw new Error('Audit trace is empty');
-  const trusted = events.filter((event) => event.context.status === 'trusted');
-  for (const event of trusted) {
+  if (
+    first.context.status !== 'trusted' ||
+    !first.request_id ||
+    !first.correlation_id ||
+    !first.context.tenant_id ||
+    !first.context.user_id ||
+    !first.context.session_id
+  ) {
+    throw new Error('Audit trace context binding is unavailable');
+  }
+  for (const event of events) {
+    if (
+      event.context.status !== 'trusted' ||
+      !event.request_id ||
+      !event.correlation_id ||
+      !event.context.tenant_id ||
+      !event.context.user_id ||
+      !event.context.session_id
+    ) {
+      throw new Error('Audit trace context binding is unavailable');
+    }
     if (
       event.trace_id !== first.trace_id ||
       event.request_id !== first.request_id ||
@@ -712,7 +746,12 @@ export function assertEndToEndAuditTrace(events: readonly CanonicalAuditEvent[])
     }
   }
   const has = (type: string, stage?: string) =>
-    events.some((event) => event.event_type === type && (!stage || event.stage === stage));
+    events.some(
+      (event) =>
+        event.context.status === 'trusted' &&
+        event.event_type === type &&
+        (!stage || event.stage === stage)
+    );
   if (
     !has('gateway.request.outcome', 'authorization') ||
     !has('orchestrator.routing.outcome') ||

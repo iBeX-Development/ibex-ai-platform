@@ -195,6 +195,42 @@ describe('Gate P7 request trace', () => {
       assertEndToEndAuditTrace(events);
     }).toThrow('context binding mismatch');
   });
+
+  it('rejects an unavailable event that spoofs a required boundary', () => {
+    const events = chain().map((event, index) => {
+      if (index !== 2) return normalizeForTest(event, index);
+      return normalizeForTest(
+        {
+          schema_version: '1.0',
+          event_type: 'tool_runtime.execution.outcome',
+          timestamp: now.toISOString(),
+          trace_id: traceId,
+          service: 'tool-runtime',
+          environment: 'test',
+          context_status: 'unavailable',
+          outcome: 'succeeded',
+          stage: 'response_schema'
+        } as unknown as AuditRecord,
+        index
+      );
+    });
+
+    expect(() => {
+      assertEndToEndAuditTrace(events);
+    }).toThrow('context binding is unavailable');
+    expect(() => reconstructAuditInteraction(events)).toThrow('context binding is unavailable');
+  });
+
+  it('rejects a required boundary with missing request binding', () => {
+    const events = chain().map(normalizeForTest);
+    const unbound = events.map((event, index) =>
+      index === 4 ? ({ ...event, request_id: undefined } as unknown as typeof event) : event
+    );
+
+    expect(() => {
+      assertEndToEndAuditTrace(unbound);
+    }).toThrow('context binding is unavailable');
+  });
 });
 
 function normalizeForTest(event: AuditRecord, index: number) {

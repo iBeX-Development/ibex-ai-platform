@@ -99,6 +99,41 @@ describe('Phase 7 canonical audit pipeline', () => {
     expect(deps.auditExporter.export).not.toHaveBeenCalled();
   });
 
+  it.each([
+    'api_key',
+    'API-KEY',
+    'apikey',
+    'token',
+    'Authorization',
+    'cookie',
+    'rawPrompt',
+    'raw-prompt',
+    'toolInput',
+    'tool.input'
+  ])('recursively rejects sensitive alias %s before any telemetry delivery', async (key) => {
+    const deps = dependencies();
+    const pipeline = new AuditTelemetryPipeline(deps);
+    const sensitiveValue = `never-export-${key}`;
+    const unsafe = {
+      ...gatewayEvent(),
+      nested: [{ safe: { [key]: sensitiveValue } }]
+    } as unknown as AuditRecord;
+
+    await expect(pipeline.emit(unsafe)).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
+
+    const store = deps.evidenceStore as InMemoryAuditEvidenceStore;
+    expect(store.audits).toHaveLength(0);
+    expect(deps.auditExporter.export).not.toHaveBeenCalled();
+    expect(deps.metricsExporter.export).not.toHaveBeenCalled();
+    expect(JSON.stringify(store.health)).not.toContain(sensitiveValue);
+    expect(JSON.stringify(vi.mocked(deps.securityExporter.export).mock.calls)).not.toContain(
+      sensitiveValue
+    );
+    expect(JSON.stringify(vi.mocked(deps.healthExporter.export).mock.calls)).not.toContain(
+      sensitiveValue
+    );
+  });
+
   it('classifies security events with a sanitized severity and reason code', () => {
     const observation = securityObservationFor(normalizeAuditEvent(gatewayEvent('rejected')));
     expect(observation).toMatchObject({
@@ -125,6 +160,66 @@ describe('Phase 7 canonical audit pipeline', () => {
     );
     expect(applicationFailure.category).toBe('application');
     expect(securityObservationFor(applicationFailure)).toBeUndefined();
+  });
+
+  it.each([
+    ['tool_runtime.execution.outcome', 'input_schema', 'INVALID_INPUT'],
+    ['tool_runtime.execution.outcome', 'request_validation', 'VALIDATION_ERROR'],
+    ['model_gateway.invocation.outcome', 'provider_invocation', 'PROVIDER_TIMEOUT'],
+    ['model_gateway.invocation.outcome', 'provider_invocation', 'PROVIDER_ERROR'],
+    ['model_gateway.invocation.outcome', 'response_validation', 'INVALID_RESPONSE']
+  ])(
+    'classifies contextual %s %s %s failures as security events with bounded metrics',
+    async (eventType, stage, errorCode) => {
+      const deps = dependencies();
+      const event = {
+        ...gatewayEvent('rejected'),
+        event_type: eventType,
+        service: `${eventType}-unregistered`,
+        stage,
+        error_code: errorCode
+      } as unknown as AuditRecord;
+
+      await new AuditTelemetryPipeline(deps).emit(event);
+
+      expect(deps.securityExporter.export).toHaveBeenCalledWith(
+        expect.objectContaining({ reason_code: errorCode })
+      );
+      expect(deps.metricsExporter.export).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: 'ibex.security.rejections',
+            labels: {
+              service: 'other',
+              environment: 'test',
+              event_type: eventType,
+              outcome: 'rejected'
+            }
+          })
+        ])
+      );
+    }
+  );
+
+  it('keeps INVALID_INPUT outside the security category when it is not a tool event', () => {
+    const event = normalizeAuditEvent({
+      ...gatewayEvent('rejected'),
+      stage: 'payload_schema',
+      error_code: 'INVALID_INPUT'
+    } as unknown as AuditRecord);
+    expect(event.category).not.toBe('security');
+    expect(securityObservationFor(event)).toBeUndefined();
+  });
+
+  it('requires the matching Tool Runtime stage before classifying INVALID_INPUT as security', () => {
+    const event = normalizeAuditEvent({
+      ...gatewayEvent('rejected'),
+      event_type: 'tool_runtime.execution.outcome',
+      stage: 'audit',
+      error_code: 'INVALID_INPUT'
+    } as unknown as AuditRecord);
+    expect(event.category).not.toBe('security');
+    expect(securityObservationFor(event)).toBeUndefined();
   });
 
   it('never promotes identifiers attached to an unavailable context', () => {

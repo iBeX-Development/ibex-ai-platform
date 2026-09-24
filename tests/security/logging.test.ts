@@ -55,4 +55,38 @@ describe('sensitive logging', () => {
     expect(output).toContain('approved-v1');
     expect(output).toContain('sha256:safe-reference');
   });
+
+  it('canonicalizes sensitive aliases across nested objects and arrays', async () => {
+    let output = '';
+    const destination = new Writable({
+      write(chunk: Buffer, _encoding, callback) {
+        output += chunk.toString('utf8');
+        callback();
+      }
+    });
+    const logger = createLogger(loadConfig(validTestEnvironment), destination);
+    const values = [
+      'api-key-value',
+      'token-value',
+      'authorization-value',
+      'cookie-value',
+      'raw-prompt-value',
+      'tool-input-value'
+    ];
+    logger.info({
+      nested: [
+        { 'API-KEY': values[0], Token: values[1] },
+        { authorization: values[2], cookie_header: values[3] },
+        { rawPrompt: values[4], 'tool.input': values[5] }
+      ],
+      prompt_version: 'approved-v1',
+      content_hash: 'sha256:safe-reference'
+    });
+    await new Promise((resolve) => destination.end(resolve));
+
+    for (const value of values) expect(output).not.toContain(value);
+    expect(output).toContain('approved-v1');
+    expect(output).toContain('sha256:safe-reference');
+    expect(output.match(/\[REDACTED\]/g)?.length).toBe(6);
+  });
 });

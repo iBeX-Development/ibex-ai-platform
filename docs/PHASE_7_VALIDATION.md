@@ -20,6 +20,12 @@ Phase 7 is limited to the Audit and Observability foundation.
   when storage/export fails.
 - Recursive structured-log redaction and audit-event rejection for raw prompts, responses, retrieved
   content, tool payloads, credentials, confidential reasoning, and chain-of-thought.
+- Canonical sensitive-key filtering across case and separator variants, including nested objects and
+  arrays, before audit persistence, export, security observation, or metric generation.
+- Trusted-only trace reconstruction that rejects unavailable, unbound, or inconsistent boundary
+  evidence.
+- Context-aware security classification for invalid Tool Runtime invocation/input events and Model
+  Gateway provider timeout/failure events without globally promoting ordinary invalid input.
 - Strict environment binding to prevent cross-environment telemetry mixing.
 
 ## Gate P7 results
@@ -35,14 +41,14 @@ Phase 7 is limited to the Audit and Observability foundation.
 | Bounded-cardinality metric labels                                       | PASS   |
 | Raw AI content, credentials, and reasoning redaction                    | PASS   |
 | Cross-environment telemetry rejection                                   | PASS   |
-| Gate P7 focused: 3 files / 16 tests                                     | PASS   |
+| Gate P7 focused: 3 files / 36 tests                                     | PASS   |
 | Phase 1 regression: 6 files / 25 tests                                  | PASS   |
 | Phase 2 regression: 3 files / 16 tests                                  | PASS   |
 | Phase 3 regression: 4 files / 25 tests                                  | PASS   |
 | Phase 4 regression: 4 files / 28 tests                                  | PASS   |
 | Phase 5 regression: 4 files / 29 tests                                  | PASS   |
 | Phase 6 regression: 4 files / 50 tests                                  | PASS   |
-| Full suite: 30 files / 195 tests                                        | PASS   |
+| Full suite: 30 files / 215 tests                                        | PASS   |
 | Format, lint, typecheck, and build                                      | PASS   |
 | Dependency audit: 0 known vulnerabilities                               | PASS   |
 | Secret, direct Core DB, provider coupling, and Phase 8 scope scans      | PASS   |

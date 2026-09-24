@@ -25,26 +25,49 @@ const redactPaths = [
 const sensitiveTelemetryKeys = new Set([
   'password',
   'secret',
-  'api_key',
   'apikey',
   'token',
-  'access_token',
+  'accesstoken',
+  'refreshtoken',
+  'idtoken',
+  'bearertoken',
+  'clientsecret',
   'authorization',
-  'authorization_header',
+  'authorizationheader',
   'cookie',
+  'cookieheader',
+  'setcookie',
   'credential',
   'credentials',
-  'private_key',
+  'privatekey',
   'prompt',
-  'raw_prompt',
+  'rawprompt',
+  'prompttext',
   'response',
-  'retrieved_content',
+  'rawresponse',
+  'modelresponse',
+  'retrievedcontent',
+  'documentcontent',
   'content',
-  'tool_payload',
+  'toolpayload',
+  'toolinput',
+  'tooloutput',
   'payload',
-  'chain_of_thought',
+  'chainofthought',
+  'confidentialreasoning',
   'reasoning'
 ]);
+
+export function canonicalizeTelemetryKey(key: string): string {
+  return key
+    .normalize('NFKC')
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .toLowerCase();
+}
+
+export function isSensitiveTelemetryKey(key: string): boolean {
+  return sensitiveTelemetryKeys.has(canonicalizeTelemetryKey(key));
+}
 
 export function sanitizeTelemetryValue(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(sanitizeTelemetryValue);
@@ -54,7 +77,7 @@ export function sanitizeTelemetryValue(value: unknown): unknown {
   return Object.fromEntries(
     Object.entries(value).map(([key, child]) => [
       key,
-      sensitiveTelemetryKeys.has(key.toLowerCase()) ? '[REDACTED]' : sanitizeTelemetryValue(child)
+      isSensitiveTelemetryKey(key) ? '[REDACTED]' : sanitizeTelemetryValue(child)
     ])
   );
 }
