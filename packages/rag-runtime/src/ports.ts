@@ -1,10 +1,30 @@
 import type { TrustedRequestContext } from '../../security/src/index.js';
 import type {
+  ApprovedRagRetrievalScope,
   EmbeddingEvidence,
   KnowledgeChunk,
   KnowledgeMetadata,
   RagSecurityFilter
 } from './contracts.js';
+
+export type RagRetrievalScopeDecision =
+  | Readonly<{
+      allowed: true;
+      decision_id: string;
+      scope: ApprovedRagRetrievalScope;
+    }>
+  | Readonly<{ allowed: false; reason: string; decision_id?: string }>;
+
+/**
+ * Resolves an immutable Shared Agent Runtime routing decision for the trusted
+ * request context. Implementations must reject stale, foreign, or widened scope.
+ */
+export interface RagRetrievalScopePort {
+  resolve(
+    context: TrustedRequestContext,
+    routingDecisionId: string
+  ): Promise<RagRetrievalScopeDecision>;
+}
 
 export interface EmbeddingPort {
   embed(

@@ -16,14 +16,17 @@ import {
 } from '../../security/src/index.js';
 import { matchesRagSecurityFilter } from './access.js';
 import {
+  approvedRagRetrievalScopeSchema,
   embeddingEvidenceSchema,
   knowledgeChunkSchema,
   ragIngestionRequestSchema,
   ragIngestionResponseSchema,
   ragRetrievalRequestSchema,
+  ragRetrievalScopeDecisionSchema,
   ragRetrievalResponseSchema,
   ragSecurityFilterSchema,
   rankedChunkReferenceSchema,
+  type ApprovedRagRetrievalScope,
   type EmbeddingEvidence,
   type KnowledgeChunk,
   type KnowledgeDocument,
@@ -35,11 +38,17 @@ import {
   type RagSecurityFilter,
   type RankedChunkReference
 } from './contracts.js';
-import { calculateDocumentChecksum, sha256Evidence, stableChunkId } from './integrity.js';
+import {
+  calculateDocumentChecksum,
+  sha256Evidence,
+  stableChunkId,
+  stableChunkIdForStoredChunk
+} from './integrity.js';
 import type {
   EmbeddingPort,
   KnowledgeGovernancePort,
   KnowledgeStorePort,
+  RagRetrievalScopePort,
   RetrievalRankerPort
 } from './ports.js';
 
@@ -68,6 +77,7 @@ export interface RagRuntimePolicy {
 
 export interface RagRuntimeDependencies {
   readonly authorization: ServerAuthorizationPolicy;
+  readonly retrievalScope: RagRetrievalScopePort;
   readonly governance: KnowledgeGovernancePort;
   readonly embeddings: EmbeddingPort;
   readonly store: KnowledgeStorePort;
@@ -464,6 +474,7 @@ export class RagRuntimeService {
       let stage: RagRuntimeAuditStage = 'boundary_context';
       let context: TrustedRequestContext | undefined;
       let request: RagRetrievalRequest | undefined;
+      let approvedScope: ApprovedRagRetrievalScope | undefined;
       let queryHash: string | undefined;
       let embedding: EmbeddingEvidence | undefined;
       let selectedChunks: readonly KnowledgeChunk[] = [];
@@ -493,11 +504,7 @@ export class RagRuntimeService {
         if (!parsed.success) {
           throw new PlatformError('INVALID_INPUT', 'RAG retrieval request is invalid', 400);
         }
-        request = Object.freeze({
-          ...parsed.data,
-          context,
-          knowledge_scopes: Object.freeze([...parsed.data.knowledge_scopes])
-        });
+        request = Object.freeze({ ...parsed.data, context });
         queryHash = sha256Evidence(request.query);
         assertNotAborted(operation.controller.signal);
 
@@ -509,6 +516,50 @@ export class RagRuntimeService {
           required_entitlements: this.dependencies.policy.retrieval_entitlements
         });
 
+        stage = 'scope_resolution';
+        let rawScopeDecision: unknown;
+        try {
+          rawScopeDecision = await this.dependencies.retrievalScope.resolve(
+            context,
+            request.routing_decision_id
+          );
+        } catch {
+          throw new PlatformError(
+            'AUTHORIZATION_ERROR',
+            'RAG retrieval scope could not be verified',
+            403
+          );
+        }
+        const scopeDecision = ragRetrievalScopeDecisionSchema.safeParse(rawScopeDecision);
+        if (!scopeDecision.success) {
+          throw new PlatformError(
+            'AUTHORIZATION_ERROR',
+            'RAG retrieval scope could not be verified',
+            403
+          );
+        }
+        if (!scopeDecision.data.allowed) {
+          throw new PlatformError('PERMISSION_DENIED', 'RAG retrieval scope denied', 403);
+        }
+        const parsedScope = approvedRagRetrievalScopeSchema.parse(scopeDecision.data.scope);
+        if (
+          parsedScope.routing_decision_id !== request.routing_decision_id ||
+          parsedScope.tenant_id !== context.tenant_id ||
+          parsedScope.user_id !== context.user_id ||
+          parsedScope.request_id !== context.request_id ||
+          parsedScope.correlation_id !== context.correlation_id
+        ) {
+          throw new PlatformError(
+            'TENANT_SCOPE_VIOLATION',
+            'RAG retrieval scope conflicts with trusted request context',
+            403
+          );
+        }
+        approvedScope = Object.freeze({
+          ...parsedScope,
+          knowledge_scopes: Object.freeze([...parsedScope.knowledge_scopes])
+        });
+
         const filter: RagSecurityFilter = Object.freeze(
           ragSecurityFilterSchema.parse({
             tenant_id: context.tenant_id,
@@ -516,9 +567,9 @@ export class RagRuntimeService {
             role: context.role,
             permissions: context.permissions,
             entitlements: context.entitlements,
-            agent_id: request.agent_id,
-            domain: request.domain,
-            knowledge_scopes: request.knowledge_scopes,
+            agent_id: approvedScope.agent_id,
+            domain: approvedScope.domain,
+            knowledge_scopes: approvedScope.knowledge_scopes,
             approval_status: 'approved',
             effective_at: now.toISOString(),
             latest_approved_only: true
@@ -533,9 +584,9 @@ export class RagRuntimeService {
           outcome: 'started',
           stage: 'security_filter',
           timestamp: now,
-          agentId: request.agent_id,
-          domain: request.domain,
-          knowledgeScopes: request.knowledge_scopes,
+          agentId: approvedScope.agent_id,
+          domain: approvedScope.domain,
+          knowledgeScopes: approvedScope.knowledge_scopes,
           queryHash,
           retrievalVersion: this.dependencies.policy.retrieval_version
         });
@@ -554,7 +605,9 @@ export class RagRuntimeService {
         }
         if (
           parsedCandidates.data.some(
-            (chunk) => sha256Evidence(chunk.content) !== chunk.content_hash
+            (chunk) =>
+              sha256Evidence(chunk.content) !== chunk.content_hash ||
+              stableChunkIdForStoredChunk(chunk) !== chunk.chunk_id
           )
         ) {
           throw new PlatformError(
@@ -580,7 +633,7 @@ export class RagRuntimeService {
           return await this.finishEmptyRetrieval({
             traceId,
             context,
-            request,
+            approvedScope,
             queryHash,
             now,
             startedAt,
@@ -654,13 +707,14 @@ export class RagRuntimeService {
           outcome: 'succeeded',
           stage,
           timestamp: now,
-          agentId: request.agent_id,
-          domain: request.domain,
-          knowledgeScopes: request.knowledge_scopes,
+          agentId: approvedScope.agent_id,
+          domain: approvedScope.domain,
+          knowledgeScopes: approvedScope.knowledge_scopes,
           queryHash,
           documentIds: selectedChunks.map(({ document_id }) => document_id),
           documentVersions: selectedChunks.map(({ document_version }) => document_version),
           chunkIds: selectedChunks.map(({ chunk_id }) => chunk_id),
+          retrievalScores: ranked.data,
           embeddingModel: embedding.model_id,
           embeddingModelVersion: embedding.model_version,
           retrievalVersion: this.dependencies.policy.retrieval_version,
@@ -678,11 +732,11 @@ export class RagRuntimeService {
           stage,
           timestamp: now,
           ...(context ? { context } : {}),
-          ...(request
+          ...(approvedScope
             ? {
-                agentId: request.agent_id,
-                domain: request.domain,
-                knowledgeScopes: request.knowledge_scopes
+                agentId: approvedScope.agent_id,
+                domain: approvedScope.domain,
+                knowledgeScopes: approvedScope.knowledge_scopes
               }
             : {}),
           ...(queryHash ? { queryHash } : {}),
@@ -711,7 +765,7 @@ export class RagRuntimeService {
   private async finishEmptyRetrieval(input: {
     readonly traceId: string;
     readonly context: TrustedRequestContext;
-    readonly request: RagRetrievalRequest;
+    readonly approvedScope: ApprovedRagRetrievalScope;
     readonly queryHash: string;
     readonly now: Date;
     readonly startedAt: number;
@@ -733,13 +787,14 @@ export class RagRuntimeService {
       outcome: 'succeeded',
       stage: 'audit',
       timestamp: input.now,
-      agentId: input.request.agent_id,
-      domain: input.request.domain,
-      knowledgeScopes: input.request.knowledge_scopes,
+      agentId: input.approvedScope.agent_id,
+      domain: input.approvedScope.domain,
+      knowledgeScopes: input.approvedScope.knowledge_scopes,
       queryHash: input.queryHash,
       documentIds: [],
       documentVersions: [],
       chunkIds: [],
+      retrievalScores: [],
       retrievalVersion: this.dependencies.policy.retrieval_version,
       resultCount: 0,
       latencyMs: this.clock() - input.startedAt
@@ -823,6 +878,7 @@ export class RagRuntimeService {
     readonly documentIds?: readonly string[];
     readonly documentVersions?: readonly string[];
     readonly chunkIds?: readonly string[];
+    readonly retrievalScores?: readonly RankedChunkReference[];
     readonly embeddingModel?: string;
     readonly embeddingModelVersion?: string;
     readonly retrievalVersion?: string;
@@ -847,6 +903,7 @@ export class RagRuntimeService {
         ...(input.documentIds ? { documentIds: input.documentIds } : {}),
         ...(input.documentVersions ? { documentVersions: input.documentVersions } : {}),
         ...(input.chunkIds ? { chunkIds: input.chunkIds } : {}),
+        ...(input.retrievalScores ? { retrievalScores: input.retrievalScores } : {}),
         ...(input.embeddingModel ? { embeddingModel: input.embeddingModel } : {}),
         ...(input.embeddingModelVersion
           ? { embeddingModelVersion: input.embeddingModelVersion }

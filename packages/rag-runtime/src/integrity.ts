@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import type { KnowledgeDocument } from './contracts.js';
+import type { KnowledgeChunk, KnowledgeDocument } from './contracts.js';
 
 export function sha256Evidence(value: string): `sha256:${string}` {
   return `sha256:${createHash('sha256').update(value, 'utf8').digest('hex')}`;
@@ -47,4 +47,18 @@ export function stableChunkId(input: {
       input.content_hash
     ])
   );
+}
+
+export function stableChunkIdForStoredChunk(chunk: KnowledgeChunk): `sha256:${string}` {
+  return stableChunkId({
+    document_id: chunk.document_id,
+    document_version: chunk.document_version,
+    tenant_scope: chunk.tenant_scope,
+    ...(chunk.tenant_id ? { tenant_id: chunk.tenant_id } : {}),
+    section: chunk.source_location.section,
+    reference: chunk.source_location.reference,
+    ...(chunk.source_location.page !== undefined ? { page: chunk.source_location.page } : {}),
+    ordinal: chunk.source_location.ordinal,
+    content_hash: chunk.content_hash
+  });
 }

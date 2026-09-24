@@ -201,6 +201,40 @@ export const ragSecurityFilterSchema = z
 
 export type RagSecurityFilter = Readonly<z.infer<typeof ragSecurityFilterSchema>>;
 
+export const approvedRagRetrievalScopeSchema = z
+  .object({
+    routing_decision_id: nonEmpty,
+    tenant_id: nonEmpty,
+    user_id: nonEmpty,
+    request_id: nonEmpty,
+    correlation_id: nonEmpty,
+    agent_id: nonEmpty,
+    agent_version: nonEmpty,
+    domain: nonEmpty,
+    knowledge_scopes: nonEmptyList
+  })
+  .strict()
+  .readonly();
+
+export type ApprovedRagRetrievalScope = Readonly<z.infer<typeof approvedRagRetrievalScopeSchema>>;
+
+export const ragRetrievalScopeDecisionSchema = z.discriminatedUnion('allowed', [
+  z
+    .object({
+      allowed: z.literal(true),
+      decision_id: nonEmpty,
+      scope: approvedRagRetrievalScopeSchema
+    })
+    .strict(),
+  z
+    .object({
+      allowed: z.literal(false),
+      reason: nonEmpty,
+      decision_id: nonEmpty.optional()
+    })
+    .strict()
+]);
+
 export const ragIngestionRequestSchema = z
   .object({
     context: z.unknown(),
@@ -222,10 +256,8 @@ export const ragRetrievalRequestSchema = z
   .object({
     context: z.unknown(),
     trace_id: nonEmpty.max(256),
-    agent_id: nonEmpty,
+    routing_decision_id: nonEmpty,
     query: nonEmpty.max(4_000),
-    domain: nonEmpty,
-    knowledge_scopes: nonEmptyList,
     top_k: z.number().int().min(1).max(20)
   })
   .strict()
@@ -234,10 +266,8 @@ export const ragRetrievalRequestSchema = z
 export interface RagRetrievalRequest {
   readonly context: TrustedRequestContext;
   readonly trace_id: string;
-  readonly agent_id: string;
+  readonly routing_decision_id: string;
   readonly query: string;
-  readonly domain: string;
-  readonly knowledge_scopes: readonly string[];
   readonly top_k: number;
 }
 

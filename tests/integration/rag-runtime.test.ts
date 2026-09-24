@@ -2,12 +2,13 @@ import { describe, expect, it, vi } from 'vitest';
 import type { AuditRecord } from '../../packages/audit/src/index.js';
 import type {
   EmbeddingPort,
+  KnowledgeChunk,
   KnowledgeStorePort,
   RetrievalRankerPort
 } from '../../packages/rag-runtime/src/index.js';
+import { stableChunkIdForStoredChunk } from '../../packages/rag-runtime/src/index.js';
 import {
   DeterministicKnowledgeStore,
-  approvedGovernance,
   createRagRuntime,
   deterministicEmbeddings,
   deterministicRanker,
@@ -101,10 +102,11 @@ describe('Gate P6 RAG Runtime', () => {
   });
 
   it('filters security metadata before semantic search and returns citations', async () => {
+    const audits: AuditRecord[] = [];
     const chunk = await indexedChunk();
     const store = new DeterministicKnowledgeStore([chunk]);
     const rank = vi.fn<RetrievalRankerPort['rank']>((request) => deterministicRanker.rank(request));
-    const runtime = createRagRuntime([], { store, ranker: { rank } });
+    const runtime = createRagRuntime(audits, { store, ranker: { rank } });
 
     const response = await runtime.retrieve(retrievalRequest(), {}, ragValidationTime);
 
@@ -133,6 +135,24 @@ describe('Gate P6 RAG Runtime', () => {
         document_checksum: chunk.document_checksum
       }
     });
+    const result = response.results[0];
+    expect(result).toBeDefined();
+    expect(audits.at(-1)).toEqual(
+      expect.objectContaining({
+        request_id: 'request-rag-1',
+        correlation_id: 'correlation-rag-1',
+        chunk_ids: [chunk.chunk_id],
+        retrieval_scores: [
+          {
+            chunk_id: chunk.chunk_id,
+            score: result?.score,
+            semantic_score: result?.semantic_score,
+            keyword_score: result?.keyword_score
+          }
+        ]
+      })
+    );
+    expect(JSON.stringify(audits)).not.toContain(chunk.content);
   });
 
   it('fails closed before store access when server authorization denies retrieval', async () => {
@@ -149,6 +169,45 @@ describe('Gate P6 RAG Runtime', () => {
         code: 'PERMISSION_DENIED'
       }
     );
+    expect(filter).not.toHaveBeenCalled();
+  });
+
+  it('fails closed when the server routing decision is missing, denied, or context-conflicting', async () => {
+    const filter = vi.fn<KnowledgeStorePort['filter']>();
+    const store = { upsert: () => Promise.resolve(), filter };
+
+    await expect(
+      createRagRuntime([], { store }).retrieve(
+        retrievalRequest({ routing_decision_id: 'unknown-routing' }),
+        {},
+        ragValidationTime
+      )
+    ).rejects.toMatchObject({ code: 'PERMISSION_DENIED' });
+
+    await expect(
+      createRagRuntime([], {
+        store,
+        retrievalScope: {
+          resolve: (context, routingDecisionId) =>
+            Promise.resolve({
+              allowed: true,
+              decision_id: 'conflicting-scope',
+              scope: {
+                routing_decision_id: routingDecisionId,
+                tenant_id: 'tenant-b',
+                user_id: context.user_id,
+                request_id: context.request_id,
+                correlation_id: context.correlation_id,
+                agent_id: 'maintenance',
+                agent_version: '1.0',
+                domain: 'maintenance',
+                knowledge_scopes: ['maintenance-manuals']
+              }
+            })
+        }
+      }).retrieve(retrievalRequest(), {}, ragValidationTime)
+    ).rejects.toMatchObject({ code: 'TENANT_SCOPE_VIOLATION' });
+
     expect(filter).not.toHaveBeenCalled();
   });
 
@@ -247,19 +306,74 @@ describe('Gate P6 RAG Runtime', () => {
     expect(rank).not.toHaveBeenCalled();
   });
 
-  it('fails closed if a store returns a chunk outside the requested security filter', async () => {
-    const tenantBChunk = await indexedChunk(
-      makeDocument({ tenant_id: 'tenant-b', source_owner: 'tenant-b-engineering' }),
-      {
-        governance: approvedGovernance,
-        authorization: {
-          authorize: () => Promise.resolve({ allowed: true, decision_id: 'cross-setup' })
-        }
-      }
-    ).catch(async () => {
-      const tenantAChunk = await indexedChunk();
-      return { ...tenantAChunk, tenant_id: 'tenant-b' };
+  it.each([
+    [
+      'document ID',
+      (chunk: Awaited<ReturnType<typeof indexedChunk>>) => ({
+        ...chunk,
+        document_id: 'other-document'
+      })
+    ],
+    [
+      'document version',
+      (chunk: Awaited<ReturnType<typeof indexedChunk>>) => ({ ...chunk, document_version: '9.9' })
+    ],
+    [
+      'source location',
+      (chunk: Awaited<ReturnType<typeof indexedChunk>>) => ({
+        ...chunk,
+        source_location: { ...chunk.source_location, reference: 'tampered-reference' }
+      })
+    ],
+    [
+      'source ordinal',
+      (chunk: Awaited<ReturnType<typeof indexedChunk>>) => ({
+        ...chunk,
+        source_location: { ...chunk.source_location, ordinal: chunk.source_location.ordinal + 1 }
+      })
+    ],
+    [
+      'tenant scope',
+      (chunk: Awaited<ReturnType<typeof indexedChunk>>) => ({
+        ...chunk,
+        tenant_scope: 'domain_approved' as const,
+        tenant_id: undefined
+      })
+    ],
+    [
+      'chunk ID',
+      (chunk: Awaited<ReturnType<typeof indexedChunk>>) => ({
+        ...chunk,
+        chunk_id: `sha256:${'f'.repeat(64)}`
+      })
+    ]
+  ])('rejects tampered %s evidence before ranking', async (_label, tamper) => {
+    const chunk = await indexedChunk();
+    const rank = vi.fn<RetrievalRankerPort['rank']>();
+    const runtime = createRagRuntime([], {
+      store: {
+        upsert: () => Promise.resolve(),
+        filter: () => Promise.resolve([tamper(chunk)])
+      },
+      ranker: { rank }
     });
+
+    await expect(runtime.retrieve(retrievalRequest(), {}, ragValidationTime)).rejects.toMatchObject(
+      {
+        code: 'INVALID_RESPONSE',
+        publicMessage: 'Knowledge chunk integrity check failed'
+      }
+    );
+    expect(rank).not.toHaveBeenCalled();
+  });
+
+  it('fails closed if a store returns a chunk outside the requested security filter', async () => {
+    const tenantAChunk = await indexedChunk();
+    const crossTenantEvidence = { ...tenantAChunk, tenant_id: 'tenant-b' } as KnowledgeChunk;
+    const tenantBChunk: KnowledgeChunk = {
+      ...crossTenantEvidence,
+      chunk_id: stableChunkIdForStoredChunk(crossTenantEvidence)
+    };
     const rank = vi.fn<RetrievalRankerPort['rank']>();
     const runtime = createRagRuntime([], {
       store: {

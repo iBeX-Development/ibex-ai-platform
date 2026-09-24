@@ -11,6 +11,7 @@ import {
   type KnowledgeMetadata,
   type KnowledgeStorePort,
   type RagRuntimeDependencies,
+  type RagRetrievalScopePort,
   type RagSecurityFilter,
   type RetrievalRankerPort
 } from '../../packages/rag-runtime/src/index.js';
@@ -92,10 +93,8 @@ export function retrievalRequest(overrides: Record<string, unknown> = {}): Recor
   return {
     context: ragContext,
     trace_id: 'rag-trace-2',
-    agent_id: 'maintenance',
+    routing_decision_id: 'routing-rag-1',
     query: 'bearing vibration lubrication',
-    domain: 'maintenance',
-    knowledge_scopes: ['maintenance-manuals'],
     top_k: 5,
     ...overrides
   };
@@ -184,6 +183,39 @@ export const approvedGovernance: KnowledgeGovernancePort = {
   authorizeIngestion: () => Promise.resolve({ allowed: true, decision_id: 'rag-governance-1' })
 };
 
+export function approvedRetrievalScope(
+  overrides: Readonly<{
+    agent_id?: string;
+    agent_version?: string;
+    domain?: string;
+    knowledge_scopes?: readonly string[];
+  }> = {}
+): RagRetrievalScopePort {
+  return {
+    resolve: (context, routingDecisionId) => {
+      if (routingDecisionId !== 'routing-rag-1') {
+        return Promise.resolve({ allowed: false, reason: 'unknown routing decision' });
+      }
+      return Promise.resolve({
+        allowed: true,
+        decision_id: 'rag-scope-authorization-1',
+        scope: {
+          routing_decision_id: routingDecisionId,
+          tenant_id: context.tenant_id,
+          user_id: context.user_id,
+          request_id: context.request_id,
+          correlation_id: context.correlation_id,
+          agent_id: 'maintenance',
+          agent_version: '1.0',
+          domain: 'maintenance',
+          knowledge_scopes: ['maintenance-manuals'],
+          ...overrides
+        }
+      });
+    }
+  };
+}
+
 export function createRagRuntime(
   audits: AuditRecord[],
   overrides: Partial<RagRuntimeDependencies> = {}
@@ -192,6 +224,7 @@ export function createRagRuntime(
     authorization: {
       authorize: () => Promise.resolve({ allowed: true, decision_id: 'rag-auth-1' })
     },
+    retrievalScope: approvedRetrievalScope(),
     governance: approvedGovernance,
     embeddings: deterministicEmbeddings,
     store: new DeterministicKnowledgeStore(),

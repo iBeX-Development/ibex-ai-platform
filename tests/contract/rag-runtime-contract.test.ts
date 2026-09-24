@@ -45,6 +45,21 @@ describe('Gate P6 RAG Runtime contracts', () => {
     ).toBe(false);
   });
 
+  it('accepts only an opaque routing decision reference for retrieval scope', () => {
+    expect(
+      ragRetrievalRequestSchema.safeParse(
+        retrievalRequest({
+          agent_id: 'warehouse',
+          domain: 'warehouse',
+          knowledge_scopes: ['warehouse-private']
+        })
+      ).success
+    ).toBe(false);
+    const withoutRoutingDecision = retrievalRequest();
+    delete withoutRoutingDecision.routing_decision_id;
+    expect(ragRetrievalRequestSchema.safeParse(withoutRoutingDecision).success).toBe(false);
+  });
+
   it('keeps trusted context separate from ingestion arguments', () => {
     expect(
       ragIngestionRequestSchema.safeParse({

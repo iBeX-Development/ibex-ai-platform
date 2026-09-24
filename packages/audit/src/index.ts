@@ -217,6 +217,7 @@ export type RagRuntimeAuditStage =
   | 'boundary_trace'
   | 'request_validation'
   | 'authorization'
+  | 'scope_resolution'
   | 'governance'
   | 'integrity'
   | 'audit'
@@ -243,12 +244,20 @@ interface RagRuntimeAuditEventBase {
   readonly document_ids?: readonly string[];
   readonly document_versions?: readonly string[];
   readonly chunk_ids?: readonly string[];
+  readonly retrieval_scores?: readonly RagRetrievalScoreAuditEvidence[];
   readonly embedding_model?: string;
   readonly embedding_model_version?: string;
   readonly retrieval_version?: string;
   readonly result_count?: number;
   readonly latency_ms?: number;
   readonly error_code?: string;
+}
+
+export interface RagRetrievalScoreAuditEvidence {
+  readonly chunk_id: string;
+  readonly score: number;
+  readonly semantic_score: number;
+  readonly keyword_score: number;
 }
 
 export interface TrustedRagRuntimeAuditEvent extends RagRuntimeAuditEventBase {
@@ -563,6 +572,7 @@ export function createRagRuntimeAuditEvent(input: {
   readonly documentIds?: readonly string[];
   readonly documentVersions?: readonly string[];
   readonly chunkIds?: readonly string[];
+  readonly retrievalScores?: readonly RagRetrievalScoreAuditEvidence[];
   readonly embeddingModel?: string;
   readonly embeddingModelVersion?: string;
   readonly retrievalVersion?: string;
@@ -591,6 +601,13 @@ export function createRagRuntimeAuditEvent(input: {
       ? { document_versions: Object.freeze([...input.documentVersions]) }
       : {}),
     ...(input.chunkIds ? { chunk_ids: Object.freeze([...input.chunkIds]) } : {}),
+    ...(input.retrievalScores
+      ? {
+          retrieval_scores: Object.freeze(
+            input.retrievalScores.map((score) => Object.freeze({ ...score }))
+          )
+        }
+      : {}),
     ...(input.embeddingModel ? { embedding_model: input.embeddingModel } : {}),
     ...(input.embeddingModelVersion
       ? { embedding_model_version: input.embeddingModelVersion }

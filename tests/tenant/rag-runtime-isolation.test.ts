@@ -3,6 +3,7 @@ import { createTrustedRequestContext } from '../../packages/security/src/index.j
 import type { RetrievalRankerPort } from '../../packages/rag-runtime/src/index.js';
 import {
   DeterministicKnowledgeStore,
+  approvedRetrievalScope,
   createRagRuntime,
   deterministicRanker,
   indexedChunk,
@@ -86,6 +87,24 @@ describe('Gate P6 RAG tenant isolation', () => {
     expect(rank).not.toHaveBeenCalled();
   });
 
+  it('rejects caller attempts to widen agent, domain, or knowledge scope', async () => {
+    const rank = vi.fn<RetrievalRankerPort['rank']>();
+    const runtime = createRagRuntime([], { ranker: { rank } });
+
+    await expect(
+      runtime.retrieve(
+        retrievalRequest({
+          agent_id: 'warehouse',
+          domain: 'warehouse',
+          knowledge_scopes: ['warehouse-private']
+        }),
+        {},
+        ragValidationTime
+      )
+    ).rejects.toMatchObject({ code: 'INVALID_INPUT' });
+    expect(rank).not.toHaveBeenCalled();
+  });
+
   it('allows globally approved knowledge only through the same access and domain filters', async () => {
     const globalDocument = makeDocument({
       tenant_scope: 'global_approved',
@@ -98,11 +117,10 @@ describe('Gate P6 RAG tenant isolation', () => {
     const runtime = createRagRuntime([], { store });
 
     const allowed = await runtime.retrieve(retrievalRequest(), {}, ragValidationTime);
-    const wrongDomain = await runtime.retrieve(
-      retrievalRequest({ domain: 'warehouse' }),
-      {},
-      ragValidationTime
-    );
+    const wrongDomain = await createRagRuntime([], {
+      store,
+      retrievalScope: approvedRetrievalScope({ domain: 'warehouse' })
+    }).retrieve(retrievalRequest(), {}, ragValidationTime);
 
     expect(allowed.results).toHaveLength(1);
     expect(wrongDomain.results).toEqual([]);
