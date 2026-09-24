@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { SpanStatusCode, type Span } from '@opentelemetry/api';
 import { PlatformError } from '../../errors/src/index.js';
+import { agentFeatureEnabled, type FeatureControls } from '../../configuration/src/index.js';
 import {
   createOrchestratorAuditEvent,
   type AuditEventSink,
@@ -31,6 +32,7 @@ import {
 const ABSTENTION = 'Insufficient approved evidence is available for this request.';
 
 export interface PilotAgentRuntimeOptions {
+  readonly featureControls: FeatureControls;
   readonly service: string;
   readonly environment: string;
   readonly promptHierarchy: PromptHierarchyAuditEvidence;
@@ -120,6 +122,52 @@ export class PilotAgentRuntime {
         'ibex.pilot.agent_id': this.profile.agent_id
       });
       try {
+        if (!this.options.featureControls.aiPlatform || !this.options.featureControls.agents) {
+          await this.emitAudit(
+            undefined,
+            boundary.trace_id,
+            'rejected',
+            'boundary_context',
+            'SERVICE_UNAVAILABLE',
+            undefined,
+            now,
+            [],
+            'insufficient',
+            false,
+            boundary
+          );
+          throw new PlatformError(
+            'SERVICE_UNAVAILABLE',
+            'AI runtime is unavailable',
+            503,
+            undefined,
+            boundary.trace_id,
+            boundary.request_id
+          );
+        }
+        if (!agentFeatureEnabled(this.options.featureControls, this.profile.agent_id)) {
+          await this.emitAudit(
+            undefined,
+            boundary.trace_id,
+            'rejected',
+            'boundary_context',
+            'PERMISSION_DENIED',
+            undefined,
+            now,
+            [],
+            'insufficient',
+            false,
+            boundary
+          );
+          throw new PlatformError(
+            'PERMISSION_DENIED',
+            'Access denied',
+            403,
+            undefined,
+            boundary.trace_id,
+            boundary.request_id
+          );
+        }
         const response = await this.executeWithinBoundary(rawRequest, boundary, span, now);
         span.setAttribute('ibex.pilot.outcome', response.response_type);
         span.setStatus({ code: SpanStatusCode.OK });
@@ -295,6 +343,15 @@ export class PilotAgentRuntime {
         policy.intent,
         now
       );
+      throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
+    }
+    if (request.requested_rag_scopes.length > 0 && !this.options.featureControls.rag) {
+      throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
+    }
+    if (request.requested_tool_capabilities.length > 0 && !this.options.featureControls.tools) {
+      throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
+    }
+    if (policy.proposal_only && !this.options.featureControls.actionTools) {
       throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
     }
 

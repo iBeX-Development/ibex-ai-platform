@@ -10,6 +10,7 @@ import {
   type GatewayResponseEnvelope
 } from '../../contracts/src/index.js';
 import { PlatformError } from '../../errors/src/index.js';
+import type { FeatureControls } from '../../configuration/src/index.js';
 import { tracer } from '../../observability/src/index.js';
 import {
   enforceAuthorization,
@@ -64,6 +65,7 @@ export interface GatewayExecutionRequest extends InboundAuthenticationRequest {
 }
 
 export interface GatewayServiceDependencies {
+  readonly featureControls: FeatureControls;
   readonly authenticator: GatewayAuthenticator;
   readonly authorizationPolicy: ServerAuthorizationPolicy;
   readonly accessRequirements: GatewayAccessRequirementsResolver;
@@ -110,6 +112,9 @@ export class AiGatewayService {
       let trustedContext: TrustedRequestContext | undefined;
       span.setAttribute('ibex.gateway.trace_id', traceId);
       try {
+        if (!this.dependencies.featureControls.aiPlatform) {
+          throw new PlatformError('SERVICE_UNAVAILABLE', 'AI platform is unavailable', 503);
+        }
         if (
           request.payload_bytes < 0 ||
           request.payload_bytes > this.dependencies.maximumPayloadBytes

@@ -1,9 +1,18 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { pilotAgentProfiles } from '../../agents/index.js';
-import { loadConfig } from '../../packages/configuration/src/index.js';
-import { validTestEnvironment } from '../../packages/testing/src/index.js';
+import { featureControls, loadConfig } from '../../packages/configuration/src/index.js';
+import { PlatformError } from '../../packages/errors/src/index.js';
+import {
+  enabledTestFeatureControls,
+  validTestEnvironment
+} from '../../packages/testing/src/index.js';
+import {
+  createPilotHarness,
+  pilotRequest,
+  pilotValidationTime
+} from '../testing/pilot-agent-fixtures.js';
 import { phase10GoldenDataset } from './datasets/pilot-agents/v1.0.0.js';
 import {
   criticalGateNames,
@@ -11,29 +20,15 @@ import {
   measurementEvidenceSchema,
   phase10QualityTargets,
   summarizeDeterministicMeasurement,
-  type CriticalGateName,
   type EvaluationObservation
 } from './support/release-gate.js';
+import { executePhase10Evaluation } from './support/runtime-evaluator.js';
 
-function deterministicOutcome(item: (typeof phase10GoldenDataset.cases)[number]) {
-  if (item.category === 'routing') return 'route' as const;
-  if (['tenant', 'permission', 'tool_parameter', 'prompt_injection'].includes(item.category))
-    return 'deny' as const;
-  if (['tool', 'abstention', 'action_boundary'].includes(item.category)) return 'abstain' as const;
-  if (item.category === 'scope' && ['asset', 'warehouse'].includes(item.agent_id))
-    return 'abstain' as const;
-  return 'allow' as const;
-}
+let observations: readonly EvaluationObservation[] = [];
 
-const observations: readonly EvaluationObservation[] = Object.freeze(
-  phase10GoldenDataset.cases.map((item) => ({
-    case_id: item.case_id,
-    actual: deterministicOutcome(item)
-  }))
-);
-const passingCriticalGates = Object.freeze(
-  Object.fromEntries(criticalGateNames.map((name) => [name, true]))
-) as Readonly<Record<CriticalGateName, boolean>>;
+beforeAll(async () => {
+  observations = await executePhase10Evaluation();
+});
 
 function sourceFiles(root: string): string[] {
   return readdirSync(root).flatMap((entry) => {
@@ -73,59 +68,115 @@ describe('Phase 10 hardening gate', () => {
     }
   });
 
-  it('passes every critical gate and all approved quality thresholds', () => {
+  it('derives every safety gate and quality score from executed runtime evidence', () => {
     const result = evaluatePhase10Gate({
       cases: phase10GoldenDataset.cases,
       observations,
-      critical_gates: passingCriticalGates,
       findings: []
     });
     expect(result.status).toBe('PASS');
     expect(result.critical_safety_gate).toBe('PASS');
     expect(result.failed_case_ids).toEqual([]);
+    expect(result.critical_evidence.map((item) => item.gate)).toEqual(criticalGateNames);
+    for (const evidence of result.critical_evidence) {
+      expect(evidence.passed).toBe(true);
+      expect(evidence.case_ids.length).toBeGreaterThan(0);
+      expect(evidence.audit_event_ids.length).toBeGreaterThan(0);
+    }
     for (const [metric, target] of Object.entries(phase10QualityTargets))
       expect(
         result.quality_scores[metric as keyof typeof result.quality_scores]
       ).toBeGreaterThanOrEqual(target);
   });
 
-  it('never conditionally accepts a failed critical gate or unresolved High finding', () => {
-    const failedCritical = evaluatePhase10Gate({
-      cases: phase10GoldenDataset.cases,
-      observations,
-      critical_gates: { ...passingCriticalGates, tenant_isolation: false },
-      findings: []
+  it('preserves reconstructable, context-bound evidence for every executed case', () => {
+    expect(observations).toHaveLength(phase10GoldenDataset.cases.length);
+    expect(new Set(observations.map((item) => item.evaluation_run_id))).toEqual(
+      new Set(['phase10-runtime-evaluation-v1.0.0'])
+    );
+    expect(new Set(observations.flatMap((item) => item.audit_correlation.event_ids)).size).toBe(
+      observations.flatMap((item) => item.audit_correlation.event_ids).length
+    );
+    for (const record of observations) {
+      expect(record.audit_correlation).toMatchObject({
+        request_id: record.request_id,
+        correlation_id: record.correlation_id,
+        trace_id: record.trace_id,
+        trusted_context_bound: true
+      });
+      expect(record.expected_result_reference.case_id).toBe(record.case_id);
+      expect(record.evaluator.mechanism).toBe('executed-pilot-agent-runtime');
+      expect(record.measurement.source).toBe('deterministic_simulation');
+      expect(JSON.stringify(record)).not.toMatch(/rawPrompt|toolInput|chain.of.thought/i);
+    }
+    const artifact = JSON.parse(
+      readFileSync(
+        resolve(import.meta.dirname, 'evidence/phase10-runtime-evidence-v1.0.0.json'),
+        'utf8'
+      )
+    ) as unknown;
+    expect(artifact).toEqual({
+      schema_version: '1.0.0',
+      evaluation_run_id: 'phase10-runtime-evaluation-v1.0.0',
+      dataset_reference: 'ibex-pilot-hardening@1.0.0',
+      classification: 'synthetic_test_only',
+      records: observations
     });
-    expect(failedCritical.status).toBe('FAIL');
-    expect(failedCritical.critical_safety_gate).toBe('FAIL');
-
-    const unresolvedHigh = evaluatePhase10Gate({
-      cases: phase10GoldenDataset.cases,
-      observations,
-      critical_gates: passingCriticalGates,
-      findings: [{ finding_id: 'P10-HIGH-001', severity: 'high', status: 'unresolved' }]
-    });
-    expect(unresolvedHigh.status).toBe('FAIL');
-    expect(unresolvedHigh.blocking_findings).toEqual(['P10-HIGH-001']);
   });
 
-  it('fails closed for missing, duplicate, or unknown evaluation observations', () => {
+  it('fails closed for missing, duplicate, malformed, or inconsistent evidence', () => {
     const first = observations[0];
-    if (!first) throw new Error('Expected a deterministic observation');
+    if (!first) throw new Error('Expected an executed observation');
+    const inconsistent = {
+      ...first,
+      audit_correlation: { ...first.audit_correlation, trace_id: 'conflicting-trace' }
+    } as EvaluationObservation;
     for (const invalid of [
       observations.slice(1),
       [...observations, first],
-      [...observations, { case_id: 'UNKNOWN-CASE', actual: 'deny' as const }]
+      observations.map((item, index) => (index === 0 ? inconsistent : item))
     ]) {
       const result = evaluatePhase10Gate({
         cases: phase10GoldenDataset.cases,
         observations: invalid,
-        critical_gates: passingCriticalGates,
         findings: []
       });
       expect(result.status).toBe('FAIL');
-      expect(result.blocking_findings).toContain('EVALUATION_DATASET_INTEGRITY');
+      expect(result.blocking_findings).toContain('EVALUATION_EVIDENCE_INTEGRITY');
     }
+  });
+
+  it('never conditionally accepts failed runtime evidence or unresolved High findings', () => {
+    const first = observations[0];
+    if (!first) throw new Error('Expected an executed observation');
+    const failedEvidence = observations.map((item, index) =>
+      index === 0
+        ? {
+            ...item,
+            observed_result:
+              item.observed_result === 'allow' ? ('deny' as const) : ('allow' as const),
+            failure: {
+              code: 'RUNTIME_MISMATCH',
+              detail: 'Runtime mismatch',
+              severity: 'critical' as const
+            }
+          }
+        : item
+    );
+    expect(
+      evaluatePhase10Gate({
+        cases: phase10GoldenDataset.cases,
+        observations: failedEvidence,
+        findings: []
+      }).status
+    ).toBe('FAIL');
+    expect(
+      evaluatePhase10Gate({
+        cases: phase10GoldenDataset.cases,
+        observations,
+        findings: [{ finding_id: 'P10-HIGH-001', severity: 'high', status: 'unresolved' }]
+      }).status
+    ).toBe('FAIL');
   });
 
   it('labels deterministic latency and cost separately from approved live measurements', () => {
@@ -143,17 +194,65 @@ describe('Phase 10 hardening gate', () => {
     ).toThrow('Live measurements require an approved integration reference');
   });
 
-  it('keeps all rollout and rollback feature controls fail-closed by default', () => {
-    const features = loadConfig(validTestEnvironment).features;
-    expect(Object.values(features).every((enabled) => !enabled)).toBe(true);
-    expect(pilotAgentProfiles.map((profile) => profile.live_capabilities_enabled)).toEqual([
-      false,
-      false,
-      false,
-      false
-    ]);
+  it('enforces platform and individual-agent rollback controls before execution', async () => {
+    const profile = pilotAgentProfiles[0];
+    if (!profile) throw new Error('Expected a Pilot Agent profile');
+    for (const controls of [
+      featureControls({ ...enabledTestFeatureControls, aiPlatform: false }),
+      featureControls({ ...enabledTestFeatureControls, agents: false }),
+      featureControls({ ...enabledTestFeatureControls, generalAgent: false })
+    ]) {
+      const { runtime, audits } = createPilotHarness(profile, {
+        featureControls: controls
+      });
+      await expect(
+        runtime.execute(pilotRequest(profile), pilotValidationTime)
+      ).rejects.toBeInstanceOf(PlatformError);
+      expect(audits).toHaveLength(1);
+    }
+  });
+
+  it('enforces RAG, Tool, and Action Tool controls before grounding', async () => {
+    const general = pilotAgentProfiles.find((profile) => profile.agent_id === 'general_ibex');
+    const warehouse = pilotAgentProfiles.find((profile) => profile.agent_id === 'warehouse');
+    if (!general || !warehouse) throw new Error('Expected Pilot Agent profiles');
+    const cases = [
+      {
+        profile: general,
+        controls: featureControls({ ...enabledTestFeatureControls, rag: false }),
+        request: pilotRequest(general, {
+          intent: 'GENERAL_KNOWLEDGE',
+          requested_rag_scopes: ['ibex-handbook']
+        })
+      },
+      {
+        profile: warehouse,
+        controls: featureControls({ ...enabledTestFeatureControls, tools: false }),
+        request: pilotRequest(warehouse, {
+          intent: 'INVENTORY_QUERY',
+          requested_tool_capabilities: ['inventory.stock']
+        })
+      },
+      {
+        profile: warehouse,
+        controls: featureControls({ ...enabledTestFeatureControls, actionTools: false }),
+        request: pilotRequest(warehouse, {
+          intent: 'ISSUE_DRAFT_ACTION',
+          requested_tool_capabilities: ['inventory.prepare_issue']
+        })
+      }
+    ];
+    for (const item of cases) {
+      const { runtime } = createPilotHarness(item.profile, { featureControls: item.controls });
+      await expect(runtime.execute(item.request, pilotValidationTime)).rejects.toMatchObject({
+        code: 'PERMISSION_DENIED'
+      });
+    }
+  });
+
+  it('keeps every rollout feature disabled in the approved default configuration', () => {
     expect(
-      pilotAgentProfiles.every((profile) => profile.tool_allowlist.every((tool) => !tool.enabled))
+      Object.values(loadConfig(validTestEnvironment).features).every((enabled) => !enabled)
     ).toBe(true);
   });
 });

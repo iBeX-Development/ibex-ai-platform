@@ -11,12 +11,16 @@ controls, validates Phase 1–9 behavior, and records results in
 | ----------------------------------------- | ------------ |
 | Critical Safety Gate                      | 9/9 PASS     |
 | Approved quality thresholds               | PASS         |
-| Phase 10 focused suite                    | 104/104 PASS |
-| Full regression suite                     | 303/303 PASS |
+| Phase 10 focused suite                    | 110/110 PASS |
+| Full regression suite                     | 310/310 PASS |
 | Formatting, lint, typecheck, and build    | PASS         |
 | Dependency and repository security scans  | PASS         |
 | Audit reconstruction and fail-safe health | PASS         |
 | Feature flags and rollback evidence       | PASS         |
+
+The Critical Safety Gate and quality scores are reconstructed from 44 executed Pilot Agent runtime
+records and 56 unique normalized audit events. The CI workflow also enforces dependency, secret,
+direct Core database, provider-coupling, evaluation-leakage, and later-phase scope scans.
 
 Shadow Mode, Controlled Pilot, Production Readiness, production promotion, and Phase 11+
 capabilities are excluded.

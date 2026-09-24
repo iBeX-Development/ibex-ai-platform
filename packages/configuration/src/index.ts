@@ -1,5 +1,8 @@
 import { z } from 'zod';
 import { ConfigurationError } from '../../errors/src/index.js';
+import { featureControls } from './feature-controls.js';
+
+export * from './feature-controls.js';
 
 const booleanString = z.enum(['true', 'false']).transform((value) => value === 'true');
 const environmentSchema = z.enum(['local', 'development', 'test', 'staging', 'production']);
@@ -87,7 +90,7 @@ function toConfig(env: z.infer<typeof envSchema>) {
       maxRetries: env.IBEX_MAX_RETRIES
     }),
     rateLimits: Object.freeze({ requestsPerMinute: env.IBEX_RATE_LIMIT_PER_MINUTE }),
-    features: Object.freeze({
+    features: featureControls({
       aiPlatform: env.IBEX_AI_PLATFORM_ENABLED,
       agents: env.IBEX_FEATURE_AGENTS_ENABLED,
       generalAgent: env.IBEX_GENERAL_AGENT_ENABLED,

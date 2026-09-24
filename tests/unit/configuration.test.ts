@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { loadConfig } from '../../packages/configuration/src/index.js';
 import { validTestEnvironment } from '../../packages/testing/src/index.js';
+import { runtimeHealth } from '../../apps/api/src/index.js';
 
 describe('configuration', () => {
   it('loads typed configuration', () => {
@@ -13,7 +14,8 @@ describe('configuration', () => {
     expect(() => loadConfig({ ...validTestEnvironment, IBEX_ENVIRONMENT: 'production' })).toThrow();
   });
   it('keeps every rollout and rollback feature disabled by default', () => {
-    expect(loadConfig(validTestEnvironment).features).toEqual({
+    const config = loadConfig(validTestEnvironment);
+    expect(config.features).toEqual({
       aiPlatform: false,
       agents: false,
       generalAgent: false,
@@ -25,6 +27,11 @@ describe('configuration', () => {
       actionTools: false,
       modelGateway: false,
       modelFallback: false
+    });
+    expect(runtimeHealth(config)).toEqual({
+      status: 'disabled',
+      service: 'test-service',
+      ai_platform_enabled: false
     });
   });
 });

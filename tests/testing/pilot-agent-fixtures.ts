@@ -18,12 +18,26 @@ import {
   type KnowledgeChunk
 } from '../../packages/rag-runtime/src/index.js';
 import { createTrustedRequestContext } from '../../packages/security/src/index.js';
+import { enabledTestFeatureControls } from '../../packages/testing/src/index.js';
+import type { FeatureControls } from '../../packages/configuration/src/index.js';
 
 export const pilotValidationTime = new Date('2026-09-24T02:00:00.000Z');
 export const pilotBoundaryIdentity = Object.freeze({
   trace_id: 'server-p8-trace-1',
   request_id: 'server-p8-request-1',
   correlation_id: 'server-p8-correlation-1'
+});
+
+export interface PilotEvidenceBinding {
+  readonly request_id: string;
+  readonly correlation_id: string;
+  readonly trace_id: string;
+}
+
+const defaultEvidenceBinding: PilotEvidenceBinding = Object.freeze({
+  request_id: 'request-p8-1',
+  correlation_id: 'correlation-p8-1',
+  trace_id: 'trace-p8-1'
 });
 
 export function pilotContext(overrides: Record<string, unknown> = {}) {
@@ -140,7 +154,8 @@ export function groundedChunk(
 export function ragGrounding(
   profile: PilotAgentProfile,
   scope: string,
-  overrides: Partial<KnowledgeChunk> = {}
+  overrides: Partial<KnowledgeChunk> = {},
+  binding: PilotEvidenceBinding = defaultEvidenceBinding
 ): PilotGroundingEvidence {
   const chunk = groundedChunk(profile, scope, overrides);
   return {
@@ -152,9 +167,9 @@ export function ragGrounding(
         response: {
           contract_version: '1.0',
           status: 'success',
-          request_id: 'request-p8-1',
-          correlation_id: 'correlation-p8-1',
-          trace_id: 'trace-p8-1',
+          request_id: binding.request_id,
+          correlation_id: binding.correlation_id,
+          trace_id: binding.trace_id,
           retrieval_version: 'test-1.0',
           results: [
             {
@@ -183,7 +198,10 @@ export function ragGrounding(
   };
 }
 
-export function toolGrounding(capability: string): PilotGroundingEvidence {
+export function toolGrounding(
+  capability: string,
+  binding: PilotEvidenceBinding = defaultEvidenceBinding
+): PilotGroundingEvidence {
   return {
     answer: 'Approved deterministic Tool result.',
     rag: [],
@@ -191,9 +209,9 @@ export function toolGrounding(capability: string): PilotGroundingEvidence {
       {
         contract_version: '1.0',
         status: 'success',
-        request_id: 'request-p8-1',
-        correlation_id: 'correlation-p8-1',
-        trace_id: 'trace-p8-1',
+        request_id: binding.request_id,
+        correlation_id: binding.correlation_id,
+        trace_id: binding.trace_id,
         tool_id: capability,
         tool_version: 'test-1.0',
         output: { status: 'test-only' },
@@ -220,7 +238,9 @@ export function createPilotHarness(
   options: {
     synthetic?: boolean;
     grounding?: PilotGroundingEvidence;
-    boundaryIdentity?: typeof pilotBoundaryIdentity;
+    boundaryIdentity?: PilotEvidenceBinding;
+    featureControls?: FeatureControls;
+    auditEventPrefix?: string;
   } = {}
 ) {
   const selected = options.synthetic === false ? profile : syntheticProfile(profile);
@@ -241,9 +261,11 @@ export function createPilotHarness(
     healthExporter: { export: () => Promise.resolve() },
     metricLabelPolicy: { services: ['pilot-agent-test'], environments: ['test'] },
     environment: 'test',
-    eventIdFactory: () => `audit-${(store.audits.length + 1).toString()}`
+    eventIdFactory: () =>
+      `${options.auditEventPrefix ?? 'audit'}-${(store.audits.length + 1).toString()}`
   });
   const runtime = new PilotAgentRuntime(selected, grounding, pipeline, {
+    featureControls: options.featureControls ?? enabledTestFeatureControls,
     service: 'pilot-agent-test',
     environment: 'test',
     allowDeterministicTestAdapters: true,

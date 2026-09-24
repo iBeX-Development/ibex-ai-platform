@@ -7,6 +7,8 @@ import {
   type GatewayServiceDependencies
 } from '../../packages/gateway/src/index.js';
 import { PlatformError } from '../../packages/errors/src/index.js';
+import { featureControls } from '../../packages/configuration/src/index.js';
+import { enabledTestFeatureControls } from '../../packages/testing/src/index.js';
 import {
   authenticatorReturning,
   gatewayEnvelope,
@@ -28,6 +30,7 @@ function createDependencies(overrides: Partial<GatewayServiceDependencies> = {})
     Promise.resolve({ allowed: true as const, decision_id: 'decision-1' })
   );
   const dependencies: GatewayServiceDependencies = {
+    featureControls: enabledTestFeatureControls,
     authenticator: authenticatorReturning(gatewayIdentity),
     authorizationPolicy: { authorize },
     accessRequirements: {
@@ -70,6 +73,22 @@ function request(
 }
 
 describe('Gate P2 AI Gateway pipeline', () => {
+  it('fails closed at the Gateway boundary when the platform rollback control is disabled', async () => {
+    const fixture = createDependencies({
+      featureControls: featureControls({ ...enabledTestFeatureControls, aiPlatform: false })
+    });
+    const service = new AiGatewayService(fixture.dependencies);
+
+    await expect(service.execute(request('chat'), validationTime)).rejects.toMatchObject({
+      code: 'SERVICE_UNAVAILABLE'
+    });
+    expect(fixture.forward).not.toHaveBeenCalled();
+    expect(fixture.authorize).not.toHaveBeenCalled();
+    expect(fixture.auditEvents).toEqual([
+      expect.objectContaining({ outcome: 'error', error_code: 'SERVICE_UNAVAILABLE' })
+    ]);
+  });
+
   it('propagates trusted context and one trace identity end to end', async () => {
     const fixture = createDependencies();
     const service = new AiGatewayService(fixture.dependencies);

@@ -6,6 +6,7 @@ import {
   type ModelGatewayAuditStage
 } from '../../audit/src/index.js';
 import { PlatformError, type ErrorCode } from '../../errors/src/index.js';
+import type { FeatureControls } from '../../configuration/src/index.js';
 import { tracer } from '../../observability/src/index.js';
 import {
   createTrustedRequestContext,
@@ -34,6 +35,7 @@ import type { ModelMetricsSink, ModelUsageMetric } from './metrics.js';
 import type { ModelCandidate, ModelRegistry } from './registry.js';
 
 export interface ModelGatewayDependencies {
+  readonly featureControls: FeatureControls;
   readonly registry: ModelRegistry;
   readonly adapters: readonly ModelProviderAdapter[];
   readonly audit: AuditEventSink;
@@ -173,6 +175,12 @@ export class ModelGatewayService {
       span.setAttribute('ibex.model_gateway.trace_id', traceId);
 
       try {
+        if (
+          !this.dependencies.featureControls.aiPlatform ||
+          !this.dependencies.featureControls.modelGateway
+        ) {
+          throw new PlatformError('MODEL_UNAVAILABLE', 'Model provider is unavailable', 503);
+        }
         if (typeof inbound !== 'object' || inbound === null) {
           throw new PlatformError('VALIDATION_ERROR', 'Model request is invalid', 400);
         }
@@ -224,7 +232,11 @@ export class ModelGatewayService {
         for (let candidateIndex = 0; candidateIndex < candidates.length; candidateIndex += 1) {
           const candidate = candidates[candidateIndex];
           if (!candidate) continue;
-          if (candidateIndex > 0 && !this.policy.fallback_enabled) break;
+          if (
+            candidateIndex > 0 &&
+            (!this.policy.fallback_enabled || !this.dependencies.featureControls.modelFallback)
+          )
+            break;
           selected = candidate;
           fallbackUsed = candidateIndex > 0;
           const adapter = this.adapters.get(candidate.provider.adapter_id);

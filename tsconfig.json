@@ -18,6 +18,7 @@
     "agents/**/*.ts",
     "apps/**/*.ts",
     "packages/**/*.ts",
+    "scripts/**/*.ts",
     "tests/**/*.ts",
     "vitest.config.ts"
   ]

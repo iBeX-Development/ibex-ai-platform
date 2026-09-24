@@ -1,9 +1,17 @@
 import { createServer } from 'node:http';
-import { loadConfig } from '../../../packages/configuration/src/index.js';
+import { loadConfig, type AppConfig } from '../../../packages/configuration/src/index.js';
 import { createLogger } from '../../../packages/observability/src/index.js';
 import type { createGatewayHttpHandler } from './gateway.js';
 
 type GatewayHttpHandler = ReturnType<typeof createGatewayHttpHandler>;
+
+export function runtimeHealth(config: AppConfig) {
+  return Object.freeze({
+    status: config.features.aiPlatform ? ('ok' as const) : ('disabled' as const),
+    service: config.runtime.serviceName,
+    ai_platform_enabled: config.features.aiPlatform
+  });
+}
 
 export function startApi(
   env: NodeJS.ProcessEnv = process.env,
@@ -17,7 +25,7 @@ export function startApi(
   ) => {
     if (request.method === 'GET' && request.url === '/health') {
       response.writeHead(200, { 'content-type': 'application/json' });
-      response.end(JSON.stringify({ status: 'ok', service: config.runtime.serviceName }));
+      response.end(JSON.stringify(runtimeHealth(config)));
       return;
     }
     if (gatewayHandler && (await gatewayHandler(request, response))) return;
