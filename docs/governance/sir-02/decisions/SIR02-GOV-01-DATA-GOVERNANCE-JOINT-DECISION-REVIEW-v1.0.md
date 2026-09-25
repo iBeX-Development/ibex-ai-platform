@@ -7,14 +7,14 @@
 | Evidence ID                    | `SIR02-GOV-01`                                                       |
 | Document                       | `SIR02-GOV-01 — Data Governance Joint Decision Review`               |
 | Version                        | `v1.0`                                                               |
-| Record status                  | `Owner Input Required`                                               |
+| Record status                  | `Owner Decision Recorded / Awaiting Immutable Linkage`               |
 | Current evidence status        | `Missing / Not Reviewed`                                             |
 | Scope                          | Reduced Initial Shadow Mode with RAG and document ingestion excluded |
 | Data Governance owner          | **GANTUMUR Erdenedalai — Founder / Administrator**                   |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                             |
-| Decision outcome               | `Owner Input Required`                                               |
-| Decision date                  | `Owner Input Required`                                               |
-| Conditions                     | `Owner Input Required`                                               |
+| Decision outcome               | `Approved`                                                           |
+| Decision date                  | `2026-09-25`                                                         |
+| Conditions                     | `Recorded in Owner completion`                                       |
 | Immutable repository reference | `Owner Input Required — completed-decision commit`                   |
 
 ## Required decision scope
@@ -50,16 +50,16 @@ The Data Governance owner decision must explicitly approve, reject, or defer the
 | Reduced scope excludes RAG and ingestion                                                   | Supporting approved governance and configuration   | `Yes`          |
 | Tenant isolation, ownership, minimization, provenance, retention, and deletion are covered | Required decision scope above                      | `Yes`          |
 | Hidden or unapproved data artifacts are explicitly prohibited                              | Required decision scope above                      | `Yes`          |
-| Data Governance owner supplies an explicit outcome and statement                           | `Owner Input Required`                             | `No`           |
-| Decision date and conditions are supplied                                                  | `Owner Input Required`                             | `No`           |
+| Data Governance owner supplies an explicit outcome and statement                           | Owner outcome and statement recorded               | `Yes`          |
+| Decision date and conditions are supplied                                                  | `2026-09-25`; owner conditions recorded            | `Yes`          |
 | Completed owner decision has an immutable repository reference                             | `Owner Input Required — completed-decision commit` | `No`           |
 
 ## Owner completion
 
-- Decision outcome (`Approved`, `Rejected`, or `Deferred`): **Owner Input Required**
-- Owner decision statement: **Owner Input Required**
-- Decision date: **Owner Input Required**
-- Conditions: **Owner Input Required**
+- Decision outcome: **Approved**
+- Owner decision statement: **Data Governance approves the reduced Initial Shadow scope with RAG and document ingestion excluded. Strict tenant data isolation, tenant ownership and authorization boundaries, data minimization, provenance, traceability, retention/deletion obligations, and prohibition of hidden ingestion/RAG artifacts remain mandatory.**
+- Decision date: **2026-09-25**
+- Conditions: **No cross-tenant data use is permitted. No deferred document, chunk, embedding, index, vector, cache, retrieval, or related artifact may be created outside approved scope. This decision does not authorize deployment, Shadow activation, ingestion, RAG, production use, or expansion of tenant-data scope.**
 - Immutable repository reference after completion: **Owner Input Required**
 
-Evidence status remains `Missing / Not Reviewed` until every mandatory owner field and the immutable completed-decision reference are supplied.
+All owner-supplied fields are complete. Evidence status remains `Missing / Not Reviewed` until the immutable completed-decision reference is linked.

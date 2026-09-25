@@ -7,14 +7,14 @@
 | Evidence ID                    | `SIR02-GOV-05`                                                   |
 | Document                       | `SIR02-GOV-05 — Data Governance Approval`                        |
 | Version                        | `v1.0`                                                           |
-| Record status                  | `Owner Input Required`                                           |
+| Record status                  | `Owner Decision Recorded / Awaiting Immutable Linkage`           |
 | Current evidence status        | `Missing / Not Reviewed`                                         |
 | Scope                          | Formal Data Governance approval for reduced Initial Shadow scope |
 | Data Governance approval owner | **GANTUMUR Erdenedalai — Founder / Administrator**               |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                         |
-| Approval status                | `Owner Input Required`                                           |
-| Decision date                  | `Owner Input Required`                                           |
-| Governance conditions          | `Owner Input Required`                                           |
+| Approval status                | `Approved`                                                       |
+| Decision date                  | `2026-09-25`                                                     |
+| Governance conditions          | `Recorded in Owner completion`                                   |
 | Immutable repository reference | `Owner Input Required — completed-approval commit`               |
 
 ## Required approval scope
@@ -44,16 +44,16 @@ The formal Data Governance decision must explicitly approve or reject the reduce
 | Versioned formal Data Governance approval record exists             | This `v1.0` record                                 | `Yes`          |
 | Reduced scope and prohibited data paths are explicit                | Required approval scope above                      | `Yes`          |
 | No operational or tenant-data-scope authorization is implied        | Required approval scope above                      | `Yes`          |
-| Authorized owner supplies explicit approval/rejection and statement | `Owner Input Required`                             | `No`           |
-| Decision date and governance conditions are supplied                | `Owner Input Required`                             | `No`           |
+| Authorized owner supplies explicit approval/rejection and statement | Owner approval and statement recorded              | `Yes`          |
+| Decision date and governance conditions are supplied                | `2026-09-25`; owner conditions recorded            | `Yes`          |
 | Completed approval has an immutable repository reference            | `Owner Input Required — completed-approval commit` | `No`           |
 
 ## Owner completion
 
-- Approval status (`Approved` or `Rejected`): **Owner Input Required**
-- Owner approval statement: **Owner Input Required**
-- Decision date: **Owner Input Required**
-- Governance conditions: **Owner Input Required**
+- Approval status: **Approved**
+- Owner approval statement: **Data Governance formally approves the reduced Initial Shadow scope with RAG and document ingestion excluded under the established tenant-isolation, ownership, authorization, minimization, provenance, traceability, retention, and deletion requirements.**
+- Decision date: **2026-09-25**
+- Governance conditions: **Any future ingestion or RAG enablement requires a new explicit Data Governance review and approval in addition to the applicable architecture, security, and configuration approvals.**
 - Immutable repository reference after completion: **Owner Input Required**
 
-Evidence status remains `Missing / Not Reviewed` until every mandatory owner field and the immutable completed-approval reference are supplied.
+All owner-supplied fields are complete. Evidence status remains `Missing / Not Reviewed` until the immutable completed-approval reference is linked.

@@ -7,14 +7,14 @@
 | Evidence ID                    | `SIR02-DEF-01`                                                                                         |
 | Document                       | `SIR02-DEF-01 — Data Governance Ingestion Deferral Acceptance`                                         |
 | Version                        | `v1.0`                                                                                                 |
-| Record status                  | `Owner Input Required`                                                                                 |
+| Record status                  | `Owner Decision Recorded / Awaiting Immutable Linkage`                                                 |
 | Current evidence status        | `Missing / Not Reviewed`                                                                               |
 | Scope                          | Data Governance acceptance of the complete SIR-09 ingestion deferral lifecycle for Initial Shadow Mode |
 | Data Governance owner          | **GANTUMUR Erdenedalai — Founder / Administrator**                                                     |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                                                               |
-| Decision outcome               | `Owner Input Required`                                                                                 |
-| Decision date                  | `Owner Input Required`                                                                                 |
-| Conditions                     | `Owner Input Required`                                                                                 |
+| Decision outcome               | `Approved`                                                                                             |
+| Decision date                  | `2026-09-25`                                                                                           |
+| Conditions                     | `Recorded in Owner completion`                                                                         |
 | Immutable repository reference | `Owner Input Required — completed-decision commit`                                                     |
 
 ## Complete deferred lifecycle
@@ -62,17 +62,17 @@ The owner must explicitly confirm that:
 | Complete ingestion lifecycle is explicitly enumerated                    | Complete deferred lifecycle above                  | `Yes`          |
 | Hidden or unapproved deferred artifacts are explicitly prohibited        | Required confirmations above                       | `Yes`          |
 | Data ownership and applicable data lifecycle controls remain mandatory   | Required confirmations above                       | `Yes`          |
-| Data Governance owner supplies explicit outcome and acceptance statement | `Owner Input Required`                             | `No`           |
-| Decision date and conditions are supplied                                | `Owner Input Required`                             | `No`           |
+| Data Governance owner supplies explicit outcome and acceptance statement | Owner acceptance and statement recorded            | `Yes`          |
+| Decision date and conditions are supplied                                | `2026-09-25`; owner conditions recorded            | `Yes`          |
 | Completed acceptance has an immutable repository reference               | `Owner Input Required — completed-decision commit` | `No`           |
 
 ## Owner completion
 
-- Decision outcome (`Approved`, `Rejected`, or `Deferred`): **Owner Input Required**
-- Owner decision statement: **Owner Input Required**
-- Explicit no-hidden/unapproved-artifact confirmation: **Owner Input Required**
-- Decision date: **Owner Input Required**
-- Conditions: **Owner Input Required**
+- Decision outcome: **Approved**
+- Owner decision statement: **Data Governance accepts the SIR-09 ingestion deferral for Initial Shadow Mode across the complete ingestion lifecycle, including document intake, parsing/chunking, embeddings, indexing, vector-store population, storage processing, retrieval preparation, and related RAG ingestion activities.**
+- Explicit no-hidden/unapproved-artifact confirmation: **Confirmed. No unapproved document, chunk, embedding, index, vector, cache, retrieval, or equivalent deferred artifact may be created or retained.**
+- Decision date: **2026-09-25**
+- Conditions: **Deferral must preserve tenant isolation, ownership, authorization, provenance, retention/deletion, and auditability requirements.**
 - Immutable repository reference after completion: **Owner Input Required**
 
-Evidence status remains `Missing / Not Reviewed` until every mandatory owner field and the immutable completed-decision reference are supplied.
+All owner-supplied fields are complete. Evidence status remains `Missing / Not Reviewed` until the immutable completed-decision reference is linked.

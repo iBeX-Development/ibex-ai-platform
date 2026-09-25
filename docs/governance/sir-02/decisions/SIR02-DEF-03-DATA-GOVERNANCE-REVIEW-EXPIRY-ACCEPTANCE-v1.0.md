@@ -7,15 +7,15 @@
 | Evidence ID                    | `SIR02-DEF-03`                                                |
 | Document                       | `SIR02-DEF-03 — Data Governance Review and Expiry Acceptance` |
 | Version                        | `v1.0`                                                        |
-| Record status                  | `Owner Input Required`                                        |
+| Record status                  | `Owner Decision Recorded / Awaiting Immutable Linkage`        |
 | Current evidence status        | `Missing / Not Reviewed`                                      |
 | Scope                          | SIR-09 ingestion deferral review and expiry policy            |
 | Data Governance owner          | **GANTUMUR Erdenedalai — Founder / Administrator**            |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                      |
-| Acceptance status              | `Owner Input Required`                                        |
-| Decision date                  | `Owner Input Required`                                        |
+| Acceptance status              | `Approved`                                                    |
+| Decision date                  | `2026-09-25`                                                  |
 | Review cadence                 | `Every 90 days`                                               |
-| Conditions                     | `Owner Input Required`                                        |
+| Conditions                     | `Recorded in Owner completion`                                |
 | Immutable repository reference | `Owner Input Required — completed-decision commit`            |
 
 ## Required review and expiry rule
@@ -47,18 +47,18 @@ The Data Governance owner must explicitly confirm that:
 | Review cadence is explicitly `Every 90 days`                               | Decision record and required rule above            | `Yes`          |
 | Automatic ingestion, storage, retrieval, or RAG enablement is prohibited   | Required rule above                                | `Yes`          |
 | Reopening requires explicit governance approval                            | Required rule above                                | `Yes`          |
-| Data Governance owner supplies explicit acceptance/rejection and statement | `Owner Input Required`                             | `No`           |
-| Decision date and conditions are supplied                                  | `Owner Input Required`                             | `No`           |
+| Data Governance owner supplies explicit acceptance/rejection and statement | Owner acceptance and statement recorded            | `Yes`          |
+| Decision date and conditions are supplied                                  | `2026-09-25`; owner conditions recorded            | `Yes`          |
 | Completed acceptance has an immutable repository reference                 | `Owner Input Required — completed-decision commit` | `No`           |
 
 ## Owner completion
 
-- Acceptance status (`Approved`, `Rejected`, or `Deferred`): **Owner Input Required**
-- Owner decision statement: **Owner Input Required**
-- Confirmation that expiry/review never automatically enables deferred scope: **Owner Input Required**
-- Confirmation that reopening requires explicit governance approval: **Owner Input Required**
-- Decision date: **Owner Input Required**
-- Conditions: **Owner Input Required**
+- Acceptance status: **Approved**
+- Owner decision statement: **Data Governance accepts the SIR-09 review and expiry policy with a review cadence of every 90 days.**
+- Confirmation that expiry/review never automatically enables deferred scope: **Confirmed. Expiry or review due date does not automatically enable ingestion, embeddings, indexing, vector-store processing, storage processing, retrieval preparation, or RAG.**
+- Confirmation that reopening requires explicit governance approval: **Confirmed. Reopening requires a new explicit governance decision and Data Governance approval.**
+- Decision date: **2026-09-25**
+- Conditions: **The no-automatic-reenablement and explicit reopening-approval confirmations above are mandatory.**
 - Immutable repository reference after completion: **Owner Input Required**
 
-Evidence status remains `Missing / Not Reviewed` until every mandatory owner field and the immutable completed-decision reference are supplied.
+All owner-supplied fields are complete. Evidence status remains `Missing / Not Reviewed` until the immutable completed-decision reference is linked.
