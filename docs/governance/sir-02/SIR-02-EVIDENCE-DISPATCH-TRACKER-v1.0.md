@@ -10,17 +10,18 @@
 - Escalation owner: **GANTUMUR Erdenedalai — Founder / Administrator**
 - Decision authority verified: **Yes**
 - Notes: **Dual-role governance responsibility within current iBeX AI project team.**
-- Evidence status for every item: **Missing**
+- Product response reference: **`responses/product-response-v1.0.md`**
+- Evidence status: **Five Product assignments Received; all other assignments remain Missing**
 
 ## Immediate-stage assignments
 
 | Evidence ID  | Owner group          | Request reference                                | Request status | Evidence status | Review status |
 | ------------ | -------------------- | ------------------------------------------------ | -------------- | --------------- | ------------- |
-| SIR02-GOV-01 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Missing         | Not Reviewed  |
-| SIR02-GOV-02 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Missing         | Not Reviewed  |
-| SIR02-CFG-02 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Missing         | Not Reviewed  |
-| SIR02-CFG-03 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Missing         | Not Reviewed  |
-| SIR02-CFG-04 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Missing         | Not Reviewed  |
+| SIR02-GOV-01 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Received        | Not Reviewed  |
+| SIR02-GOV-02 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Received        | Not Reviewed  |
+| SIR02-CFG-02 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Received        | Not Reviewed  |
+| SIR02-CFG-03 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Received        | Not Reviewed  |
+| SIR02-CFG-04 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Received        | Not Reviewed  |
 | SIR02-CFG-06 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Missing         | Not Reviewed  |
 | SIR02-CFG-07 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Missing         | Not Reviewed  |
 | SIR02-DEF-03 | Product              | `immediate/product-request-v1.0.md`              | Sent           | Missing         | Not Reviewed  |
@@ -51,4 +52,4 @@
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
 
-No evidence may move to Received, Ready for Review, Approved, or Rejected without an actual owner submission and review record.
+The Product response above is the owner submission for the five Product assignments marked `Received`. No evidence may move to `Ready for Review`, `Approved`, or `Rejected` without an explicit review record.
