@@ -14,7 +14,7 @@
 - Product remaining-input response reference: **`responses/product-remaining-inputs-v1.0.md`**
 - Proposed Shadow RAG-disablement configuration: **`configuration/SIR-02-SHADOW-RAG-DISABLEMENT-v1.0.json`** — `SIR02-SHADOW-RAG-DISABLEMENT` `v1.0`, not activated
 - Evidence collection register: **`SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md`**
-- Evidence status: **Five Product assignments Ready for Review; three Product assignments Received; all other assignments remain Missing**
+- Evidence status: **All eight Product assignments Ready for Review; all non-Product Immediate assignments remain Missing**
 
 ## Immediate-stage assignments
 
@@ -25,9 +25,9 @@
 | SIR02-CFG-02 | Product              | `immediate/product-request-v1.0.md`                                       | Sent           | Ready for Review | Accepted      |
 | SIR02-CFG-03 | Product              | `immediate/product-request-v1.0.md`                                       | Sent           | Ready for Review | Accepted      |
 | SIR02-CFG-04 | Product              | `immediate/product-request-v1.0.md`                                       | Sent           | Ready for Review | Accepted      |
-| SIR02-CFG-06 | Product              | `immediate/product-request-v1.0.md`; `responses/product-response-v1.0.md` | Sent           | Received         | Not Reviewed  |
-| SIR02-CFG-07 | Product              | `immediate/product-request-v1.0.md`; `responses/product-response-v1.0.md` | Sent           | Received         | Not Reviewed  |
-| SIR02-DEF-03 | Product              | `immediate/product-request-v1.0.md`; `responses/product-response-v1.0.md` | Sent           | Received         | Not Reviewed  |
+| SIR02-CFG-06 | Product              | `immediate/product-request-v1.0.md`; `responses/product-response-v1.0.md` | Sent           | Ready for Review | Accepted      |
+| SIR02-CFG-07 | Product              | `immediate/product-request-v1.0.md`; `responses/product-response-v1.0.md` | Sent           | Ready for Review | Accepted      |
+| SIR02-DEF-03 | Product              | `immediate/product-request-v1.0.md`; `responses/product-response-v1.0.md` | Sent           | Ready for Review | Accepted      |
 | SIR02-GOV-01 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Missing          | Not Reviewed  |
 | SIR02-GOV-03 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Missing          | Not Reviewed  |
 | SIR02-CFG-02 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Missing          | Not Reviewed  |
@@ -55,20 +55,20 @@
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
 
-The Product response is the owner submission for all eight Product assignments. Five are `Ready for Review` with accepted review records; three are newly `Received` and remain `Not Reviewed`. No evidence may move to `Approved` or `Rejected` without a separate explicit review and approval record.
+The Product response is the owner submission for all eight Product assignments. All eight are `Ready for Review` with accepted review records. No evidence may move to `Approved` or `Rejected` without a separate explicit approval record.
 
 ## SIR-02 completion dashboard
 
 - Immediate-stage assignments: **29 total**
-- Ready for Review: **5**
-- Received: **3**
+- Ready for Review: **8**
+- Received: **0**
 - Missing: **21**
-- Accepted review results: **5**
+- Accepted review results: **8**
 - Needs Clarification: **0**
 - Rejected: **0**
 - Approved evidence: **0**
-- Product assignments: **5 Ready for Review; 3 Received; 0 Missing**
-- Product governance approval: **Recorded for `SIR02-CFG-06`, `SIR02-CFG-07`, and `SIR02-DEF-03` on `2026-09-25`; reviewer assessment pending**
+- Product assignments: **8 Ready for Review; 0 Received; 0 Missing**
+- Product governance review: **All eight Product evidence items accepted; none marked Approved**
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
-- Current SIR-02 status: **Blocking — all Product evidence is supplied, but three newly received Product items require reviewer assessment and required evidence from other owner groups remains outstanding.**
+- Current SIR-02 status: **Blocking — Product evidence is 8/8 Ready for Review, but 21 non-Product Immediate-stage assignments remain missing.**

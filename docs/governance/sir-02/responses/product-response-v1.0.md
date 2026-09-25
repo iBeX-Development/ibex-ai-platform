@@ -149,17 +149,19 @@ The Product owner records the SIR-02 decision outcome as **Approved** and approv
 
 ## Submission status
 
-- Evidence Ready for Review: `SIR02-GOV-01`, `SIR02-GOV-02`, `SIR02-CFG-02`, `SIR02-CFG-03`, `SIR02-CFG-04`
-- Evidence received and not reviewed: `SIR02-CFG-06`, `SIR02-CFG-07`, `SIR02-DEF-03`
+- Evidence Ready for Review: `SIR02-GOV-01`, `SIR02-GOV-02`, `SIR02-CFG-02`, `SIR02-CFG-03`, `SIR02-CFG-04`, `SIR02-CFG-06`, `SIR02-CFG-07`, `SIR02-DEF-03`
+- Evidence received and not reviewed: none
 - Product evidence still missing: none
 - Evidence marked Approved: none
-- Current SIR-02 status: **Blocking — all Product evidence is supplied, but the three new items require reviewer assessment and required evidence from other owner groups remains outstanding.**
+- Current SIR-02 status: **Blocking — all eight Product evidence items are Ready for Review, but required evidence from other owner groups remains outstanding.**
 
 ## Product evidence review
 
 - Reviewer: **SODBILEG Erkhembayar — Administrator**
 - Review date: **2026-09-25**
 - Evidence snapshot: Git commit `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`
+- Configuration artifact snapshot: Git commit `52e437f053cdca25492410cecbd182ebc19a4afd`; SHA-256 `123e7761265dc753ceb42f52ed8e0b7c8d7796a3f6ff6b5510e66610846274b6`
+- Product approval snapshot: Git commit `df112abde861a908fd5838ba10dad54e96053b65`
 - Repository-definition version: Pilot agent/profile and RAG-scope policy `1.0.0`
 - Status rule applied: An `Accepted` review moves evidence to `Ready for Review`; it does not mark the evidence `Approved`.
 
@@ -170,9 +172,13 @@ The Product owner records the SIR-02 decision outcome as **Approved** and approv
 | `SIR02-CFG-02` | `Accepted`    | All four canonical profiles in `pilotAgentProfiles` were checked: `general_ibex`, `maintenance-agent`, `asset`, and `warehouse`. Each contains at least one `rag` or `tool_and_rag` intent. IDs exactly match repository definitions; the list is complete and contains no wildcard. Repository feature controls default RAG off, and `RagRuntimeService` fails closed when platform or RAG control is disabled. | Authoritative environment configuration and its effective date remain separately missing under `SIR02-CFG-06`. |
 | `SIR02-CFG-03` | `Accepted`    | The manifest exactly matches all nine intents whose evidence mode is `rag` or `tool_and_rag` across the four versioned profiles. No qualifying intent is omitted, no non-RAG intent is added, and no wildcard is used.                                                                                                                                                                                           | Authoritative configuration enforcement remains separate evidence; no correction to this manifest is required. |
 | `SIR02-CFG-04` | `Accepted`    | `agents/index.ts` deterministically derives capabilities as `intent:${policy.intent}`. All nine capability IDs exactly correspond to the accepted RAG-dependent intents, with no wildcard or extra capability. Direct RAG invocation remains subject to non-caller-controlled feature controls.                                                                                                                  | Authoritative configuration enforcement remains separate evidence; no correction to this manifest is required. |
+| `SIR02-CFG-06` | `Accepted`    | Configuration ID `SIR02-SHADOW-RAG-DISABLEMENT`, version `v1.0`, checksum, immutable artifact commit, Product approval commit, owner, decision date `2026-09-25`, and effective date `2026-10-01` all match. The artifact remains `Proposed / Not Activated` and explicitly grants no deployment or Shadow authorization.                                                                                        | None for Product evidence; activation remains prohibited.                                                      |
+| `SIR02-CFG-07` | `Accepted`    | The `Every 90 days` cadence, accountable reapproval owner, decision date `2026-09-25`, no-automatic-RAG-enablement rule, and requirement for new governance approval plus an approved configuration change are explicit and consistent.                                                                                                                                                                          | None for Product evidence.                                                                                     |
+| `SIR02-DEF-03` | `Accepted`    | The `Every 90 days` cadence, accountable SIR-09 owner, decision date `2026-09-25`, complete deferred scope, no-automatic-enablement rule, and explicit-governance-reopening requirement are explicit and consistent.                                                                                                                                                                                             | None for Product evidence.                                                                                     |
 
 ### Review disposition
 
-- Moved to `Ready for Review`: `SIR02-GOV-01`, `SIR02-GOV-02`, `SIR02-CFG-02`, `SIR02-CFG-03`, `SIR02-CFG-04`
-- Newly `Received` and `Not Reviewed`: `SIR02-CFG-06`, `SIR02-CFG-07`, `SIR02-DEF-03`
+- `Ready for Review`: `SIR02-GOV-01`, `SIR02-GOV-02`, `SIR02-CFG-02`, `SIR02-CFG-03`, `SIR02-CFG-04`, `SIR02-CFG-06`, `SIR02-CFG-07`, `SIR02-DEF-03`
+- Newly moved from `Received` to `Ready for Review`: `SIR02-CFG-06`, `SIR02-CFG-07`, `SIR02-DEF-03`
+- Remaining `Received`: none
 - Evidence marked `Approved`: none
