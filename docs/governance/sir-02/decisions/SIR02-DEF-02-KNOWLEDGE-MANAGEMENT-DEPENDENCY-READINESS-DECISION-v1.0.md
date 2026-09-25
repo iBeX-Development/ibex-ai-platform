@@ -97,11 +97,12 @@ Ingestion cannot reopen until these controls are formally approved and operation
 - Approved lifecycle-control reference: **`controls/SIR-02-KNOWLEDGE-MANAGEMENT-LIFECYCLE-CONTROL-BASELINE-v1.0.md`; baseline commit `48407614af13e8f8239a9e63454c013dc43e432b`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`**
 - Approved evidence execution plan/matrix: **artifact commit `37212d5869709f85256618e6b03fffb0622a2049`; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960`**
 - Approved Gate A: **artifact commit `437612dfe56fb4903f8132bef2971089bdb374aa`; approval commit `84a05702b744a6a710644299381e30e9a9a7aefb`**
-- OE-01 execution evidence: **`operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json`; SHA-256 `d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b`; commit `44a97a9b387235c67ae70cce24fb32cda0adfe70`; `Executed / Awaiting Independent Review`**
+- OE-01 execution evidence: **`operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json`; SHA-256 `d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b`; commit `44a97a9b387235c67ae70cce24fb32cda0adfe70`**
+- OE-01 independent review: **`operational-evidence/oe-01/SIR-02-KM-OE-01-INDEPENDENT-REVIEW-v1.0.md`; commit `a33c8220e595fafad317610e94d09d4f21ecc882`; result `Accepted`**
 - Operational evidence reference: **Owner Input Required**
 - Controlled reopening criteria confirmation: **Confirmed**
 - Decision date: **2026-09-25**
 - Conditions: **Lifecycle controls must be approved and operationally evidenced before ingestion reopening.**
 - Immutable owner-decision reference: **`c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`**
 
-The owner decision, approved lifecycle-control reference, controlled operational-evidence execution plan, and Gate A prerequisites are complete. `SIR02-KM-OE-01` has executed successfully and awaits independent review; the other 14 evidence items remain `Not Executed`. Evidence status remains `Missing / Not Reviewed` because the complete 15-item accepted operational-evidence package and immutable package reference do not yet exist. These records do not authorize ingestion reopening.
+The owner decision, approved lifecycle-control reference, controlled operational-evidence execution plan, and Gate A prerequisites are complete. `SIR02-KM-OE-01` is independently reviewed and `Accepted`; the other 14 evidence items remain `Not Executed`. Evidence status remains `Missing / Not Reviewed` because the complete 15-item accepted operational-evidence package and immutable package reference do not yet exist. These records do not authorize ingestion reopening.

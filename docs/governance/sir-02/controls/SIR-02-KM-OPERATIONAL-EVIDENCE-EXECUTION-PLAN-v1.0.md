@@ -43,7 +43,7 @@
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
 
-Gate A is approved for controlled execution of `SIR02-KM-OE-01` under the immutable Gate A approval reference above. All 15 evidence items remain `Not Executed`; this linkage records authorization only and is not an execution result.
+Gate A approved controlled execution of `SIR02-KM-OE-01` under the immutable Gate A approval reference above. OE-01 is now independently reviewed and accepted; the other 14 evidence items remain `Not Executed`.
 
 ## Purpose
 
@@ -110,8 +110,9 @@ Each produced evidence package must contain:
 - **Checksum/reference:** SHA-256 per artifact and immutable evidence commit/store reference.
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** Exact approved sample reconstructs source identity, version, ownership, tenant, provenance, checksum, status, and correlation without enabling ingestion.
-- **Status:** `Executed / Awaiting Independent Review`
+- **Status:** `Accepted`
 - **Execution evidence:** `operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json`; SHA-256 `d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b`; immutable evidence commit `44a97a9b387235c67ae70cce24fb32cda0adfe70`.
+- **Independent review:** `operational-evidence/oe-01/SIR-02-KM-OE-01-INDEPENDENT-REVIEW-v1.0.md`; result `Accepted`; immutable review commit `a33c8220e595fafad317610e94d09d4f21ecc882`.
 
 ### SIR02-KM-OE-02 — Source owner and tenant binding
 

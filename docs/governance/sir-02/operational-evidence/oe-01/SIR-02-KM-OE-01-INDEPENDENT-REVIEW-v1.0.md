@@ -15,7 +15,7 @@
 | Linkage commit | `9b17ef719b2edfd3835654a163a573cdc3497f5b` |
 | Evidence artifact | `SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json` |
 | Artifact SHA-256 | `d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b` |
-| Immutable review reference | `Review commit containing this record` |
+| Immutable review reference | `a33c8220e595fafad317610e94d09d4f21ecc882` |
 
 ## Reviewer independence
 

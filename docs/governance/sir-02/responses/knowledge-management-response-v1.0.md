@@ -35,7 +35,8 @@ Authoritative supporting references:
 - approved Knowledge Management Lifecycle-Control Baseline `v1.0`: `controls/SIR-02-KNOWLEDGE-MANAGEMENT-LIFECYCLE-CONTROL-BASELINE-v1.0.md`; baseline commit `48407614af13e8f8239a9e63454c013dc43e432b`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`.
 - approved Operational Evidence Execution Plan and Acceptance Matrix `v1.0`: artifact commit `37212d5869709f85256618e6b03fffb0622a2049`; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960`.
 - approved Operational Evidence Gate A `v1.0`: artifact commit `437612dfe56fb4903f8132bef2971089bdb374aa`; approval commit `84a05702b744a6a710644299381e30e9a9a7aefb`.
-- OE-01 execution evidence: `operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json`; SHA-256 `d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b`; commit `44a97a9b387235c67ae70cce24fb32cda0adfe70`; status `Executed / Awaiting Independent Review`.
+- OE-01 execution evidence: `operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json`; SHA-256 `d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b`; commit `44a97a9b387235c67ae70cce24fb32cda0adfe70`.
+- OE-01 independent review: `operational-evidence/oe-01/SIR-02-KM-OE-01-INDEPENDENT-REVIEW-v1.0.md`; commit `a33c8220e595fafad317610e94d09d4f21ecc882`; result and status `Accepted`.
 
 These references remain supporting evidence. Knowledge Management owner decisions are now immutable at commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
 
@@ -60,10 +61,10 @@ These references remain supporting evidence. Knowledge Management owner decision
 - Approved lifecycle-control reference satisfied: **Yes**.
 - Controlled evidence execution plan/matrix approved: **Yes; execution remains subject to all plan prerequisites and restrictions**.
 - Gate A approved: **Yes; controlled execution of `SIR02-KM-OE-01` is authorized under the approved synthetic-only, isolated non-live controls**.
-- OE-01 execution: **Passed; `Executed / Awaiting Independent Review`; acceptance status `Not Reviewed`**.
+- OE-01 execution and review: **Execution passed; independent review `Accepted`; resulting status `Accepted`**.
 - Operational-evidence requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
-- Exact remaining blocker: OE-01 awaits independent review, the other 14 items remain `Not Executed`, and the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
+- Exact remaining blocker: the other 14 items remain `Not Executed`, and the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
 
 ### SIR02-DEF-03 — Knowledge Management review and expiry acceptance
 
@@ -89,4 +90,4 @@ These references remain supporting evidence. Knowledge Management owner decision
 
 ## Reviewer next action
 
-Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 execution passed under the approved Plan/Matrix and Gate A controls and now requires SODBILEG Erkhembayar to independently verify the immutable artifact, checksum, validation, audit evidence, Tenant B denial, and cleanup manifest, then record exactly one result: `Accepted`, `Needs Clarification`, or `Rejected`. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
+Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 is independently reviewed and accepted. The approved execution order authorizes `SIR02-KM-OE-02 — Source owner and tenant binding` next, subject to its stated synthetic-context and deterministic-adapter preconditions. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
