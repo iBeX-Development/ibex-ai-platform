@@ -7,8 +7,8 @@
 | Evidence ID                    | `SIR02-DEF-01`                                                                                  |
 | Document                       | `SIR02-DEF-01 — Security Ingestion Deferral Acceptance`                                         |
 | Version                        | `v1.0`                                                                                          |
-| Record status                  | `Owner Decision Recorded / Ready for Reviewer Assessment`                                       |
-| Current evidence status        | `Received / Not Reviewed`                                                                       |
+| Record status                  | `Reviewer Accepted`                                                                             |
+| Current evidence status        | `Ready for Review / Accepted`                                                                   |
 | Scope                          | Security acceptance of the complete SIR-09 ingestion deferral lifecycle for Initial Shadow Mode |
 | Security acceptance owner      | **GANTUMUR Erdenedalai — Founder / Administrator**                                              |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                                                        |
@@ -74,4 +74,17 @@ The owner must explicitly confirm that the deferral:
 - Security conditions and confirmations: **Review every 90 days. Expiry does not automatically enable ingestion or RAG. Reopening requires explicit governance and Security approval.**
 - Immutable repository reference after completion: **`10423e60524467e678cacafce0724c66ff3ac616`**
 
-All mandatory owner fields and the immutable content reference are complete. Evidence status is `Received / Not Reviewed`; reviewer assessment remains required.
+All mandatory owner fields and the immutable content reference are complete.
+
+## Reviewer assessment
+
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Review date: **2026-09-25**
+- Owner-approved Security decision content: `10423e60524467e678cacafce0724c66ff3ac616`
+- Governance linkage/status reference: `182f63fc8c3fe900db5918f1bdfa50b80e1b185f`
+- Review result: **Accepted**
+- Reason: Security explicitly accepts the full SIR-09 ingestion deferral lifecycle. The record preserves tenant isolation, authorization, entitlement, ownership validation, auditability, and network/security boundaries, requires review every 90 days, prohibits automatic ingestion or RAG enablement at review or expiry, and requires explicit governance and Security approval to reopen the scope.
+- Acceptance gap: **None for this evidence item.**
+- Resulting evidence status: `Ready for Review`
+
+This review does not mark the evidence item `Approved` at the evidence-status level.

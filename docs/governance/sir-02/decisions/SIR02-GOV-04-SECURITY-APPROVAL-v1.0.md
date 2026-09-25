@@ -7,8 +7,8 @@
 | Evidence ID                    | `SIR02-GOV-04`                                                                  |
 | Document                       | `SIR02-GOV-04 — Security Approval`                                              |
 | Version                        | `v1.0`                                                                          |
-| Record status                  | `Owner Decision Recorded / Ready for Reviewer Assessment`                       |
-| Current evidence status        | `Received / Not Reviewed`                                                       |
+| Record status                  | `Reviewer Accepted`                                                             |
+| Current evidence status        | `Ready for Review / Accepted`                                                   |
 | Scope                          | Formal Security approval for the reduced Initial Shadow scope with RAG excluded |
 | Security approval owner        | **GANTUMUR Erdenedalai — Founder / Administrator**                              |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                                        |
@@ -61,4 +61,17 @@ Any approval conditions must explicitly preserve:
 - Security conditions: **Strict tenant isolation, trusted context, authorization, entitlement, ownership validation, audit, and no-bypass controls remain mandatory. Any future expansion requires separate governance and security review.**
 - Immutable repository reference after completion: **`10423e60524467e678cacafce0724c66ff3ac616`**
 
-All mandatory owner fields and the immutable content reference are complete. Evidence status is `Received / Not Reviewed`; reviewer assessment remains required. Technical controls and other owner-group approvals do not substitute for this Security approval.
+All mandatory owner fields and the immutable content reference are complete. Technical controls and other owner-group approvals do not substitute for this Security approval.
+
+## Reviewer assessment
+
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Review date: **2026-09-25**
+- Owner-approved Security decision content: `10423e60524467e678cacafce0724c66ff3ac616`
+- Governance linkage/status reference: `182f63fc8c3fe900db5918f1bdfa50b80e1b185f`
+- Review result: **Accepted**
+- Reason: The formal Security approval is explicit, tied to the reduced Initial Shadow scope with RAG excluded, and keeps the Tenant Security Contract and approved fail-closed controls authoritative. Tenant isolation, trusted context, authorization, entitlement, ownership validation, audit, and no-bypass controls remain mandatory, and future expansion requires separate governance and Security review.
+- Acceptance gap: **None for this evidence item.**
+- Resulting evidence status: `Ready for Review`
+
+This review does not mark the evidence item `Approved` at the evidence-status level or authorize deployment or Shadow activation.
