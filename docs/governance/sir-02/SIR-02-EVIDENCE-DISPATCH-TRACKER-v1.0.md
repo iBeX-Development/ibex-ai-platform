@@ -12,6 +12,7 @@
 - Notes: **Dual-role governance responsibility within current iBeX AI project team.**
 - Product response reference: **`responses/product-response-v1.0.md`**
 - Product remaining-input response reference: **`responses/product-remaining-inputs-v1.0.md`**
+- Proposed Shadow RAG-disablement configuration: **`configuration/SIR-02-SHADOW-RAG-DISABLEMENT-v1.0.json`** — `SIR02-SHADOW-RAG-DISABLEMENT` `v1.0`, not activated
 - Evidence collection register: **`SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md`**
 - Evidence status: **Five Product assignments Ready for Review; all other assignments remain Missing**
 
@@ -68,6 +69,7 @@ The Product response above is the owner submission for the five Product assignme
 - Approved evidence: **0**
 - Product assignments: **5 Ready for Review; 3 Missing**
 - Product remaining-input response: **Published; three items remain Missing because mandatory owner values were not supplied**
+- Pending Product decision input: **Actual approved decision date for `SIR02-CFG-06`, `SIR02-CFG-07`, and `SIR02-DEF-03`; CFG-06 also requires formal approval of the exact proposed artifact ID/version/checksum**
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
 - Current SIR-02 status: **Blocking — Product manifest evidence is accepted for review, but three Product inputs and required evidence from other owner groups remain outstanding.**
