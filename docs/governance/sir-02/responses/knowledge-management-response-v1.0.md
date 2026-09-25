@@ -44,6 +44,7 @@ Authoritative supporting references:
 - OE-03 independent review: `operational-evidence/oe-03/SIR-02-KM-OE-03-INDEPENDENT-REVIEW-v1.0.md`; commit `79f2d74ab31335e2487fa4e6c7dce4158c9a7b1f`; result `Needs Clarification`; status remains `Executed / Awaiting Independent Review`.
 - OE-03 corrected sequence `0003`: `operational-evidence/oe-03/SIR-02-KM-OE-03-SOURCE-APPROVAL-RECONSTRUCTION-0003-v1.0.json`; SHA-256 `5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345`; commit `74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a`; status `Executed / Awaiting Independent Review`.
 - OE-03 corrected independent review: `operational-evidence/oe-03/SIR-02-KM-OE-03-INDEPENDENT-REVIEW-0003-v1.0.md`; commit `77ae9c99b2601ec58a50bd20c772326688268e5d`; result and status `Accepted`.
+- OE-04 execution evidence: `operational-evidence/oe-04/SIR-02-KM-OE-04-SOURCE-VERSION-LINEAGE-v1.0.json`; SHA-256 `f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f`; commit `eefc0cd3dcb74761af91bd17cfe271e872d88264`; status `Executed / Awaiting Independent Review`.
 
 These references remain supporting evidence. Knowledge Management owner decisions are now immutable at commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
 
@@ -72,9 +73,10 @@ These references remain supporting evidence. Knowledge Management owner decision
 - OE-02 execution and review: **Successful run passed 1/1 positive and 11/11 negative cases with zero cross-tenant disclosure; preserved failed-attempt lineage independently verified; resulting status `Accepted`**.
 - OE-03 execution and review: **Integrity, authorization, exact-version binding, 1/1 positive, 14/14 negative, zero disclosure, zero negative processing, sanitized audit, and cleanup passed; review result is `Needs Clarification` because its later pending-to-approved transition conflicts with OE-01's earlier accepted approved state**.
 - OE-03 corrected reconstruction and review: **Sequence `0003` reconstructs the original OE-01 approval timestamp, distinguishes the reconstruction timestamp, creates zero new approval events, passes chronology and duplicate prevention, passes 1/1 positive plus 17/17 negative cases, preserves all prior lineage, and is independently `Accepted`**.
+- OE-04 execution: **The exact two-node lineage passed 1/1 positive and 17/17 negative cases; accepted `v1.0` approval remains isolated from the unapproved synthetic `v1.1` successor; zero new approval events, cross-tenant disclosures, live calls, or persistent artifacts occurred; independent review is pending**.
 - Operational-evidence requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
-- Exact remaining blocker: 12 items remain `Not Executed`, and the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
+- Exact remaining blocker: OE-04 awaits independent review, 11 items remain `Not Executed`, and the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
 
 ### SIR02-DEF-03 — Knowledge Management review and expiry acceptance
 
@@ -100,4 +102,4 @@ These references remain supporting evidence. Knowledge Management owner decision
 
 ## Reviewer next action
 
-Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01, OE-02, and corrected OE-03 sequence `0003` are independently accepted. The approved execution order authorizes OE-04 next. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
+Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01, OE-02, and corrected OE-03 sequence `0003` are independently accepted. SODBILEG Erkhembayar must independently review OE-04 lineage integrity, chronology, tenant isolation, exact-version approval isolation, audit evidence, and cleanup before OE-05 can execute. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.

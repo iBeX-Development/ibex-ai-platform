@@ -70,7 +70,7 @@ The Data Governance response supplies all four owner decisions, and all four hav
 
 The Platform Operations response and completed-decision commit `8cd55532ef4052c13eaaca42ac5c8299c18133ed` establish custody, exact configuration acceptance, secret-management governance ownership, and the separate activation requirement. Both assignments are `Ready for Review / Accepted`; neither is evidence-level `Approved`.
 
-The Knowledge Management response records immutable owner decisions for all three assignments. `SIR02-DEF-01` and `SIR02-DEF-03` are `Ready for Review / Accepted`. The approved `v1.0` lifecycle baseline, Plan/Matrix, and Gate A govern controlled evidence execution. OE-01, OE-02, and corrected OE-03 sequence `0003` are `Accepted`; the other 12 items remain `Not Executed`. `SIR02-DEF-02` remains `Missing / Not Reviewed`, and ingestion reopening remains prohibited.
+The Knowledge Management response records immutable owner decisions for all three assignments. `SIR02-DEF-01` and `SIR02-DEF-03` are `Ready for Review / Accepted`. The approved `v1.0` lifecycle baseline, Plan/Matrix, and Gate A govern controlled evidence execution. OE-01 through OE-03 are `Accepted`; OE-04 is `Executed / Awaiting Independent Review`; the other 11 items remain `Not Executed`. `SIR02-DEF-02` remains `Missing / Not Reviewed`, and ingestion reopening remains prohibited.
 
 ## SIR-02 completion dashboard
 
@@ -89,7 +89,7 @@ The Knowledge Management response records immutable owner decisions for all thre
 - Data Governance assignments: **4 Ready for Review; 0 Received; 0 Missing**
 - Platform Operations assignments: **2 Ready for Review; 0 Received; 0 Missing**
 - Knowledge Management assignments: **2 Ready for Review; 0 Received; 1 Missing**
-- Knowledge Management operational evidence: **3 Accepted (OE-01, OE-02, and corrected OE-03 sequence `0003`); 12 Not Executed**
+- Knowledge Management operational evidence: **3 Accepted (OE-01 through OE-03); 1 Executed / Awaiting Independent Review (OE-04); 11 Not Executed**
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
 - Current SIR-02 status: **Blocking — `SIR02-DEF-02` remains missing under its operational-evidence dependency hold.**
