@@ -7,16 +7,16 @@
 | Evidence ID                         | `SIR02-DEF-01`                                                      |
 | Document                            | `SIR02-DEF-01 — Knowledge Management Ingestion Deferral Acceptance` |
 | Version                             | `v1.0`                                                              |
-| Record status                       | `Owner Input Required`                                              |
+| Record status                       | `Owner Decision Recorded — Awaiting Immutable Reference`            |
 | Current evidence status             | `Missing / Not Reviewed`                                            |
 | Knowledge Management owner          | **GANTUMUR Erdenedalai — Founder / Administrator**                  |
 | Reviewer                            | **SODBILEG Erkhembayar — Administrator**                            |
-| Decision outcome                    | `Owner Input Required — Approved, Rejected, or Deferred`            |
-| Owner decision statement            | `Owner Input Required`                                              |
-| Decision date                       | `Owner Input Required`                                              |
+| Decision outcome                    | `Approved`                                                          |
+| Owner decision statement            | Owner-approved statement below                                      |
+| Decision date                       | `2026-09-25`                                                        |
 | Scope                               | Complete knowledge-ingestion lifecycle described below              |
-| No-unapproved-artifact confirmation | `Owner Input Required`                                              |
-| Conditions                          | `Owner Input Required`                                              |
+| No-unapproved-artifact confirmation | `Confirmed`                                                         |
+| Conditions                          | Owner-approved conditions below                                     |
 | Immutable repository reference      | `Owner Input Required — completed-decision commit`                  |
 
 ## Required decision scope
@@ -38,6 +38,18 @@ The Knowledge Management owner decision must explicitly cover:
 - provenance, traceability, reconciliation, and related knowledge-ingestion activity.
 
 The decision must confirm that no unapproved document, chunk, embedding, index, vector, cache, retrieval, or equivalent knowledge artifact may be created or retained while SIR-09 remains deferred.
+
+## Owner decision statement
+
+> Knowledge Management accepts the SIR-09 ingestion deferral for Initial Shadow Mode across the complete knowledge lifecycle, including source registration, document intake, source approval, versioning, parsing/chunking, embeddings, indexing, vector-store population, retrieval preparation, supersession, stale-content handling, retention/deletion, and related knowledge-ingestion activities.
+
+## No-unapproved-artifact confirmation
+
+> Confirmed. No unapproved document, chunk, embedding, index, vector, cache, retrieval, or equivalent knowledge artifact may be created or retained while the deferral is in effect.
+
+## Owner-approved conditions
+
+> All reopening remains subject to explicit governance approval and controlled knowledge-source onboarding.
 
 ## Mandatory conditions
 
@@ -65,18 +77,18 @@ The decision must confirm that no unapproved document, chunk, embedding, index, 
 | Versioned Knowledge Management acceptance record exists                       | This `v1.0` record                                 | `Yes`          |
 | Complete knowledge-ingestion lifecycle is defined                             | Required decision scope above                      | `Yes`          |
 | Supporting cross-owner deferral evidence is immutable                         | Supporting references above                        | `Yes`          |
-| Knowledge Management supplies an explicit decision outcome and statement      | `Owner Input Required`                             | `No`           |
-| No-unapproved-artifact confirmation is explicit                               | `Owner Input Required`                             | `No`           |
-| Decision date and owner-approved conditions are supplied                      | `Owner Input Required`                             | `No`           |
+| Knowledge Management supplies an explicit decision outcome and statement      | `Approved`; owner statement recorded               | `Yes`          |
+| No-unapproved-artifact confirmation is explicit                               | `Confirmed`                                        | `Yes`          |
+| Decision date and owner-approved conditions are supplied                      | `2026-09-25`; conditions recorded                  | `Yes`          |
 | Completed Knowledge Management decision has an immutable repository reference | `Owner Input Required — completed-decision commit` | `No`           |
 
 ## Owner completion
 
-- Decision outcome (`Approved`, `Rejected`, or `Deferred`): **Owner Input Required**
-- Owner decision statement: **Owner Input Required**
-- No-unapproved-artifact confirmation: **Owner Input Required**
-- Decision date: **Owner Input Required**
-- Conditions: **Owner Input Required**
+- Decision outcome: **Approved**
+- Owner decision statement: **Recorded above**
+- No-unapproved-artifact confirmation: **Confirmed**
+- Decision date: **2026-09-25**
+- Conditions: **All reopening remains subject to explicit governance approval and controlled knowledge-source onboarding.**
 - Immutable repository reference after completion: **Owner Input Required**
 
-Evidence status remains `Missing / Not Reviewed` until every mandatory owner field and the immutable completed-decision reference are supplied.
+All mandatory owner fields are supplied. Evidence status remains `Missing / Not Reviewed` until the owner decision receives an immutable completed-decision reference and the evidence register is reconciled.

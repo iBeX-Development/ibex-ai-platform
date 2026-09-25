@@ -7,16 +7,18 @@
 | Evidence ID                               | `SIR02-DEF-03`                                                     |
 | Document                                  | `SIR02-DEF-03 — Knowledge Management Review and Expiry Acceptance` |
 | Version                                   | `v1.0`                                                             |
-| Record status                             | `Owner Input Required`                                             |
+| Record status                             | `Owner Decision Recorded — Awaiting Immutable Reference`           |
 | Current evidence status                   | `Missing / Not Reviewed`                                           |
 | Knowledge Management owner                | **GANTUMUR Erdenedalai — Founder / Administrator**                 |
 | Reviewer                                  | **SODBILEG Erkhembayar — Administrator**                           |
-| Acceptance status                         | `Owner Input Required — Approved, Rejected, or Deferred`           |
-| Decision date                             | `Owner Input Required`                                             |
+| Acceptance status                         | `Approved`                                                         |
+| Decision date                             | `2026-09-25`                                                       |
 | Review cadence                            | `Every 90 days`                                                    |
-| No-automatic-reopening confirmation       | `Owner Input Required`                                             |
-| Controlled source-onboarding confirmation | `Owner Input Required`                                             |
-| Conditions                                | `Owner Input Required`                                             |
+| Owner decision statement                  | Owner-approved statement below                                     |
+| No-automatic-reopening confirmation       | `Confirmed`                                                        |
+| Controlled source-onboarding confirmation | `Confirmed`                                                        |
+| Approval-before-reopening confirmation    | `Confirmed`                                                        |
+| Conditions                                | Owner-approved confirmations below                                 |
 | Immutable repository reference            | `Owner Input Required — completed-decision commit`                 |
 
 ## Required review and expiry rule
@@ -29,6 +31,17 @@ The Knowledge Management owner must explicitly confirm that:
 - reopening requires explicit governance approval and controlled source onboarding;
 - controlled source onboarding includes approved registration, ownership, source approval, version, provenance, supersession, stale-content, retention/deletion, reconciliation, and audit evidence;
 - this record grants no deployment, Shadow activation, ingestion, storage, RAG, credential, traffic, or production-use authority.
+
+## Owner decision statement
+
+> Knowledge Management accepts the SIR-09 review and expiry policy.
+
+## Owner-approved confirmations
+
+- Review cadence: `Every 90 days`.
+- No automatic reopening: **Confirmed. Expiry or review due date does not automatically enable document intake, parsing/chunking, embeddings, indexing, vector storage, retrieval preparation, or RAG.**
+- Controlled source onboarding: **Confirmed.**
+- Approval before reopening: **Confirmed. Reopening requires explicit governance approval and controlled source onboarding.**
 
 ## Supporting immutable evidence
 
@@ -48,21 +61,21 @@ The Knowledge Management owner must explicitly confirm that:
 | Versioned Knowledge Management review/expiry record exists              | This `v1.0` record                                 | `Yes`          |
 | Review cadence is explicitly `Every 90 days`                            | Decision record above                              | `Yes`          |
 | Deferred activities subject to no-automatic-reopening are fully defined | Required review and expiry rule above              | `Yes`          |
-| Knowledge Management supplies explicit acceptance/rejection             | `Owner Input Required`                             | `No`           |
-| No-automatic-reopening confirmation is explicit                         | `Owner Input Required`                             | `No`           |
-| Controlled onboarding and explicit reopening approval are confirmed     | `Owner Input Required`                             | `No`           |
-| Decision date and owner-approved conditions are supplied                | `Owner Input Required`                             | `No`           |
+| Knowledge Management supplies explicit acceptance/rejection             | `Approved`; owner statement recorded               | `Yes`          |
+| No-automatic-reopening confirmation is explicit                         | `Confirmed`                                        | `Yes`          |
+| Controlled onboarding and explicit reopening approval are confirmed     | Both confirmations recorded                        | `Yes`          |
+| Decision date and owner-approved conditions are supplied                | `2026-09-25`; confirmations recorded               | `Yes`          |
 | Completed acceptance has an immutable repository reference              | `Owner Input Required — completed-decision commit` | `No`           |
 
 ## Owner completion
 
-- Acceptance status (`Approved`, `Rejected`, or `Deferred`): **Owner Input Required**
-- Confirmation of `Every 90 days` review cadence: **Owner Input Required**
-- No-automatic-reopening confirmation: **Owner Input Required**
-- Controlled source-onboarding confirmation: **Owner Input Required**
-- Explicit governance-approval-before-reopening confirmation: **Owner Input Required**
-- Decision date: **Owner Input Required**
-- Conditions: **Owner Input Required**
+- Acceptance status: **Approved**
+- Confirmation of `Every 90 days` review cadence: **Confirmed**
+- No-automatic-reopening confirmation: **Confirmed**
+- Controlled source-onboarding confirmation: **Confirmed**
+- Explicit governance-approval-before-reopening confirmation: **Confirmed**
+- Decision date: **2026-09-25**
+- Conditions: **Owner-approved confirmations recorded above**
 - Immutable repository reference after completion: **Owner Input Required**
 
-Evidence status remains `Missing / Not Reviewed` until every mandatory owner field and the immutable completed-decision reference are supplied.
+All mandatory owner fields are supplied. Evidence status remains `Missing / Not Reviewed` until the owner decision receives an immutable completed-decision reference and the evidence register is reconciled.
