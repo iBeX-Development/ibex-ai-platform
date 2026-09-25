@@ -43,7 +43,7 @@
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
 
-Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 is independently reviewed and accepted; OE-02 is executed and awaiting independent review; the other 13 evidence items remain `Not Executed`.
+Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 and OE-02 are independently reviewed and accepted; the other 13 evidence items remain `Not Executed`.
 
 ## Purpose
 
@@ -129,9 +129,10 @@ Each produced evidence package must contain:
 - **Checksum/reference:** Checksummed results linked to OE-01 and immutable test commit/run.
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** Existing Phase 6 tenant tests plus new owner-binding cases prove complete default-deny behavior.
-- **Status:** `Executed / Awaiting Independent Review`
+- **Status:** `Accepted`
 - **Successful execution evidence:** `operational-evidence/oe-02/SIR-02-KM-OE-02-SOURCE-OWNER-TENANT-BINDING-v1.0.json`; SHA-256 `16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71`; immutable evidence commit `9d4bc50d885e50b4fef8580918398f6764742b74`.
 - **Preserved failed attempt:** `operational-evidence/oe-02/SIR-02-KM-OE-02-EXECUTION-ATTEMPT-0001-FAILED-v1.0.json`; SHA-256 `4c5664e232e2fb6bb4e1ad6637db05ba9569a5b29e413c95b50df77f3a6ce336`; run `SIR02-KM-OE-02-V1_0-20260925T065015Z-0001`; harness aggregate error with no acceptance-criteria failure.
+- **Independent review:** `operational-evidence/oe-02/SIR-02-KM-OE-02-INDEPENDENT-REVIEW-v1.0.md`; result `Accepted`; immutable review commit `3328353ea04298729b6e68ca46061393edce2148`.
 
 ### SIR02-KM-OE-03 — Source approval record
 

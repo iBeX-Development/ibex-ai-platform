@@ -18,7 +18,7 @@
 | Preserved failed run ID | `SIR02-KM-OE-02-V1_0-20260925T065015Z-0001` |
 | Preserved failed artifact | `SIR-02-KM-OE-02-EXECUTION-ATTEMPT-0001-FAILED-v1.0.json` |
 | Preserved failed artifact SHA-256 | `4c5664e232e2fb6bb4e1ad6637db05ba9569a5b29e413c95b50df77f3a6ce336` |
-| Immutable review reference | `Review commit containing this record` |
+| Immutable review reference | `3328353ea04298729b6e68ca46061393edce2148` |
 
 ## Reviewer independence
 
