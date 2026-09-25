@@ -7,15 +7,15 @@
 | Evidence ID                    | `SIR02-GOV-01`                                                       |
 | Document                       | `SIR02-GOV-01 — Data Governance Joint Decision Review`               |
 | Version                        | `v1.0`                                                               |
-| Record status                  | `Owner Decision Recorded / Awaiting Immutable Linkage`               |
-| Current evidence status        | `Missing / Not Reviewed`                                             |
+| Record status                  | `Owner Decision Recorded / Ready for Reviewer Assessment`            |
+| Current evidence status        | `Received / Not Reviewed`                                            |
 | Scope                          | Reduced Initial Shadow Mode with RAG and document ingestion excluded |
 | Data Governance owner          | **GANTUMUR Erdenedalai — Founder / Administrator**                   |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                             |
 | Decision outcome               | `Approved`                                                           |
 | Decision date                  | `2026-09-25`                                                         |
 | Conditions                     | `Recorded in Owner completion`                                       |
-| Immutable repository reference | `Owner Input Required — completed-decision commit`                   |
+| Immutable repository reference | `0b110e4916ab58022d29ae88f4a69cb4e5dde773`                           |
 
 ## Required decision scope
 
@@ -44,15 +44,15 @@ The Data Governance owner decision must explicitly approve, reject, or defer the
 
 ## Acceptance-criteria mapping
 
-| Criterion                                                                                  | Current evidence                                   | Satisfied now? |
-| ------------------------------------------------------------------------------------------ | -------------------------------------------------- | -------------- |
-| Versioned Data Governance decision record exists                                           | This `v1.0` record                                 | `Yes`          |
-| Reduced scope excludes RAG and ingestion                                                   | Supporting approved governance and configuration   | `Yes`          |
-| Tenant isolation, ownership, minimization, provenance, retention, and deletion are covered | Required decision scope above                      | `Yes`          |
-| Hidden or unapproved data artifacts are explicitly prohibited                              | Required decision scope above                      | `Yes`          |
-| Data Governance owner supplies an explicit outcome and statement                           | Owner outcome and statement recorded               | `Yes`          |
-| Decision date and conditions are supplied                                                  | `2026-09-25`; owner conditions recorded            | `Yes`          |
-| Completed owner decision has an immutable repository reference                             | `Owner Input Required — completed-decision commit` | `No`           |
+| Criterion                                                                                  | Current evidence                                 | Satisfied now? |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------ | -------------- |
+| Versioned Data Governance decision record exists                                           | This `v1.0` record                               | `Yes`          |
+| Reduced scope excludes RAG and ingestion                                                   | Supporting approved governance and configuration | `Yes`          |
+| Tenant isolation, ownership, minimization, provenance, retention, and deletion are covered | Required decision scope above                    | `Yes`          |
+| Hidden or unapproved data artifacts are explicitly prohibited                              | Required decision scope above                    | `Yes`          |
+| Data Governance owner supplies an explicit outcome and statement                           | Owner outcome and statement recorded             | `Yes`          |
+| Decision date and conditions are supplied                                                  | `2026-09-25`; owner conditions recorded          | `Yes`          |
+| Completed owner decision has an immutable repository reference                             | `0b110e4916ab58022d29ae88f4a69cb4e5dde773`       | `Yes`          |
 
 ## Owner completion
 
@@ -60,6 +60,6 @@ The Data Governance owner decision must explicitly approve, reject, or defer the
 - Owner decision statement: **Data Governance approves the reduced Initial Shadow scope with RAG and document ingestion excluded. Strict tenant data isolation, tenant ownership and authorization boundaries, data minimization, provenance, traceability, retention/deletion obligations, and prohibition of hidden ingestion/RAG artifacts remain mandatory.**
 - Decision date: **2026-09-25**
 - Conditions: **No cross-tenant data use is permitted. No deferred document, chunk, embedding, index, vector, cache, retrieval, or related artifact may be created outside approved scope. This decision does not authorize deployment, Shadow activation, ingestion, RAG, production use, or expansion of tenant-data scope.**
-- Immutable repository reference after completion: **Owner Input Required**
+- Immutable repository reference after completion: **`0b110e4916ab58022d29ae88f4a69cb4e5dde773`**
 
-All owner-supplied fields are complete. Evidence status remains `Missing / Not Reviewed` until the immutable completed-decision reference is linked.
+All mandatory owner fields and the immutable content reference are complete. Evidence status is `Received / Not Reviewed`; reviewer assessment remains required.

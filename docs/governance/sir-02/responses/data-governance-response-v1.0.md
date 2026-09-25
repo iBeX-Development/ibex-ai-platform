@@ -9,7 +9,7 @@
 - Primary owner assignment: **GANTUMUR Erdenedalai — Founder / Administrator**
 - Reviewer: **SODBILEG Erkhembayar — Administrator**
 - Scope: Data Governance Immediate-stage assignments only
-- Review status: **Not Reviewed**
+- Review status: **Owner Decisions Received / Not Reviewed**
 
 This response inventories existing supporting evidence without treating Product, RAG Architecture, or Security decisions as Data Governance approval. It does not authorize deployment, Shadow activation, credentials, traffic, ingestion, storage, or production use.
 
@@ -36,10 +36,10 @@ These controls are supporting evidence only. A Data Governance-owned decision is
   - Security owner decisions: `10423e60524467e678cacafce0724c66ff3ac616`;
   - proposed Shadow disablement configuration: `52e437f053cdca25492410cecbd182ebc19a4afd`;
   - Tenant Security Contract and RAG Architecture baseline snapshot: `552ee21095f709869c4e0d84772a40c1afd81870`.
-- Owner/source/version/date: Supporting records are versioned and dated in their source documents. No Data Governance-owned joint decision outcome, statement, date, conditions, or immutable completed-decision reference exists.
-- Data Governance-owned requirement satisfied: **No**.
-- Evidence status: `Missing / Not Reviewed`.
-- Exact owner gap: Data Governance must supply an explicit outcome, owner decision statement, decision date, governance conditions, and immutable reference confirming the reduced scope and all required tenant ownership, authorization, minimization, provenance, retention, and deletion obligations.
+- Owner/source/version/date: **GANTUMUR Erdenedalai — Founder / Administrator**; decision `v1.0`; `2026-09-25`; immutable content `0b110e4916ab58022d29ae88f4a69cb4e5dde773`.
+- Data Governance-owned requirement satisfied: **Yes**.
+- Evidence status: `Received / Not Reviewed`.
+- Remaining gap: Reviewer assessment is required.
 
 ### SIR02-GOV-05 — Formal Data Governance approval
 
@@ -49,10 +49,10 @@ These controls are supporting evidence only. A Data Governance-owned decision is
   - accepted RAG Architecture review: `e780b35008cb4ea84a474f2eeace3bc848eb9fd0`;
   - accepted Security review: `b0a9ddb189c40218640a1ef934a0f8a9ea89ec40`;
   - proposed, not-activated configuration artifact: `52e437f053cdca25492410cecbd182ebc19a4afd`.
-- Owner/source/version/date: No explicit Data Governance approval, owner statement, decision date, conditions, or immutable approval reference exists.
-- Data Governance-owned requirement satisfied: **No**.
-- Evidence status: `Missing / Not Reviewed`.
-- Exact owner gap: An authorized Data Governance owner must provide a formal approval or rejection, exact decision statement, decision date, conditions, and immutable reference. Approval must preserve tenant ownership boundaries and grant no deployment, activation, ingestion, storage, or production authority.
+- Owner/source/version/date: **GANTUMUR Erdenedalai — Founder / Administrator**; approval `v1.0`; `2026-09-25`; immutable content `0b110e4916ab58022d29ae88f4a69cb4e5dde773`.
+- Data Governance-owned requirement satisfied: **Yes**.
+- Evidence status: `Received / Not Reviewed`.
+- Remaining gap: Reviewer assessment is required.
 
 ### SIR02-DEF-01 — Data Governance acceptance of the full SIR-09 ingestion deferral
 
@@ -62,10 +62,10 @@ These controls are supporting evidence only. A Data Governance-owned decision is
   - Security acceptance of the deferral: `10423e60524467e678cacafce0724c66ff3ac616`;
   - proposed configuration disabling ingestion, embeddings, and vector-store access: `52e437f053cdca25492410cecbd182ebc19a4afd`;
   - RAG integrity and traceability implementation: `dcec56f383b41d733b54160205011e315dc60614`.
-- Owner/source/version/date: The supporting RAG Architecture and Security decisions are explicit. No Data Governance acceptance outcome, owner statement, decision date, artifact-prohibition conditions, or immutable completed-decision reference exists.
-- Data Governance-owned requirement satisfied: **No**.
-- Evidence status: `Missing / Not Reviewed`.
-- Exact owner gap: Data Governance must explicitly accept or reject the full SIR-09 deferral and confirm that no deferred data artifact is created or retained, all applicable data lifecycle controls remain mandatory, and reopening requires explicit governance approval.
+- Owner/source/version/date: **GANTUMUR Erdenedalai — Founder / Administrator**; decision `v1.0`; `2026-09-25`; immutable content `0b110e4916ab58022d29ae88f4a69cb4e5dde773`.
+- Data Governance-owned requirement satisfied: **Yes**.
+- Evidence status: `Received / Not Reviewed`.
+- Remaining gap: Reviewer assessment is required.
 
 ### SIR02-DEF-03 — Data Governance acceptance of the review and expiry rule
 
@@ -75,15 +75,32 @@ These controls are supporting evidence only. A Data Governance-owned decision is
   - accepted Product review: `4b7fcb77343f5009f5b521f6d580ab6088d3c9f4`;
   - RAG Architecture deferral decision: `8044f8a0084bfd9f9f801309ddee84f718976c1d`;
   - Security deferral acceptance: `10423e60524467e678cacafce0724c66ff3ac616`.
-- Owner/source/version/date: The `Every 90 days` cadence and no-automatic-reenablement rule are established supporting governance evidence. No Data Governance-owned acceptance statement, decision date, conditions, or immutable completed-decision reference exists.
-- Data Governance-owned requirement satisfied: **No**.
-- Evidence status: `Missing / Not Reviewed`.
-- Exact owner gap: Data Governance must explicitly accept the cadence and full no-automatic-reenablement rule, identify the decision owner and date, state the reopening conditions, and provide an immutable completed-decision reference.
+- Owner/source/version/date: **GANTUMUR Erdenedalai — Founder / Administrator**; decision `v1.0`; `2026-09-25`; immutable content `0b110e4916ab58022d29ae88f4a69cb4e5dde773`.
+- Data Governance-owned requirement satisfied: **Yes**.
+- Evidence status: `Received / Not Reviewed`.
+- Remaining gap: Reviewer assessment is required.
 
 ## Response disposition
 
-- Moved from `Missing` to `Received`: none
-- Remaining `Missing / Not Reviewed`: `SIR02-GOV-01`, `SIR02-GOV-05`, `SIR02-DEF-01`, `SIR02-DEF-03`
+- Moved from `Missing` to `Received`: `SIR02-GOV-01`, `SIR02-GOV-05`, `SIR02-DEF-01`, `SIR02-DEF-03`
+- Remaining Data Governance `Missing`: none
 - Moved directly to `Ready for Review`: none
 - Evidence marked `Approved`: none
-- Current SIR-02 status: **Blocking — all four Data Governance assignments, two Platform Operations assignments, and three Knowledge Management assignments remain missing.**
+- Current SIR-02 status: **Blocking — four newly received Data Governance decisions require reviewer assessment, while two Platform Operations assignments and three Knowledge Management assignments remain missing.**
+
+## Data Governance owner decision submission
+
+- Owner: **GANTUMUR Erdenedalai — Founder / Administrator**
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Decision date: **2026-09-25**
+- Immutable owner-decision content commit: `0b110e4916ab58022d29ae88f4a69cb4e5dde773`
+- Review status: **Not Reviewed**
+
+| Evidence ID    | Outcome    | Decision record                                                                | Evidence status           |
+| -------------- | ---------- | ------------------------------------------------------------------------------ | ------------------------- |
+| `SIR02-GOV-01` | `Approved` | `decisions/SIR02-GOV-01-DATA-GOVERNANCE-JOINT-DECISION-REVIEW-v1.0.md`         | `Received / Not Reviewed` |
+| `SIR02-GOV-05` | `Approved` | `decisions/SIR02-GOV-05-DATA-GOVERNANCE-APPROVAL-v1.0.md`                      | `Received / Not Reviewed` |
+| `SIR02-DEF-01` | `Approved` | `decisions/SIR02-DEF-01-DATA-GOVERNANCE-INGESTION-DEFERRAL-ACCEPTANCE-v1.0.md` | `Received / Not Reviewed` |
+| `SIR02-DEF-03` | `Approved` | `decisions/SIR02-DEF-03-DATA-GOVERNANCE-REVIEW-EXPIRY-ACCEPTANCE-v1.0.md`      | `Received / Not Reviewed` |
+
+No evidence item is marked `Approved` at the evidence-status level. The owner decisions grant no deployment, Shadow activation, credential, traffic, ingestion, RAG, storage, or production authority.

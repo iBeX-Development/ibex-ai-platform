@@ -7,8 +7,8 @@
 | Evidence ID                    | `SIR02-DEF-03`                                                |
 | Document                       | `SIR02-DEF-03 — Data Governance Review and Expiry Acceptance` |
 | Version                        | `v1.0`                                                        |
-| Record status                  | `Owner Decision Recorded / Awaiting Immutable Linkage`        |
-| Current evidence status        | `Missing / Not Reviewed`                                      |
+| Record status                  | `Owner Decision Recorded / Ready for Reviewer Assessment`     |
+| Current evidence status        | `Received / Not Reviewed`                                     |
 | Scope                          | SIR-09 ingestion deferral review and expiry policy            |
 | Data Governance owner          | **GANTUMUR Erdenedalai — Founder / Administrator**            |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                      |
@@ -16,7 +16,7 @@
 | Decision date                  | `2026-09-25`                                                  |
 | Review cadence                 | `Every 90 days`                                               |
 | Conditions                     | `Recorded in Owner completion`                                |
-| Immutable repository reference | `Owner Input Required — completed-decision commit`            |
+| Immutable repository reference | `0b110e4916ab58022d29ae88f4a69cb4e5dde773`                    |
 
 ## Required review and expiry rule
 
@@ -41,15 +41,15 @@ The Data Governance owner must explicitly confirm that:
 
 ## Acceptance-criteria mapping
 
-| Criterion                                                                  | Current evidence                                   | Satisfied now? |
-| -------------------------------------------------------------------------- | -------------------------------------------------- | -------------- |
-| Versioned Data Governance review/expiry acceptance record exists           | This `v1.0` record                                 | `Yes`          |
-| Review cadence is explicitly `Every 90 days`                               | Decision record and required rule above            | `Yes`          |
-| Automatic ingestion, storage, retrieval, or RAG enablement is prohibited   | Required rule above                                | `Yes`          |
-| Reopening requires explicit governance approval                            | Required rule above                                | `Yes`          |
-| Data Governance owner supplies explicit acceptance/rejection and statement | Owner acceptance and statement recorded            | `Yes`          |
-| Decision date and conditions are supplied                                  | `2026-09-25`; owner conditions recorded            | `Yes`          |
-| Completed acceptance has an immutable repository reference                 | `Owner Input Required — completed-decision commit` | `No`           |
+| Criterion                                                                  | Current evidence                           | Satisfied now? |
+| -------------------------------------------------------------------------- | ------------------------------------------ | -------------- |
+| Versioned Data Governance review/expiry acceptance record exists           | This `v1.0` record                         | `Yes`          |
+| Review cadence is explicitly `Every 90 days`                               | Decision record and required rule above    | `Yes`          |
+| Automatic ingestion, storage, retrieval, or RAG enablement is prohibited   | Required rule above                        | `Yes`          |
+| Reopening requires explicit governance approval                            | Required rule above                        | `Yes`          |
+| Data Governance owner supplies explicit acceptance/rejection and statement | Owner acceptance and statement recorded    | `Yes`          |
+| Decision date and conditions are supplied                                  | `2026-09-25`; owner conditions recorded    | `Yes`          |
+| Completed acceptance has an immutable repository reference                 | `0b110e4916ab58022d29ae88f4a69cb4e5dde773` | `Yes`          |
 
 ## Owner completion
 
@@ -59,6 +59,6 @@ The Data Governance owner must explicitly confirm that:
 - Confirmation that reopening requires explicit governance approval: **Confirmed. Reopening requires a new explicit governance decision and Data Governance approval.**
 - Decision date: **2026-09-25**
 - Conditions: **The no-automatic-reenablement and explicit reopening-approval confirmations above are mandatory.**
-- Immutable repository reference after completion: **Owner Input Required**
+- Immutable repository reference after completion: **`0b110e4916ab58022d29ae88f4a69cb4e5dde773`**
 
-All owner-supplied fields are complete. Evidence status remains `Missing / Not Reviewed` until the immutable completed-decision reference is linked.
+All mandatory owner fields and the immutable content reference are complete. Evidence status is `Received / Not Reviewed`; reviewer assessment remains required.
