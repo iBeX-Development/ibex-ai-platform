@@ -2,19 +2,19 @@
 
 ## Decision record
 
-| Field                          | Value                                                     |
-| ------------------------------ | --------------------------------------------------------- |
-| Evidence ID                    | `SIR02-GOV-01`                                            |
-| Document                       | `SIR02-GOV-01 — Joint RAG Architecture Decision Review`   |
-| Version                        | `v1.0`                                                    |
-| Record status                  | `Owner Decision Recorded / Ready for Reviewer Assessment` |
-| Evidence status                | `Received / Not Reviewed`                                 |
-| Scope                          | Initial Shadow Mode with RAG excluded                     |
-| Primary owner                  | **GANTUMUR Erdenedalai — Founder / Administrator**        |
-| Reviewer                       | **SODBILEG Erkhembayar — Administrator**                  |
-| Decision outcome               | `Approved`                                                |
-| Decision date                  | `2026-09-25`                                              |
-| Immutable repository reference | `8044f8a0084bfd9f9f801309ddee84f718976c1d`                |
+| Field                          | Value                                                   |
+| ------------------------------ | ------------------------------------------------------- |
+| Evidence ID                    | `SIR02-GOV-01`                                          |
+| Document                       | `SIR02-GOV-01 — Joint RAG Architecture Decision Review` |
+| Version                        | `v1.0`                                                  |
+| Record status                  | `Reviewed / Ready for Review`                           |
+| Evidence status                | `Ready for Review / Accepted`                           |
+| Scope                          | Initial Shadow Mode with RAG excluded                   |
+| Primary owner                  | **GANTUMUR Erdenedalai — Founder / Administrator**      |
+| Reviewer                       | **SODBILEG Erkhembayar — Administrator**                |
+| Decision outcome               | `Approved`                                              |
+| Decision date                  | `2026-09-25`                                            |
+| Immutable repository reference | `8044f8a0084bfd9f9f801309ddee84f718976c1d`              |
 
 ## Decision scope
 
@@ -60,4 +60,16 @@ This record does not authorize deployment, Shadow Mode entry, traffic, credentia
 - Owner decision statement: **Initial Shadow Mode will operate with RAG excluded. The accepted canonical agent, intent, and capability exclusion manifests, together with the approved Shadow RAG-disablement configuration baseline, define the reduced Shadow scope. No RAG capability may be re-enabled without a new explicit governance decision and approved configuration change.**
 - Immutable repository reference after completion: **`8044f8a0084bfd9f9f801309ddee84f718976c1d`**
 
-All mandatory owner fields and the immutable content reference are complete. Evidence status is `Received / Not Reviewed`; reviewer assessment remains required.
+All mandatory owner fields and the immutable content reference are complete.
+
+## Reviewer assessment
+
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Review date: **2026-09-25**
+- Review result: `Accepted`
+- Verified owner-decision content: `8044f8a0084bfd9f9f801309ddee84f718976c1d`
+- Verified governance linkage: `878cd022fab39619ef5be037466d2edc7facb9f0`
+- Reason: The outcome is explicitly `Approved`; initial Shadow scope excludes RAG; the accepted canonical manifests and configuration evidence are referenced; automatic re-enablement is prohibited; owner and date are explicit; the immutable reference resolves; and the record grants no deployment or Shadow activation authority.
+- Acceptance gap: None for this evidence item.
+- Evidence status after review: `Ready for Review`
+- Evidence marked `Approved` at evidence-status level: No

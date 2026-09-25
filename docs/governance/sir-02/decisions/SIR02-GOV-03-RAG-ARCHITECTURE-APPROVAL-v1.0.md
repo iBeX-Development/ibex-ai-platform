@@ -7,8 +7,8 @@
 | Evidence ID                    | `SIR02-GOV-03`                                                                          |
 | Document                       | `SIR02-GOV-03 — RAG Architecture Approval`                                              |
 | Version                        | `v1.0`                                                                                  |
-| Record status                  | `Owner Decision Recorded / Ready for Reviewer Assessment`                               |
-| Evidence status                | `Received / Not Reviewed`                                                               |
+| Record status                  | `Reviewed / Ready for Review`                                                           |
+| Evidence status                | `Ready for Review / Accepted`                                                           |
 | Scope                          | Formal RAG Architecture approval for the reduced initial Shadow scope with RAG excluded |
 | Approval owner                 | **GANTUMUR Erdenedalai — Founder / Administrator**                                      |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                                                |
@@ -58,4 +58,16 @@ An approval must also confirm that:
 - Approval conditions: **This approval does not authorize deployment, Shadow activation, ingestion enablement, or production use.**
 - Immutable repository reference after completion: **`8044f8a0084bfd9f9f801309ddee84f718976c1d`**
 
-All mandatory owner fields and the immutable content reference are complete. Evidence status is `Received / Not Reviewed`; reviewer assessment remains required. Product evidence does not substitute for this RAG Architecture approval.
+All mandatory owner fields and the immutable content reference are complete. Product evidence does not substitute for this RAG Architecture approval.
+
+## Reviewer assessment
+
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Review date: **2026-09-25**
+- Review result: `Accepted`
+- Verified owner-decision content: `8044f8a0084bfd9f9f801309ddee84f718976c1d`
+- Verified governance linkage: `878cd022fab39619ef5be037466d2edc7facb9f0`
+- Reason: Formal RAG Architecture approval is explicit; the reduced initial Shadow scope, fail-closed controls, no-automatic-reenablement rule, owner, date, version, and immutable reference are present; and the approval expressly grants no deployment, ingestion enablement, Shadow activation, or production-use authority.
+- Acceptance gap: None for this evidence item.
+- Evidence status after review: `Ready for Review`
+- Evidence marked `Approved` at evidence-status level: No

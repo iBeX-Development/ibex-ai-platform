@@ -175,3 +175,27 @@ This response uses existing approved governance records and immutable repository
 - RAG Architecture evidence now `Missing`: 0
 - Evidence marked `Approved` at evidence-status level: none
 - Current SIR-02 status: **Blocking — the three newly received RAG Architecture decisions require reviewer assessment, and 13 Immediate-stage assignments from other owner groups remain missing.**
+
+## RAG Architecture governance decision review
+
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Review date: **2026-09-25**
+- Owner-decision content commit: `8044f8a0084bfd9f9f801309ddee84f718976c1d`
+- Governance linkage/status commit: `878cd022fab39619ef5be037466d2edc7facb9f0`
+- Status rule applied: An `Accepted` review moves evidence from `Received` to `Ready for Review`; it does not mark the evidence `Approved`.
+
+| Evidence ID    | Review result | Verification and concise reason                                                                                                                                                                                                                                                            | Acceptance gap               |
+| -------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------- |
+| `SIR02-GOV-01` | `Accepted`    | Outcome, owner, date, reduced scope, canonical exclusion references, no-automatic-reenablement rule, and immutable reference are explicit. The record states that it grants no deployment or Shadow activation authority.                                                                  | None for this evidence item. |
+| `SIR02-GOV-03` | `Accepted`    | Formal RAG Architecture approval, reduced initial Shadow scope, fail-closed and no-automatic-reenablement conditions, owner, date, version, and immutable reference are present. The conditions grant no deployment, ingestion enablement, Shadow activation, or production-use authority. | None for this evidence item. |
+| `SIR02-DEF-01` | `Accepted`    | Outcome is `Deferred`; the full ingestion lifecycle is explicit; review is every 90 days; expiry cannot enable ingestion or RAG; reopening requires explicit governance approval; and owner, date, and immutable reference are present.                                                    | None for this evidence item. |
+
+### Final RAG Architecture disposition
+
+- Moved from `Received` to `Ready for Review`: `SIR02-GOV-01`, `SIR02-GOV-03`, `SIR02-DEF-01`
+- RAG Architecture evidence `Ready for Review`: 8 of 8
+- RAG Architecture evidence `Received`: 0
+- RAG Architecture evidence `Missing`: 0
+- Clarification or rejection: none
+- Evidence marked `Approved` at evidence-status level: none
+- Current SIR-02 status: **Blocking — RAG Architecture evidence is 8/8 Ready for Review, but 13 Immediate-stage assignments from Security, Data Governance, Platform Operations, and Knowledge Management remain missing.**

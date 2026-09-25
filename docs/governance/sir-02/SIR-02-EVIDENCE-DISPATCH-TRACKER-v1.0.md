@@ -15,7 +15,7 @@
 - RAG Architecture response reference: **`responses/rag-architecture-response-v1.0.md`**
 - Proposed Shadow RAG-disablement configuration: **`configuration/SIR-02-SHADOW-RAG-DISABLEMENT-v1.0.json`** — `SIR02-SHADOW-RAG-DISABLEMENT` `v1.0`, not activated
 - Evidence collection register: **`SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md`**
-- Evidence status: **All eight Product assignments and five RAG Architecture assignments Ready for Review; three RAG Architecture decisions Received; all remaining owner-group assignments remain Missing**
+- Evidence status: **All eight Product and all eight RAG Architecture assignments Ready for Review; all remaining owner-group assignments remain Missing**
 
 ## Immediate-stage assignments
 
@@ -29,13 +29,13 @@
 | SIR02-CFG-06 | Product              | `immediate/product-request-v1.0.md`; `responses/product-response-v1.0.md` | Sent           | Ready for Review | Accepted      |
 | SIR02-CFG-07 | Product              | `immediate/product-request-v1.0.md`; `responses/product-response-v1.0.md` | Sent           | Ready for Review | Accepted      |
 | SIR02-DEF-03 | Product              | `immediate/product-request-v1.0.md`; `responses/product-response-v1.0.md` | Sent           | Ready for Review | Accepted      |
-| SIR02-GOV-01 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Received         | Not Reviewed  |
-| SIR02-GOV-03 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Received         | Not Reviewed  |
+| SIR02-GOV-01 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Ready for Review | Accepted      |
+| SIR02-GOV-03 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Ready for Review | Accepted      |
 | SIR02-CFG-02 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Ready for Review | Accepted      |
 | SIR02-CFG-03 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Ready for Review | Accepted      |
 | SIR02-CFG-04 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Ready for Review | Accepted      |
 | SIR02-CFG-07 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Ready for Review | Accepted      |
-| SIR02-DEF-01 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Received         | Not Reviewed  |
+| SIR02-DEF-01 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Ready for Review | Accepted      |
 | SIR02-DEF-02 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Ready for Review | Accepted      |
 | SIR02-GOV-01 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
 | SIR02-GOV-04 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
@@ -58,21 +58,21 @@
 
 The Product response is the owner submission for all eight Product assignments. All eight are `Ready for Review` with accepted review records. No evidence may move to `Approved` or `Rejected` without a separate explicit approval record.
 
-The RAG Architecture response supplies all eight assigned evidence items. Five have accepted review records at `Ready for Review`; `SIR02-GOV-01`, `SIR02-GOV-03`, and `SIR02-DEF-01` are newly `Received` and remain `Not Reviewed`. No RAG Architecture evidence is `Approved` at the evidence-status level.
+The RAG Architecture response supplies all eight assigned evidence items, and all eight have accepted review records at `Ready for Review`. No RAG Architecture evidence is `Approved` at the evidence-status level.
 
 ## SIR-02 completion dashboard
 
 - Immediate-stage assignments: **29 total**
-- Ready for Review: **13**
-- Received: **3**
+- Ready for Review: **16**
+- Received: **0**
 - Missing: **13**
-- Accepted review results: **13**
+- Accepted review results: **16**
 - Needs Clarification: **0**
 - Rejected: **0**
 - Approved evidence: **0**
 - Product assignments: **8 Ready for Review; 0 Received; 0 Missing**
 - Product governance review: **All eight Product evidence items accepted; none marked Approved**
-- RAG Architecture assignments: **5 Ready for Review; 3 Received; 0 Missing**
+- RAG Architecture assignments: **8 Ready for Review; 0 Received; 0 Missing**
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
-- Current SIR-02 status: **Blocking — three RAG Architecture decisions require reviewer assessment, and 13 assignments from Security, Data Governance, Platform Operations, and Knowledge Management remain missing.**
+- Current SIR-02 status: **Blocking — Product and RAG Architecture evidence are each 8/8 Ready for Review, but 13 assignments from Security, Data Governance, Platform Operations, and Knowledge Management remain missing.**

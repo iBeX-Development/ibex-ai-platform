@@ -7,8 +7,8 @@
 | Evidence ID                    | `SIR02-DEF-01`                                                      |
 | Document                       | `SIR02-DEF-01 — SIR-09 Ingestion Deferral Decision`                 |
 | Version                        | `v1.0`                                                              |
-| Record status                  | `Owner Decision Recorded / Ready for Reviewer Assessment`           |
-| Evidence status                | `Received / Not Reviewed`                                           |
+| Record status                  | `Reviewed / Ready for Review`                                       |
+| Evidence status                | `Ready for Review / Accepted`                                       |
 | Scope                          | SIR-09 document and RAG ingestion lifecycle for initial Shadow Mode |
 | Accountable SIR-09 owner       | **GANTUMUR Erdenedalai — Founder / Administrator**                  |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                            |
@@ -71,4 +71,16 @@ The current proposed configuration disables document ingestion, embedding access
 - Confirmation that the full listed lifecycle is governed by this outcome: **Yes**
 - Immutable repository reference after completion: **`8044f8a0084bfd9f9f801309ddee84f718976c1d`**
 
-All mandatory owner fields and the immutable content reference are complete. Evidence status is `Received / Not Reviewed`; reviewer assessment remains required.
+All mandatory owner fields and the immutable content reference are complete.
+
+## Reviewer assessment
+
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Review date: **2026-09-25**
+- Review result: `Accepted`
+- Verified owner-decision content: `8044f8a0084bfd9f9f801309ddee84f718976c1d`
+- Verified governance linkage: `878cd022fab39619ef5be037466d2edc7facb9f0`
+- Reason: The outcome is explicitly `Deferred`; the complete ingestion lifecycle includes intake, parsing/chunking, embeddings, indexing, vector-store population and storage processing, retrieval preparation, and related RAG ingestion; review is every 90 days; expiry cannot enable ingestion or RAG; reopening requires explicit governance approval; and owner, date, and immutable reference are present.
+- Acceptance gap: None for this evidence item.
+- Evidence status after review: `Ready for Review`
+- Evidence marked `Approved` at evidence-status level: No
