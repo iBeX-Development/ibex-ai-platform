@@ -7,14 +7,14 @@
 | Evidence ID                    | `SIR02-GOV-01`                                                                       |
 | Document                       | `SIR02-GOV-01 — Security Joint Decision Review`                                      |
 | Version                        | `v1.0`                                                                               |
-| Record status                  | `Draft / Owner Input Required`                                                       |
+| Record status                  | `Owner Decision Recorded / Awaiting Immutable Reference`                             |
 | Current evidence status        | `Missing / Not Reviewed`                                                             |
 | Scope                          | Reduced Initial Shadow Mode with RAG excluded                                        |
 | Security owner                 | **GANTUMUR Erdenedalai — Founder / Administrator**                                   |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                                             |
-| Decision outcome               | `Owner Input Required` — allowed values: `Approved / Rejected / Deferred`            |
-| Decision date                  | `Owner Input Required`                                                               |
-| Conditions                     | `Owner Input Required`                                                               |
+| Decision outcome               | `Approved`                                                                           |
+| Decision date                  | `2026-09-25`                                                                         |
+| Conditions                     | `Recorded in Owner completion`                                                       |
 | Immutable repository reference | `Owner Input Required` — immutable commit containing the completed Security decision |
 
 ## Required decision scope
@@ -49,16 +49,16 @@ The Security owner decision must explicitly accept, reject, or defer the reduced
 | Reduced scope and RAG exclusion are exact and immutable                   | Accepted Product/RAG manifests and proposed configuration baseline | `Yes`          |
 | Tenant, trusted-context, authorization, ownership, and entitlement remain | Phase 1 Security foundation and Phase 10 direct-boundary controls  | `Yes`          |
 | Missing/conflicting configuration and every fallback path fail closed     | Proposed configuration and accepted Security technical review      | `Yes`          |
-| Security owner supplies explicit joint-review outcome and statement       | `Owner Input Required`                                             | `No`           |
-| Security conditions are explicitly accepted                               | `Owner Input Required`                                             | `No`           |
-| Decision date and immutable completed-decision reference exist            | `Owner Input Required`                                             | `No`           |
+| Security owner supplies explicit joint-review outcome and statement       | Owner outcome and statement recorded                               | `Yes`          |
+| Security conditions are explicitly accepted                               | Owner conditions recorded                                          | `Yes`          |
+| Decision date and immutable completed-decision reference exist            | Date supplied; immutable reference awaits content commit           | `No`           |
 
 ## Owner completion
 
-- Decision outcome: **Owner Input Required**
-- Owner decision statement: **Owner Input Required**
-- Decision date: **Owner Input Required**
-- Conditions explicitly preserving every listed Security control: **Owner Input Required**
+- Decision outcome: **Approved**
+- Owner decision statement: **Security approves the reduced Initial Shadow scope with RAG excluded, provided strict tenant isolation, trusted-context validation, ownership validation, authorization, entitlement enforcement, fail-closed behavior, auditability, and network/security boundaries remain mandatory and unchanged.**
+- Decision date: **2026-09-25**
+- Conditions explicitly preserving every listed Security control: **No wildcard or broad-allow bypass is permitted. Missing, conflicting, or incomplete security configuration must deny/fail closed. This decision does not authorize deployment, Shadow activation, credentials, traffic, ingestion, or production use.**
 - Immutable repository reference after completion: **Owner Input Required**
 
-This Security evidence remains `Missing / Not Reviewed` until every mandatory owner-decision field is supplied in an immutable record.
+The owner decision is recorded. This Security evidence remains `Missing / Not Reviewed` until the immutable commit containing the completed decision is linked.

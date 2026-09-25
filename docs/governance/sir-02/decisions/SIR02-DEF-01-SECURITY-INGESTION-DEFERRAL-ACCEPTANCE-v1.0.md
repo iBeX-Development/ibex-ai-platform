@@ -7,14 +7,14 @@
 | Evidence ID                    | `SIR02-DEF-01`                                                                                  |
 | Document                       | `SIR02-DEF-01 — Security Ingestion Deferral Acceptance`                                         |
 | Version                        | `v1.0`                                                                                          |
-| Record status                  | `Draft / Owner Input Required`                                                                  |
+| Record status                  | `Owner Decision Recorded / Awaiting Immutable Reference`                                        |
 | Current evidence status        | `Missing / Not Reviewed`                                                                        |
 | Scope                          | Security acceptance of the complete SIR-09 ingestion deferral lifecycle for Initial Shadow Mode |
 | Security acceptance owner      | **GANTUMUR Erdenedalai — Founder / Administrator**                                              |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                                                        |
-| Decision outcome               | `Owner Input Required` — allowed values: `Approved / Rejected / Deferred`                       |
-| Decision date                  | `Owner Input Required`                                                                          |
-| Security conditions            | `Owner Input Required`                                                                          |
+| Decision outcome               | `Approved`                                                                                      |
+| Decision date                  | `2026-09-25`                                                                                    |
+| Security conditions            | `Recorded in Owner completion`                                                                  |
 | Review cadence                 | `Every 90 days`                                                                                 |
 | Immutable repository reference | `Owner Input Required` — immutable commit containing the completed Security acceptance          |
 
@@ -61,17 +61,17 @@ The owner must explicitly confirm that the deferral:
 | ---------------------------------------------------------------------------------------- | ----------------------------------------- | -------------- |
 | Complete deferred ingestion lifecycle is explicit and immutable                          | Accepted RAG Architecture SIR-09 decision | `Yes`          |
 | Review cadence and no-automatic-reenablement rule are explicit                           | `Every 90 days`; accepted SIR-09 decision | `Yes`          |
-| Security owner explicitly accepts or rejects the deferral and all required confirmations | `Owner Input Required`                    | `No`           |
-| Security conditions, including network/audit obligations, are supplied                   | `Owner Input Required`                    | `No`           |
-| Decision date is supplied                                                                | `Owner Input Required`                    | `No`           |
+| Security owner explicitly accepts or rejects the deferral and all required confirmations | Owner acceptance and statement recorded   | `Yes`          |
+| Security conditions, including network/audit obligations, are supplied                   | Owner conditions recorded                 | `Yes`          |
+| Decision date is supplied                                                                | `2026-09-25`                              | `Yes`          |
 | Completed Security acceptance has an immutable repository reference                      | `Owner Input Required`                    | `No`           |
 
 ## Owner completion
 
-- Decision outcome: **Owner Input Required**
-- Owner decision statement: **Owner Input Required**
-- Decision date: **Owner Input Required**
-- Security conditions and confirmations: **Owner Input Required**
+- Decision outcome: **Approved**
+- Owner decision statement: **Security accepts the SIR-09 ingestion deferral for Initial Shadow Mode. The deferral covers the complete ingestion lifecycle and does not weaken tenant isolation, authorization, entitlement, ownership validation, auditability, or network/security boundaries.**
+- Decision date: **2026-09-25**
+- Security conditions and confirmations: **Review every 90 days. Expiry does not automatically enable ingestion or RAG. Reopening requires explicit governance and Security approval.**
 - Immutable repository reference after completion: **Owner Input Required**
 
-This Security evidence remains `Missing / Not Reviewed` until every mandatory owner-decision field is supplied in an immutable Security acceptance record.
+The owner acceptance is recorded. This Security evidence remains `Missing / Not Reviewed` until the immutable commit containing the completed acceptance is linked.
