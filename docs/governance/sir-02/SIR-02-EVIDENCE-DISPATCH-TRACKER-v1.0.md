@@ -14,62 +14,61 @@
 - Product remaining-input response reference: **`responses/product-remaining-inputs-v1.0.md`**
 - Proposed Shadow RAG-disablement configuration: **`configuration/SIR-02-SHADOW-RAG-DISABLEMENT-v1.0.json`** — `SIR02-SHADOW-RAG-DISABLEMENT` `v1.0`, not activated
 - Evidence collection register: **`SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md`**
-- Evidence status: **Five Product assignments Ready for Review; all other assignments remain Missing**
+- Evidence status: **Five Product assignments Ready for Review; three Product assignments Received; all other assignments remain Missing**
 
 ## Immediate-stage assignments
 
-| Evidence ID  | Owner group          | Request reference                                                                 | Request status | Evidence status  | Review status |
-| ------------ | -------------------- | --------------------------------------------------------------------------------- | -------------- | ---------------- | ------------- |
-| SIR02-GOV-01 | Product              | `immediate/product-request-v1.0.md`                                               | Sent           | Ready for Review | Accepted      |
-| SIR02-GOV-02 | Product              | `immediate/product-request-v1.0.md`                                               | Sent           | Ready for Review | Accepted      |
-| SIR02-CFG-02 | Product              | `immediate/product-request-v1.0.md`                                               | Sent           | Ready for Review | Accepted      |
-| SIR02-CFG-03 | Product              | `immediate/product-request-v1.0.md`                                               | Sent           | Ready for Review | Accepted      |
-| SIR02-CFG-04 | Product              | `immediate/product-request-v1.0.md`                                               | Sent           | Ready for Review | Accepted      |
-| SIR02-CFG-06 | Product              | `immediate/product-request-v1.0.md`; `responses/product-remaining-inputs-v1.0.md` | Sent           | Missing          | Not Reviewed  |
-| SIR02-CFG-07 | Product              | `immediate/product-request-v1.0.md`; `responses/product-remaining-inputs-v1.0.md` | Sent           | Missing          | Not Reviewed  |
-| SIR02-DEF-03 | Product              | `immediate/product-request-v1.0.md`; `responses/product-remaining-inputs-v1.0.md` | Sent           | Missing          | Not Reviewed  |
-| SIR02-GOV-01 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
-| SIR02-GOV-03 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
-| SIR02-CFG-02 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
-| SIR02-CFG-03 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
-| SIR02-CFG-04 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
-| SIR02-CFG-07 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
-| SIR02-DEF-01 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
-| SIR02-DEF-02 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
-| SIR02-GOV-01 | Security             | `immediate/security-request-v1.0.md`                                              | Sent           | Missing          | Not Reviewed  |
-| SIR02-GOV-04 | Security             | `immediate/security-request-v1.0.md`                                              | Sent           | Missing          | Not Reviewed  |
-| SIR02-CFG-04 | Security             | `immediate/security-request-v1.0.md`                                              | Sent           | Missing          | Not Reviewed  |
-| SIR02-DEF-01 | Security             | `immediate/security-request-v1.0.md`                                              | Sent           | Missing          | Not Reviewed  |
-| SIR02-GOV-01 | Data Governance      | `immediate/data-governance-request-v1.0.md`                                       | Sent           | Missing          | Not Reviewed  |
-| SIR02-GOV-05 | Data Governance      | `immediate/data-governance-request-v1.0.md`                                       | Sent           | Missing          | Not Reviewed  |
-| SIR02-DEF-01 | Data Governance      | `immediate/data-governance-request-v1.0.md`                                       | Sent           | Missing          | Not Reviewed  |
-| SIR02-DEF-03 | Data Governance      | `immediate/data-governance-request-v1.0.md`                                       | Sent           | Missing          | Not Reviewed  |
-| SIR02-CFG-05 | Platform Operations  | `immediate/platform-operations-request-v1.0.md`                                   | Sent           | Missing          | Not Reviewed  |
-| SIR02-CFG-06 | Platform Operations  | `immediate/platform-operations-request-v1.0.md`                                   | Sent           | Missing          | Not Reviewed  |
-| SIR02-DEF-01 | Knowledge Management | `immediate/knowledge-management-request-v1.0.md`                                  | Sent           | Missing          | Not Reviewed  |
-| SIR02-DEF-02 | Knowledge Management | `immediate/knowledge-management-request-v1.0.md`                                  | Sent           | Missing          | Not Reviewed  |
-| SIR02-DEF-03 | Knowledge Management | `immediate/knowledge-management-request-v1.0.md`                                  | Sent           | Missing          | Not Reviewed  |
+| Evidence ID  | Owner group          | Request reference                                                         | Request status | Evidence status  | Review status |
+| ------------ | -------------------- | ------------------------------------------------------------------------- | -------------- | ---------------- | ------------- |
+| SIR02-GOV-01 | Product              | `immediate/product-request-v1.0.md`                                       | Sent           | Ready for Review | Accepted      |
+| SIR02-GOV-02 | Product              | `immediate/product-request-v1.0.md`                                       | Sent           | Ready for Review | Accepted      |
+| SIR02-CFG-02 | Product              | `immediate/product-request-v1.0.md`                                       | Sent           | Ready for Review | Accepted      |
+| SIR02-CFG-03 | Product              | `immediate/product-request-v1.0.md`                                       | Sent           | Ready for Review | Accepted      |
+| SIR02-CFG-04 | Product              | `immediate/product-request-v1.0.md`                                       | Sent           | Ready for Review | Accepted      |
+| SIR02-CFG-06 | Product              | `immediate/product-request-v1.0.md`; `responses/product-response-v1.0.md` | Sent           | Received         | Not Reviewed  |
+| SIR02-CFG-07 | Product              | `immediate/product-request-v1.0.md`; `responses/product-response-v1.0.md` | Sent           | Received         | Not Reviewed  |
+| SIR02-DEF-03 | Product              | `immediate/product-request-v1.0.md`; `responses/product-response-v1.0.md` | Sent           | Received         | Not Reviewed  |
+| SIR02-GOV-01 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Missing          | Not Reviewed  |
+| SIR02-GOV-03 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Missing          | Not Reviewed  |
+| SIR02-CFG-02 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Missing          | Not Reviewed  |
+| SIR02-CFG-03 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Missing          | Not Reviewed  |
+| SIR02-CFG-04 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Missing          | Not Reviewed  |
+| SIR02-CFG-07 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Missing          | Not Reviewed  |
+| SIR02-DEF-01 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Missing          | Not Reviewed  |
+| SIR02-DEF-02 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Missing          | Not Reviewed  |
+| SIR02-GOV-01 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
+| SIR02-GOV-04 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
+| SIR02-CFG-04 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
+| SIR02-DEF-01 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
+| SIR02-GOV-01 | Data Governance      | `immediate/data-governance-request-v1.0.md`                               | Sent           | Missing          | Not Reviewed  |
+| SIR02-GOV-05 | Data Governance      | `immediate/data-governance-request-v1.0.md`                               | Sent           | Missing          | Not Reviewed  |
+| SIR02-DEF-01 | Data Governance      | `immediate/data-governance-request-v1.0.md`                               | Sent           | Missing          | Not Reviewed  |
+| SIR02-DEF-03 | Data Governance      | `immediate/data-governance-request-v1.0.md`                               | Sent           | Missing          | Not Reviewed  |
+| SIR02-CFG-05 | Platform Operations  | `immediate/platform-operations-request-v1.0.md`                           | Sent           | Missing          | Not Reviewed  |
+| SIR02-CFG-06 | Platform Operations  | `immediate/platform-operations-request-v1.0.md`                           | Sent           | Missing          | Not Reviewed  |
+| SIR02-DEF-01 | Knowledge Management | `immediate/knowledge-management-request-v1.0.md`                          | Sent           | Missing          | Not Reviewed  |
+| SIR02-DEF-02 | Knowledge Management | `immediate/knowledge-management-request-v1.0.md`                          | Sent           | Missing          | Not Reviewed  |
+| SIR02-DEF-03 | Knowledge Management | `immediate/knowledge-management-request-v1.0.md`                          | Sent           | Missing          | Not Reviewed  |
 
 ## Unchanged later-stage status
 
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
 
-The Product response above is the owner submission for the five Product assignments marked `Ready for Review`; their explicit review record is in the response and collection register. No evidence may move to `Approved` or `Rejected` without a separate explicit approval record.
+The Product response is the owner submission for all eight Product assignments. Five are `Ready for Review` with accepted review records; three are newly `Received` and remain `Not Reviewed`. No evidence may move to `Approved` or `Rejected` without a separate explicit review and approval record.
 
 ## SIR-02 completion dashboard
 
 - Immediate-stage assignments: **29 total**
 - Ready for Review: **5**
-- Received: **0**
-- Missing: **24**
+- Received: **3**
+- Missing: **21**
 - Accepted review results: **5**
 - Needs Clarification: **0**
 - Rejected: **0**
 - Approved evidence: **0**
-- Product assignments: **5 Ready for Review; 3 Missing**
-- Product remaining-input response: **Published; three items remain Missing because mandatory owner values were not supplied**
-- Pending Product decision input: **Actual approved decision date for `SIR02-CFG-06`, `SIR02-CFG-07`, and `SIR02-DEF-03`; CFG-06 also requires formal approval of the exact proposed artifact ID/version/checksum**
+- Product assignments: **5 Ready for Review; 3 Received; 0 Missing**
+- Product governance approval: **Recorded for `SIR02-CFG-06`, `SIR02-CFG-07`, and `SIR02-DEF-03` on `2026-09-25`; reviewer assessment pending**
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
-- Current SIR-02 status: **Blocking — Product manifest evidence is accepted for review, but three Product inputs and required evidence from other owner groups remain outstanding.**
+- Current SIR-02 status: **Blocking — all Product evidence is supplied, but three newly received Product items require reviewer assessment and required evidence from other owner groups remains outstanding.**

@@ -114,45 +114,46 @@ The Product owner records the SIR-02 decision outcome as **Approved** and approv
 ### SIR02-CFG-06 — Effective date tied to authoritative configuration
 
 - Evidence ID: `SIR02-CFG-06`
-- Supplied decision/content: Proposed configuration ID `SIR02-SHADOW-RAG-DISABLEMENT`, version `v1.0`, SHA-256 `123e7761265dc753ceb42f52ed8e0b7c8d7796a3f6ff6b5510e66610846274b6`, effective date `2026-10-01`, and configuration owner **GANTUMUR Erdenedalai — Founder / Administrator**. The artifact remains `Proposed / Not Activated`; the actual approved decision date is not supplied.
-- Source/reference: `responses/product-remaining-inputs-v1.0.md`, version `1.0`
-- Version: `Owner Input Required`
+- Supplied decision/content: Product owner formally approves configuration ID `SIR02-SHADOW-RAG-DISABLEMENT`, version `v1.0`, SHA-256 `123e7761265dc753ceb42f52ed8e0b7c8d7796a3f6ff6b5510e66610846274b6`, immutable repository commit `52e437f053cdca25492410cecbd182ebc19a4afd`, effective date `2026-10-01`, and configuration owner **GANTUMUR Erdenedalai — Founder / Administrator** as the authoritative proposed Shadow RAG-disablement configuration baseline. The artifact remains `Proposed / Not Activated` and this approval does not authorize deployment or Shadow Mode.
+- Source/reference: `configuration/SIR-02-SHADOW-RAG-DISABLEMENT-v1.0.json` at commit `52e437f053cdca25492410cecbd182ebc19a4afd`; this response version `1.0`
+- Version: `v1.0`
 - Owner: **GANTUMUR Erdenedalai — Founder / Administrator**
-- Date: `Owner Input Required — replace <approved decision date>`
+- Date: **2026-09-25**
 - Acceptance-criteria mapping: Cannot be satisfied by reusing the request date. It requires an explicit effective date tied to the authoritative configuration version.
-- Status proposed: `Missing`
-- Remaining gap: Formally approve the exact proposed artifact ID/version/checksum and supply the actual approved decision date.
+- Status proposed: `Received`
+- Remaining gap: Reviewer assessment remains outstanding.
 
 ### SIR02-CFG-07 — Exclusion review/expiry rule
 
 - Evidence ID: `SIR02-CFG-07`
-- Supplied decision/content: Review cadence is `Every 90 days`; accountable reapproval owner is **GANTUMUR Erdenedalai — Founder / Administrator**. Expiry or review never automatically enables RAG, and re-enablement requires a new explicit governance decision and approved configuration change. The actual approved decision date is not supplied.
+- Supplied decision/content: Review cadence is `Every 90 days`; accountable reapproval owner is **GANTUMUR Erdenedalai — Founder / Administrator**. Expiry or review never automatically enables RAG, and re-enablement requires a new explicit governance decision and approved configuration change.
 - Source/reference: `responses/product-remaining-inputs-v1.0.md`, version `1.0`
-- Version: `Owner Input Required`
+- Version: `1.0`
 - Owner: **GANTUMUR Erdenedalai — Founder / Administrator**
-- Date: `Owner Input Required — replace <approved decision date>`
+- Date: **2026-09-25**
 - Acceptance-criteria mapping: Cannot be satisfied by reusing the dispatch target review date. The rule must require explicit reassessment and must state that expiry cannot automatically enable RAG, embeddings, vector search, ingestion, or an excluded capability.
-- Status proposed: `Missing`
-- Remaining gap: Supply the actual approved decision date.
+- Status proposed: `Received`
+- Remaining gap: Reviewer assessment remains outstanding.
 
 ### SIR02-DEF-03 — SIR-09 deferral review/expiry requirement
 
 - Evidence ID: `SIR02-DEF-03`
-- Supplied decision/content: Review cadence is `Every 90 days`; accountable SIR-09 owner is **GANTUMUR Erdenedalai — Founder / Administrator**. Deferred scope covers document ingestion, embeddings, indexing, storage, and related processing. Expiry never automatically enables ingestion or RAG, and reopening requires explicit approval. The actual approved decision date is not supplied.
+- Supplied decision/content: Review cadence is `Every 90 days`; accountable SIR-09 owner is **GANTUMUR Erdenedalai — Founder / Administrator**. Deferred scope covers document ingestion, embeddings, indexing, storage processing, and related deferred RAG processing. Expiry never automatically enables ingestion, embeddings, indexing, storage processing, or RAG, and reopening requires explicit governance approval.
 - Source/reference: `responses/product-remaining-inputs-v1.0.md`, version `1.0`
-- Version: `Owner Input Required`
+- Version: `1.0`
 - Owner: **GANTUMUR Erdenedalai — Founder / Administrator**
-- Date: `Owner Input Required — replace <approved decision date>`
+- Date: **2026-09-25**
 - Acceptance-criteria mapping: Cannot be satisfied by reusing the dispatch target review date. The requirement must cover repositories, connectors, parsing, malware controls, embeddings, indexing, storage, retention, deletion, and reconciliation, and must prohibit automatic ingestion or RAG enablement on expiry.
-- Status proposed: `Missing`
-- Remaining gap: Supply the actual approved decision date.
+- Status proposed: `Received`
+- Remaining gap: Reviewer assessment remains outstanding.
 
 ## Submission status
 
-- Evidence received: `SIR02-GOV-01`, `SIR02-GOV-02`, `SIR02-CFG-02`, `SIR02-CFG-03`, `SIR02-CFG-04`
-- Evidence still missing: `SIR02-CFG-06`, `SIR02-CFG-07`, `SIR02-DEF-03`
-- No item is marked `Ready for Review` or `Approved` in the evidence register.
-- Current SIR-02 status: **Blocking — Product evidence partially received; reviewer assessment and remaining multi-owner evidence are outstanding.**
+- Evidence Ready for Review: `SIR02-GOV-01`, `SIR02-GOV-02`, `SIR02-CFG-02`, `SIR02-CFG-03`, `SIR02-CFG-04`
+- Evidence received and not reviewed: `SIR02-CFG-06`, `SIR02-CFG-07`, `SIR02-DEF-03`
+- Product evidence still missing: none
+- Evidence marked Approved: none
+- Current SIR-02 status: **Blocking — all Product evidence is supplied, but the three new items require reviewer assessment and required evidence from other owner groups remains outstanding.**
 
 ## Product evidence review
 
@@ -173,5 +174,5 @@ The Product owner records the SIR-02 decision outcome as **Approved** and approv
 ### Review disposition
 
 - Moved to `Ready for Review`: `SIR02-GOV-01`, `SIR02-GOV-02`, `SIR02-CFG-02`, `SIR02-CFG-03`, `SIR02-CFG-04`
-- Kept `Missing` and `Not Reviewed`: `SIR02-CFG-06`, `SIR02-CFG-07`, `SIR02-DEF-03`
+- Newly `Received` and `Not Reviewed`: `SIR02-CFG-06`, `SIR02-CFG-07`, `SIR02-DEF-03`
 - Evidence marked `Approved`: none
