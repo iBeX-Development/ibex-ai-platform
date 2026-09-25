@@ -40,6 +40,7 @@ Authoritative supporting references:
 - OE-02 successful execution: `operational-evidence/oe-02/SIR-02-KM-OE-02-SOURCE-OWNER-TENANT-BINDING-v1.0.json`; SHA-256 `16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71`; commit `9d4bc50d885e50b4fef8580918398f6764742b74`.
 - OE-02 failed attempt preserved for traceability: `operational-evidence/oe-02/SIR-02-KM-OE-02-EXECUTION-ATTEMPT-0001-FAILED-v1.0.json`; SHA-256 `4c5664e232e2fb6bb4e1ad6637db05ba9569a5b29e413c95b50df77f3a6ce336`; failure was an execution-harness aggregate error after all scenario expectations matched.
 - OE-02 independent review: `operational-evidence/oe-02/SIR-02-KM-OE-02-INDEPENDENT-REVIEW-v1.0.md`; commit `3328353ea04298729b6e68ca46061393edce2148`; result and status `Accepted`.
+- OE-03 execution evidence: `operational-evidence/oe-03/SIR-02-KM-OE-03-SOURCE-APPROVAL-RECORD-v1.0.json`; SHA-256 `5a87f1f0e0dbfca6a56e53d0bb1485d2ee10bd59cf0d6efa796c56a271b3858c`; commit `fa51d26ab43abd53f354d544da7ab5bfca394276`; status `Executed / Awaiting Independent Review`.
 
 These references remain supporting evidence. Knowledge Management owner decisions are now immutable at commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
 
@@ -66,9 +67,10 @@ These references remain supporting evidence. Knowledge Management owner decision
 - Gate A approved: **Yes; controlled execution of `SIR02-KM-OE-01` is authorized under the approved synthetic-only, isolated non-live controls**.
 - OE-01 execution and review: **Execution passed; independent review `Accepted`; resulting status `Accepted`**.
 - OE-02 execution and review: **Successful run passed 1/1 positive and 11/11 negative cases with zero cross-tenant disclosure; preserved failed-attempt lineage independently verified; resulting status `Accepted`**.
+- OE-03 execution: **Corrected run passed 1/1 positive and 14/14 negative cases; authorization and exact-version approval passed; cross-tenant disclosure and negative processing were zero; `Executed / Awaiting Independent Review`**.
 - Operational-evidence requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
-- Exact remaining blocker: 13 items remain `Not Executed`, and the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
+- Exact remaining blocker: OE-03 awaits independent review, 12 items remain `Not Executed`, and the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
 
 ### SIR02-DEF-03 — Knowledge Management review and expiry acceptance
 
@@ -94,4 +96,4 @@ These references remain supporting evidence. Knowledge Management owner decision
 
 ## Reviewer next action
 
-Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 and OE-02 are independently reviewed and accepted. The approved execution order authorizes OE-03 next. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
+Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 and OE-02 are independently reviewed and accepted. OE-03 executed successfully and requires independent review of the exact approval record, authorization context, version binding, all negative cases, tooling-failure lineage, audit sanitization, and cleanup evidence. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.

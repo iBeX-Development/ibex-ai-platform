@@ -43,7 +43,7 @@
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
 
-Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 and OE-02 are independently reviewed and accepted; the other 13 evidence items remain `Not Executed`.
+Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 and OE-02 are independently reviewed and accepted; OE-03 is executed and awaiting independent review; the other 12 evidence items remain `Not Executed`.
 
 ## Purpose
 
@@ -149,7 +149,9 @@ Each produced evidence package must contain:
 - **Checksum/reference:** SHA-256 and immutable governance/evidence reference.
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** Approval is independently verifiable and valid for one exact tenant/source/version/checksum only.
-- **Status:** `Not Executed`
+- **Status:** `Executed / Awaiting Independent Review`
+- **Execution evidence:** `operational-evidence/oe-03/SIR-02-KM-OE-03-SOURCE-APPROVAL-RECORD-v1.0.json`; SHA-256 `5a87f1f0e0dbfca6a56e53d0bb1485d2ee10bd59cf0d6efa796c56a271b3858c`; immutable evidence commit `fa51d26ab43abd53f354d544da7ab5bfca394276`.
+- **Execution lineage:** pre-artifact attempt sequence `0001` stopped at final aggregate validation because PowerShell did not resolve ordered observation properties; no artifact was written and no acceptance-criteria failure was observed. Corrected explicit aggregation ran under sequence `0002` and the tooling failure remains recorded in the evidence artifact.
 
 ### SIR02-KM-OE-04 — Source version and lineage evidence
 
