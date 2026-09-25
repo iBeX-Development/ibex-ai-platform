@@ -13,7 +13,7 @@
 | Decision date                  | `2026-09-25`                                             |
 | Approval status                | `Approved`                                               |
 | Immutable baseline reference   | `48407614af13e8f8239a9e63454c013dc43e432b`               |
-| Immutable approval reference   | `Pending approval-content commit linkage`                |
+| Immutable approval reference   | `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`               |
 | Operational-evidence reference | `Not Available — evidence must be produced and reviewed` |
 
 This baseline defines governance and readiness controls only. It does not authorize or activate document ingestion, parsing, chunking, embeddings, indexing, vector storage, retrieval, RAG, credentials, deployment, traffic, or production use.
