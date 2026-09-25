@@ -107,10 +107,11 @@ Ingestion cannot reopen until these controls are formally approved and operation
 - OE-03 corrected reconstruction: **`operational-evidence/oe-03/SIR-02-KM-OE-03-SOURCE-APPROVAL-RECONSTRUCTION-0003-v1.0.json`; SHA-256 `5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345`; commit `74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a`; `Executed / Awaiting Independent Review`**
 - OE-03 corrected independent review: **`operational-evidence/oe-03/SIR-02-KM-OE-03-INDEPENDENT-REVIEW-0003-v1.0.md`; commit `77ae9c99b2601ec58a50bd20c772326688268e5d`; result `Accepted`**
 - OE-04 execution evidence: **`operational-evidence/oe-04/SIR-02-KM-OE-04-SOURCE-VERSION-LINEAGE-v1.0.json`; SHA-256 `f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f`; commit `eefc0cd3dcb74761af91bd17cfe271e872d88264`; `Executed / Awaiting Independent Review`**
+- OE-04 independent review: **`operational-evidence/oe-04/SIR-02-KM-OE-04-INDEPENDENT-REVIEW-v1.0.md`; commit `f5ce491bfe3a98af66031a64b9b9620c3bc51420`; result `Accepted`**
 - Operational evidence reference: **Owner Input Required**
 - Controlled reopening criteria confirmation: **Confirmed**
 - Decision date: **2026-09-25**
 - Conditions: **Lifecycle controls must be approved and operationally evidenced before ingestion reopening.**
 - Immutable owner-decision reference: **`c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`**
 
-The owner decision, approved lifecycle-control reference, controlled operational-evidence execution plan, and Gate A prerequisites are complete. OE-01, OE-02, and corrected OE-03 sequence `0003` are `Accepted`; OE-04 is `Executed / Awaiting Independent Review`; the other 11 evidence items remain `Not Executed`. Evidence status remains `Missing / Not Reviewed` because the complete 15-item accepted operational-evidence package and immutable package reference do not yet exist. These records do not authorize ingestion reopening.
+The owner decision, approved lifecycle-control reference, controlled operational-evidence execution plan, and Gate A prerequisites are complete. OE-01 through OE-04 are `Accepted`; the other 11 evidence items remain `Not Executed`. Evidence status remains `Missing / Not Reviewed` because the complete 15-item accepted operational-evidence package and immutable package reference do not yet exist. These records do not authorize ingestion reopening.

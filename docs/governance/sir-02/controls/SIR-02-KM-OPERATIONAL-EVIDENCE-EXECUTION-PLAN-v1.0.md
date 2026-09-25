@@ -43,7 +43,7 @@
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
 
-Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01, OE-02, and corrected OE-03 sequence `0003` are independently reviewed and accepted; OE-04 is `Executed / Awaiting Independent Review`; the other 11 evidence items remain `Not Executed`.
+Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-04 are independently reviewed and accepted; the other 11 evidence items remain `Not Executed`.
 
 ## Purpose
 
@@ -172,9 +172,10 @@ Each produced evidence package must contain:
 - **Checksum/reference:** Checksummed graph/results and immutable run reference.
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** Complete exact-version lineage is reconstructable and invalid lineage fails closed.
-- **Status:** `Executed / Awaiting Independent Review`
+- **Status:** `Accepted`
 - **Execution evidence:** `operational-evidence/oe-04/SIR-02-KM-OE-04-SOURCE-VERSION-LINEAGE-v1.0.json`; SHA-256 `f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f`; run `SIR02-KM-OE-04-V1_0-20260925T085207Z-0001`; immutable evidence commit `eefc0cd3dcb74761af91bd17cfe271e872d88264`.
-- **Execution result:** One valid two-node lineage and 17/17 negative cases passed. The accepted `v1.0` approval remains exact and unchanged; the synthetic `v1.1` successor remains unapproved; zero new approval events, cross-tenant disclosures, negative processing calls, live calls, or persistent artifacts occurred. Independent review remains required.
+- **Execution result:** One valid two-node lineage and 17/17 negative cases passed. The accepted `v1.0` approval remains exact and unchanged; the synthetic `v1.1` successor remains unapproved; zero new approval events, cross-tenant disclosures, negative processing calls, live calls, or persistent artifacts occurred.
+- **Independent review:** `operational-evidence/oe-04/SIR-02-KM-OE-04-INDEPENDENT-REVIEW-v1.0.md`; result `Accepted`; immutable review commit `f5ce491bfe3a98af66031a64b9b9620c3bc51420`.
 
 ### SIR02-KM-OE-05 — Provenance trace
 
