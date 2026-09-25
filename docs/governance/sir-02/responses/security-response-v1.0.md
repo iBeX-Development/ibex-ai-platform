@@ -103,3 +103,29 @@ This response uses existing approved governance records and immutable repository
 - Moved to `Ready for Review`: none
 - Evidence marked `Approved`: none
 - Current SIR-02 status: **Blocking — Security approvals and Security acceptance of the SIR-09 deferral remain missing, and evidence assigned to other owner groups remains outstanding.**
+
+## Security evidence review
+
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Review date: **2026-09-25**
+- Capability manifest commit: `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`
+- Shadow disablement configuration commit: `52e437f053cdca25492410cecbd182ebc19a4afd`
+- Tenant/Security foundation commit: `46ec67a26df683f21d9694446767590a6040875b`
+- Direct boundary controls commit: `d0b5a174ed6f5635349186caace0642687fe7c86`
+- Product review commit: `4b7fcb77343f5009f5b521f6d580ab6088d3c9f4`
+- RAG Architecture review commit: `e780b35008cb4ea84a474f2eeace3bc848eb9fd0`
+- Security response commit: `3b5350b32f5cd878380b3c4d1e1777bf8d075991`
+
+| Evidence ID    | Review result | Verification and concise reason                                                                                                                                                                                                                                                                                                                                                                                                   | Acceptance gap               |
+| -------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `SIR02-CFG-04` | `Accepted`    | The versioned manifest contains exactly the nine canonical `intent:` capabilities derived from the excluded RAG intents, with no wildcard or broad allow. Missing/conflicting configuration denies and fails closed; fallback cannot enable RAG; trusted context, tenant isolation, ownership, server authorization, and entitlements remain enforced; and no cross-tenant relaxation or operational authorization is introduced. | None for this evidence item. |
+
+### Review disposition
+
+- Moved from `Received` to `Ready for Review`: `SIR02-CFG-04`
+- Security evidence `Ready for Review`: 1
+- Security evidence `Received`: 0
+- Security evidence `Missing / Not Reviewed`: `SIR02-GOV-01`, `SIR02-GOV-04`, `SIR02-DEF-01`
+- Clarification or rejection: none
+- Evidence marked `Approved`: none
+- Current SIR-02 status: **Blocking — three Security-owned decision/approval records and 9 assignments from Data Governance, Platform Operations, and Knowledge Management remain missing.**
