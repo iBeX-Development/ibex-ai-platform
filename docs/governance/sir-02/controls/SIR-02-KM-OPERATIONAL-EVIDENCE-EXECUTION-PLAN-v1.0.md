@@ -13,7 +13,7 @@
 | Decision date                | `2026-09-25`                                                              |
 | Approval status              | `Approved for Controlled Evidence Execution`                              |
 | Immutable artifact reference | `37212d5869709f85256618e6b03fffb0622a2049`                                |
-| Immutable approval reference | `Pending approval-content commit linkage`                                 |
+| Immutable approval reference | `4d18b54180ebe0d34b147d769c5d906fc8c3b960`                                |
 | Control baseline             | `SIR-02 Knowledge Management Lifecycle-Control Baseline v1.0`             |
 | Baseline reference           | `48407614af13e8f8239a9e63454c013dc43e432b`                                |
 | Governance approval          | `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`                                |

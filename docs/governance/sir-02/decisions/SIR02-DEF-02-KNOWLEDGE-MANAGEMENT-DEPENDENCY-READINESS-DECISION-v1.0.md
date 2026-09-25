@@ -2,26 +2,27 @@
 
 ## Decision record
 
-| Field                              | Value                                                                                |
-| ---------------------------------- | ------------------------------------------------------------------------------------ |
-| Evidence ID                        | `SIR02-DEF-02`                                                                       |
-| Document                           | `SIR02-DEF-02 — Knowledge Management Dependency and Readiness Decision`              |
-| Version                            | `v1.0`                                                                               |
-| Record status                      | `Owner Decision Recorded — Dependency Hold`                                          |
-| Current evidence status            | `Missing / Not Reviewed`                                                             |
-| Primary owner assignment           | **GANTUMUR Erdenedalai — Founder / Administrator**                                   |
-| Reviewer                           | **SODBILEG Erkhembayar — Administrator**                                             |
-| Accountable KM owner/team          | **GANTUMUR Erdenedalai — Founder / Administrator**                                   |
-| Decision outcome                   | `Approved with dependency hold`                                                      |
-| Owner decision statement           | Owner-approved statement below                                                       |
-| Decision date                      | `2026-09-25`                                                                         |
-| Scope                              | Knowledge-source governance and ingestion-reopening readiness described below        |
-| Conditions                         | Owner-approved dependency hold below                                                 |
-| Lifecycle-control status           | `Required before ingestion reopening`                                                |
-| Operational evidence status        | `Required before ingestion reopening`                                                |
-| Lifecycle-control reference        | Approved baseline `v1.0`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5` |
-| Operational evidence reference     | `Owner Input Required — not yet available`                                           |
-| Immutable owner-decision reference | `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`                                           |
+| Field                              | Value                                                                                         |
+| ---------------------------------- | --------------------------------------------------------------------------------------------- |
+| Evidence ID                        | `SIR02-DEF-02`                                                                                |
+| Document                           | `SIR02-DEF-02 — Knowledge Management Dependency and Readiness Decision`                       |
+| Version                            | `v1.0`                                                                                        |
+| Record status                      | `Owner Decision Recorded — Dependency Hold`                                                   |
+| Current evidence status            | `Missing / Not Reviewed`                                                                      |
+| Primary owner assignment           | **GANTUMUR Erdenedalai — Founder / Administrator**                                            |
+| Reviewer                           | **SODBILEG Erkhembayar — Administrator**                                                      |
+| Accountable KM owner/team          | **GANTUMUR Erdenedalai — Founder / Administrator**                                            |
+| Decision outcome                   | `Approved with dependency hold`                                                               |
+| Owner decision statement           | Owner-approved statement below                                                                |
+| Decision date                      | `2026-09-25`                                                                                  |
+| Scope                              | Knowledge-source governance and ingestion-reopening readiness described below                 |
+| Conditions                         | Owner-approved dependency hold below                                                          |
+| Lifecycle-control status           | `Required before ingestion reopening`                                                         |
+| Operational evidence status        | `Required before ingestion reopening`                                                         |
+| Lifecycle-control reference        | Approved baseline `v1.0`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`          |
+| Operational-evidence plan          | Approved for controlled execution; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960` |
+| Operational evidence reference     | `Owner Input Required — not yet available`                                                    |
+| Immutable owner-decision reference | `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`                                                    |
 
 ## Required dependency and readiness scope
 
@@ -71,20 +72,22 @@ Ingestion cannot reopen until these controls are formally approved and operation
 - Proposed Shadow RAG-disablement configuration: `52e437f053cdca25492410cecbd182ebc19a4afd`
 - Knowledge Management evidence assessment: `c00733931a1b3814bf71617cd3bf51eb0c4d7226`
 - Approved Knowledge Management Lifecycle-Control Baseline `v1.0`: baseline commit `48407614af13e8f8239a9e63454c013dc43e432b`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`
+- Approved Operational Evidence Execution Plan and Acceptance Matrix `v1.0`: artifact commit `37212d5869709f85256618e6b03fffb0622a2049`; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960`
 
 ## Acceptance-criteria mapping
 
-| Criterion                                                                    | Current evidence                                                            | Satisfied now? |
-| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------- | -------------- |
-| Versioned Knowledge Management dependency/readiness record exists            | This `v1.0` record                                                          | `Yes`          |
-| Required lifecycle and controlled-reopening categories are defined           | Required scope above                                                        | `Yes`          |
-| Reopening is blocked until controls are approved and operationally evidenced | Mandatory readiness statement above                                         | `Yes`          |
-| Accountable Knowledge Management owner or managed team is explicit           | Named owner recorded                                                        | `Yes`          |
-| Owner supplies a decision outcome and statement                              | `Approved with dependency hold`; statement recorded                         | `Yes`          |
-| Approved lifecycle-control reference is supplied                             | Baseline `v1.0`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5` | `Yes`          |
-| Approved operational-evidence reference is supplied                          | `Owner Input Required`                                                      | `No`           |
-| Decision date and owner-approved conditions are supplied                     | `2026-09-25`; dependency hold recorded                                      | `Yes`          |
-| Owner decision has an immutable repository reference                         | `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`                                  | `Yes`          |
+| Criterion                                                                    | Current evidence                                                               | Satisfied now? |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | -------------- |
+| Versioned Knowledge Management dependency/readiness record exists            | This `v1.0` record                                                             | `Yes`          |
+| Required lifecycle and controlled-reopening categories are defined           | Required scope above                                                           | `Yes`          |
+| Reopening is blocked until controls are approved and operationally evidenced | Mandatory readiness statement above                                            | `Yes`          |
+| Accountable Knowledge Management owner or managed team is explicit           | Named owner recorded                                                           | `Yes`          |
+| Owner supplies a decision outcome and statement                              | `Approved with dependency hold`; statement recorded                            | `Yes`          |
+| Approved lifecycle-control reference is supplied                             | Baseline `v1.0`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`    | `Yes`          |
+| Controlled operational-evidence plan and matrix are approved                 | Plan/Matrix `v1.0`; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960` | `Yes`          |
+| Approved operational-evidence reference is supplied                          | `Owner Input Required`                                                         | `No`           |
+| Decision date and owner-approved conditions are supplied                     | `2026-09-25`; dependency hold recorded                                         | `Yes`          |
+| Owner decision has an immutable repository reference                         | `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`                                     | `Yes`          |
 
 ## Owner completion
 
@@ -92,10 +95,11 @@ Ingestion cannot reopen until these controls are formally approved and operation
 - Decision outcome: **Approved with dependency hold**
 - Owner decision statement: **Recorded above**
 - Approved lifecycle-control reference: **`controls/SIR-02-KNOWLEDGE-MANAGEMENT-LIFECYCLE-CONTROL-BASELINE-v1.0.md`; baseline commit `48407614af13e8f8239a9e63454c013dc43e432b`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`**
+- Approved evidence execution plan/matrix: **artifact commit `37212d5869709f85256618e6b03fffb0622a2049`; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960`; all 15 items `Not Executed`**
 - Operational evidence reference: **Owner Input Required**
 - Controlled reopening criteria confirmation: **Confirmed**
 - Decision date: **2026-09-25**
 - Conditions: **Lifecycle controls must be approved and operationally evidenced before ingestion reopening.**
 - Immutable owner-decision reference: **`c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`**
 
-The owner decision and approved lifecycle-control reference are complete. Evidence status remains `Missing / Not Reviewed` because the required operational-evidence package and immutable operational-evidence reference do not yet exist. Lifecycle-control approval does not remove that dependency hold or authorize ingestion reopening.
+The owner decision, approved lifecycle-control reference, and controlled operational-evidence execution plan are complete. Controlled evidence execution is authorized under the plan conditions, beginning with `SIR02-KM-OE-01` after its Gate A test-data, schema, namespace, reviewer-independence, and evidence-run prerequisites are approved. Evidence status remains `Missing / Not Reviewed` because all 15 items are `Not Executed` and the required operational-evidence package and immutable operational-evidence reference do not yet exist. These approvals do not authorize ingestion reopening.
