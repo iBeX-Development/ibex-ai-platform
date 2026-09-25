@@ -43,7 +43,7 @@
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
 
-Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-04 are independently reviewed and accepted; OE-05 is `Executed / Awaiting Independent Review`; the other 10 evidence items remain `Not Executed`.
+Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-05 are independently reviewed and accepted; the other 10 evidence items remain `Not Executed`.
 
 ## Purpose
 
@@ -192,9 +192,10 @@ Each produced evidence package must contain:
 - **Checksum/reference:** Event-set and report hashes with immutable run reference.
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** Independent reviewer can reconstruct source origin, custody, approval, version, and lifecycle without raw sensitive content.
-- **Status:** `Executed / Awaiting Independent Review`
+- **Status:** `Accepted`
 - **Execution evidence:** `operational-evidence/oe-05/SIR-02-KM-OE-05-PROVENANCE-TRACE-v1.0.json`; SHA-256 `8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045`; run `SIR02-KM-OE-05-V1_0-20260925T120200Z-0001`; immutable evidence commit `a46a7018a54f2beb918ed9fe72403a6a769644df`.
-- **Execution result:** The four-hop registration, tenant/owner, approval, and lineage chain passed 1/1 positive and 21/21 negative validations. Exact `v1.0` approval remains isolated from unapproved `v1.1`; zero new approval events, cross-tenant disclosures, negative processing calls, live calls, or persistent artifacts occurred. Independent review remains required.
+- **Execution result:** The four-hop registration, tenant/owner, approval, and lineage chain passed 1/1 positive and 21/21 negative validations. Exact `v1.0` approval remains isolated from unapproved `v1.1`; zero new approval events, cross-tenant disclosures, negative processing calls, live calls, or persistent artifacts occurred.
+- **Independent review:** `operational-evidence/oe-05/SIR-02-KM-OE-05-INDEPENDENT-REVIEW-v1.0.md`; result `Accepted`; immutable review commit `3e8d3e1bcf24ccbc52a244bb728964e5cbd340a2`.
 
 ### SIR02-KM-OE-06 — Supersession test
 

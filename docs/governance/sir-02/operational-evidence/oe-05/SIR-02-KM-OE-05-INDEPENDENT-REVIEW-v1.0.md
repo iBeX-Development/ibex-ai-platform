@@ -17,7 +17,7 @@
 | Linkage commit | `7d6d5f659c01565b3d67d1352f7af464a21575b3` |
 | Evidence artifact | `SIR-02-KM-OE-05-PROVENANCE-TRACE-v1.0.json` |
 | Artifact SHA-256 | `8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045` |
-| Immutable review reference | `Review commit containing this record` |
+| Immutable review reference | `3e8d3e1bcf24ccbc52a244bb728964e5cbd340a2` |
 
 ## Reviewer independence
 
