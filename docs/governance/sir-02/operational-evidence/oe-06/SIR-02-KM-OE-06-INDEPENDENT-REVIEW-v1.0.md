@@ -17,7 +17,7 @@
 | Linkage commit | `dd94c07c386c5c1b9df6cbc8080a07874d2cbb96` |
 | Evidence artifact | `SIR-02-KM-OE-06-SUPERSESSION-TEST-v1.0.json` |
 | Artifact SHA-256 | `1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43` |
-| Immutable review reference | `Review commit containing this record` |
+| Immutable review reference | `6c821280369760a4fc8cdf10b611282ca332dea4` |
 
 ## Reviewer independence
 

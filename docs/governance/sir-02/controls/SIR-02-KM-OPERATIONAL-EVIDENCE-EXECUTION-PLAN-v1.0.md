@@ -43,7 +43,7 @@
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
 
-Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-05 are independently reviewed and accepted; OE-06 is `Executed / Awaiting Independent Review`; the other 9 evidence items remain `Not Executed`.
+Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-06 are independently reviewed and accepted; the other 9 evidence items remain `Not Executed`.
 
 ## Purpose
 
@@ -212,10 +212,11 @@ Each produced evidence package must contain:
 - **Checksum/reference:** Checksummed inventories/results and immutable run reference.
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** Supersession is exact, tenant-bound, auditable, and leaves no active predecessor artifact.
-- **Status:** `Executed / Awaiting Independent Review`
+- **Status:** `Accepted`
 - **Execution evidence:** `operational-evidence/oe-06/SIR-02-KM-OE-06-SUPERSESSION-TEST-v1.0.json`; SHA-256 `1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43`; run `SIR02-KM-OE-06-V1_0-20260925T121803Z-0002`; immutable evidence commit `f5cd7cc043c3bb99d9a745a1e546e2be30e7ddcc`.
 - **Execution result:** Exact `v1.0` to `v1.1` test-only supersession passed 1/1 positive and 21/21 negative validations. The predecessor is non-active, the successor remains unapproved and non-active, approval inheritance is denied, chronology and tenant isolation pass, and zero live artifacts or new source-approval events were created.
 - **Preserved prior attempt:** Sequence `0001` stopped before artifact creation because PowerShell implicit ISO timestamp comparison incorrectly denied the otherwise valid positive case. All 21 negative cases had passed, no security or tenant-isolation expectation failed, and sequence `0002` used explicit UTC `DateTimeOffset` comparison.
+- **Independent review:** `operational-evidence/oe-06/SIR-02-KM-OE-06-INDEPENDENT-REVIEW-v1.0.md`; result `Accepted`; immutable review commit `6c821280369760a4fc8cdf10b611282ca332dea4`.
 
 ### SIR02-KM-OE-07 — Stale-content quarantine test
 
