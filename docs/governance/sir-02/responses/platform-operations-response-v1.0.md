@@ -25,7 +25,7 @@ The repository establishes the following supporting controls:
 - `.env.example` is illustrative only. `.env` and `.env.*` are ignored, and no untracked local environment file is accepted as governance evidence.
 - Activation requires a later authorized deployment and change process.
 
-These are supporting controls only. No immutable Platform Operations decision assigns operational custody, environment ownership, drift/integrity responsibility, or secret/configuration management ownership.
+The Platform Operations owner has now supplied explicit custody and configuration-acceptance decisions. Those decisions assign operational and environment/configuration accountability, but they do not name the mandatory accountable secret-management owner. Both evidence items therefore remain incomplete and fail closed.
 
 ## Evidence submissions
 
@@ -38,12 +38,13 @@ These are supporting controls only. No immutable Platform Operations decision as
   - proposed configuration artifact: `52e437f053cdca25492410cecbd182ebc19a4afd`;
   - typed configuration and fail-closed feature-control implementation: `e579a00e6c3ac8df0a0efbc4437f047caaec5ba2`;
   - external secret-provider abstraction: `1bc863768062a267e1d21583ed453a41b765bc9e`.
-- Formal owner/custodian already recorded: **No**. The Product configuration-owner assignment does not establish Platform Operations acceptance or operational custody.
-- Versioned, controlled, fail-closed handling present: **Yes as supporting implementation evidence**, but not yet accepted by Platform Operations.
-- Secret/configuration management ownership present: **No**. The abstraction and validation rules exist, but no accountable operational owner, approved external provider, endpoint, credential process, or environment custody record is supplied.
+- Formal owner/custodian recorded: **Yes**. **GANTUMUR Erdenedalai — Founder / Administrator** accepted Platform Operations custody for the `Shadow` environment on `2026-09-25`.
+- Versioned, controlled, fail-closed handling accepted: **Yes**. The owner decision accepts configuration integrity, drift control, versioned change management, and environment configuration governance.
+- Secret/configuration management ownership present: **Incomplete**. The owner requires external management through approved mechanisms, but no accountable secret-management owner or managed team is named.
 - Platform Operations-owned requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
-- Exact owner gap: Platform Operations must provide an explicit custody/ownership decision, accountable owner or managed team, environment scope, drift and integrity duties, change-control duties, secret/configuration management ownership, decision date, conditions, and immutable completed-decision reference.
+- Owner decision record: `decisions/SIR02-CFG-05-PLATFORM-OPERATIONS-CUSTODY-DECISION-v1.0.md`.
+- Exact remaining gap: Platform Operations must name the accountable secret-management owner or managed team and provide the immutable completed-decision reference.
 
 ### SIR02-CFG-06 — Authoritative Shadow environment configuration acceptance
 
@@ -59,12 +60,14 @@ These are supporting controls only. No immutable Platform Operations decision as
   - Configuration owner: **GANTUMUR Erdenedalai — Founder / Administrator**;
   - Artifact status: `Proposed / Not Activated`.
 - Artifact sufficient as immutable proposed configuration evidence: **Yes**.
-- Artifact sufficient as Platform Operations acceptance and custody evidence: **No**.
+- Artifact accepted by Platform Operations: **Yes**, through the explicit owner decision dated `2026-09-25`.
 - Live activation evidence: **None, as required**. No deployment, credentials, secrets, traffic, or live environment change is evidenced or authorized.
 - `.env.example` or local `.env` accepted as authority: **No**.
 - Platform Operations-owned requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
-- Exact owner gap: Platform Operations must explicitly accept or reject operational custody of the exact artifact, confirm environment scope and effective-date linkage, identify the accountable environment/configuration and secret-management owner, preserve `Proposed / Not Activated`, require an authorized deployment/change process for activation, supply a decision date and conditions, and provide an immutable completed-decision reference.
+- Owner decision record: `decisions/SIR02-CFG-06-PLATFORM-OPERATIONS-CONFIGURATION-ACCEPTANCE-v1.0.md`.
+- Exact artifact identity, effective date, `Proposed / Not Activated` state, environment/configuration owner, and separate activation-process requirement: **Confirmed**.
+- Exact remaining gap: Platform Operations must name the accountable secret-management owner or managed team and provide the immutable completed-acceptance reference.
 
 ## Response disposition
 

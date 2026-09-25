@@ -7,19 +7,19 @@
 | Evidence ID                                | `SIR02-CFG-05`                                                      |
 | Document                                   | `SIR02-CFG-05 — Platform Operations Custody and Ownership Decision` |
 | Version                                    | `v1.0`                                                              |
-| Record status                              | `Owner Input Required`                                              |
+| Record status                              | `Owner Decision Recorded — Evidence Incomplete`                     |
 | Current evidence status                    | `Missing / Not Reviewed`                                            |
 | Platform Operations owner                  | **GANTUMUR Erdenedalai — Founder / Administrator**                  |
 | Reviewer                                   | **SODBILEG Erkhembayar — Administrator**                            |
-| Custody/ownership decision                 | `Owner Input Required`                                              |
-| Accountable operational owner/managed team | `Owner Input Required`                                              |
-| Environment scope                          | `Owner Input Required`                                              |
-| Configuration integrity responsibility     | `Owner Input Required`                                              |
-| Drift-detection responsibility             | `Owner Input Required`                                              |
-| Change-control responsibility              | `Owner Input Required`                                              |
-| Secret/configuration-management ownership  | `Owner Input Required`                                              |
-| Decision date                              | `Owner Input Required`                                              |
-| Operating conditions                       | `Owner Input Required`                                              |
+| Custody/ownership decision                 | `Approved`                                                          |
+| Accountable operational owner/managed team | **GANTUMUR Erdenedalai — Founder / Administrator**                  |
+| Environment scope                          | `Shadow`                                                            |
+| Configuration integrity responsibility     | Accepted by Platform Operations owner                               |
+| Drift-detection responsibility             | Accepted by Platform Operations owner                               |
+| Change-control responsibility              | Accepted by Platform Operations owner                               |
+| Secret/configuration-management ownership  | `Owner Input Required — accountable secret-management owner`        |
+| Decision date                              | `2026-09-25`                                                        |
+| Operating conditions                       | Owner-approved conditions below                                     |
 | Immutable repository reference             | `Owner Input Required — completed-decision commit`                  |
 
 ## Required custody and control scope
@@ -34,6 +34,14 @@ The Platform Operations owner decision must explicitly accept, reject, or defer 
 - ownership of secret and configuration management, including approved external secret-manager integration when required;
 - monitoring and evidence obligations for configuration state and unauthorized change attempts;
 - escalation and fail-safe handling for missing, conflicting, incomplete, unavailable, or expired configuration.
+
+## Owner decision statement
+
+> Platform Operations accepts operational custody and change-control responsibility for the proposed Shadow configuration baseline. Configuration integrity, drift control, versioned change management, and environment configuration governance remain mandatory.
+
+## Owner-approved conditions
+
+> Secret and configuration material must remain externally managed through approved mechanisms. .env.example and untracked local .env files are not authoritative operational configuration. Missing, conflicting, or incomplete configuration must fail closed. This decision does not authorize deployment, activation, credential creation, traffic enablement, or production use.
 
 ## Mandatory control conditions
 
@@ -60,23 +68,23 @@ The Platform Operations owner decision must explicitly accept, reject, or defer 
 | Versioned Platform Operations custody record exists                           | This `v1.0` record                                 | `Yes`          |
 | Required integrity, drift, change, secret, and fail-closed duties are defined | Required scope and mandatory conditions above      | `Yes`          |
 | No activation or operational authority is implied                             | Mandatory control conditions above                 | `Yes`          |
-| Owner supplies explicit custody/ownership decision                            | `Owner Input Required`                             | `No`           |
-| Accountable owner/team and environment scope are supplied                     | `Owner Input Required`                             | `No`           |
-| Integrity, drift, change-control, and secret-management duties are assigned   | `Owner Input Required`                             | `No`           |
-| Decision date and operating conditions are supplied                           | `Owner Input Required`                             | `No`           |
+| Owner supplies explicit custody/ownership decision                            | `Approved`                                         | `Yes`          |
+| Accountable owner/team and environment scope are supplied                     | Named owner; `Shadow`                              | `Yes`          |
+| Integrity, drift, change-control, and secret-management duties are assigned   | Operational duties accepted; secret owner unnamed  | `No`           |
+| Decision date and operating conditions are supplied                           | `2026-09-25`; owner-approved conditions            | `Yes`          |
 | Completed decision has an immutable repository reference                      | `Owner Input Required — completed-decision commit` | `No`           |
 
 ## Owner completion
 
-- Custody/ownership decision (`Accepted`, `Rejected`, or `Deferred`): **Owner Input Required**
-- Accountable operational owner or managed team: **Owner Input Required**
-- Environment scope: **Owner Input Required**
-- Configuration integrity responsibility: **Owner Input Required**
-- Drift-detection responsibility: **Owner Input Required**
-- Change-control responsibility: **Owner Input Required**
-- Secret/configuration-management ownership: **Owner Input Required**
-- Decision date: **Owner Input Required**
-- Operating conditions: **Owner Input Required**
+- Custody/ownership decision: **Approved**
+- Accountable operational owner: **GANTUMUR Erdenedalai — Founder / Administrator**
+- Environment scope: **Shadow**
+- Configuration integrity responsibility: **Accepted by Platform Operations owner**
+- Drift-detection responsibility: **Accepted by Platform Operations owner**
+- Change-control responsibility: **Accepted by Platform Operations owner**
+- Secret/configuration-management ownership: **Owner Input Required — accountable secret-management owner**
+- Decision date: **2026-09-25**
+- Operating conditions: **Owner-approved conditions recorded above**
 - Immutable repository reference after completion: **Owner Input Required**
 
-Evidence status remains `Missing / Not Reviewed` until every mandatory owner field and the immutable completed-decision reference are supplied.
+Evidence status remains `Missing / Not Reviewed` until the accountable secret-management owner and immutable completed-decision reference are supplied.

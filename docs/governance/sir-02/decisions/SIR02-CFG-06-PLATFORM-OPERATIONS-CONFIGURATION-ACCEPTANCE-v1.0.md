@@ -7,7 +7,7 @@
 | Evidence ID                                      | `SIR02-CFG-06`                                                     |
 | Document                                         | `SIR02-CFG-06 — Platform Operations Configuration Acceptance`      |
 | Version                                          | `v1.0`                                                             |
-| Record status                                    | `Owner Input Required`                                             |
+| Record status                                    | `Owner Decision Recorded — Evidence Incomplete`                    |
 | Current evidence status                          | `Missing / Not Reviewed`                                           |
 | Platform Operations owner                        | **GANTUMUR Erdenedalai — Founder / Administrator**                 |
 | Reviewer                                         | **SODBILEG Erkhembayar — Administrator**                           |
@@ -17,13 +17,13 @@
 | Artifact commit                                  | `52e437f053cdca25492410cecbd182ebc19a4afd`                         |
 | Effective date                                   | `2026-10-01`                                                       |
 | Current activation status                        | `Proposed / Not Activated`                                         |
-| Operational acceptance                           | `Owner Input Required`                                             |
-| Accountable environment/configuration owner      | `Owner Input Required`                                             |
+| Operational acceptance                           | `Approved`                                                         |
+| Accountable environment/configuration owner      | **GANTUMUR Erdenedalai — Founder / Administrator**                 |
 | Secret-management owner                          | `Owner Input Required`                                             |
-| Exact artifact-identity confirmation             | `Owner Input Required`                                             |
-| Later authorized activation-process confirmation | `Owner Input Required`                                             |
-| Decision date                                    | `Owner Input Required`                                             |
-| Conditions                                       | `Owner Input Required`                                             |
+| Exact artifact-identity confirmation             | `Confirmed`                                                        |
+| Later authorized activation-process confirmation | `Confirmed`                                                        |
+| Decision date                                    | `2026-09-25`                                                       |
+| Conditions                                       | Owner-approved conditions below                                    |
 | Immutable repository reference                   | `Owner Input Required — completed-acceptance commit`               |
 
 ## Required operational acceptance
@@ -38,6 +38,14 @@ The Platform Operations owner must explicitly:
 - confirm that no live activation, deployment, credential, secret, traffic, ingestion, RAG, storage, or production change has occurred or is authorized;
 - require a later authorized deployment/change process, environment-specific validation, change approval, and rollback control before activation;
 - preserve fail-closed handling for missing, conflicting, incomplete, unavailable, expired, or integrity-invalid configuration.
+
+## Owner decision statement
+
+> Platform Operations formally accepts custody of the exact proposed Shadow configuration artifact identified above. Any activation requires a separate authorized deployment/change process and must preserve fail-closed behavior, version integrity, auditability, and approved secret/configuration controls.
+
+## Owner-approved conditions
+
+> No deployment, Shadow activation, secret change, credential creation, traffic enablement, or production use is authorized by this acceptance.
 
 ## Mandatory control conditions
 
@@ -64,21 +72,21 @@ The Platform Operations owner must explicitly:
 | Effective date is tied to Product governance                                  | Product decision and accepted review                 | `Yes`          |
 | Artifact remains proposed and not activated                                   | Versioned artifact and governance records            | `Yes`          |
 | No local environment file is treated as authority                             | Mandatory control conditions above                   | `Yes`          |
-| Platform Operations supplies explicit acceptance/rejection                    | `Owner Input Required`                               | `No`           |
-| Environment/configuration and secret-management owners are supplied           | `Owner Input Required`                               | `No`           |
-| Exact artifact identity and later activation process are explicitly confirmed | `Owner Input Required`                               | `No`           |
-| Decision date and conditions are supplied                                     | `Owner Input Required`                               | `No`           |
+| Platform Operations supplies explicit acceptance/rejection                    | `Approved`                                           | `Yes`          |
+| Environment/configuration and secret-management owners are supplied           | Environment owner named; secret owner unnamed        | `No`           |
+| Exact artifact identity and later activation process are explicitly confirmed | Owner-approved statement and exact artifact identity | `Yes`          |
+| Decision date and conditions are supplied                                     | `2026-09-25`; owner-approved conditions              | `Yes`          |
 | Completed acceptance has an immutable repository reference                    | `Owner Input Required — completed-acceptance commit` | `No`           |
 
 ## Owner completion
 
-- Operational acceptance (`Accepted`, `Rejected`, or `Deferred`): **Owner Input Required**
-- Accountable environment/configuration owner: **Owner Input Required**
+- Operational acceptance: **Approved**
+- Accountable environment/configuration owner: **GANTUMUR Erdenedalai — Founder / Administrator**
 - Secret-management owner: **Owner Input Required**
-- Exact artifact-identity confirmation: **Owner Input Required**
-- Confirmation that activation requires a later authorized deployment/change process: **Owner Input Required**
-- Decision date: **Owner Input Required**
-- Conditions: **Owner Input Required**
+- Exact artifact-identity confirmation: **Confirmed**
+- Confirmation that activation requires a later authorized deployment/change process: **Confirmed**
+- Decision date: **2026-09-25**
+- Conditions: **Owner-approved conditions recorded above**
 - Immutable repository reference after completion: **Owner Input Required**
 
-Evidence status remains `Missing / Not Reviewed` until every mandatory owner field and the immutable completed-acceptance reference are supplied.
+Evidence status remains `Missing / Not Reviewed` until the accountable secret-management owner and immutable completed-acceptance reference are supplied.
