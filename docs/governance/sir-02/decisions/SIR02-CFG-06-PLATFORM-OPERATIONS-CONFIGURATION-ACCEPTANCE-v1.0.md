@@ -8,7 +8,7 @@
 | Document                                         | `SIR02-CFG-06 — Platform Operations Configuration Acceptance`      |
 | Version                                          | `v1.0`                                                             |
 | Record status                                    | `Owner Decision Complete — Awaiting Review`                        |
-| Current evidence status                          | `Received / Not Reviewed`                                          |
+| Current evidence status                          | `Ready for Review / Accepted`                                      |
 | Platform Operations owner                        | **GANTUMUR Erdenedalai — Founder / Administrator**                 |
 | Reviewer                                         | **SODBILEG Erkhembayar — Administrator**                           |
 | Configuration ID                                 | `SIR02-SHADOW-RAG-DISABLEMENT`                                     |
@@ -103,4 +103,18 @@ This assignment creates governance ownership only. It does not create or rotate 
 - Conditions: **Owner-approved conditions recorded above**
 - Immutable completed-decision reference: **`8cd55532ef4052c13eaaca42ac5c8299c18133ed`**
 
-All mandatory owner-decision fields and the immutable completed-acceptance reference are supplied. Evidence status is `Received / Not Reviewed`; reviewer acceptance remains required before `Ready for Review`.
+All mandatory owner-decision fields and the immutable completed-acceptance reference are supplied. The reviewer assessment below records acceptance and moves the evidence to `Ready for Review`.
+
+## Reviewer assessment
+
+| Field                 | Value                                      |
+| --------------------- | ------------------------------------------ |
+| Reviewer              | **SODBILEG Erkhembayar — Administrator**   |
+| Review date           | `2026-09-25`                               |
+| Review result         | `Accepted`                                 |
+| Resulting status      | `Ready for Review`                         |
+| Owner-decision commit | `8cd55532ef4052c13eaaca42ac5c8299c18133ed` |
+| Linkage commit        | `c8696145c042f9c7b5da6be874efd0436d10310d` |
+| Acceptance gap        | None                                       |
+
+The reviewer verified configuration ID `SIR02-SHADOW-RAG-DISABLEMENT`, version `v1.0`, SHA-256 `123e7761265dc753ceb42f52ed8e0b7c8d7796a3f6ff6b5510e66610846274b6`, artifact commit `52e437f053cdca25492410cecbd182ebc19a4afd`, effective date `2026-10-01`, `Proposed / Not Activated` status, named environment/configuration and secret-management owner, exact custody acceptance, separate activation authorization, fail-closed handling, version integrity, auditability, and prohibited live or production authorization. The artifact's preapproval date placeholder is governed by the later immutable owner decisions; the artifact content and integrity hash remain unchanged.

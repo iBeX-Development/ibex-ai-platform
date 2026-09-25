@@ -18,7 +18,7 @@
 - Platform Operations response reference: **`responses/platform-operations-response-v1.0.md`**
 - Proposed Shadow RAG-disablement configuration: **`configuration/SIR-02-SHADOW-RAG-DISABLEMENT-v1.0.json`** — `SIR02-SHADOW-RAG-DISABLEMENT` `v1.0`, not activated
 - Evidence collection register: **`SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md`**
-- Evidence status: **All eight Product, all eight RAG Architecture, all four Security, and all four Data Governance assignments Ready for Review; both Platform Operations assignments Received; Knowledge Management assignments remain Missing**
+- Evidence status: **All eight Product, all eight RAG Architecture, all four Security, all four Data Governance, and both Platform Operations assignments Ready for Review; Knowledge Management assignments remain Missing**
 
 ## Immediate-stage assignments
 
@@ -48,8 +48,8 @@
 | SIR02-GOV-05 | Data Governance      | `immediate/data-governance-request-v1.0.md`; `responses/data-governance-response-v1.0.md`                                                                                          | Sent           | Ready for Review | Accepted      |
 | SIR02-DEF-01 | Data Governance      | `immediate/data-governance-request-v1.0.md`; `responses/data-governance-response-v1.0.md`                                                                                          | Sent           | Ready for Review | Accepted      |
 | SIR02-DEF-03 | Data Governance      | `immediate/data-governance-request-v1.0.md`; `responses/data-governance-response-v1.0.md`                                                                                          | Sent           | Ready for Review | Accepted      |
-| SIR02-CFG-05 | Platform Operations  | `responses/platform-operations-response-v1.0.md`; `decisions/SIR02-CFG-05-PLATFORM-OPERATIONS-CUSTODY-DECISION-v1.0.md`; commit `8cd55532ef4052c13eaaca42ac5c8299c18133ed`         | Sent           | Received         | Not Reviewed  |
-| SIR02-CFG-06 | Platform Operations  | `responses/platform-operations-response-v1.0.md`; `decisions/SIR02-CFG-06-PLATFORM-OPERATIONS-CONFIGURATION-ACCEPTANCE-v1.0.md`; commit `8cd55532ef4052c13eaaca42ac5c8299c18133ed` | Sent           | Received         | Not Reviewed  |
+| SIR02-CFG-05 | Platform Operations  | `responses/platform-operations-response-v1.0.md`; `decisions/SIR02-CFG-05-PLATFORM-OPERATIONS-CUSTODY-DECISION-v1.0.md`; commit `8cd55532ef4052c13eaaca42ac5c8299c18133ed`         | Sent           | Ready for Review | Accepted      |
+| SIR02-CFG-06 | Platform Operations  | `responses/platform-operations-response-v1.0.md`; `decisions/SIR02-CFG-06-PLATFORM-OPERATIONS-CONFIGURATION-ACCEPTANCE-v1.0.md`; commit `8cd55532ef4052c13eaaca42ac5c8299c18133ed` | Sent           | Ready for Review | Accepted      |
 | SIR02-DEF-01 | Knowledge Management | `immediate/knowledge-management-request-v1.0.md`                                                                                                                                   | Sent           | Missing          | Not Reviewed  |
 | SIR02-DEF-02 | Knowledge Management | `immediate/knowledge-management-request-v1.0.md`                                                                                                                                   | Sent           | Missing          | Not Reviewed  |
 | SIR02-DEF-03 | Knowledge Management | `immediate/knowledge-management-request-v1.0.md`                                                                                                                                   | Sent           | Missing          | Not Reviewed  |
@@ -67,15 +67,15 @@ The Security response supplies all four assignments, and all four have accepted 
 
 The Data Governance response supplies all four owner decisions, and all four have accepted review records at `Ready for Review`. No Data Governance evidence is `Approved` at the evidence-status level.
 
-The Platform Operations response and completed-decision commit `8cd55532ef4052c13eaaca42ac5c8299c18133ed` establish custody, exact configuration acceptance, secret-management governance ownership, and the separate activation requirement. Both assignments are `Received / Not Reviewed` pending reviewer acceptance.
+The Platform Operations response and completed-decision commit `8cd55532ef4052c13eaaca42ac5c8299c18133ed` establish custody, exact configuration acceptance, secret-management governance ownership, and the separate activation requirement. Both assignments are `Ready for Review / Accepted`; neither is evidence-level `Approved`.
 
 ## SIR-02 completion dashboard
 
 - Immediate-stage assignments: **29 total**
-- Ready for Review: **24**
-- Received: **2**
+- Ready for Review: **26**
+- Received: **0**
 - Missing: **3**
-- Accepted review results: **24**
+- Accepted review results: **26**
 - Needs Clarification: **0**
 - Rejected: **0**
 - Approved evidence: **0**
@@ -84,7 +84,7 @@ The Platform Operations response and completed-decision commit `8cd55532ef4052c1
 - RAG Architecture assignments: **8 Ready for Review; 0 Received; 0 Missing**
 - Security assignments: **4 Ready for Review; 0 Received; 0 Missing**
 - Data Governance assignments: **4 Ready for Review; 0 Received; 0 Missing**
-- Platform Operations assignments: **0 Ready for Review; 2 Received; 0 Missing**
+- Platform Operations assignments: **2 Ready for Review; 0 Received; 0 Missing**
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
-- Current SIR-02 status: **Blocking — two Platform Operations assignments await review and three Knowledge Management assignments remain missing.**
+- Current SIR-02 status: **Blocking — three Knowledge Management assignments remain missing.**

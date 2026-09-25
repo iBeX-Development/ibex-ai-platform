@@ -8,7 +8,7 @@
 | Document                                   | `SIR02-CFG-05 — Platform Operations Custody and Ownership Decision` |
 | Version                                    | `v1.0`                                                              |
 | Record status                              | `Owner Decision Complete — Awaiting Review`                         |
-| Current evidence status                    | `Received / Not Reviewed`                                           |
+| Current evidence status                    | `Ready for Review / Accepted`                                       |
 | Platform Operations owner                  | **GANTUMUR Erdenedalai — Founder / Administrator**                  |
 | Reviewer                                   | **SODBILEG Erkhembayar — Administrator**                            |
 | Custody/ownership decision                 | `Approved`                                                          |
@@ -101,4 +101,18 @@ This assignment creates governance ownership only. It does not create or rotate 
 - Operating conditions: **Owner-approved conditions recorded above**
 - Immutable completed-decision reference: **`8cd55532ef4052c13eaaca42ac5c8299c18133ed`**
 
-All mandatory owner-decision fields and the immutable completed-decision reference are supplied. Evidence status is `Received / Not Reviewed`; reviewer acceptance remains required before `Ready for Review`.
+All mandatory owner-decision fields and the immutable completed-decision reference are supplied. The reviewer assessment below records acceptance and moves the evidence to `Ready for Review`.
+
+## Reviewer assessment
+
+| Field                 | Value                                      |
+| --------------------- | ------------------------------------------ |
+| Reviewer              | **SODBILEG Erkhembayar — Administrator**   |
+| Review date           | `2026-09-25`                               |
+| Review result         | `Accepted`                                 |
+| Resulting status      | `Ready for Review`                         |
+| Owner-decision commit | `8cd55532ef4052c13eaaca42ac5c8299c18133ed` |
+| Linkage commit        | `c8696145c042f9c7b5da6be874efd0436d10310d` |
+| Acceptance gap        | None                                       |
+
+The reviewer verified the explicit `Approved` custody decision, named operational and secret-management owner, `Shadow` scope, integrity and drift duties, versioned change control, fail-closed configuration handling, non-authoritative `.env.example` and local `.env` treatment, decision date, conditions, and immutable references. The record grants no deployment, activation, credential, secret, traffic, or production authority.
