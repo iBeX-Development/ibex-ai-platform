@@ -18,6 +18,8 @@
 | Baseline reference           | `48407614af13e8f8239a9e63454c013dc43e432b`                                |
 | Governance approval          | `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`                                |
 | Governance linkage           | `9f9ab7b94f669581ef107aefddc2f10dff4b7516`                                |
+| Gate A artifact reference    | `437612dfe56fb4903f8132bef2971089bdb374aa`                                |
+| Gate A approval reference    | `84a05702b744a6a710644299381e30e9a9a7aefb`                                |
 | Environment                  | Isolated deterministic fixtures or separately approved non-live test only |
 | Live ingestion/RAG authority | `None`                                                                    |
 
@@ -40,6 +42,8 @@
 - Existing repository evidence may only be reused where the approved Acceptance Matrix explicitly permits it.
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
+
+Gate A is approved for controlled execution of `SIR02-KM-OE-01` under the immutable Gate A approval reference above. All 15 evidence items remain `Not Executed`; this linkage records authorization only and is not an execution result.
 
 ## Purpose
 

@@ -17,11 +17,15 @@
 | Execution plan               | `SIR-02-KM-OPERATIONAL-EVIDENCE-EXECUTION-PLAN-v1.0.md`     |
 | Approved baseline            | `48407614af13e8f8239a9e63454c013dc43e432b`                  |
 | Baseline approval            | `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`                  |
+| Gate A artifact reference    | `437612dfe56fb4903f8132bef2971089bdb374aa`                  |
+| Gate A approval reference    | `84a05702b744a6a710644299381e30e9a9a7aefb`                  |
 | Runtime authorization        | `None`                                                      |
 
 ## Formal governance approval
 
 The approval statement and conditions recorded in the approved Execution Plan apply equally to this Acceptance Matrix. They authorize only controlled evidence execution under the Matrix classifications and preserve all 15 evidence statuses as `Not Executed` until actual immutable execution evidence is independently reviewed.
+
+Gate A authorizes controlled execution of `SIR02-KM-OE-01` only. It does not change any matrix result or acceptance status, and `OE-08` and `OE-15` retain their separate non-live operational-environment prerequisites.
 
 ## Classification and acceptance matrix
 

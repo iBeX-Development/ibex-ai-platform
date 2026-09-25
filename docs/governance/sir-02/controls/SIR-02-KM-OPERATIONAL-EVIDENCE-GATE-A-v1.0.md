@@ -15,7 +15,7 @@
 | Decision date                | `2026-09-25`                                       |
 | Approval status              | `Approved for Controlled Evidence Execution`       |
 | Immutable artifact reference | `437612dfe56fb4903f8132bef2971089bdb374aa`         |
-| Immutable approval reference | `Approval commit containing this record`           |
+| Immutable approval reference | `84a05702b744a6a710644299381e30e9a9a7aefb`         |
 
 ## Controlling references
 
@@ -245,7 +245,7 @@ Constraints:
 | Overall Gate A outcome        | `Approved for Controlled Evidence Execution`        |
 | Decision date                 | `2026-09-25`                                        |
 | Conditions                    | `Formal governance approval conditions above`       |
-| Immutable completed reference | `Approval commit containing this record`             |
+| Immutable completed reference | `84a05702b744a6a710644299381e30e9a9a7aefb`          |
 
 ## Approval and execution rule
 

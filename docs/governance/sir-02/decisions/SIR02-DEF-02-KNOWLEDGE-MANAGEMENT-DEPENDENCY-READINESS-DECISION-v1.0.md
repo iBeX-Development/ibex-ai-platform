@@ -96,10 +96,11 @@ Ingestion cannot reopen until these controls are formally approved and operation
 - Owner decision statement: **Recorded above**
 - Approved lifecycle-control reference: **`controls/SIR-02-KNOWLEDGE-MANAGEMENT-LIFECYCLE-CONTROL-BASELINE-v1.0.md`; baseline commit `48407614af13e8f8239a9e63454c013dc43e432b`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`**
 - Approved evidence execution plan/matrix: **artifact commit `37212d5869709f85256618e6b03fffb0622a2049`; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960`; all 15 items `Not Executed`**
+- Approved Gate A: **artifact commit `437612dfe56fb4903f8132bef2971089bdb374aa`; approval commit `84a05702b744a6a710644299381e30e9a9a7aefb`; `SIR02-KM-OE-01` controlled execution authorized but not executed**
 - Operational evidence reference: **Owner Input Required**
 - Controlled reopening criteria confirmation: **Confirmed**
 - Decision date: **2026-09-25**
 - Conditions: **Lifecycle controls must be approved and operationally evidenced before ingestion reopening.**
 - Immutable owner-decision reference: **`c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`**
 
-The owner decision, approved lifecycle-control reference, and controlled operational-evidence execution plan are complete. Controlled evidence execution is authorized under the plan conditions, beginning with `SIR02-KM-OE-01` after its Gate A test-data, schema, namespace, reviewer-independence, and evidence-run prerequisites are approved. Evidence status remains `Missing / Not Reviewed` because all 15 items are `Not Executed` and the required operational-evidence package and immutable operational-evidence reference do not yet exist. These approvals do not authorize ingestion reopening.
+The owner decision, approved lifecycle-control reference, controlled operational-evidence execution plan, and Gate A prerequisites are complete. Controlled execution of `SIR02-KM-OE-01` is authorized under the approved Plan, Matrix, and Gate A conditions. Evidence status remains `Missing / Not Reviewed` because all 15 items are `Not Executed` and the required operational-evidence package and immutable operational-evidence reference do not yet exist. These approvals do not authorize ingestion reopening.
