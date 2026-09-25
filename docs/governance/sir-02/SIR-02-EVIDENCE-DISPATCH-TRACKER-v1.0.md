@@ -19,7 +19,7 @@
 - Knowledge Management response reference: **`responses/knowledge-management-response-v1.0.md`**
 - Proposed Shadow RAG-disablement configuration: **`configuration/SIR-02-SHADOW-RAG-DISABLEMENT-v1.0.json`** — `SIR02-SHADOW-RAG-DISABLEMENT` `v1.0`, not activated
 - Evidence collection register: **`SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md`**
-- Evidence status: **All eight Product, all eight RAG Architecture, all four Security, all four Data Governance, and both Platform Operations assignments Ready for Review; two Knowledge Management assignments Received; one Knowledge Management assignment remains Missing**
+- Evidence status: **All eight Product, all eight RAG Architecture, all four Security, all four Data Governance, both Platform Operations, and two Knowledge Management assignments Ready for Review; one Knowledge Management assignment remains Missing**
 
 ## Immediate-stage assignments
 
@@ -51,9 +51,9 @@
 | SIR02-DEF-03 | Data Governance      | `immediate/data-governance-request-v1.0.md`; `responses/data-governance-response-v1.0.md`                                                                                                 | Sent           | Ready for Review | Accepted      |
 | SIR02-CFG-05 | Platform Operations  | `responses/platform-operations-response-v1.0.md`; `decisions/SIR02-CFG-05-PLATFORM-OPERATIONS-CUSTODY-DECISION-v1.0.md`; commit `8cd55532ef4052c13eaaca42ac5c8299c18133ed`                | Sent           | Ready for Review | Accepted      |
 | SIR02-CFG-06 | Platform Operations  | `responses/platform-operations-response-v1.0.md`; `decisions/SIR02-CFG-06-PLATFORM-OPERATIONS-CONFIGURATION-ACCEPTANCE-v1.0.md`; commit `8cd55532ef4052c13eaaca42ac5c8299c18133ed`        | Sent           | Ready for Review | Accepted      |
-| SIR02-DEF-01 | Knowledge Management | `responses/knowledge-management-response-v1.0.md`; `decisions/SIR02-DEF-01-KNOWLEDGE-MANAGEMENT-INGESTION-DEFERRAL-ACCEPTANCE-v1.0.md`; commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122` | Sent           | Received         | Not Reviewed  |
+| SIR02-DEF-01 | Knowledge Management | `responses/knowledge-management-response-v1.0.md`; `decisions/SIR02-DEF-01-KNOWLEDGE-MANAGEMENT-INGESTION-DEFERRAL-ACCEPTANCE-v1.0.md`; commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122` | Sent           | Ready for Review | Accepted      |
 | SIR02-DEF-02 | Knowledge Management | `responses/knowledge-management-response-v1.0.md`; `decisions/SIR02-DEF-02-KNOWLEDGE-MANAGEMENT-DEPENDENCY-READINESS-DECISION-v1.0.md`; commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122` | Sent           | Missing          | Not Reviewed  |
-| SIR02-DEF-03 | Knowledge Management | `responses/knowledge-management-response-v1.0.md`; `decisions/SIR02-DEF-03-KNOWLEDGE-MANAGEMENT-REVIEW-EXPIRY-ACCEPTANCE-v1.0.md`; commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`      | Sent           | Received         | Not Reviewed  |
+| SIR02-DEF-03 | Knowledge Management | `responses/knowledge-management-response-v1.0.md`; `decisions/SIR02-DEF-03-KNOWLEDGE-MANAGEMENT-REVIEW-EXPIRY-ACCEPTANCE-v1.0.md`; commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`      | Sent           | Ready for Review | Accepted      |
 
 ## Unchanged later-stage status
 
@@ -70,15 +70,15 @@ The Data Governance response supplies all four owner decisions, and all four hav
 
 The Platform Operations response and completed-decision commit `8cd55532ef4052c13eaaca42ac5c8299c18133ed` establish custody, exact configuration acceptance, secret-management governance ownership, and the separate activation requirement. Both assignments are `Ready for Review / Accepted`; neither is evidence-level `Approved`.
 
-The Knowledge Management response records immutable owner decisions for all three assignments. `SIR02-DEF-01` and `SIR02-DEF-03` are `Received / Not Reviewed`. `SIR02-DEF-02` remains `Missing / Not Reviewed` because approved lifecycle-control and operational-evidence references are absent; ingestion reopening remains prohibited.
+The Knowledge Management response records immutable owner decisions for all three assignments. `SIR02-DEF-01` and `SIR02-DEF-03` are `Ready for Review / Accepted`. `SIR02-DEF-02` remains `Missing / Not Reviewed` because approved lifecycle-control and operational-evidence references are absent; ingestion reopening remains prohibited.
 
 ## SIR-02 completion dashboard
 
 - Immediate-stage assignments: **29 total**
-- Ready for Review: **26**
-- Received: **2**
+- Ready for Review: **28**
+- Received: **0**
 - Missing: **1**
-- Accepted review results: **26**
+- Accepted review results: **28**
 - Needs Clarification: **0**
 - Rejected: **0**
 - Approved evidence: **0**
@@ -88,7 +88,7 @@ The Knowledge Management response records immutable owner decisions for all thre
 - Security assignments: **4 Ready for Review; 0 Received; 0 Missing**
 - Data Governance assignments: **4 Ready for Review; 0 Received; 0 Missing**
 - Platform Operations assignments: **2 Ready for Review; 0 Received; 0 Missing**
-- Knowledge Management assignments: **0 Ready for Review; 2 Received; 1 Missing**
+- Knowledge Management assignments: **2 Ready for Review; 0 Received; 1 Missing**
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
-- Current SIR-02 status: **Blocking — two Knowledge Management assignments await review and `SIR02-DEF-02` remains missing under its lifecycle/operational-evidence dependency hold.**
+- Current SIR-02 status: **Blocking — `SIR02-DEF-02` remains missing under its lifecycle/operational-evidence dependency hold.**

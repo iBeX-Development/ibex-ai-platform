@@ -8,7 +8,7 @@
 | Document                               | `SIR02-DEF-01 — Knowledge Management Ingestion Deferral Acceptance` |
 | Version                                | `v1.0`                                                              |
 | Record status                          | `Owner Decision Complete — Awaiting Review`                         |
-| Current evidence status                | `Received / Not Reviewed`                                           |
+| Current evidence status                | `Ready for Review / Accepted`                                       |
 | Knowledge Management owner             | **GANTUMUR Erdenedalai — Founder / Administrator**                  |
 | Reviewer                               | **SODBILEG Erkhembayar — Administrator**                            |
 | Decision outcome                       | `Approved`                                                          |
@@ -91,4 +91,18 @@ The decision must confirm that no unapproved document, chunk, embedding, index, 
 - Conditions: **All reopening remains subject to explicit governance approval and controlled knowledge-source onboarding.**
 - Immutable completed-decision reference: **`c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`**
 
-All mandatory owner fields and the immutable completed-decision reference are supplied. Evidence status is `Received / Not Reviewed`; reviewer acceptance remains required before `Ready for Review`.
+All mandatory owner fields and the immutable completed-decision reference are supplied. The reviewer assessment below records acceptance and moves the evidence to `Ready for Review`.
+
+## Reviewer assessment
+
+| Field                 | Value                                      |
+| --------------------- | ------------------------------------------ |
+| Reviewer              | **SODBILEG Erkhembayar — Administrator**   |
+| Review date           | `2026-09-25`                               |
+| Review result         | `Accepted`                                 |
+| Resulting status      | `Ready for Review`                         |
+| Owner-decision commit | `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122` |
+| Linkage commit        | `e26f51e99d27a0a98644451971e3af633f71c65e` |
+| Acceptance gap        | None                                       |
+
+The reviewer verified explicit Knowledge Management acceptance, the complete source and document lifecycle, the no-unapproved-artifact confirmation, controlled knowledge-source onboarding, explicit governance approval before reopening, owner, decision date, conditions, and immutable references. No deferred document, chunk, embedding, index, vector, cache, retrieval, or equivalent knowledge artifact is authorized outside approved scope.
