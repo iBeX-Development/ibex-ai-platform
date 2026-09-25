@@ -17,7 +17,7 @@
 | Linkage commit | `e43c6664a75ec8bad7973d3cd4934b0c113975fe` |
 | Evidence artifact | `SIR-02-KM-OE-07-STALE-CONTENT-QUARANTINE-TEST-v1.0.json` |
 | Artifact SHA-256 | `c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4` |
-| Immutable review reference | `Review commit containing this record` |
+| Immutable review reference | `b7932b282833487b1a3eb2ccc6d7ca56015740a5` |
 
 ## Reviewer independence
 

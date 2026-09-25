@@ -51,6 +51,7 @@ Authoritative supporting references:
 - OE-06 execution evidence: `operational-evidence/oe-06/SIR-02-KM-OE-06-SUPERSESSION-TEST-v1.0.json`; SHA-256 `1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43`; commit `f5cd7cc043c3bb99d9a745a1e546e2be30e7ddcc`; status `Executed / Awaiting Independent Review`; sequence `0001` pre-artifact harness failure is preserved in the evidence lineage.
 - OE-06 independent review: `operational-evidence/oe-06/SIR-02-KM-OE-06-INDEPENDENT-REVIEW-v1.0.md`; commit `6c821280369760a4fc8cdf10b611282ca332dea4`; result and status `Accepted`.
 - OE-07 execution evidence: `operational-evidence/oe-07/SIR-02-KM-OE-07-STALE-CONTENT-QUARANTINE-TEST-v1.0.json`; SHA-256 `c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4`; commit `03791c7096adaa0ee5874110f7dae291858efd37`; status `Executed / Awaiting Independent Review`.
+- OE-07 independent review: `operational-evidence/oe-07/SIR-02-KM-OE-07-INDEPENDENT-REVIEW-v1.0.md`; commit `b7932b282833487b1a3eb2ccc6d7ca56015740a5`; result and status `Accepted`.
 
 These references remain supporting evidence. Knowledge Management owner decisions are now immutable at commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
 
@@ -82,10 +83,10 @@ These references remain supporting evidence. Knowledge Management owner decision
 - OE-04 execution and review: **The exact two-node lineage passed 1/1 positive and 17/17 negative cases; accepted `v1.0` approval remains isolated from the unapproved synthetic `v1.1` successor; zero new approval events, cross-tenant disclosures, live calls, or persistent artifacts occurred; independent review result is `Accepted`**.
 - OE-05 execution and review: **The immutable four-hop provenance chain passed 1/1 positive and 21/21 negative cases; source/version/checksum, tenant, owner, approval, and lineage remain consistent; unapproved `v1.1` remains unapproved; zero new approval events, cross-tenant disclosures, live calls, or persistent artifacts occurred; independent review result is `Accepted`**.
 - OE-06 execution and review: **Corrected sequence `0002` passed 1/1 positive and 21/21 negative cases. Supersession is exact and tenant-bound; `v1.0` is non-active, `v1.1` remains unapproved and non-active, approval inheritance is denied, chronology is preserved, zero live artifacts or new approval events occurred, and the preserved `0001 → 0002` lineage was independently accepted.**
-- OE-07 execution: **The exact superseded `v1.0` record passed 1/1 positive and 22/22 negative cases. Stale content is version-specifically quarantined and remains unavailable for active or approved knowledge use; automatic release, unauthorized reactivation, rollback, wildcard, and cross-tenant attempts fail closed; independent review is pending.**
+- OE-07 execution and review: **The exact superseded `v1.0` record passed 1/1 positive and 22/22 negative cases. Stale content is version-specifically quarantined and remains unavailable for active or approved knowledge use; automatic release, unauthorized reactivation, rollback, wildcard, and cross-tenant attempts fail closed; independent review result is `Accepted`.**
 - Operational-evidence requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
-- Exact remaining blocker: OE-07 awaits independent review, 8 items remain `Not Executed`, and the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
+- Exact remaining blocker: 8 items remain `Not Executed`, and the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
 
 ### SIR02-DEF-03 — Knowledge Management review and expiry acceptance
 
@@ -111,4 +112,4 @@ These references remain supporting evidence. Knowledge Management owner decision
 
 ## Reviewer next action
 
-Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 through OE-06 are independently accepted. OE-07 requires independent review before its quarantine evidence may support the later OE-08/OE-09 lifecycle dependencies. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
+Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 through OE-07 are independently accepted. The approved execution order authorizes OE-09 next; OE-08 retains its separate policy and non-live operational-environment prerequisites. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
