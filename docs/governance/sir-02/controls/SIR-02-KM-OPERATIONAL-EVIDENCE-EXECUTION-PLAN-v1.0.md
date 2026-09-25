@@ -43,7 +43,7 @@
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
 
-Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-06 are independently reviewed and accepted; the other 9 evidence items remain `Not Executed`.
+Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-06 are independently reviewed and accepted; OE-07 is `Executed / Awaiting Independent Review`; the other 8 evidence items remain `Not Executed`.
 
 ## Purpose
 
@@ -233,7 +233,9 @@ Each produced evidence package must contain:
 - **Checksum/reference:** Checksummed matrix/evidence and immutable run reference.
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** All staleness signals fail closed and quarantine cannot be bypassed.
-- **Status:** `Not Executed`
+- **Status:** `Executed / Awaiting Independent Review`
+- **Execution evidence:** `operational-evidence/oe-07/SIR-02-KM-OE-07-STALE-CONTENT-QUARANTINE-TEST-v1.0.json`; SHA-256 `c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4`; run `SIR02-KM-OE-07-V1_0-20260925T123237Z-0001`; immutable evidence commit `03791c7096adaa0ee5874110f7dae291858efd37`.
+- **Execution result:** The accepted OE-06 superseded `v1.0` lifecycle state produced an exact version-specific quarantine record and passed 1/1 positive plus 22/22 negative validations. Stale content remains non-active and ineligible for knowledge use, automatic or unauthorized release is denied, chronology and tenant isolation pass, and zero live artifacts or new source-approval events were created.
 
 ### SIR02-KM-OE-08 — Retention/deletion test
 
