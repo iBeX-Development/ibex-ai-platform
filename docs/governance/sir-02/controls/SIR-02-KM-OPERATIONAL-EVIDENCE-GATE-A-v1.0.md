@@ -6,15 +6,16 @@
 | ---------------------------- | -------------------------------------------------- |
 | Document                     | `SIR-02-KM-OPERATIONAL-EVIDENCE-GATE-A`            |
 | Version                      | `v1.0`                                             |
-| Status                       | `Proposed / Not Approved`                          |
+| Status                       | `Approved for Controlled Evidence Execution`       |
 | Environment                  | `Isolated Non-Live Evidence Execution`             |
 | Evidence subject             | `SIR02-DEF-02`                                     |
 | First controlled item        | `SIR02-KM-OE-01`                                   |
 | Owner                        | **GANTUMUR Erdenedalai — Founder / Administrator** |
 | Reviewer                     | **SODBILEG Erkhembayar — Administrator**           |
-| Decision date                | `Owner Input Required`                             |
-| Approval status              | `Owner Input Required`                             |
-| Immutable approval reference | `Owner Input Required`                             |
+| Decision date                | `2026-09-25`                                       |
+| Approval status              | `Approved for Controlled Evidence Execution`       |
+| Immutable artifact reference | `437612dfe56fb4903f8132bef2971089bdb374aa`         |
+| Immutable approval reference | `Approval commit containing this record`           |
 
 ## Controlling references
 
@@ -24,19 +25,31 @@
 - Controlled Execution approval: `4d18b54180ebe0d34b147d769c5d906fc8c3b960`
 - Linkage/status reference: `5509f6cf6814b6206b832132b6d2a83aaba08fda`
 
-This record defines prerequisites only. It contains no evidence execution result and does not authorize `SIR02-KM-OE-01` until every Gate A owner-input field is completed, approved, and immutably referenced.
+This record defines and approves the prerequisites for isolated, deterministic, non-live execution of `SIR02-KM-OE-01`. It contains no evidence execution result and grants no live ingestion, RAG, deployment, credential, storage, or traffic authority.
+
+## Formal governance approval
+
+**Overall outcome:** `Approved for Controlled Evidence Execution`
+
+**Approval conditions:**
+
+- Gate A approval authorizes only isolated, deterministic, non-live evidence execution.
+- It does not authorize ingestion, RAG, embeddings, indexing, vector-store population, retrieval, Shadow activation, production deployment, credentials, secrets, or traffic.
+- Evidence results must not be marked accepted until independently reviewed.
+- `OE-08` and `OE-15` still require separate approved non-live operational-environment controls.
+- Any deviation from Gate A requires a new version and separate approval.
 
 ## Gate A decision summary
 
 | Gate | Prerequisite                                 | Proposed control state                | Final owner approval   |
 | ---- | -------------------------------------------- | ------------------------------------- | ---------------------- |
-| A1   | Synthetic test-data scope and classification | Defined below; approval outstanding   | `Owner Input Required` |
-| A2   | Fixture schema/version                       | Proposed `v1.0`; approval outstanding | `Owner Input Required` |
-| A3   | Isolated test namespace                      | No authoritative namespace found      | `Owner Input Required` |
-| A4   | Reviewer independence                        | Candidate named; confirmation absent  | `Owner Input Required` |
-| A5   | Evidence-run metadata and identity           | Format defined; approval outstanding  | `Owner Input Required` |
+| A1   | Synthetic test-data scope and classification | Synthetic-only scope approved          | `Approved`             |
+| A2   | Fixture schema/version                       | Schema `v1.0` approved                 | `Approved`             |
+| A3   | Isolated test namespace                      | Dedicated namespace approved           | `Approved`             |
+| A4   | Reviewer independence                        | Assignment and separation approved     | `Approved`             |
+| A5   | Evidence-run metadata and identity           | Metadata and identity rules approved   | `Approved`             |
 
-Gate A remains closed until A1 through A5 are explicitly approved. Partial completion, elapsed time, repository test defaults, or plan approval cannot open the gate.
+Gate A is approved for `SIR02-KM-OE-01` under the exact controls and conditions in this record. Approval does not constitute execution evidence or authorize any other evidence item to bypass its dependencies.
 
 ## A1 — Synthetic test-data scope and classification
 
@@ -65,12 +78,12 @@ Only the following test-data classes may be used:
 
 | Field                            | Value                  |
 | -------------------------------- | ---------------------- |
-| Allowed classes approved         | `Owner Input Required` |
-| Synthetic-only default confirmed | `Owner Input Required` |
-| Real tenant mapping prohibited   | `Owner Input Required` |
-| Cross-tenant reuse prohibited    | `Owner Input Required` |
-| Test-data owner                  | `Owner Input Required` |
-| Test-data approval reference     | `Owner Input Required` |
+| Allowed classes approved         | `Approved exactly as defined above`                 |
+| Synthetic-only default confirmed | `Approved / Mandatory`                              |
+| Real tenant mapping prohibited   | `Confirmed`                                         |
+| Cross-tenant reuse prohibited    | `Confirmed`                                         |
+| Test-data owner                  | `GANTUMUR Erdenedalai — Founder / Administrator`    |
+| Test-data approval reference     | `Immutable approval reference in Document control`  |
 
 ## A2 — Fixture schema and version
 
@@ -114,11 +127,11 @@ The fixture schema must represent at least the following domains:
 
 | Field                               | Value                  |
 | ----------------------------------- | ---------------------- |
-| Schema ID approved                  | `Owner Input Required` |
-| Schema version `v1.0` approved      | `Owner Input Required` |
-| Mandatory domains/fields approved   | `Owner Input Required` |
-| Reuse of existing contracts allowed | `Owner Input Required` |
-| Schema approval reference           | `Owner Input Required` |
+| Schema ID approved                  | `SIR02-KM-EVIDENCE-FIXTURE`                         |
+| Schema version `v1.0` approved      | `Approved`                                          |
+| Mandatory domains/fields approved   | `Approved exactly as defined above`                 |
+| Reuse of existing contracts allowed | `Only when conformant; no weakened lifecycle rules` |
+| Schema approval reference           | `Immutable approval reference in Document control`  |
 
 ## A3 — Isolated test namespace
 
@@ -140,13 +153,13 @@ The repository defines a generic `test` environment and deterministic fixtures u
 
 | Field                               | Value                  |
 | ----------------------------------- | ---------------------- |
-| Namespace identifier                | `Owner Input Required` |
-| Namespace version                   | `Owner Input Required` |
-| Isolation mechanism/reference       | `Owner Input Required` |
-| Synthetic tenant identifiers        | `Owner Input Required` |
-| Ephemeral storage/cleanup reference | `Owner Input Required` |
-| Namespace owner                     | `Owner Input Required` |
-| Namespace approval reference        | `Owner Input Required` |
+| Namespace identifier                | `sir02-km-evidence-v1`                              |
+| Namespace version                   | `v1.0`                                             |
+| Isolation mechanism/reference       | `Dedicated test-only namespace; no production or live Shadow shared state` |
+| Synthetic tenant identifiers        | `sir02-test-tenant-a`, `sir02-test-tenant-b`       |
+| Ephemeral storage/cleanup reference | `Ephemeral/test-only; cleanup after each run except retained evidence artifacts` |
+| Namespace owner                     | `GANTUMUR Erdenedalai — Founder / Administrator`   |
+| Namespace approval reference        | `Immutable approval reference in Document control` |
 
 ## A4 — Reviewer independence
 
@@ -168,11 +181,11 @@ The repository defines a generic `test` environment and deterministic fixtures u
 
 | Field                                       | Value                  |
 | ------------------------------------------- | ---------------------- |
-| Reviewer assignment accepted                | `Owner Input Required` |
-| Reviewer did not author/alter result rule   | `Owner Input Required` |
-| Independent post-execution review confirmed | `Owner Input Required` |
-| Conflict-of-interest assessment             | `Owner Input Required` |
-| Independence approval reference             | `Owner Input Required` |
+| Reviewer assignment accepted                | `SODBILEG Erkhembayar — Administrator`             |
+| Reviewer did not author/alter result rule   | `Required / Confirmed as governing rule`           |
+| Independent post-execution review confirmed | `Required after each execution`                    |
+| Conflict-of-interest assessment             | `No known conflict for current controlled evidence execution` |
+| Independence approval reference             | `Immutable approval reference in Document control`  |
 
 ## A5 — Evidence-run metadata and identity
 
@@ -214,31 +227,31 @@ Constraints:
 
 | Field                                | Value                  |
 | ------------------------------------ | ---------------------- |
-| Mandatory metadata approved          | `Owner Input Required` |
-| Run-ID format approved               | `Owner Input Required` |
-| Timestamp/sequence authority defined | `Owner Input Required` |
-| Artifact checksum/storage convention | `Owner Input Required` |
-| Evidence-run identity approval ref   | `Owner Input Required` |
+| Mandatory metadata approved          | `Approved exactly as defined above`                 |
+| Run-ID format approved               | `Approved exactly as defined above`                 |
+| Timestamp/sequence authority defined | `UTC runtime timestamp; deterministic evidence-ID/execution-order sequence` |
+| Artifact checksum/storage convention | `SHA-256; immutable repository/governance reference` |
+| Evidence-run identity approval ref   | `Immutable approval reference in Document control`  |
 
 ## Gate A approval decision
 
 | Field                         | Value                  |
 | ----------------------------- | ---------------------- |
-| A1 decision                   | `Owner Input Required` |
-| A2 decision                   | `Owner Input Required` |
-| A3 decision                   | `Owner Input Required` |
-| A4 decision                   | `Owner Input Required` |
-| A5 decision                   | `Owner Input Required` |
-| Overall Gate A outcome        | `Owner Input Required` |
-| Decision date                 | `Owner Input Required` |
-| Conditions                    | `Owner Input Required` |
-| Immutable completed reference | `Owner Input Required` |
+| A1 decision                   | `Approved`                                          |
+| A2 decision                   | `Approved`                                          |
+| A3 decision                   | `Approved`                                          |
+| A4 decision                   | `Approved`                                          |
+| A5 decision                   | `Approved`                                          |
+| Overall Gate A outcome        | `Approved for Controlled Evidence Execution`        |
+| Decision date                 | `2026-09-25`                                        |
+| Conditions                    | `Formal governance approval conditions above`       |
+| Immutable completed reference | `Approval commit containing this record`             |
 
 ## Approval and execution rule
 
-Gate A may be marked `Approved` only when every A1–A5 mandatory field is complete, internally consistent, independently reviewable, and linked through an immutable completed-decision reference. Until then:
+Gate A is approved because every A1–A5 mandatory field is complete, internally consistent, independently reviewable, and linked through the immutable artifact and approval references. Under this approval:
 
-- `SIR02-KM-OE-01` and all other evidence items remain `Not Executed`;
+- `SIR02-KM-OE-01` is authorized for controlled execution but remains `Not Executed`; all other evidence items remain `Not Executed`;
 - no fixture, migration, namespace, run ID, evidence result, or live artifact is created;
 - `SIR02-DEF-02` remains `Missing / Not Reviewed`;
 - ingestion, RAG, embeddings, indexing, vector storage, retrieval, deployment, credentials, and traffic remain disabled;
