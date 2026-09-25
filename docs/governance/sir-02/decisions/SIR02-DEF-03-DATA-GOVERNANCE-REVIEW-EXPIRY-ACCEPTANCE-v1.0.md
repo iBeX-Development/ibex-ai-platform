@@ -7,8 +7,8 @@
 | Evidence ID                    | `SIR02-DEF-03`                                                |
 | Document                       | `SIR02-DEF-03 — Data Governance Review and Expiry Acceptance` |
 | Version                        | `v1.0`                                                        |
-| Record status                  | `Owner Decision Recorded / Ready for Reviewer Assessment`     |
-| Current evidence status        | `Received / Not Reviewed`                                     |
+| Record status                  | `Reviewer Accepted`                                           |
+| Current evidence status        | `Ready for Review / Accepted`                                 |
 | Scope                          | SIR-09 ingestion deferral review and expiry policy            |
 | Data Governance owner          | **GANTUMUR Erdenedalai — Founder / Administrator**            |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                      |
@@ -61,4 +61,17 @@ The Data Governance owner must explicitly confirm that:
 - Conditions: **The no-automatic-reenablement and explicit reopening-approval confirmations above are mandatory.**
 - Immutable repository reference after completion: **`0b110e4916ab58022d29ae88f4a69cb4e5dde773`**
 
-All mandatory owner fields and the immutable content reference are complete. Evidence status is `Received / Not Reviewed`; reviewer assessment remains required.
+All mandatory owner fields and the immutable content reference are complete.
+
+## Reviewer assessment
+
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Review date: **2026-09-25**
+- Owner-approved Data Governance decision content: `0b110e4916ab58022d29ae88f4a69cb4e5dde773`
+- Governance linkage/status reference: `b767b2200386348db66c55782dc73d54a94d5bb9`
+- Review result: **Accepted**
+- Reason: The record explicitly accepts the 90-day review cadence, prohibits automatic enablement of ingestion, embeddings, indexing, vector-store or storage processing, retrieval preparation, and RAG, and requires a new explicit governance decision and Data Governance approval before reopening.
+- Acceptance gap: **None for this evidence item.**
+- Resulting evidence status: `Ready for Review`
+
+This review does not mark the evidence item `Approved` at the evidence-status level.

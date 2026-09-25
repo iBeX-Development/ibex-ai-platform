@@ -7,8 +7,8 @@
 | Evidence ID                    | `SIR02-DEF-01`                                                                                         |
 | Document                       | `SIR02-DEF-01 — Data Governance Ingestion Deferral Acceptance`                                         |
 | Version                        | `v1.0`                                                                                                 |
-| Record status                  | `Owner Decision Recorded / Ready for Reviewer Assessment`                                              |
-| Current evidence status        | `Received / Not Reviewed`                                                                              |
+| Record status                  | `Reviewer Accepted`                                                                                    |
+| Current evidence status        | `Ready for Review / Accepted`                                                                          |
 | Scope                          | Data Governance acceptance of the complete SIR-09 ingestion deferral lifecycle for Initial Shadow Mode |
 | Data Governance owner          | **GANTUMUR Erdenedalai — Founder / Administrator**                                                     |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                                                               |
@@ -75,4 +75,17 @@ The owner must explicitly confirm that:
 - Conditions: **Deferral must preserve tenant isolation, ownership, authorization, provenance, retention/deletion, and auditability requirements.**
 - Immutable repository reference after completion: **`0b110e4916ab58022d29ae88f4a69cb4e5dde773`**
 
-All mandatory owner fields and the immutable content reference are complete. Evidence status is `Received / Not Reviewed`; reviewer assessment remains required.
+All mandatory owner fields and the immutable content reference are complete.
+
+## Reviewer assessment
+
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Review date: **2026-09-25**
+- Owner-approved Data Governance decision content: `0b110e4916ab58022d29ae88f4a69cb4e5dde773`
+- Governance linkage/status reference: `b767b2200386348db66c55782dc73d54a94d5bb9`
+- Review result: **Accepted**
+- Reason: The decision explicitly accepts the complete SIR-09 ingestion lifecycle deferral and prohibits creating or retaining unapproved document, chunk, embedding, index, vector, cache, retrieval, or equivalent artifacts. Tenant isolation, ownership, authorization, provenance, retention/deletion, and auditability remain mandatory.
+- Acceptance gap: **None for this evidence item.**
+- Resulting evidence status: `Ready for Review`
+
+This review does not mark the evidence item `Approved` at the evidence-status level.

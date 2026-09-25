@@ -17,7 +17,7 @@
 - Data Governance response reference: **`responses/data-governance-response-v1.0.md`**
 - Proposed Shadow RAG-disablement configuration: **`configuration/SIR-02-SHADOW-RAG-DISABLEMENT-v1.0.json`** — `SIR02-SHADOW-RAG-DISABLEMENT` `v1.0`, not activated
 - Evidence collection register: **`SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md`**
-- Evidence status: **All eight Product, all eight RAG Architecture, and all four Security assignments Ready for Review; four Data Governance decisions Received; Platform Operations and Knowledge Management assignments remain Missing**
+- Evidence status: **All eight Product, all eight RAG Architecture, all four Security, and all four Data Governance assignments Ready for Review; Platform Operations and Knowledge Management assignments remain Missing**
 
 ## Immediate-stage assignments
 
@@ -43,10 +43,10 @@
 | SIR02-GOV-04 | Security             | `immediate/security-request-v1.0.md`                                                      | Sent           | Ready for Review | Accepted      |
 | SIR02-CFG-04 | Security             | `immediate/security-request-v1.0.md`                                                      | Sent           | Ready for Review | Accepted      |
 | SIR02-DEF-01 | Security             | `immediate/security-request-v1.0.md`                                                      | Sent           | Ready for Review | Accepted      |
-| SIR02-GOV-01 | Data Governance      | `immediate/data-governance-request-v1.0.md`; `responses/data-governance-response-v1.0.md` | Sent           | Received         | Not Reviewed  |
-| SIR02-GOV-05 | Data Governance      | `immediate/data-governance-request-v1.0.md`; `responses/data-governance-response-v1.0.md` | Sent           | Received         | Not Reviewed  |
-| SIR02-DEF-01 | Data Governance      | `immediate/data-governance-request-v1.0.md`; `responses/data-governance-response-v1.0.md` | Sent           | Received         | Not Reviewed  |
-| SIR02-DEF-03 | Data Governance      | `immediate/data-governance-request-v1.0.md`; `responses/data-governance-response-v1.0.md` | Sent           | Received         | Not Reviewed  |
+| SIR02-GOV-01 | Data Governance      | `immediate/data-governance-request-v1.0.md`; `responses/data-governance-response-v1.0.md` | Sent           | Ready for Review | Accepted      |
+| SIR02-GOV-05 | Data Governance      | `immediate/data-governance-request-v1.0.md`; `responses/data-governance-response-v1.0.md` | Sent           | Ready for Review | Accepted      |
+| SIR02-DEF-01 | Data Governance      | `immediate/data-governance-request-v1.0.md`; `responses/data-governance-response-v1.0.md` | Sent           | Ready for Review | Accepted      |
+| SIR02-DEF-03 | Data Governance      | `immediate/data-governance-request-v1.0.md`; `responses/data-governance-response-v1.0.md` | Sent           | Ready for Review | Accepted      |
 | SIR02-CFG-05 | Platform Operations  | `immediate/platform-operations-request-v1.0.md`                                           | Sent           | Missing          | Not Reviewed  |
 | SIR02-CFG-06 | Platform Operations  | `immediate/platform-operations-request-v1.0.md`                                           | Sent           | Missing          | Not Reviewed  |
 | SIR02-DEF-01 | Knowledge Management | `immediate/knowledge-management-request-v1.0.md`                                          | Sent           | Missing          | Not Reviewed  |
@@ -64,15 +64,15 @@ The RAG Architecture response supplies all eight assigned evidence items, and al
 
 The Security response supplies all four assignments, and all four have accepted review records at `Ready for Review`. No Security evidence is `Approved` at the evidence-status level.
 
-The Data Governance response supplies all four owner decisions at `Received / Not Reviewed`. Reviewer assessment remains required, and no Data Governance evidence is `Approved` at the evidence-status level.
+The Data Governance response supplies all four owner decisions, and all four have accepted review records at `Ready for Review`. No Data Governance evidence is `Approved` at the evidence-status level.
 
 ## SIR-02 completion dashboard
 
 - Immediate-stage assignments: **29 total**
-- Ready for Review: **20**
-- Received: **4**
+- Ready for Review: **24**
+- Received: **0**
 - Missing: **5**
-- Accepted review results: **20**
+- Accepted review results: **24**
 - Needs Clarification: **0**
 - Rejected: **0**
 - Approved evidence: **0**
@@ -80,7 +80,7 @@ The Data Governance response supplies all four owner decisions at `Received / No
 - Product governance review: **All eight Product evidence items accepted; none marked Approved**
 - RAG Architecture assignments: **8 Ready for Review; 0 Received; 0 Missing**
 - Security assignments: **4 Ready for Review; 0 Received; 0 Missing**
-- Data Governance assignments: **0 Ready for Review; 4 Received; 0 Missing**
+- Data Governance assignments: **4 Ready for Review; 0 Received; 0 Missing**
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
-- Current SIR-02 status: **Blocking — four Data Governance decisions require reviewer assessment, while two Platform Operations and three Knowledge Management assignments remain missing.**
+- Current SIR-02 status: **Blocking — two Platform Operations and three Knowledge Management assignments remain missing.**
