@@ -20,7 +20,7 @@
 | Secret/configuration-management ownership  | `Owner Input Required — accountable secret-management owner`        |
 | Decision date                              | `2026-09-25`                                                        |
 | Operating conditions                       | Owner-approved conditions below                                     |
-| Immutable repository reference             | `Owner Input Required — completed-decision commit`                  |
+| Immutable owner-decision reference         | `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`                          |
 
 ## Required custody and control scope
 
@@ -63,16 +63,16 @@ The Platform Operations owner decision must explicitly accept, reject, or defer 
 
 ## Acceptance-criteria mapping
 
-| Criterion                                                                     | Current evidence                                   | Satisfied now? |
-| ----------------------------------------------------------------------------- | -------------------------------------------------- | -------------- |
-| Versioned Platform Operations custody record exists                           | This `v1.0` record                                 | `Yes`          |
-| Required integrity, drift, change, secret, and fail-closed duties are defined | Required scope and mandatory conditions above      | `Yes`          |
-| No activation or operational authority is implied                             | Mandatory control conditions above                 | `Yes`          |
-| Owner supplies explicit custody/ownership decision                            | `Approved`                                         | `Yes`          |
-| Accountable owner/team and environment scope are supplied                     | Named owner; `Shadow`                              | `Yes`          |
-| Integrity, drift, change-control, and secret-management duties are assigned   | Operational duties accepted; secret owner unnamed  | `No`           |
-| Decision date and operating conditions are supplied                           | `2026-09-25`; owner-approved conditions            | `Yes`          |
-| Completed decision has an immutable repository reference                      | `Owner Input Required — completed-decision commit` | `No`           |
+| Criterion                                                                     | Current evidence                                  | Satisfied now? |
+| ----------------------------------------------------------------------------- | ------------------------------------------------- | -------------- |
+| Versioned Platform Operations custody record exists                           | This `v1.0` record                                | `Yes`          |
+| Required integrity, drift, change, secret, and fail-closed duties are defined | Required scope and mandatory conditions above     | `Yes`          |
+| No activation or operational authority is implied                             | Mandatory control conditions above                | `Yes`          |
+| Owner supplies explicit custody/ownership decision                            | `Approved`                                        | `Yes`          |
+| Accountable owner/team and environment scope are supplied                     | Named owner; `Shadow`                             | `Yes`          |
+| Integrity, drift, change-control, and secret-management duties are assigned   | Operational duties accepted; secret owner unnamed | `No`           |
+| Decision date and operating conditions are supplied                           | `2026-09-25`; owner-approved conditions           | `Yes`          |
+| Owner decision has an immutable repository reference                          | `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`        | `Yes`          |
 
 ## Owner completion
 
@@ -85,6 +85,6 @@ The Platform Operations owner decision must explicitly accept, reject, or defer 
 - Secret/configuration-management ownership: **Owner Input Required — accountable secret-management owner**
 - Decision date: **2026-09-25**
 - Operating conditions: **Owner-approved conditions recorded above**
-- Immutable repository reference after completion: **Owner Input Required**
+- Immutable owner-decision reference: **`333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`**
 
-Evidence status remains `Missing / Not Reviewed` until the accountable secret-management owner and immutable completed-decision reference are supplied.
+Evidence status remains `Missing / Not Reviewed` until the accountable secret-management owner is supplied. A later linkage/status commit does not make the incomplete decision acceptable.

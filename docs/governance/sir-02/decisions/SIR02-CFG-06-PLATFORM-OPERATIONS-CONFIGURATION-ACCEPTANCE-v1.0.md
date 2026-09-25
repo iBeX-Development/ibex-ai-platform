@@ -24,7 +24,7 @@
 | Later authorized activation-process confirmation | `Confirmed`                                                        |
 | Decision date                                    | `2026-09-25`                                                       |
 | Conditions                                       | Owner-approved conditions below                                    |
-| Immutable repository reference                   | `Owner Input Required — completed-acceptance commit`               |
+| Immutable owner-decision reference               | `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`                         |
 
 ## Required operational acceptance
 
@@ -76,7 +76,7 @@ The Platform Operations owner must explicitly:
 | Environment/configuration and secret-management owners are supplied           | Environment owner named; secret owner unnamed        | `No`           |
 | Exact artifact identity and later activation process are explicitly confirmed | Owner-approved statement and exact artifact identity | `Yes`          |
 | Decision date and conditions are supplied                                     | `2026-09-25`; owner-approved conditions              | `Yes`          |
-| Completed acceptance has an immutable repository reference                    | `Owner Input Required — completed-acceptance commit` | `No`           |
+| Owner acceptance has an immutable repository reference                        | `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`           | `Yes`          |
 
 ## Owner completion
 
@@ -87,6 +87,6 @@ The Platform Operations owner must explicitly:
 - Confirmation that activation requires a later authorized deployment/change process: **Confirmed**
 - Decision date: **2026-09-25**
 - Conditions: **Owner-approved conditions recorded above**
-- Immutable repository reference after completion: **Owner Input Required**
+- Immutable owner-decision reference: **`333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`**
 
-Evidence status remains `Missing / Not Reviewed` until the accountable secret-management owner and immutable completed-acceptance reference are supplied.
+Evidence status remains `Missing / Not Reviewed` until the accountable secret-management owner is supplied. A later linkage/status commit does not make the incomplete acceptance acceptable.

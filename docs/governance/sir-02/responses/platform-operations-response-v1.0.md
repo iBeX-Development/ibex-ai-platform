@@ -44,7 +44,8 @@ The Platform Operations owner has now supplied explicit custody and configuratio
 - Platform Operations-owned requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
 - Owner decision record: `decisions/SIR02-CFG-05-PLATFORM-OPERATIONS-CUSTODY-DECISION-v1.0.md`.
-- Exact remaining gap: Platform Operations must name the accountable secret-management owner or managed team and provide the immutable completed-decision reference.
+- Immutable owner-decision reference: `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`.
+- Exact remaining gap: Platform Operations must name the accountable secret-management owner or managed team.
 
 ### SIR02-CFG-06 — Authoritative Shadow environment configuration acceptance
 
@@ -66,8 +67,9 @@ The Platform Operations owner has now supplied explicit custody and configuratio
 - Platform Operations-owned requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
 - Owner decision record: `decisions/SIR02-CFG-06-PLATFORM-OPERATIONS-CONFIGURATION-ACCEPTANCE-v1.0.md`.
+- Immutable owner-decision reference: `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`.
 - Exact artifact identity, effective date, `Proposed / Not Activated` state, environment/configuration owner, and separate activation-process requirement: **Confirmed**.
-- Exact remaining gap: Platform Operations must name the accountable secret-management owner or managed team and provide the immutable completed-acceptance reference.
+- Exact remaining gap: Platform Operations must name the accountable secret-management owner or managed team.
 
 ## Response disposition
 
