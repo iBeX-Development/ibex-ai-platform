@@ -2,12 +2,14 @@
 
 ## Scope
 
-This repository register materializes the Product Immediate-stage evidence rows reviewed on 2026-09-25. It does not change other owner assignments, After Config Scope items, or Final Sign-Off items.
+This repository register materializes the Product Immediate-stage evidence reviewed on 2026-09-25 and the RAG Architecture Immediate-stage evidence received on 2026-09-25. It does not change other owner assignments, After Config Scope items, or Final Sign-Off items.
 
-- Evidence response: `responses/product-response-v1.0.md`
+- Product evidence response: `responses/product-response-v1.0.md`
+- RAG Architecture evidence response: `responses/rag-architecture-response-v1.0.md`
 - Stable received-evidence snapshot: `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`
-- Reviewer: **SODBILEG Erkhembayar — Administrator**
-- Review date: **2026-09-25**
+- Product reviewer: **SODBILEG Erkhembayar — Administrator**
+- Product review date: **2026-09-25**
+- RAG Architecture review status: **Not Reviewed**
 
 ## Product Immediate-stage evidence
 
@@ -23,3 +25,18 @@ This repository register materializes the Product Immediate-stage evidence rows 
 | `SIR02-DEF-03` | Explicit SIR-09 review/expiry rule prohibiting automatic ingestion or RAG enablement                             | `Every 90 days`; accountable owner, deferred scope, and no-auto-enable rule; Product decision `2026-09-25`; `responses/product-response-v1.0.md`                                                                      | `1.0`                    | `Ready for Review` | `Accepted`    | None for Product evidence                                      |
 
 No evidence in this register is marked `Approved`.
+
+## RAG Architecture Immediate-stage evidence
+
+| Evidence ID    | Acceptance criterion                                                            | Evidence reference                                                                                                            | Version | Evidence status | Review result  | Acceptance gap                                                                 |
+| -------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------- | --------------- | -------------- | ------------------------------------------------------------------------------ |
+| `SIR02-GOV-01` | Versioned RAG Architecture joint review of the SIR-02 exclusion decision        | Product support: `responses/product-response-v1.0.md`; Product approval commit `df112abde861a908fd5838ba10dad54e96053b65`     | `1.0`   | `Missing`       | `Not Reviewed` | RAG Architecture concurrence in a versioned joint review has not been supplied |
+| `SIR02-GOV-03` | Signed RAG Architecture approval of safely disabled initial Shadow RAG scope    | Proposed controls: `configuration/SIR-02-SHADOW-RAG-DISABLEMENT-v1.0.json`; commit `52e437f053cdca25492410cecbd182ebc19a4afd` | `v1.0`  | `Missing`       | `Not Reviewed` | Signed architecture approval, decision date, and immutable reference required  |
+| `SIR02-CFG-02` | Exact canonical RAG-dependent agent exclusions with no wildcard or broad allow  | Four agent profiles and `agents/index.ts`; evidence snapshot `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`                       | `1.0.0` | `Received`      | `Not Reviewed` | RAG Architecture reviewer assessment required                                  |
+| `SIR02-CFG-03` | Exact canonical RAG-dependent intent exclusions with no wildcard or omission    | Four agent profiles; evidence snapshot `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`                                             | `1.0.0` | `Received`      | `Not Reviewed` | RAG Architecture reviewer assessment required                                  |
+| `SIR02-CFG-04` | Exact canonical RAG-dependent capability exclusions with no scope widening      | `agents/index.ts`; evidence snapshot `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`                                               | `1.0.0` | `Received`      | `Not Reviewed` | RAG Architecture reviewer assessment required                                  |
+| `SIR02-CFG-07` | Review rule prohibits automatic RAG enablement and requires new approval/change | Product decision and review commits `df112abde861a908fd5838ba10dad54e96053b65`, `4b7fcb77343f5009f5b521f6d580ab6088d3c9f4`    | `1.0`   | `Received`      | `Not Reviewed` | RAG Architecture reviewer assessment required                                  |
+| `SIR02-DEF-01` | Signed, versioned SIR-09 `Deferred` decision covering full ingestion scope      | Product supporting rule: `responses/product-response-v1.0.md`, `SIR02-DEF-03`                                                 | `1.0`   | `Missing`       | `Not Reviewed` | Formal signed SIR-09 decision and complete scope record required               |
+| `SIR02-DEF-02` | Explicit accountable SIR-09 deferral owner assignment                           | Product decision and review commits `df112abde861a908fd5838ba10dad54e96053b65`, `4b7fcb77343f5009f5b521f6d580ab6088d3c9f4`    | `1.0`   | `Received`      | `Not Reviewed` | RAG Architecture reviewer assessment required                                  |
+
+RAG Architecture response: `responses/rag-architecture-response-v1.0.md`. No RAG Architecture evidence is marked `Ready for Review` or `Approved` by this submission.
