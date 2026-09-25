@@ -6,20 +6,35 @@
 | ------------------------------ | -------------------------------------------------------- |
 | Document title                 | `SIR-02 Knowledge Management Lifecycle-Control Baseline` |
 | Version                        | `v1.0`                                                   |
-| Status                         | `Proposed / Not Operationalized`                         |
+| Status                         | `Approved / Not Operationalized`                         |
 | Owner                          | **GANTUMUR Erdenedalai — Founder / Administrator**       |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                 |
 | Environment scope              | `Shadow`                                                 |
-| Decision date                  | `Owner Input Required`                                   |
-| Approval status                | `Owner Input Required`                                   |
-| Immutable approval reference   | `Owner Input Required`                                   |
+| Decision date                  | `2026-09-25`                                             |
+| Approval status                | `Approved`                                               |
+| Immutable baseline reference   | `48407614af13e8f8239a9e63454c013dc43e432b`               |
+| Immutable approval reference   | `Pending approval-content commit linkage`                |
 | Operational-evidence reference | `Not Available — evidence must be produced and reviewed` |
 
 This baseline defines governance and readiness controls only. It does not authorize or activate document ingestion, parsing, chunking, embeddings, indexing, vector storage, retrieval, RAG, credentials, deployment, traffic, or production use.
 
+## Formal governance approval
+
+**Approval statement:**
+
+> The SIR-02 Knowledge Management Lifecycle-Control Baseline v1.0 is formally approved as the governance control baseline required before any future reopening of document ingestion or related RAG knowledge-processing activities.
+
+**Approval conditions:**
+
+- The baseline remains non-operational until all required operational evidence is produced and independently reviewed.
+- Approval does not authorize ingestion, RAG, embeddings, indexing, vector-store population, retrieval, deployment, Shadow activation, or production use.
+- No automatic reopening is permitted.
+- Any future reopening requires the required operational evidence plus separate explicit governance approval.
+- Changes to the baseline require a new version and separate approval.
+
 ## Purpose and authority boundary
 
-This document is the proposed lifecycle-control reference required by `SIR02-DEF-02`. It governs the full knowledge-source lifecycle that must be approved and operationally evidenced before SIR-09 ingestion may be considered for reopening.
+This document is the approved, non-operational lifecycle-control reference required by `SIR02-DEF-02`. It governs the full knowledge-source lifecycle that must be operationally evidenced before SIR-09 ingestion may be considered for reopening.
 
 The following approved architecture remains authoritative:
 
