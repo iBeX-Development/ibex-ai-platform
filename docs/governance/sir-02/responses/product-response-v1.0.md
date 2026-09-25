@@ -114,8 +114,8 @@ The Product owner records the SIR-02 decision outcome as **Approved** and approv
 ### SIR02-CFG-06 — Effective date tied to authoritative configuration
 
 - Evidence ID: `SIR02-CFG-06`
-- Supplied decision/content: `Owner Input Required`
-- Source/reference: No authoritative environment-specific configuration artifact/version and linked effective date are approved in the available repository governance records.
+- Supplied decision/content: `Owner Input Required`; the owner did not select an effective date or supply an authoritative configuration reference/version.
+- Source/reference: `responses/product-remaining-inputs-v1.0.md`, version `1.0`
 - Version: `Owner Input Required`
 - Owner: **GANTUMUR Erdenedalai — Founder / Administrator**
 - Date: `Owner Input Required`
@@ -126,26 +126,26 @@ The Product owner records the SIR-02 decision outcome as **Approved** and approv
 ### SIR02-CFG-07 — Exclusion review/expiry rule
 
 - Evidence ID: `SIR02-CFG-07`
-- Supplied decision/content: `Owner Input Required`
-- Source/reference: No approved Product review/expiry rule is present in the available repository governance records.
+- Supplied decision/content: Expiry or a review due date does not automatically enable RAG. Re-enablement requires a new explicit governance decision and approved configuration change. Review cadence/expiry and accountable reapproval owner remain `Owner Input Required`.
+- Source/reference: `responses/product-remaining-inputs-v1.0.md`, version `1.0`
 - Version: `Owner Input Required`
 - Owner: **GANTUMUR Erdenedalai — Founder / Administrator**
 - Date: `Owner Input Required`
 - Acceptance-criteria mapping: Cannot be satisfied by reusing the dispatch target review date. The rule must require explicit reassessment and must state that expiry cannot automatically enable RAG, embeddings, vector search, ingestion, or an excluded capability.
 - Status proposed: `Missing`
-- Remaining gap: Supply the explicit review trigger/cadence, expiry behavior, decision owner, and a rule requiring a new approved decision before any enablement.
+- Remaining gap: Supply the explicit review cadence or expiry date, accountable reapproval owner, and decision date.
 
 ### SIR02-DEF-03 — SIR-09 deferral review/expiry requirement
 
 - Evidence ID: `SIR02-DEF-03`
-- Supplied decision/content: `Owner Input Required`
-- Source/reference: No approved SIR-09 deferral review/expiry requirement is present in the available repository governance records.
+- Supplied decision/content: The deferred scope covers document ingestion-related activity. Expiry does not automatically enable ingestion, embeddings, indexing, or RAG; reopening requires explicit approval. Review cadence/expiry and accountable SIR-09 owner remain `Owner Input Required`.
+- Source/reference: `responses/product-remaining-inputs-v1.0.md`, version `1.0`
 - Version: `Owner Input Required`
 - Owner: **GANTUMUR Erdenedalai — Founder / Administrator**
 - Date: `Owner Input Required`
 - Acceptance-criteria mapping: Cannot be satisfied by reusing the dispatch target review date. The requirement must cover repositories, connectors, parsing, malware controls, embeddings, indexing, storage, retention, deletion, and reconciliation, and must prohibit automatic ingestion or RAG enablement on expiry.
 - Status proposed: `Missing`
-- Remaining gap: Supply the explicit SIR-09 review trigger/cadence, expiry behavior, accountable decision owner, and no-automatic-enablement rule.
+- Remaining gap: Supply the explicit review cadence or expiry date, accountable SIR-09 owner, and decision date.
 
 ## Submission status
 
