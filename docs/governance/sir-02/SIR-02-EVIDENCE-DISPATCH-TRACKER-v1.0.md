@@ -13,9 +13,10 @@
 - Product response reference: **`responses/product-response-v1.0.md`**
 - Product remaining-input response reference: **`responses/product-remaining-inputs-v1.0.md`**
 - RAG Architecture response reference: **`responses/rag-architecture-response-v1.0.md`**
+- Security response reference: **`responses/security-response-v1.0.md`**
 - Proposed Shadow RAG-disablement configuration: **`configuration/SIR-02-SHADOW-RAG-DISABLEMENT-v1.0.json`** — `SIR02-SHADOW-RAG-DISABLEMENT` `v1.0`, not activated
 - Evidence collection register: **`SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md`**
-- Evidence status: **All eight Product and all eight RAG Architecture assignments Ready for Review; all remaining owner-group assignments remain Missing**
+- Evidence status: **All eight Product and all eight RAG Architecture assignments Ready for Review; one Security assignment Received; all remaining owner-group assignments remain Missing**
 
 ## Immediate-stage assignments
 
@@ -39,7 +40,7 @@
 | SIR02-DEF-02 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Ready for Review | Accepted      |
 | SIR02-GOV-01 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
 | SIR02-GOV-04 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
-| SIR02-CFG-04 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
+| SIR02-CFG-04 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Received         | Not Reviewed  |
 | SIR02-DEF-01 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
 | SIR02-GOV-01 | Data Governance      | `immediate/data-governance-request-v1.0.md`                               | Sent           | Missing          | Not Reviewed  |
 | SIR02-GOV-05 | Data Governance      | `immediate/data-governance-request-v1.0.md`                               | Sent           | Missing          | Not Reviewed  |
@@ -60,12 +61,14 @@ The Product response is the owner submission for all eight Product assignments. 
 
 The RAG Architecture response supplies all eight assigned evidence items, and all eight have accepted review records at `Ready for Review`. No RAG Architecture evidence is `Approved` at the evidence-status level.
 
+The Security response supplies `SIR02-CFG-04` as `Received`. `SIR02-GOV-01`, `SIR02-GOV-04`, and `SIR02-DEF-01` remain `Missing / Not Reviewed`. No Security evidence is `Ready for Review` or `Approved`.
+
 ## SIR-02 completion dashboard
 
 - Immediate-stage assignments: **29 total**
 - Ready for Review: **16**
-- Received: **0**
-- Missing: **13**
+- Received: **1**
+- Missing: **12**
 - Accepted review results: **16**
 - Needs Clarification: **0**
 - Rejected: **0**
@@ -73,6 +76,7 @@ The RAG Architecture response supplies all eight assigned evidence items, and al
 - Product assignments: **8 Ready for Review; 0 Received; 0 Missing**
 - Product governance review: **All eight Product evidence items accepted; none marked Approved**
 - RAG Architecture assignments: **8 Ready for Review; 0 Received; 0 Missing**
+- Security assignments: **0 Ready for Review; 1 Received; 3 Missing**
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
-- Current SIR-02 status: **Blocking — Product and RAG Architecture evidence are each 8/8 Ready for Review, but 13 assignments from Security, Data Governance, Platform Operations, and Knowledge Management remain missing.**
+- Current SIR-02 status: **Blocking — one Security item awaits review; three Security-owned decision/approval records and 9 assignments from Data Governance, Platform Operations, and Knowledge Management remain missing.**
