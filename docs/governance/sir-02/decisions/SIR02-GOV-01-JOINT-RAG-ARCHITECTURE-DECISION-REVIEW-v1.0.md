@@ -2,19 +2,19 @@
 
 ## Decision record
 
-| Field                          | Value                                                                             |
-| ------------------------------ | --------------------------------------------------------------------------------- |
-| Evidence ID                    | `SIR02-GOV-01`                                                                    |
-| Document                       | `SIR02-GOV-01 — Joint RAG Architecture Decision Review`                           |
-| Version                        | `v1.0`                                                                            |
-| Record status                  | `Owner Decision Recorded / Awaiting Immutable Reference`                          |
-| Evidence status                | `Missing / Not Reviewed`                                                          |
-| Scope                          | Initial Shadow Mode with RAG excluded                                             |
-| Primary owner                  | **GANTUMUR Erdenedalai — Founder / Administrator**                                |
-| Reviewer                       | **SODBILEG Erkhembayar — Administrator**                                          |
-| Decision outcome               | `Approved`                                                                        |
-| Decision date                  | `2026-09-25`                                                                      |
-| Immutable repository reference | `Owner Input Required` — immutable commit containing the completed owner decision |
+| Field                          | Value                                                     |
+| ------------------------------ | --------------------------------------------------------- |
+| Evidence ID                    | `SIR02-GOV-01`                                            |
+| Document                       | `SIR02-GOV-01 — Joint RAG Architecture Decision Review`   |
+| Version                        | `v1.0`                                                    |
+| Record status                  | `Owner Decision Recorded / Ready for Reviewer Assessment` |
+| Evidence status                | `Received / Not Reviewed`                                 |
+| Scope                          | Initial Shadow Mode with RAG excluded                     |
+| Primary owner                  | **GANTUMUR Erdenedalai — Founder / Administrator**        |
+| Reviewer                       | **SODBILEG Erkhembayar — Administrator**                  |
+| Decision outcome               | `Approved`                                                |
+| Decision date                  | `2026-09-25`                                              |
+| Immutable repository reference | `8044f8a0084bfd9f9f801309ddee84f718976c1d`                |
 
 ## Decision scope
 
@@ -43,14 +43,14 @@ This record does not authorize deployment, Shadow Mode entry, traffic, credentia
 
 ## Acceptance-criteria mapping
 
-| Criterion                                                                                  | Current evidence                                       | Satisfied now? |
-| ------------------------------------------------------------------------------------------ | ------------------------------------------------------ | -------------- |
-| Initial Shadow Mode scope explicitly excludes RAG and related services                     | Product decision and proposed configuration artifact   | `Yes`          |
-| Canonical agent, intent, and capability exclusions are exact, versioned, and wildcard-free | Accepted manifests in the immutable snapshots          | `Yes`          |
-| Missing/conflicting configuration and fallback paths fail closed                           | Configuration artifact `v1.0`                          | `Yes`          |
-| RAG Architecture owner records an explicit joint-review outcome                            | Owner outcome is `Approved`                            | `Yes`          |
-| Decision date is supplied                                                                  | `2026-09-25`                                           | `Yes`          |
-| Immutable completed-decision reference exists                                              | Awaiting the commit containing this completed decision | `No`           |
+| Criterion                                                                                  | Current evidence                                     | Satisfied now? |
+| ------------------------------------------------------------------------------------------ | ---------------------------------------------------- | -------------- |
+| Initial Shadow Mode scope explicitly excludes RAG and related services                     | Product decision and proposed configuration artifact | `Yes`          |
+| Canonical agent, intent, and capability exclusions are exact, versioned, and wildcard-free | Accepted manifests in the immutable snapshots        | `Yes`          |
+| Missing/conflicting configuration and fallback paths fail closed                           | Configuration artifact `v1.0`                        | `Yes`          |
+| RAG Architecture owner records an explicit joint-review outcome                            | Owner outcome is `Approved`                          | `Yes`          |
+| Decision date is supplied                                                                  | `2026-09-25`                                         | `Yes`          |
+| Immutable completed-decision reference exists                                              | `8044f8a0084bfd9f9f801309ddee84f718976c1d`           | `Yes`          |
 
 ## Owner completion
 
@@ -58,6 +58,6 @@ This record does not authorize deployment, Shadow Mode entry, traffic, credentia
 - Decision date: **2026-09-25**
 - Conditions: **RAG remains excluded from Initial Shadow Mode; all fail-closed controls and review requirements remain mandatory.**
 - Owner decision statement: **Initial Shadow Mode will operate with RAG excluded. The accepted canonical agent, intent, and capability exclusion manifests, together with the approved Shadow RAG-disablement configuration baseline, define the reduced Shadow scope. No RAG capability may be re-enabled without a new explicit governance decision and approved configuration change.**
-- Immutable repository reference after completion: **Owner Input Required**
+- Immutable repository reference after completion: **`8044f8a0084bfd9f9f801309ddee84f718976c1d`**
 
-The owner decision is recorded. This evidence remains `Missing / Not Reviewed` until the immutable commit containing this completed decision is linked.
+All mandatory owner fields and the immutable content reference are complete. Evidence status is `Received / Not Reviewed`; reviewer assessment remains required.

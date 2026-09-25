@@ -7,14 +7,14 @@
 | Evidence ID                    | `SIR02-GOV-03`                                                                          |
 | Document                       | `SIR02-GOV-03 — RAG Architecture Approval`                                              |
 | Version                        | `v1.0`                                                                                  |
-| Record status                  | `Owner Decision Recorded / Awaiting Immutable Reference`                                |
-| Evidence status                | `Missing / Not Reviewed`                                                                |
+| Record status                  | `Owner Decision Recorded / Ready for Reviewer Assessment`                               |
+| Evidence status                | `Received / Not Reviewed`                                                               |
 | Scope                          | Formal RAG Architecture approval for the reduced initial Shadow scope with RAG excluded |
 | Approval owner                 | **GANTUMUR Erdenedalai — Founder / Administrator**                                      |
 | Reviewer                       | **SODBILEG Erkhembayar — Administrator**                                                |
 | Approval status                | `Approved`                                                                              |
 | Decision date                  | `2026-09-25`                                                                            |
-| Immutable repository reference | `Owner Input Required` — immutable commit containing the completed approval             |
+| Immutable repository reference | `8044f8a0084bfd9f9f801309ddee84f718976c1d`                                              |
 
 ## Required approval statement
 
@@ -48,7 +48,7 @@ An approval must also confirm that:
 | Approval owner and reviewer are identified                            | Established governance roles               | `Yes`          |
 | Explicit RAG Architecture approval statement and outcome are supplied | Owner statement and `Approved` outcome     | `Yes`          |
 | Decision date is supplied                                             | `2026-09-25`                               | `Yes`          |
-| Completed approval has an immutable repository reference              | `Owner Input Required`                     | `No`           |
+| Completed approval has an immutable repository reference              | `8044f8a0084bfd9f9f801309ddee84f718976c1d` | `Yes`          |
 
 ## Owner completion
 
@@ -56,6 +56,6 @@ An approval must also confirm that:
 - Explicit approval statement: **RAG Architecture formally approves the reduced Initial Shadow scope with RAG excluded, subject to the approved exclusion manifests, fail-closed controls, no-automatic-reenablement rule, and separate approval for any future RAG activation.**
 - Decision date: **2026-09-25**
 - Approval conditions: **This approval does not authorize deployment, Shadow activation, ingestion enablement, or production use.**
-- Immutable repository reference after completion: **Owner Input Required**
+- Immutable repository reference after completion: **`8044f8a0084bfd9f9f801309ddee84f718976c1d`**
 
-The owner approval is recorded. This evidence remains `Missing / Not Reviewed` until the immutable commit containing this completed approval is linked. Product evidence does not substitute for this RAG Architecture approval.
+All mandatory owner fields and the immutable content reference are complete. Evidence status is `Received / Not Reviewed`; reviewer assessment remains required. Product evidence does not substitute for this RAG Architecture approval.

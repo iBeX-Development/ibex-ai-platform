@@ -133,3 +133,45 @@ This response uses existing approved governance records and immutable repository
 - Remains `Missing / Not Reviewed`: `SIR02-GOV-01`, `SIR02-GOV-03`, `SIR02-DEF-01`
 - Evidence marked `Approved`: none
 - Current SIR-02 status: **Blocking — the joint RAG Architecture decision review, signed RAG Architecture approval, signed SIR-09 Deferred decision, and evidence assigned to other owner groups remain missing.**
+
+## RAG Architecture owner decision submission
+
+- Owner: **GANTUMUR Erdenedalai — Founder / Administrator**
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Decision date: **2026-09-25**
+- Immutable owner-decision content commit: `8044f8a0084bfd9f9f801309ddee84f718976c1d`
+- Review status: **Not Reviewed**
+
+### SIR02-GOV-01
+
+- Outcome: `Approved`
+- Decision record: `decisions/SIR02-GOV-01-JOINT-RAG-ARCHITECTURE-DECISION-REVIEW-v1.0.md`
+- Owner statement: **Initial Shadow Mode will operate with RAG excluded. The accepted canonical agent, intent, and capability exclusion manifests, together with the approved Shadow RAG-disablement configuration baseline, define the reduced Shadow scope. No RAG capability may be re-enabled without a new explicit governance decision and approved configuration change.**
+- Conditions: **RAG remains excluded from Initial Shadow Mode; all fail-closed controls and review requirements remain mandatory.**
+- Evidence status: `Received / Not Reviewed`
+
+### SIR02-GOV-03
+
+- Approval status: `Approved`
+- Decision record: `decisions/SIR02-GOV-03-RAG-ARCHITECTURE-APPROVAL-v1.0.md`
+- Approval statement: **RAG Architecture formally approves the reduced Initial Shadow scope with RAG excluded, subject to the approved exclusion manifests, fail-closed controls, no-automatic-reenablement rule, and separate approval for any future RAG activation.**
+- Conditions: **This approval does not authorize deployment, Shadow activation, ingestion enablement, or production use.**
+- Evidence status: `Received / Not Reviewed`
+
+### SIR02-DEF-01
+
+- Outcome: `Deferred`
+- Decision record: `decisions/SIR02-DEF-01-SIR-09-INGESTION-DEFERRAL-DECISION-v1.0.md`
+- Owner statement: **SIR-09 ingestion is deferred for Initial Shadow Mode. The deferral covers the complete ingestion lifecycle including document intake, parsing/chunking, embeddings, indexing, vector-store population/storage processing, retrieval preparation, and related RAG ingestion activities.**
+- Conditions: **Review every 90 days. Expiry or review due date does not automatically enable any ingestion or RAG capability. Reopening requires explicit governance approval.**
+- Full lifecycle governed: `Yes`
+- Evidence status: `Received / Not Reviewed`
+
+### Current disposition
+
+- Moved from `Missing` to `Received`: `SIR02-GOV-01`, `SIR02-GOV-03`, `SIR02-DEF-01`
+- RAG Architecture evidence now `Ready for Review`: 5
+- RAG Architecture evidence now `Received`: 3
+- RAG Architecture evidence now `Missing`: 0
+- Evidence marked `Approved` at evidence-status level: none
+- Current SIR-02 status: **Blocking — the three newly received RAG Architecture decisions require reviewer assessment, and 13 Immediate-stage assignments from other owner groups remain missing.**

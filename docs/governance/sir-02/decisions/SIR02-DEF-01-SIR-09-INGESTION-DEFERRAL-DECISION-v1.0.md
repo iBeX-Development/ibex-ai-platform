@@ -2,20 +2,20 @@
 
 ## Decision record
 
-| Field                          | Value                                                                                |
-| ------------------------------ | ------------------------------------------------------------------------------------ |
-| Evidence ID                    | `SIR02-DEF-01`                                                                       |
-| Document                       | `SIR02-DEF-01 — SIR-09 Ingestion Deferral Decision`                                  |
-| Version                        | `v1.0`                                                                               |
-| Record status                  | `Owner Decision Recorded / Awaiting Immutable Reference`                             |
-| Evidence status                | `Missing / Not Reviewed`                                                             |
-| Scope                          | SIR-09 document and RAG ingestion lifecycle for initial Shadow Mode                  |
-| Accountable SIR-09 owner       | **GANTUMUR Erdenedalai — Founder / Administrator**                                   |
-| Reviewer                       | **SODBILEG Erkhembayar — Administrator**                                             |
-| Decision outcome               | `Deferred`                                                                           |
-| Decision date                  | `2026-09-25`                                                                         |
-| Review cadence                 | `Every 90 days`                                                                      |
-| Immutable repository reference | `Owner Input Required` — immutable commit containing the completed deferral decision |
+| Field                          | Value                                                               |
+| ------------------------------ | ------------------------------------------------------------------- |
+| Evidence ID                    | `SIR02-DEF-01`                                                      |
+| Document                       | `SIR02-DEF-01 — SIR-09 Ingestion Deferral Decision`                 |
+| Version                        | `v1.0`                                                              |
+| Record status                  | `Owner Decision Recorded / Ready for Reviewer Assessment`           |
+| Evidence status                | `Received / Not Reviewed`                                           |
+| Scope                          | SIR-09 document and RAG ingestion lifecycle for initial Shadow Mode |
+| Accountable SIR-09 owner       | **GANTUMUR Erdenedalai — Founder / Administrator**                  |
+| Reviewer                       | **SODBILEG Erkhembayar — Administrator**                            |
+| Decision outcome               | `Deferred`                                                          |
+| Decision date                  | `2026-09-25`                                                        |
+| Review cadence                 | `Every 90 days`                                                     |
+| Immutable repository reference | `8044f8a0084bfd9f9f801309ddee84f718976c1d`                          |
 
 ## Decision scope
 
@@ -60,7 +60,7 @@ The current proposed configuration disables document ingestion, embedding access
 | Review cadence and no-automatic-reenablement rule are explicit         | Accepted Product governance evidence; reproduced above          | `Yes`          |
 | Owner explicitly records `Deferred`, `Approved`, or `Rejected`         | Owner outcome is `Deferred`                                     | `Yes`          |
 | Decision date is supplied                                              | `2026-09-25`                                                    | `Yes`          |
-| Completed decision has an immutable repository reference               | `Owner Input Required`                                          | `No`           |
+| Completed decision has an immutable repository reference               | `8044f8a0084bfd9f9f801309ddee84f718976c1d`                      | `Yes`          |
 
 ## Owner completion
 
@@ -69,6 +69,6 @@ The current proposed configuration disables document ingestion, embedding access
 - Owner decision statement: **SIR-09 ingestion is deferred for Initial Shadow Mode. The deferral covers the complete ingestion lifecycle including document intake, parsing/chunking, embeddings, indexing, vector-store population/storage processing, retrieval preparation, and related RAG ingestion activities.**
 - Decision conditions: **Review every 90 days. Expiry or review due date does not automatically enable any ingestion or RAG capability. Reopening requires explicit governance approval.**
 - Confirmation that the full listed lifecycle is governed by this outcome: **Yes**
-- Immutable repository reference after completion: **Owner Input Required**
+- Immutable repository reference after completion: **`8044f8a0084bfd9f9f801309ddee84f718976c1d`**
 
-The owner decision is recorded. This evidence remains `Missing / Not Reviewed` until the immutable commit containing this completed decision is linked.
+All mandatory owner fields and the immutable content reference are complete. Evidence status is `Received / Not Reviewed`; reviewer assessment remains required.
