@@ -129,3 +129,44 @@ This response uses existing approved governance records and immutable repository
 - Clarification or rejection: none
 - Evidence marked `Approved`: none
 - Current SIR-02 status: **Blocking — three Security-owned decision/approval records and 9 assignments from Data Governance, Platform Operations, and Knowledge Management remain missing.**
+
+## Security owner decision submission
+
+- Owner: **GANTUMUR Erdenedalai — Founder / Administrator**
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Decision date: **2026-09-25**
+- Immutable owner-decision content commit: `10423e60524467e678cacafce0724c66ff3ac616`
+- Review status: **Not Reviewed**
+
+### SIR02-GOV-01
+
+- Outcome: `Approved`
+- Decision record: `decisions/SIR02-GOV-01-SECURITY-JOINT-DECISION-REVIEW-v1.0.md`
+- Owner statement: **Security approves the reduced Initial Shadow scope with RAG excluded, provided strict tenant isolation, trusted-context validation, ownership validation, authorization, entitlement enforcement, fail-closed behavior, auditability, and network/security boundaries remain mandatory and unchanged.**
+- Conditions: **No wildcard or broad-allow bypass is permitted. Missing, conflicting, or incomplete security configuration must deny/fail closed. This decision does not authorize deployment, Shadow activation, credentials, traffic, ingestion, or production use.**
+- Evidence status: `Received / Not Reviewed`
+
+### SIR02-GOV-04
+
+- Approval status: `Approved`
+- Decision record: `decisions/SIR02-GOV-04-SECURITY-APPROVAL-v1.0.md`
+- Owner statement: **Security formally approves the reduced Initial Shadow scope with RAG excluded under the existing Tenant Security Contract and approved fail-closed security controls.**
+- Conditions: **Strict tenant isolation, trusted context, authorization, entitlement, ownership validation, audit, and no-bypass controls remain mandatory. Any future expansion requires separate governance and security review.**
+- Evidence status: `Received / Not Reviewed`
+
+### SIR02-DEF-01
+
+- Outcome: `Approved`
+- Decision record: `decisions/SIR02-DEF-01-SECURITY-INGESTION-DEFERRAL-ACCEPTANCE-v1.0.md`
+- Owner statement: **Security accepts the SIR-09 ingestion deferral for Initial Shadow Mode. The deferral covers the complete ingestion lifecycle and does not weaken tenant isolation, authorization, entitlement, ownership validation, auditability, or network/security boundaries.**
+- Conditions: **Review every 90 days. Expiry does not automatically enable ingestion or RAG. Reopening requires explicit governance and Security approval.**
+- Evidence status: `Received / Not Reviewed`
+
+### Current disposition
+
+- Moved from `Missing` to `Received`: `SIR02-GOV-01`, `SIR02-GOV-04`, `SIR02-DEF-01`
+- Security evidence `Ready for Review`: 1
+- Security evidence `Received`: 3
+- Security evidence `Missing`: 0
+- Evidence marked `Approved` at evidence-status level: none
+- Current SIR-02 status: **Blocking — three newly received Security decisions require reviewer assessment, and 9 assignments from Data Governance, Platform Operations, and Knowledge Management remain missing.**
