@@ -153,3 +153,25 @@ The Product owner records the SIR-02 decision outcome as **Approved** and approv
 - Evidence still missing: `SIR02-CFG-06`, `SIR02-CFG-07`, `SIR02-DEF-03`
 - No item is marked `Ready for Review` or `Approved` in the evidence register.
 - Current SIR-02 status: **Blocking — Product evidence partially received; reviewer assessment and remaining multi-owner evidence are outstanding.**
+
+## Product evidence review
+
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Review date: **2026-09-25**
+- Evidence snapshot: Git commit `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`
+- Repository-definition version: Pilot agent/profile and RAG-scope policy `1.0.0`
+- Status rule applied: An `Accepted` review moves evidence to `Ready for Review`; it does not mark the evidence `Approved`.
+
+| Evidence ID    | Review result | Verification and concise reason                                                                                                                                                                                                                                                                                                                                                                                  | Acceptance gap                                                                                                 |
+| -------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `SIR02-GOV-01` | `Accepted`    | The Product decision is explicitly `Approved`; the reduced scope excludes RAG, embeddings, vector search, document ingestion, and every RAG-dependent capability. The response is versioned `1.0` and pinned to the immutable evidence snapshot above.                                                                                                                                                           | None for the Product decision evidence. Required approvals from other owner groups remain separate evidence.   |
+| `SIR02-GOV-02` | `Accepted`    | Product explicitly approves reduced initial Shadow scope and prohibits tenant, role, entitlement, caller, or fallback override. The approval is unambiguous, versioned, and snapshot-pinned.                                                                                                                                                                                                                     | None for Product approval. Shadow entry remains blocked by other decisions and evidence.                       |
+| `SIR02-CFG-02` | `Accepted`    | All four canonical profiles in `pilotAgentProfiles` were checked: `general_ibex`, `maintenance-agent`, `asset`, and `warehouse`. Each contains at least one `rag` or `tool_and_rag` intent. IDs exactly match repository definitions; the list is complete and contains no wildcard. Repository feature controls default RAG off, and `RagRuntimeService` fails closed when platform or RAG control is disabled. | Authoritative environment configuration and its effective date remain separately missing under `SIR02-CFG-06`. |
+| `SIR02-CFG-03` | `Accepted`    | The manifest exactly matches all nine intents whose evidence mode is `rag` or `tool_and_rag` across the four versioned profiles. No qualifying intent is omitted, no non-RAG intent is added, and no wildcard is used.                                                                                                                                                                                           | Authoritative configuration enforcement remains separate evidence; no correction to this manifest is required. |
+| `SIR02-CFG-04` | `Accepted`    | `agents/index.ts` deterministically derives capabilities as `intent:${policy.intent}`. All nine capability IDs exactly correspond to the accepted RAG-dependent intents, with no wildcard or extra capability. Direct RAG invocation remains subject to non-caller-controlled feature controls.                                                                                                                  | Authoritative configuration enforcement remains separate evidence; no correction to this manifest is required. |
+
+### Review disposition
+
+- Moved to `Ready for Review`: `SIR02-GOV-01`, `SIR02-GOV-02`, `SIR02-CFG-02`, `SIR02-CFG-03`, `SIR02-CFG-04`
+- Kept `Missing` and `Not Reviewed`: `SIR02-CFG-06`, `SIR02-CFG-07`, `SIR02-DEF-03`
+- Evidence marked `Approved`: none

@@ -1,0 +1,25 @@
+# SIR-02 Evidence Collection Register v1.0
+
+## Scope
+
+This repository register materializes the Product Immediate-stage evidence rows reviewed on 2026-09-25. It does not change other owner assignments, After Config Scope items, or Final Sign-Off items.
+
+- Evidence response: `responses/product-response-v1.0.md`
+- Stable received-evidence snapshot: `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Review date: **2026-09-25**
+
+## Product Immediate-stage evidence
+
+| Evidence ID    | Acceptance criteria                                                                                              | Evidence reference                                                                          | Version                  | Evidence status    | Review result  | Acceptance gap                                                                      |
+| -------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------ | ------------------ | -------------- | ----------------------------------------------------------------------------------- |
+| `SIR02-GOV-01` | Explicit SIR-02 outcome; RAG, embeddings, vector search, ingestion, and dependent capability exclusion stated    | `responses/product-response-v1.0.md`; snapshot `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`   | `1.0`                    | `Ready for Review` | `Accepted`     | Other owner approvals remain separate evidence                                      |
+| `SIR02-GOV-02` | Explicit Product approval of reduced initial Shadow scope and no scope-widening override                         | `responses/product-response-v1.0.md`; snapshot `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`   | `1.0`                    | `Ready for Review` | `Accepted`     | Other Shadow entry decisions remain outstanding                                     |
+| `SIR02-CFG-02` | Complete canonical RAG-excluded agent manifest; no wildcard; repository-verifiable IDs                           | `agents/index.ts`; four agent profiles; snapshot `4779dce2e53e8fdc65ccf947084130b1b22ff2f8` | Agent/RAG policy `1.0.0` | `Ready for Review` | `Accepted`     | Authoritative environment configuration remains `SIR02-CFG-06`                      |
+| `SIR02-CFG-03` | Complete canonical `rag` and `tool_and_rag` intent manifest; no wildcard                                         | Four versioned agent profiles; snapshot `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`          | Agent/RAG policy `1.0.0` | `Ready for Review` | `Accepted`     | Authoritative enforcement evidence remains separate                                 |
+| `SIR02-CFG-04` | Complete canonical capability manifest derived from accepted intents; no wildcard; no caller-controlled widening | `agents/index.ts`; snapshot `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`                      | Agent profile `1.0.0`    | `Ready for Review` | `Accepted`     | Authoritative enforcement evidence remains separate                                 |
+| `SIR02-CFG-06` | Explicit effective date tied to authoritative configuration version                                              | Not supplied                                                                                | `Owner Input Required`   | `Missing`          | `Not Reviewed` | Configuration reference/version and bound effective date required                   |
+| `SIR02-CFG-07` | Explicit review/expiry rule prohibiting automatic RAG enablement                                                 | Not supplied                                                                                | `Owner Input Required`   | `Missing`          | `Not Reviewed` | Review trigger/cadence, expiry behavior, owner, and reapproval rule required        |
+| `SIR02-DEF-03` | Explicit SIR-09 review/expiry rule prohibiting automatic ingestion or RAG enablement                             | Not supplied                                                                                | `Owner Input Required`   | `Missing`          | `Not Reviewed` | SIR-09 review trigger/cadence, expiry behavior, owner, and reapproval rule required |
+
+No evidence in this register is marked `Approved`.
