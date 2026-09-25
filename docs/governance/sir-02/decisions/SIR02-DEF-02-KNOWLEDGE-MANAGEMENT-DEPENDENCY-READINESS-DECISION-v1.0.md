@@ -2,26 +2,26 @@
 
 ## Decision record
 
-| Field                          | Value                                                                         |
-| ------------------------------ | ----------------------------------------------------------------------------- |
-| Evidence ID                    | `SIR02-DEF-02`                                                                |
-| Document                       | `SIR02-DEF-02 — Knowledge Management Dependency and Readiness Decision`       |
-| Version                        | `v1.0`                                                                        |
-| Record status                  | `Owner Decision Recorded — Dependency Hold`                                   |
-| Current evidence status        | `Missing / Not Reviewed`                                                      |
-| Primary owner assignment       | **GANTUMUR Erdenedalai — Founder / Administrator**                            |
-| Reviewer                       | **SODBILEG Erkhembayar — Administrator**                                      |
-| Accountable KM owner/team      | **GANTUMUR Erdenedalai — Founder / Administrator**                            |
-| Decision outcome               | `Approved with dependency hold`                                               |
-| Owner decision statement       | Owner-approved statement below                                                |
-| Decision date                  | `2026-09-25`                                                                  |
-| Scope                          | Knowledge-source governance and ingestion-reopening readiness described below |
-| Conditions                     | Owner-approved dependency hold below                                          |
-| Lifecycle-control status       | `Required before ingestion reopening`                                         |
-| Operational evidence status    | `Required before ingestion reopening`                                         |
-| Lifecycle-control reference    | `Owner Input Required — not yet approved/evidenced`                           |
-| Operational evidence reference | `Owner Input Required — not yet available`                                    |
-| Immutable repository reference | `Owner Input Required — completed-decision commit`                            |
+| Field                              | Value                                                                         |
+| ---------------------------------- | ----------------------------------------------------------------------------- |
+| Evidence ID                        | `SIR02-DEF-02`                                                                |
+| Document                           | `SIR02-DEF-02 — Knowledge Management Dependency and Readiness Decision`       |
+| Version                            | `v1.0`                                                                        |
+| Record status                      | `Owner Decision Recorded — Dependency Hold`                                   |
+| Current evidence status            | `Missing / Not Reviewed`                                                      |
+| Primary owner assignment           | **GANTUMUR Erdenedalai — Founder / Administrator**                            |
+| Reviewer                           | **SODBILEG Erkhembayar — Administrator**                                      |
+| Accountable KM owner/team          | **GANTUMUR Erdenedalai — Founder / Administrator**                            |
+| Decision outcome                   | `Approved with dependency hold`                                               |
+| Owner decision statement           | Owner-approved statement below                                                |
+| Decision date                      | `2026-09-25`                                                                  |
+| Scope                              | Knowledge-source governance and ingestion-reopening readiness described below |
+| Conditions                         | Owner-approved dependency hold below                                          |
+| Lifecycle-control status           | `Required before ingestion reopening`                                         |
+| Operational evidence status        | `Required before ingestion reopening`                                         |
+| Lifecycle-control reference        | `Owner Input Required — not yet approved/evidenced`                           |
+| Operational evidence reference     | `Owner Input Required — not yet available`                                    |
+| Immutable owner-decision reference | `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`                                    |
 
 ## Required dependency and readiness scope
 
@@ -82,7 +82,7 @@ Ingestion cannot reopen until these controls are formally approved and operation
 | Owner supplies a decision outcome and statement                              | `Approved with dependency hold`; statement recorded | `Yes`          |
 | Approved lifecycle-control and operational evidence references are supplied  | `Owner Input Required`                              | `No`           |
 | Decision date and owner-approved conditions are supplied                     | `2026-09-25`; dependency hold recorded              | `Yes`          |
-| Completed decision has an immutable repository reference                     | `Owner Input Required — completed-decision commit`  | `No`           |
+| Owner decision has an immutable repository reference                         | `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`          | `Yes`          |
 
 ## Owner completion
 
@@ -94,6 +94,6 @@ Ingestion cannot reopen until these controls are formally approved and operation
 - Controlled reopening criteria confirmation: **Confirmed**
 - Decision date: **2026-09-25**
 - Conditions: **Lifecycle controls must be approved and operationally evidenced before ingestion reopening.**
-- Immutable repository reference after completion: **Owner Input Required**
+- Immutable owner-decision reference: **`c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`**
 
-The owner decision is complete, but evidence status remains `Missing / Not Reviewed` because approved lifecycle-control and operational-evidence references do not yet exist. An immutable owner-decision reference does not remove this dependency hold.
+The owner decision and immutable reference are complete, but evidence status remains `Missing / Not Reviewed` because approved lifecycle-control and operational-evidence references do not yet exist. The immutable owner-decision reference does not remove this dependency hold.
