@@ -25,7 +25,7 @@ The repository establishes the following supporting controls:
 - `.env.example` is illustrative only. `.env` and `.env.*` are ignored, and no untracked local environment file is accepted as governance evidence.
 - Activation requires a later authorized deployment and change process.
 
-The Platform Operations owner has now supplied explicit custody and configuration-acceptance decisions. Those decisions assign operational and environment/configuration accountability, but they do not name the mandatory accountable secret-management owner. Both evidence items therefore remain incomplete and fail closed.
+The Platform Operations owner has supplied explicit custody and configuration-acceptance decisions and named the accountable secret-management owner. The completed decisions are immutable at commit `8cd55532ef4052c13eaaca42ac5c8299c18133ed`. Both evidence items are complete and awaiting reviewer acceptance.
 
 ## Evidence submissions
 
@@ -40,12 +40,12 @@ The Platform Operations owner has now supplied explicit custody and configuratio
   - external secret-provider abstraction: `1bc863768062a267e1d21583ed453a41b765bc9e`.
 - Formal owner/custodian recorded: **Yes**. **GANTUMUR Erdenedalai — Founder / Administrator** accepted Platform Operations custody for the `Shadow` environment on `2026-09-25`.
 - Versioned, controlled, fail-closed handling accepted: **Yes**. The owner decision accepts configuration integrity, drift control, versioned change management, and environment configuration governance.
-- Secret/configuration management ownership present: **Incomplete**. The owner requires external management through approved mechanisms, but no accountable secret-management owner or managed team is named.
-- Platform Operations-owned requirement satisfied: **No**.
-- Evidence status: `Missing / Not Reviewed`.
+- Secret/configuration management ownership present: **Yes**. **GANTUMUR Erdenedalai — Founder / Administrator** is accountable for the approved governance duties recorded in the completed decision.
+- Platform Operations-owned requirement satisfied: **Yes, pending reviewer acceptance**.
+- Evidence status: `Received / Not Reviewed`.
 - Owner decision record: `decisions/SIR02-CFG-05-PLATFORM-OPERATIONS-CUSTODY-DECISION-v1.0.md`.
-- Immutable owner-decision reference: `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`.
-- Exact remaining gap: Platform Operations must name the accountable secret-management owner or managed team.
+- Immutable completed-decision reference: `8cd55532ef4052c13eaaca42ac5c8299c18133ed`.
+- Exact remaining gap: reviewer acceptance only.
 
 ### SIR02-CFG-06 — Authoritative Shadow environment configuration acceptance
 
@@ -64,17 +64,18 @@ The Platform Operations owner has now supplied explicit custody and configuratio
 - Artifact accepted by Platform Operations: **Yes**, through the explicit owner decision dated `2026-09-25`.
 - Live activation evidence: **None, as required**. No deployment, credentials, secrets, traffic, or live environment change is evidenced or authorized.
 - `.env.example` or local `.env` accepted as authority: **No**.
-- Platform Operations-owned requirement satisfied: **No**.
-- Evidence status: `Missing / Not Reviewed`.
+- Platform Operations-owned requirement satisfied: **Yes, pending reviewer acceptance**.
+- Evidence status: `Received / Not Reviewed`.
 - Owner decision record: `decisions/SIR02-CFG-06-PLATFORM-OPERATIONS-CONFIGURATION-ACCEPTANCE-v1.0.md`.
-- Immutable owner-decision reference: `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`.
+- Immutable completed-decision reference: `8cd55532ef4052c13eaaca42ac5c8299c18133ed`.
 - Exact artifact identity, effective date, `Proposed / Not Activated` state, environment/configuration owner, and separate activation-process requirement: **Confirmed**.
-- Exact remaining gap: Platform Operations must name the accountable secret-management owner or managed team.
+- Secret-management owner: **GANTUMUR Erdenedalai — Founder / Administrator**.
+- Exact remaining gap: reviewer acceptance only.
 
 ## Response disposition
 
-- Moved from `Missing` to `Received`: none
-- Remaining `Missing / Not Reviewed`: `SIR02-CFG-05`, `SIR02-CFG-06`
+- Moved from `Missing` to `Received`: `SIR02-CFG-05`, `SIR02-CFG-06`
+- Remaining `Missing / Not Reviewed`: none for Platform Operations
 - Moved directly to `Ready for Review`: none
 - Evidence marked `Approved`: none
-- Current SIR-02 status: **Blocking — both Platform Operations assignments and three Knowledge Management assignments remain missing.**
+- Current SIR-02 status: **Blocking — both Platform Operations assignments await review and three Knowledge Management assignments remain missing.**

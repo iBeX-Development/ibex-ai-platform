@@ -7,8 +7,8 @@
 | Evidence ID                                      | `SIR02-CFG-06`                                                     |
 | Document                                         | `SIR02-CFG-06 — Platform Operations Configuration Acceptance`      |
 | Version                                          | `v1.0`                                                             |
-| Record status                                    | `Owner Decision Recorded — Evidence Incomplete`                    |
-| Current evidence status                          | `Missing / Not Reviewed`                                           |
+| Record status                                    | `Owner Decision Complete — Awaiting Review`                        |
+| Current evidence status                          | `Received / Not Reviewed`                                          |
 | Platform Operations owner                        | **GANTUMUR Erdenedalai — Founder / Administrator**                 |
 | Reviewer                                         | **SODBILEG Erkhembayar — Administrator**                           |
 | Configuration ID                                 | `SIR02-SHADOW-RAG-DISABLEMENT`                                     |
@@ -24,7 +24,7 @@
 | Later authorized activation-process confirmation | `Confirmed`                                                        |
 | Decision date                                    | `2026-09-25`                                                       |
 | Conditions                                       | Owner-approved conditions below                                    |
-| Immutable owner-decision reference               | `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`                         |
+| Immutable completed-decision reference           | `8cd55532ef4052c13eaaca42ac5c8299c18133ed`                         |
 
 ## Required operational acceptance
 
@@ -90,7 +90,7 @@ This assignment creates governance ownership only. It does not create or rotate 
 | Environment/configuration and secret-management owners are supplied           | Named accountable owner recorded                     | `Yes`          |
 | Exact artifact identity and later activation process are explicitly confirmed | Owner-approved statement and exact artifact identity | `Yes`          |
 | Decision date and conditions are supplied                                     | `2026-09-25`; owner-approved conditions              | `Yes`          |
-| Owner acceptance has an immutable repository reference                        | `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`           | `Yes`          |
+| Completed acceptance has an immutable repository reference                    | `8cd55532ef4052c13eaaca42ac5c8299c18133ed`           | `Yes`          |
 
 ## Owner completion
 
@@ -101,6 +101,6 @@ This assignment creates governance ownership only. It does not create or rotate 
 - Confirmation that activation requires a later authorized deployment/change process: **Confirmed**
 - Decision date: **2026-09-25**
 - Conditions: **Owner-approved conditions recorded above**
-- Immutable owner-decision reference: **`333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`**
+- Immutable completed-decision reference: **`8cd55532ef4052c13eaaca42ac5c8299c18133ed`**
 
-All mandatory owner-decision fields are supplied. Evidence status remains unchanged until the completed acceptance receives an immutable repository reference and the evidence register is reconciled.
+All mandatory owner-decision fields and the immutable completed-acceptance reference are supplied. Evidence status is `Received / Not Reviewed`; reviewer acceptance remains required before `Ready for Review`.

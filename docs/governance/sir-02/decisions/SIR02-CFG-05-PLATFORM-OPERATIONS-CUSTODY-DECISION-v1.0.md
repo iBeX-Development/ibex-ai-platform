@@ -7,8 +7,8 @@
 | Evidence ID                                | `SIR02-CFG-05`                                                      |
 | Document                                   | `SIR02-CFG-05 — Platform Operations Custody and Ownership Decision` |
 | Version                                    | `v1.0`                                                              |
-| Record status                              | `Owner Decision Recorded — Evidence Incomplete`                     |
-| Current evidence status                    | `Missing / Not Reviewed`                                            |
+| Record status                              | `Owner Decision Complete — Awaiting Review`                         |
+| Current evidence status                    | `Received / Not Reviewed`                                           |
 | Platform Operations owner                  | **GANTUMUR Erdenedalai — Founder / Administrator**                  |
 | Reviewer                                   | **SODBILEG Erkhembayar — Administrator**                            |
 | Custody/ownership decision                 | `Approved`                                                          |
@@ -20,7 +20,7 @@
 | Secret/configuration-management ownership  | **GANTUMUR Erdenedalai — Founder / Administrator**                  |
 | Decision date                              | `2026-09-25`                                                        |
 | Operating conditions                       | Owner-approved conditions below                                     |
-| Immutable owner-decision reference         | `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`                          |
+| Immutable completed-decision reference     | `8cd55532ef4052c13eaaca42ac5c8299c18133ed`                          |
 
 ## Required custody and control scope
 
@@ -86,7 +86,7 @@ This assignment creates governance ownership only. It does not create or rotate 
 | Accountable owner/team and environment scope are supplied                     | Named owner; `Shadow`                         | `Yes`          |
 | Integrity, drift, change-control, and secret-management duties are assigned   | Named owner and responsibilities recorded     | `Yes`          |
 | Decision date and operating conditions are supplied                           | `2026-09-25`; owner-approved conditions       | `Yes`          |
-| Owner decision has an immutable repository reference                          | `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`    | `Yes`          |
+| Completed decision has an immutable repository reference                      | `8cd55532ef4052c13eaaca42ac5c8299c18133ed`    | `Yes`          |
 
 ## Owner completion
 
@@ -99,6 +99,6 @@ This assignment creates governance ownership only. It does not create or rotate 
 - Secret/configuration-management ownership: **GANTUMUR Erdenedalai — Founder / Administrator**
 - Decision date: **2026-09-25**
 - Operating conditions: **Owner-approved conditions recorded above**
-- Immutable owner-decision reference: **`333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`**
+- Immutable completed-decision reference: **`8cd55532ef4052c13eaaca42ac5c8299c18133ed`**
 
-All mandatory owner-decision fields are supplied. Evidence status remains unchanged until the completed decision receives an immutable repository reference and the evidence register is reconciled.
+All mandatory owner-decision fields and the immutable completed-decision reference are supplied. Evidence status is `Received / Not Reviewed`; reviewer acceptance remains required before `Ready for Review`.
