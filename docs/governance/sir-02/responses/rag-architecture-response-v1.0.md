@@ -106,3 +106,30 @@ This response uses existing approved governance records and immutable repository
 - Moved to `Ready for Review`: none
 - Evidence marked `Approved`: none
 - Current SIR-02 status: **Blocking — RAG Architecture approvals and the formal SIR-09 Deferred decision remain missing, alongside evidence assigned to other owner groups.**
+
+## RAG Architecture evidence review
+
+- Reviewer: **SODBILEG Erkhembayar — Administrator**
+- Review date: **2026-09-25**
+- Agent-definition snapshot: Git commit `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`
+- Configuration artifact snapshot: Git commit `52e437f053cdca25492410cecbd182ebc19a4afd`
+- Product approval snapshot: Git commit `df112abde861a908fd5838ba10dad54e96053b65`
+- Product evidence review snapshot: Git commit `4b7fcb77343f5009f5b521f6d580ab6088d3c9f4`
+- RAG Architecture response snapshot: Git commit `baa007af56cbb0aa70ccbb64618291c13c27369c`
+- Status rule applied: An `Accepted` result moves received evidence to `Ready for Review`; it does not mark evidence `Approved`.
+
+| Evidence ID    | Review result | Verification and concise reason                                                                                                                                                                                                                                                                                               | Acceptance gap                                                                                                                                |
+| -------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SIR02-CFG-02` | `Accepted`    | The immutable agent snapshot and configuration artifact contain exactly `general_ibex`, `maintenance-agent`, `asset`, and `warehouse`. All four profiles are version `1.0.0`, each has RAG-dependent intent scope, and neither manifest contains a wildcard.                                                                  | None for this evidence item.                                                                                                                  |
+| `SIR02-CFG-03` | `Accepted`    | All nine intents whose profile evidence mode is `rag` or `tool_and_rag` are present exactly once in the immutable configuration artifact. No wildcard, implicit broad inclusion, omitted qualifying intent, or added non-RAG intent was found.                                                                                | None for this evidence item.                                                                                                                  |
+| `SIR02-CFG-04` | `Accepted`    | Each of the nine capability IDs exactly equals `intent:${policy.intent}` for its excluded RAG intent. The artifact disables every listed capability, sets RAG fallback false, prohibits fallback or tenant/role/entitlement/caller/agent/model/provider enablement, and fails closed on missing or conflicting configuration. | None for this evidence item.                                                                                                                  |
+| `SIR02-CFG-07` | `Accepted`    | The versioned Product approval records `Every 90 days`, the accountable reapproval owner, and decision date `2026-09-25`. Review or expiry cannot enable RAG; re-enablement requires a new explicit governance approval and approved configuration change.                                                                    | None for this evidence item.                                                                                                                  |
+| `SIR02-DEF-02` | `Accepted`    | The accountable SIR-09 owner is explicit and versioned. Supporting Product evidence defines the deferred ingestion, embedding, indexing, storage, and related RAG scope and prohibits automatic reopening; the configuration artifact disables ingestion, embedding, and vector-store access. No contradiction was found.     | The signed SIR-09 `Deferred` decision remains separately missing under `SIR02-DEF-01`; it does not invalidate this owner-assignment evidence. |
+
+### Review disposition
+
+- Moved from `Received` to `Ready for Review`: `SIR02-CFG-02`, `SIR02-CFG-03`, `SIR02-CFG-04`, `SIR02-CFG-07`, `SIR02-DEF-02`
+- Remains `Received`: none
+- Remains `Missing / Not Reviewed`: `SIR02-GOV-01`, `SIR02-GOV-03`, `SIR02-DEF-01`
+- Evidence marked `Approved`: none
+- Current SIR-02 status: **Blocking — the joint RAG Architecture decision review, signed RAG Architecture approval, signed SIR-09 Deferred decision, and evidence assigned to other owner groups remain missing.**
