@@ -19,7 +19,7 @@
 | Current activation status                        | `Proposed / Not Activated`                                         |
 | Operational acceptance                           | `Approved`                                                         |
 | Accountable environment/configuration owner      | **GANTUMUR Erdenedalai — Founder / Administrator**                 |
-| Secret-management owner                          | `Owner Input Required`                                             |
+| Secret-management owner                          | **GANTUMUR Erdenedalai — Founder / Administrator**                 |
 | Exact artifact-identity confirmation             | `Confirmed`                                                        |
 | Later authorized activation-process confirmation | `Confirmed`                                                        |
 | Decision date                                    | `2026-09-25`                                                       |
@@ -47,6 +47,20 @@ The Platform Operations owner must explicitly:
 
 > No deployment, Shadow activation, secret change, credential creation, traffic enablement, or production use is authorized by this acceptance.
 
+## Secret-management ownership
+
+**GANTUMUR Erdenedalai — Founder / Administrator**, decision date `2026-09-25`, is accountable for:
+
+- approved secret-management governance;
+- credential and secret custody coordination;
+- ensuring secrets are not committed to the repository;
+- ensuring `.env.example` is not treated as authoritative runtime configuration;
+- ensuring untracked local `.env` files are not treated as governance evidence;
+- ensuring secret and configuration changes follow approved versioned change control;
+- preserving fail-closed behavior when required secret or configuration inputs are missing or invalid.
+
+This assignment creates governance ownership only. It does not create or rotate any secret, credential, key, token, or live environment value.
+
 ## Mandatory control conditions
 
 - `.env.example` is not authoritative runtime configuration.
@@ -73,7 +87,7 @@ The Platform Operations owner must explicitly:
 | Artifact remains proposed and not activated                                   | Versioned artifact and governance records            | `Yes`          |
 | No local environment file is treated as authority                             | Mandatory control conditions above                   | `Yes`          |
 | Platform Operations supplies explicit acceptance/rejection                    | `Approved`                                           | `Yes`          |
-| Environment/configuration and secret-management owners are supplied           | Environment owner named; secret owner unnamed        | `No`           |
+| Environment/configuration and secret-management owners are supplied           | Named accountable owner recorded                     | `Yes`          |
 | Exact artifact identity and later activation process are explicitly confirmed | Owner-approved statement and exact artifact identity | `Yes`          |
 | Decision date and conditions are supplied                                     | `2026-09-25`; owner-approved conditions              | `Yes`          |
 | Owner acceptance has an immutable repository reference                        | `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`           | `Yes`          |
@@ -82,11 +96,11 @@ The Platform Operations owner must explicitly:
 
 - Operational acceptance: **Approved**
 - Accountable environment/configuration owner: **GANTUMUR Erdenedalai — Founder / Administrator**
-- Secret-management owner: **Owner Input Required**
+- Secret-management owner: **GANTUMUR Erdenedalai — Founder / Administrator**
 - Exact artifact-identity confirmation: **Confirmed**
 - Confirmation that activation requires a later authorized deployment/change process: **Confirmed**
 - Decision date: **2026-09-25**
 - Conditions: **Owner-approved conditions recorded above**
 - Immutable owner-decision reference: **`333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`**
 
-Evidence status remains `Missing / Not Reviewed` until the accountable secret-management owner is supplied. A later linkage/status commit does not make the incomplete acceptance acceptable.
+All mandatory owner-decision fields are supplied. Evidence status remains unchanged until the completed acceptance receives an immutable repository reference and the evidence register is reconciled.

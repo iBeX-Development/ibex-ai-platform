@@ -17,7 +17,7 @@
 | Configuration integrity responsibility     | Accepted by Platform Operations owner                               |
 | Drift-detection responsibility             | Accepted by Platform Operations owner                               |
 | Change-control responsibility              | Accepted by Platform Operations owner                               |
-| Secret/configuration-management ownership  | `Owner Input Required — accountable secret-management owner`        |
+| Secret/configuration-management ownership  | **GANTUMUR Erdenedalai — Founder / Administrator**                  |
 | Decision date                              | `2026-09-25`                                                        |
 | Operating conditions                       | Owner-approved conditions below                                     |
 | Immutable owner-decision reference         | `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`                          |
@@ -43,6 +43,20 @@ The Platform Operations owner decision must explicitly accept, reject, or defer 
 
 > Secret and configuration material must remain externally managed through approved mechanisms. .env.example and untracked local .env files are not authoritative operational configuration. Missing, conflicting, or incomplete configuration must fail closed. This decision does not authorize deployment, activation, credential creation, traffic enablement, or production use.
 
+## Secret-management ownership
+
+**GANTUMUR Erdenedalai — Founder / Administrator**, decision date `2026-09-25`, is accountable for:
+
+- approved secret-management governance;
+- credential and secret custody coordination;
+- ensuring secrets are not committed to the repository;
+- ensuring `.env.example` is not treated as authoritative runtime configuration;
+- ensuring untracked local `.env` files are not treated as governance evidence;
+- ensuring secret and configuration changes follow approved versioned change control;
+- preserving fail-closed behavior when required secret or configuration inputs are missing or invalid.
+
+This assignment creates governance ownership only. It does not create or rotate any secret, credential, key, token, or live environment value.
+
 ## Mandatory control conditions
 
 - `.env.example` is illustrative and is not authoritative runtime configuration.
@@ -63,16 +77,16 @@ The Platform Operations owner decision must explicitly accept, reject, or defer 
 
 ## Acceptance-criteria mapping
 
-| Criterion                                                                     | Current evidence                                  | Satisfied now? |
-| ----------------------------------------------------------------------------- | ------------------------------------------------- | -------------- |
-| Versioned Platform Operations custody record exists                           | This `v1.0` record                                | `Yes`          |
-| Required integrity, drift, change, secret, and fail-closed duties are defined | Required scope and mandatory conditions above     | `Yes`          |
-| No activation or operational authority is implied                             | Mandatory control conditions above                | `Yes`          |
-| Owner supplies explicit custody/ownership decision                            | `Approved`                                        | `Yes`          |
-| Accountable owner/team and environment scope are supplied                     | Named owner; `Shadow`                             | `Yes`          |
-| Integrity, drift, change-control, and secret-management duties are assigned   | Operational duties accepted; secret owner unnamed | `No`           |
-| Decision date and operating conditions are supplied                           | `2026-09-25`; owner-approved conditions           | `Yes`          |
-| Owner decision has an immutable repository reference                          | `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`        | `Yes`          |
+| Criterion                                                                     | Current evidence                              | Satisfied now? |
+| ----------------------------------------------------------------------------- | --------------------------------------------- | -------------- |
+| Versioned Platform Operations custody record exists                           | This `v1.0` record                            | `Yes`          |
+| Required integrity, drift, change, secret, and fail-closed duties are defined | Required scope and mandatory conditions above | `Yes`          |
+| No activation or operational authority is implied                             | Mandatory control conditions above            | `Yes`          |
+| Owner supplies explicit custody/ownership decision                            | `Approved`                                    | `Yes`          |
+| Accountable owner/team and environment scope are supplied                     | Named owner; `Shadow`                         | `Yes`          |
+| Integrity, drift, change-control, and secret-management duties are assigned   | Named owner and responsibilities recorded     | `Yes`          |
+| Decision date and operating conditions are supplied                           | `2026-09-25`; owner-approved conditions       | `Yes`          |
+| Owner decision has an immutable repository reference                          | `333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`    | `Yes`          |
 
 ## Owner completion
 
@@ -82,9 +96,9 @@ The Platform Operations owner decision must explicitly accept, reject, or defer 
 - Configuration integrity responsibility: **Accepted by Platform Operations owner**
 - Drift-detection responsibility: **Accepted by Platform Operations owner**
 - Change-control responsibility: **Accepted by Platform Operations owner**
-- Secret/configuration-management ownership: **Owner Input Required — accountable secret-management owner**
+- Secret/configuration-management ownership: **GANTUMUR Erdenedalai — Founder / Administrator**
 - Decision date: **2026-09-25**
 - Operating conditions: **Owner-approved conditions recorded above**
 - Immutable owner-decision reference: **`333daeeaf0579c48f5fc9aac3d300c6f0117ac9b`**
 
-Evidence status remains `Missing / Not Reviewed` until the accountable secret-management owner is supplied. A later linkage/status commit does not make the incomplete decision acceptable.
+All mandatory owner-decision fields are supplied. Evidence status remains unchanged until the completed decision receives an immutable repository reference and the evidence register is reconciled.
