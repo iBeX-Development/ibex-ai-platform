@@ -2,17 +2,26 @@
 
 ## Document control
 
-| Field                 | Value                                                   |
-| --------------------- | ------------------------------------------------------- |
-| Document              | `SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX`      |
-| Version               | `v1.0`                                                  |
-| Status                | `Proposed / Not Executed`                               |
-| Evidence subject      | `SIR02-DEF-02`                                          |
-| Execution plan        | `SIR-02-KM-OPERATIONAL-EVIDENCE-EXECUTION-PLAN-v1.0.md` |
-| Approved baseline     | `48407614af13e8f8239a9e63454c013dc43e432b`              |
-| Baseline approval     | `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`              |
-| Reviewer              | **SODBILEG Erkhembayar — Administrator**                |
-| Runtime authorization | `None`                                                  |
+| Field                        | Value                                                       |
+| ---------------------------- | ----------------------------------------------------------- |
+| Document                     | `SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX`          |
+| Version                      | `v1.0`                                                      |
+| Status                       | `Approved for Controlled Evidence Execution / Not Executed` |
+| Evidence subject             | `SIR02-DEF-02`                                              |
+| Owner                        | **GANTUMUR Erdenedalai — Founder / Administrator**          |
+| Reviewer                     | **SODBILEG Erkhembayar — Administrator**                    |
+| Decision date                | `2026-09-25`                                                |
+| Approval status              | `Approved for Controlled Evidence Execution`                |
+| Immutable artifact reference | `37212d5869709f85256618e6b03fffb0622a2049`                  |
+| Immutable approval reference | `Pending approval-content commit linkage`                   |
+| Execution plan               | `SIR-02-KM-OPERATIONAL-EVIDENCE-EXECUTION-PLAN-v1.0.md`     |
+| Approved baseline            | `48407614af13e8f8239a9e63454c013dc43e432b`                  |
+| Baseline approval            | `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`                  |
+| Runtime authorization        | `None`                                                      |
+
+## Formal governance approval
+
+The approval statement and conditions recorded in the approved Execution Plan apply equally to this Acceptance Matrix. They authorize only controlled evidence execution under the Matrix classifications and preserve all 15 evidence statuses as `Not Executed` until actual immutable execution evidence is independently reviewed.
 
 ## Classification and acceptance matrix
 

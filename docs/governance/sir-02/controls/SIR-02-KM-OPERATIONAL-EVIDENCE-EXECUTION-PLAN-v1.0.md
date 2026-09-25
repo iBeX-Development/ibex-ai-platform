@@ -6,15 +6,40 @@
 | ---------------------------- | ------------------------------------------------------------------------- |
 | Document                     | `SIR-02-KM-OPERATIONAL-EVIDENCE-EXECUTION-PLAN`                           |
 | Version                      | `v1.0`                                                                    |
-| Status                       | `Proposed / Not Executed`                                                 |
+| Status                       | `Approved for Controlled Evidence Execution / Not Executed`               |
 | Evidence subject             | `SIR02-DEF-02`                                                            |
+| Owner                        | **GANTUMUR Erdenedalai — Founder / Administrator**                        |
+| Reviewer                     | **SODBILEG Erkhembayar — Administrator**                                  |
+| Decision date                | `2026-09-25`                                                              |
+| Approval status              | `Approved for Controlled Evidence Execution`                              |
+| Immutable artifact reference | `37212d5869709f85256618e6b03fffb0622a2049`                                |
+| Immutable approval reference | `Pending approval-content commit linkage`                                 |
 | Control baseline             | `SIR-02 Knowledge Management Lifecycle-Control Baseline v1.0`             |
 | Baseline reference           | `48407614af13e8f8239a9e63454c013dc43e432b`                                |
 | Governance approval          | `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`                                |
 | Governance linkage           | `9f9ab7b94f669581ef107aefddc2f10dff4b7516`                                |
-| Evidence reviewer            | **SODBILEG Erkhembayar — Administrator**                                  |
 | Environment                  | Isolated deterministic fixtures or separately approved non-live test only |
 | Live ingestion/RAG authority | `None`                                                                    |
+
+## Formal governance approval
+
+**Approval statement:**
+
+> The SIR-02 Knowledge Management Operational Evidence Execution Plan v1.0 and Acceptance Matrix v1.0 are approved as the controlling plan for producing and reviewing the 15 mandatory operational-evidence items required by SIR02-DEF-02.
+
+**Approval conditions:**
+
+- Execution is limited to isolated, deterministic, non-live test fixtures and approved non-live operational evidence.
+- No production or live Shadow ingestion may be enabled.
+- RAG, embeddings, indexing, vector-store population, retrieval, and production traffic remain disabled.
+- Test data must be synthetic or explicitly approved for test use.
+- No cross-tenant data use is permitted.
+- Tenant isolation and fail-closed behavior remain mandatory.
+- `OE-08` and `OE-15` require separately approved non-live operational-environment controls before execution.
+- Evidence must not be marked `Passed`, `Accepted`, or equivalent until the actual execution result and immutable evidence reference exist.
+- Existing repository evidence may only be reused where the approved Acceptance Matrix explicitly permits it.
+- Any required code change must be test-only unless separately approved through the normal implementation/change process.
+- This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
 
 ## Purpose
 
