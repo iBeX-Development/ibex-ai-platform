@@ -152,6 +152,8 @@ Each produced evidence package must contain:
 - **Status:** `Executed / Awaiting Independent Review`
 - **Execution evidence:** `operational-evidence/oe-03/SIR-02-KM-OE-03-SOURCE-APPROVAL-RECORD-v1.0.json`; SHA-256 `5a87f1f0e0dbfca6a56e53d0bb1485d2ee10bd59cf0d6efa796c56a271b3858c`; immutable evidence commit `fa51d26ab43abd53f354d544da7ab5bfca394276`.
 - **Execution lineage:** pre-artifact attempt sequence `0001` stopped at final aggregate validation because PowerShell did not resolve ordered observation properties; no artifact was written and no acceptance-criteria failure was observed. Corrected explicit aggregation ran under sequence `0002` and the tooling failure remains recorded in the evidence artifact.
+- **Independent review:** `operational-evidence/oe-03/SIR-02-KM-OE-03-INDEPENDENT-REVIEW-v1.0.md`; result `Needs Clarification`; immutable review commit `79f2d74ab31335e2487fa4e6c7dce4158c9a7b1f`.
+- **Clarification gap:** OE-01 already records this exact source/version as approved at `2026-09-25T05:22:58Z`, while OE-03 declares a later pending-to-approved transition at `2026-09-25T07:59:08Z`. A new execution sequence must reconcile the immutable lifecycle chronology before acceptance.
 
 ### SIR02-KM-OE-04 — Source version and lineage evidence
 
