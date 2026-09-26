@@ -1,4 +1,8 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
+import { writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { isAbsolute, relative, resolve } from 'node:path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
   FixtureExecutionFailure,
   OE13_NAMESPACE,
@@ -18,12 +22,182 @@ import {
   type SourceRecord,
   type Submission
 } from '../testing/sir02-km-oe13-duplicate-conflict-fixture.js';
+import {
+  LIVE_OPERATION_CATEGORIES,
+  observeScenario,
+  verifyGuardedEntryPointProbes,
+  verifySyntheticBlockedProbes,
+  type LiveOperationCounters
+} from '../testing/sir02-km-oe13-live-operation-observer.js';
 
 type Inputs = ReturnType<typeof loadOe13Inputs>;
 type Mutate = (state: FixtureState, submission: Submission) => void;
 let inputs: Inputs;
+const caseCaptures: Array<{
+  scenarioId: string;
+  scenarioCategory: string | null;
+  subcaseId: number;
+  compositeIdentity: string;
+  hashAlgorithm: 'SHA-256';
+  authoritativeRegistrySha256: string;
+  observedRegistrySha256: string;
+  authoritativeArtifactInventorySha256: string;
+  observedArtifactInventorySha256: string;
+  conflictPairs: ReturnType<typeof executeSubmission>['conflictPairs'];
+  perTypeUniquePairCounts: ReturnType<typeof executeSubmission>['conflictCounts'];
+  totalUniquePairCount: number;
+  inputImmutableReferences: Submission['record']['immutableRefs'];
+  quarantine: Array<{
+    id: string;
+    conflictType: ConflictCode;
+    humanDecisionRequired: true;
+    humanDecisionHoldReference: string;
+  }>;
+  protectedFieldsDisclosed: number;
+  downstreamCalls: ReturnType<typeof executeSubmission>['processingCalls'];
+  liveOperationCounters: LiveOperationCounters;
+  cleanup: 'Passed';
+}> = [];
+const scenarioSequence = new Map<string, number>();
+let categoryProbeCoverage: Record<string, boolean> | null = null;
+let entryPointProbeCoverage: Record<string, boolean> | null = null;
+const categoryMatchers: Array<[string, string]> = [
+  ['C01', 'loads the accepted immutable baseline'],
+  ['C02', 'duplicate source registration with divergent identity'],
+  ['C03', 'same version with divergent content/checksum'],
+  ['C04', 'conflicting approval record'],
+  ['C05', 'conflicting provenance record'],
+  ['C06', 'conflicting lineage predecessor'],
+  ['C07', 'conflicting supersession record'],
+  ['C08', 'conflicting stale/quarantine record'],
+  ['C09', 'conflicting immutable commit/reference'],
+  ['C10', 'conflicting artifact path/reference'],
+  ['C11', 'wrong-tenant submission'],
+  ['C12', 'cross-tenant injected duplicate/conflict'],
+  ['C13', 'owner substitution/conflict'],
+  ['C14', 'checksum/content-identity conflict'],
+  ['C15', 'chronology conflict and no newest-record precedence'],
+  ['C16', 'ambiguous authoritative state'],
+  ['C17', 'classifies an unapproved unregistered version'],
+  ['C18', 'rejects wildcard'],
+  ['C19', 'keeps the same version in a different synthetic tenant'],
+  ['C20', 'holds a duplicate or conflicting quarantine decision']
+];
+
+function executeObserved(
+  state: FixtureState,
+  submission: Submission
+): ReturnType<typeof executeSubmission> {
+  const scenarioId = expect.getState().currentTestName;
+  if (!scenarioId) throw new Error('OE13_SCENARIO_ID_MISSING');
+  const { result, liveOperationCounters, observerCleanup } = observeScenario(() =>
+    executeSubmission(state, submission)
+  );
+  const subcaseId = (scenarioSequence.get(scenarioId) ?? 0) + 1;
+  scenarioSequence.set(scenarioId, subcaseId);
+  const pairs = result.conflictPairs;
+  expect(new Set(pairs.map((pair) => pair.pairId)).size).toBe(result.totalConflicts);
+  for (const pair of pairs) {
+    expect(pair.leftReferenceId.length).toBeGreaterThan(0);
+    expect(pair.rightReferenceId.length).toBeGreaterThan(0);
+    expect(pair.leftReferenceId <= pair.rightReferenceId).toBe(true);
+    expect(pair.pairId).toBe(
+      createHash('sha256')
+        .update(
+          JSON.stringify([
+            scopedKey(submission.record),
+            pair.leftReferenceId,
+            pair.rightReferenceId
+          ])
+        )
+        .digest('hex')
+    );
+  }
+  for (const hold of result.quarantine)
+    expect(
+      pairs.filter((pair) => pair.conflictType === hold.conflictType).map((pair) => pair.pairId)
+    ).toEqual(hold.affectedPairIds);
+  for (const code of result.conflictCodes) {
+    const count = result.conflictCounts[code];
+    if (count === undefined) throw new Error(`OE13_CAPTURE_CONFLICT_COUNT_MISSING:${code}`);
+    expect(pairs.filter((pair) => pair.conflictType === code)).toHaveLength(count);
+  }
+  for (const value of [
+    result.registryHashBefore,
+    result.registryHashAfter,
+    result.inventoryHashBefore,
+    result.inventoryHashAfter
+  ])
+    expect(value).toMatch(/^[a-f0-9]{64}$/u);
+  expect(Object.values(liveOperationCounters).every((count) => count === 0)).toBe(true);
+  caseCaptures.push({
+    scenarioId,
+    scenarioCategory:
+      categoryMatchers.find(([category, title]) =>
+        scenarioId.includes(category === 'C19' ? title : title.slice(0, 24))
+      )?.[0] ?? null,
+    subcaseId,
+    compositeIdentity: `${submission.record.tenantId}|${submission.record.sourceId}|${submission.record.version}`,
+    hashAlgorithm: 'SHA-256',
+    authoritativeRegistrySha256: result.registryHashBefore,
+    observedRegistrySha256: result.registryHashAfter,
+    authoritativeArtifactInventorySha256: result.inventoryHashBefore,
+    observedArtifactInventorySha256: result.inventoryHashAfter,
+    conflictPairs: structuredClone(pairs),
+    perTypeUniquePairCounts: structuredClone(result.conflictCounts),
+    totalUniquePairCount: result.totalConflicts,
+    inputImmutableReferences: structuredClone(submission.record.immutableRefs),
+    quarantine: result.quarantine.map((hold) => ({
+      id: hold.id,
+      conflictType: hold.conflictType,
+      humanDecisionRequired: hold.humanDecisionRequired,
+      humanDecisionHoldReference: hold.id
+    })),
+    protectedFieldsDisclosed: result.protectedFieldsDisclosed,
+    downstreamCalls: structuredClone(result.processingCalls),
+    liveOperationCounters,
+    cleanup: observerCleanup
+  });
+  return result;
+}
+
 beforeAll(() => {
   inputs = loadOe13Inputs();
+});
+
+afterAll(() => {
+  if (!categoryProbeCoverage || !entryPointProbeCoverage)
+    throw new Error('OE13_OBSERVER_PROBE_COVERAGE_MISSING');
+  const observedCategories = new Set(caseCaptures.map((entry) => entry.scenarioCategory));
+  for (const [category] of categoryMatchers)
+    if (!observedCategories.has(category))
+      throw new Error(`OE13_CAPTURE_CATEGORY_MISSING:${category}`);
+  const output = process.env.SIR02_OE13_SUPPLEMENTAL_REPORT_PATH;
+  if (!output) return;
+  const absolute = resolve(output);
+  const underTemp = relative(tmpdir(), absolute);
+  if (!isAbsolute(output) || underTemp.startsWith('..') || isAbsolute(underTemp))
+    throw new Error('OE13_SUPPLEMENTAL_REPORT_PATH_MUST_BE_TEMP');
+  writeFileSync(
+    absolute,
+    `${JSON.stringify({
+      document: 'OE-13 test-only supplemental measurement report',
+      status: 'Pending bounded runner exit and independent review',
+      originalFormalRun: 'SIR02-KM-OE-13-V1_0-20260926T131738Z-0001',
+      supplementalCaptureTimestampUtc: new Date().toISOString(),
+      namespace: OE13_NAMESPACE,
+      schema: OE13_SCHEMA,
+      testDataClassification: 'Synthetic',
+      measurementBoundary:
+        'Bracketed synchronous OE-13 scenario invocation in isolated test worker',
+      observerCoverage: {
+        categoryProbes: categoryProbeCoverage,
+        guardedEntryPointProbes: entryPointProbeCoverage
+      },
+      cases: caseCaptures
+    })}\n`,
+    { encoding: 'utf8', flag: 'wx' }
+  );
 });
 
 const zeroCalls = {
@@ -125,7 +299,7 @@ function addSameKeyRecord(
 }
 
 function expectConflict(state: FixtureState, submission: Submission, code: ConflictCode): void {
-  const result = executeSubmission(state, submission);
+  const result = executeObserved(state, submission);
   expect(result.decision).toBe('Conflict / Quarantined / Fail Closed');
   expect(result.classification).toBe('CONFLICT');
   expect(result.conflictCodes).toContain(code);
@@ -188,12 +362,49 @@ function expectConflict(state: FixtureState, submission: Submission, code: Confl
 }
 
 describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () => {
+  it('proves every live-operation counter using synthetic blocked probes', () => {
+    const verified = verifySyntheticBlockedProbes();
+    expect(Object.keys(verified).sort()).toEqual([...LIVE_OPERATION_CATEGORIES].sort());
+    expect(Object.values(verified).every(Boolean)).toBe(true);
+    categoryProbeCoverage = verified;
+  });
+
+  it('blocks guarded network, filesystem, process, and environment entry points', () => {
+    const verified = verifyGuardedEntryPointProbes();
+    expect(Object.keys(verified).sort()).toEqual([
+      'child-process',
+      'fetch',
+      'filesystem-write',
+      'http',
+      'net',
+      'process-environment'
+    ]);
+    expect(Object.values(verified).every(Boolean)).toBe(true);
+    entryPointProbeCoverage = verified;
+  });
+
+  it('cleans observer state after normal and exceptional scoped execution', () => {
+    const first = observeScenario(() => 'synthetic-tenant-a');
+    expect(first.result).toBe('synthetic-tenant-a');
+    expect(Object.values(first.liveOperationCounters).every((count) => count === 0)).toBe(true);
+    expect(first.observerCleanup).toBe('Passed');
+    expect(() =>
+      observeScenario(() => {
+        throw new Error('SYNTHETIC_OBSERVER_ERROR');
+      })
+    ).toThrow('SYNTHETIC_OBSERVER_ERROR');
+    const second = observeScenario(() => 'synthetic-tenant-b');
+    expect(second.result).toBe('synthetic-tenant-b');
+    expect(Object.values(second.liveOperationCounters).every((count) => count === 0)).toBe(true);
+    expect(second.observerCleanup).toBe('Passed');
+  });
+
   it('loads the accepted immutable baseline and suppresses repeated exact registration/version submissions', () => {
     const state = createFixture(inputs);
     const original = baselineRecord(state);
     const submission = makeSubmission(state);
     submission.repeatCount = 2;
-    const result = executeSubmission(state, submission);
+    const result = executeObserved(state, submission);
     expect(result.decision).toBe('Exact Duplicate / No Op');
     expect(result.classification).toBe('EXACT_DUPLICATE_NO_OP');
     expect(result.conflictCodes).toEqual([]);
@@ -219,7 +430,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
 
   it('classifies an exact source/version repeat as a no-op in an independent case', () => {
     const state = createFixture(inputs);
-    const result = executeSubmission(state, makeSubmission(state));
+    const result = executeObserved(state, makeSubmission(state));
     expect(result.classification).toBe('EXACT_DUPLICATE_NO_OP');
     expect(result.artifactCountAfter.authoritativeRecords).toBe(
       result.artifactCountBefore.authoritativeRecords
@@ -369,7 +580,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     submission.claimedApproval = 'Approved';
     expect(submission.record.approvalState).toBe('unapproved');
     expect(submission.record.approvalRef).toBeNull();
-    const result = executeSubmission(state, submission);
+    const result = executeObserved(state, submission);
     expect(result.classification).toBe('EXACT_DUPLICATE_NO_OP');
     expect(result.artifactCountAfter.active).toBe(0);
     expect(result.artifactCountAfter.downstreamKnowledge).toBe(0);
@@ -413,7 +624,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     const state = createFixture(inputs);
     const submission = distinct(state, OE13_TENANT_B, makeSubmission(state).record.sourceId);
     expect(scopedKey(submission.record)).not.toBe(scopedKey(baselineRecord(state)));
-    const result = executeSubmission(state, submission);
+    const result = executeObserved(state, submission);
     expect(result.classification).toBe('DISTINCT_SCOPED_IDENTITY');
     expect(result.conflictCodes).toEqual([]);
     expect(result.artifactCountAfter.authoritativeRecords).toBe(
@@ -430,7 +641,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     const state = createFixture(inputs);
     const submission = distinct(state, OE13_TENANT_A, 'sir02-test-distinct-source');
     expect(scopedKey(submission.record)).not.toBe(scopedKey(baselineRecord(state)));
-    const result = executeSubmission(state, submission);
+    const result = executeObserved(state, submission);
     expect(result.classification).toBe('DISTINCT_SCOPED_IDENTITY');
     expect(result.conflictCodes).toEqual([]);
     expect(result.artifactCountAfter.authoritativeRecords).toBe(
@@ -473,7 +684,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     const protectedRecord = baselineRecord(state);
     const submission = makeSubmission(state);
     submission.callerTenant = OE13_TENANT_B;
-    const result = executeSubmission(state, submission);
+    const result = executeObserved(state, submission);
     const visible = JSON.stringify(result.callerVisible);
     for (const secret of [
       protectedRecord.registrationId,
@@ -494,12 +705,12 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
   it('gives Tenant B identical caller-visible denial for existing and unknown foreign registrations', () => {
     const existingState = createFixture(inputs);
     const foreignRegistration = baselineRecord(existingState).registrationId;
-    const existing = executeSubmission(
+    const existing = executeObserved(
       existingState,
       unauthorizedTenantBRequest(existingState, foreignRegistration, 'sir02-test-unknown-source')
     );
     const unknownState = createFixture(inputs);
-    const unknown = executeSubmission(
+    const unknown = executeObserved(
       unknownState,
       unauthorizedTenantBRequest(
         unknownState,
@@ -524,7 +735,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
   it('gives Tenant B identical denial for foreign and unknown source/version references', () => {
     const foreignState = createFixture(inputs);
     const foreign = baselineRecord(foreignState);
-    const attempted = executeSubmission(
+    const attempted = executeObserved(
       foreignState,
       unauthorizedTenantBRequest(
         foreignState,
@@ -534,7 +745,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
       )
     );
     const unknownState = createFixture(inputs);
-    const unknown = executeSubmission(
+    const unknown = executeObserved(
       unknownState,
       unauthorizedTenantBRequest(
         unknownState,
@@ -557,14 +768,14 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     const existingState = createFixture(inputs);
     const existingClaim = makeSubmission(existingState);
     existingClaim.callerTenant = OE13_TENANT_B;
-    const existing = executeSubmission(existingState, existingClaim);
+    const existing = executeObserved(existingState, existingClaim);
     const unknownState = createFixture(inputs);
     const unknownClaim = makeSubmission(unknownState);
     unknownClaim.callerTenant = OE13_TENANT_B;
     unknownClaim.record.registrationId = 'sir02-test-registration-unknown';
     unknownClaim.record.sourceId = 'sir02-test-unknown-source';
     unknownClaim.record.version = 'v9.9';
-    const unknown = executeSubmission(unknownState, unknownClaim);
+    const unknown = executeObserved(unknownState, unknownClaim);
     expect(existing.decision).toBe('Conflict / Quarantined / Fail Closed');
     expect(unknown.decision).toBe(existing.decision);
     expect(existing.classification).toBe('CONFLICT');
@@ -581,7 +792,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     const submission = makeSubmission(state);
     submission.record.checksum = 'f'.repeat(64);
     submission.record.contentIdentity = 'f'.repeat(64);
-    const result = executeSubmission(state, submission);
+    const result = executeObserved(state, submission);
     const hold = conflictHold(result, 'CONTENT_IDENTITY_CONFLICT');
     expect(result.conflictCounts.CONTENT_IDENTITY_CONFLICT).toBe(1);
     expect(hold.exactConflictCount).toBe(1);
@@ -598,7 +809,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
       record.checksum = 'e'.repeat(64);
       record.contentIdentity = 'e'.repeat(64);
     });
-    const result = executeSubmission(state, submission);
+    const result = executeObserved(state, submission);
     const hold = conflictHold(result, 'CONTENT_IDENTITY_CONFLICT');
     expect(result.conflictCounts.CONTENT_IDENTITY_CONFLICT).toBe(2);
     expect(hold.exactConflictCount).toBe(2);
@@ -611,7 +822,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     repeated.record.checksum = 'f'.repeat(64);
     repeated.record.contentIdentity = 'f'.repeat(64);
     addSameKeyRecord(repeatedState, repeated.record, () => {});
-    const repeatedResult = executeSubmission(repeatedState, repeated);
+    const repeatedResult = executeObserved(repeatedState, repeated);
     expect(repeatedResult.conflictCounts.CONTENT_IDENTITY_CONFLICT).toBe(1);
     expect(conflictHold(repeatedResult, 'CONTENT_IDENTITY_CONFLICT').affectedPairIds).toHaveLength(
       1
@@ -627,7 +838,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     if (!first || !second) throw new Error('TEST_IMMUTABLE_REFERENCES_MISSING');
     first.commit = 'e'.repeat(40);
     second.commit = 'f'.repeat(40);
-    const result = executeSubmission(state, submission);
+    const result = executeObserved(state, submission);
     const hold = conflictHold(result, 'IMMUTABLE_COMMIT_CONFLICT');
     expect(result.conflictCounts.IMMUTABLE_COMMIT_CONFLICT).toBe(2);
     expect(hold.exactConflictCount).toBe(2);
@@ -659,7 +870,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
       submission.record.checksum = 'f'.repeat(64);
       submission.record.contentIdentity = 'f'.repeat(64);
       submission.record.approvalRef = 'e'.repeat(40);
-      return executeSubmission(state, submission);
+      return executeObserved(state, submission);
     };
     const firstState = build(false);
     const secondState = build(true);
@@ -679,6 +890,10 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     );
     expect(first.conflictCounts).toEqual(second.conflictCounts);
     expect(first.totalConflicts).toBe(second.totalConflicts);
+    expect(first.registryHashBefore).toBe(second.registryHashBefore);
+    expect(first.registryHashAfter).toBe(second.registryHashAfter);
+    expect(first.inventoryHashBefore).toBe(second.inventoryHashBefore);
+    expect(first.inventoryHashAfter).toBe(second.inventoryHashAfter);
     expectClean(firstState.state);
     expectClean(secondState.state);
   });
@@ -690,7 +905,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     const b = makeSubmission(second);
     a.record.checksum = 'd'.repeat(64);
     b.record.checksum = 'd'.repeat(64);
-    expect(executeSubmission(first, a)).toEqual(executeSubmission(second, b));
+    expect(executeObserved(first, a)).toEqual(executeObserved(second, b));
     expectClean(first);
     expectClean(second);
   });
@@ -700,7 +915,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     state.beforeClassify = () => {
       throw new Error('SYNTHETIC_UNEXPECTED_ERROR');
     };
-    expect(() => executeSubmission(state, makeSubmission(state))).toThrow(
+    expect(() => executeObserved(state, makeSubmission(state))).toThrow(
       'SYNTHETIC_UNEXPECTED_ERROR'
     );
     expectClean(state);
@@ -722,7 +937,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     state.spies.ports.embedding();
     const submission = makeSubmission(state);
     submission.record.ownerId = 'sir02-test-invalid-owner';
-    expect(() => executeSubmission(state, submission)).toThrow('DOWNSTREAM_PROCESSING_CALL');
+    expect(() => executeObserved(state, submission)).toThrow('DOWNSTREAM_PROCESSING_CALL');
     expectClean(state);
   });
 
@@ -736,7 +951,7 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
     };
     let thrown: unknown;
     try {
-      executeSubmission(state, makeSubmission(state));
+      executeObserved(state, makeSubmission(state));
     } catch (error) {
       thrown = error;
     }

@@ -89,6 +89,14 @@ export interface QuarantineDecision {
   };
 }
 
+/** Internal evidence only. Never include these references in caller-visible output. */
+export interface ConflictPairEvidence {
+  conflictType: ConflictCode;
+  pairId: string;
+  leftReferenceId: string;
+  rightReferenceId: string;
+}
+
 export interface AuditEvent {
   eventType: 'km_duplicate_conflict_evaluated';
   eventTimestamp: typeof OE13_EVALUATION_TIME;
@@ -116,6 +124,7 @@ export interface SubmissionResult {
     | 'Conflict / Quarantined / Fail Closed';
   classification: 'EXACT_DUPLICATE_NO_OP' | 'DISTINCT_SCOPED_IDENTITY' | 'CONFLICT';
   conflictCodes: ConflictCode[];
+  conflictPairs: ConflictPairEvidence[];
   conflictCounts: Partial<Record<ConflictCode, number>>;
   totalConflicts: number;
   artifactCountBefore: LogicalArtifactCount;
@@ -192,7 +201,12 @@ const keyOf = (record: Pick<SourceRecord, 'tenantId' | 'sourceId' | 'version'>):
 export const scopedKey = keyOf;
 
 const orderedRegistry = (registry: FixtureState['registry']): unknown =>
-  [...registry].sort(([a], [b]) => a.localeCompare(b)).map(([key, records]) => [key, records]);
+  [...registry]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, records]) => [
+      key,
+      [...records].sort((left, right) => hash(left).localeCompare(hash(right)))
+    ]);
 const orderedInventory = (inventory: FixtureState['artifactInventory']): unknown =>
   [...inventory].sort(([a], [b]) => a.localeCompare(b));
 const counts = (state: FixtureState): LogicalArtifactCount => ({
@@ -735,6 +749,17 @@ export function executeSubmission(state: FixtureState, submission: Submission): 
             ? 'EXACT_DUPLICATE_NO_OP'
             : 'DISTINCT_SCOPED_IDENTITY',
       conflictCodes: codes,
+      conflictPairs: observations.map((entry) => {
+        const [leftReferenceId, rightReferenceId] = entry.references;
+        if (!leftReferenceId || !rightReferenceId)
+          throw new Error('OE13_CONFLICT_PAIR_REFERENCE_MISSING');
+        return {
+          conflictType: entry.code,
+          pairId: entry.pairId,
+          leftReferenceId,
+          rightReferenceId
+        };
+      }),
       conflictCounts: byCode,
       totalConflicts: new Set(observations.map((entry) => entry.pairId)).size,
       artifactCountBefore: before,
