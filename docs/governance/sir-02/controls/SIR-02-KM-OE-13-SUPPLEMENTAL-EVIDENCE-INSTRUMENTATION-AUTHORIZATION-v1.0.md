@@ -16,7 +16,7 @@
 | Owner decision statement | Exact owner-supplied statement below |
 | Owner acceptance of conditions | Exact scope and conditions below |
 | Exact authorized file list | The three test-only files below, and no others |
-| Immutable completed-authorization reference | Pending immutable decision commit; linked in a follow-up governance commit |
+| Immutable completed-authorization reference | `70b636fd0f59df0b4bbf1d079463452255f050e6` |
 
 ## Formal owner decision
 

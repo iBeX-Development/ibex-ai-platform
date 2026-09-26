@@ -60,6 +60,7 @@ Authoritative supporting references:
 - OE-11 supplied formal-run reviewer attestation: `operational-evidence/oe-11/SIR-02-KM-OE-11-REVIEWER-ATTESTATION-v1.0.md`; commit `16b1f8de44f6dd82d4f0c62700288b17abfce408`.
 - OE-11 independent review: `operational-evidence/oe-11/SIR-02-KM-OE-11-INDEPENDENT-REVIEW-v1.0.md`; commit `2bb7ebbcfe5d137b34f5cd19b2107ac68e24b1cc`; result and status `Accepted`. The `0001 → 0002` lineage remains preserved.
 - OE-13 formal duplicate/conflict execution: `operational-evidence/oe-13/SIR-02-KM-OE-13-DUPLICATE-CONFLICT-FORMAL-EVIDENCE-0001-v1.0.json`; SHA-256 `908843689d9ccb1b5139d2ab8939a12067d046fc2f04c857cda065ea41544bee`; evidence commit `a0bcdb4ef646b0322cca6e30ef1f8c3b282501c9`; run `SIR02-KM-OE-13-V1_0-20260926T131738Z-0001`; status `Executed / Awaiting Independent Review`. The prior `EPERM` tooling attempt is preserved in the artifact.
+- OE-13 supplemental instrumentation: exact design v1.0 commit `927ef22169cebf33cceec852eb4911364e9f4f44`; test-only implementation authorization decision `70b636fd0f59df0b4bbf1d079463452255f050e6`; clarification review `ca366ee8fd2814695051fa745c6f71236d9e1508` remains open. The authorization permits only the three named test-only files; it does not authorize supplemental execution or change OE-13's `Executed / Awaiting Independent Review` status.
 
 These references remain supporting evidence. Knowledge Management owner decisions are now immutable at commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
 
