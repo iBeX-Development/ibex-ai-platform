@@ -16,7 +16,7 @@
 | Decision date                               | `2026-09-26`                                                |
 | Owner decision statement                    | Exact owner-approved statement below                        |
 | Conditions accepted by owner                | Exact implementation conditions below                       |
-| Immutable completed-authorization reference | `Pending decision-content commit and linkage`               |
+| Immutable completed-authorization reference | `8e1ea66c669a59f93268555ffa5e943d784a1f74`                  |
 
 ## Formal owner authorization
 
@@ -52,6 +52,6 @@ OE-09 immutable-input/reconciliation components and OE-11 fail-closed, downstrea
 | Owner decision date                           | `2026-09-26`                                        |
 | Owner acceptance of conditions                | Exact implementation conditions above               |
 | Independent review of future implementation   | `Not Performed — required before OE-13 execution`   |
-| Immutable completed-decision commit/reference | `Pending decision-content commit and linkage`       |
+| Immutable completed-decision commit/reference | `8e1ea66c669a59f93268555ffa5e943d784a1f74`          |
 
 This decision authorizes implementation only within the two named test-only files. It does not authorize OE-13 execution or acceptance, live or Shadow ingestion, RAG, embedding, indexing, vector storage, retrieval, application/runtime modification, database migration, dependency addition, deployment, configuration, credentials, secrets, traffic, or production use. OE-13 remains `Not Executed`; the other evidence statuses, including `SIR02-DEF-02` at `Missing / Not Reviewed`, remain unchanged. SIR-02 remains `Blocking`.

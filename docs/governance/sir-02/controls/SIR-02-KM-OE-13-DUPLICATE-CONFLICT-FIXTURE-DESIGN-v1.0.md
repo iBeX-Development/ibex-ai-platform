@@ -17,6 +17,7 @@
 | Decision date                    | `2026-09-26`                                          |
 | Immutable exact-design reference | `92f08b23a77202a7773e09ff6b722db402d7c840`            |
 | Implementation authorization     | `Authorized for Test-Only Implementation`             |
+| Authorization decision reference | `8e1ea66c669a59f93268555ffa5e943d784a1f74`            |
 | OE-13 evidence status            | `Not Executed`                                        |
 
 The owner has authorized test-only implementation of the exact `v1.0` design at the immutable reference above, limited to the two named test files and the conditions in the companion authorization record. This document contains no implemented fixture, test run, or OE-13 evidence result.
