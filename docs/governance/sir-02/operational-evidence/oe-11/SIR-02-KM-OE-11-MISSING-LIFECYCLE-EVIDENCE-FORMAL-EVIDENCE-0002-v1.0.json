@@ -1,0 +1,1088 @@
+{
+  "document": "SIR-02-KM-OE-11-MISSING-LIFECYCLE-EVIDENCE-FORMAL-EVIDENCE",
+  "version": "v1.0",
+  "evidence_id": "SIR02-KM-OE-11",
+  "run_id": "SIR02-KM-OE-11-V1_0-20260926T060608Z-0002",
+  "execution_timestamp_utc": "2026-09-26T06:06:08Z",
+  "executor": "GANTUMUR Erdenedalai — Founder / Administrator",
+  "reviewer": "SODBILEG Erkhembayar — Administrator",
+  "execution_repository_commit": "37812de6c90b9e5d8d3f1f5c4e0b89ee87eb838f",
+  "implementation_commit": "203ec33c39bb5c41f80ed0b72692897b808c08f3",
+  "implementation_review_reference": "37812de6c90b9e5d8d3f1f5c4e0b89ee87eb838f",
+  "reviewer_attestation_reference": "ce7fd0442c09ac3b3fe00ec1e72f19466a4b8c02",
+  "design_reference": "1d17f0c1f51386fc8b0161b60a6f30804e0aa9a2",
+  "authorization_reference": "8689da1fa3e3edf2846c267d0a9103d7eb4cfbc0",
+  "authorization_linkage_reference": "81a4559a9957d56c0d4cc48f5772f6ea555b82f1",
+  "lifecycle_control_reference": "48407614af13e8f8239a9e63454c013dc43e432b",
+  "plan_matrix_reference": "37212d5869709f85256618e6b03fffb0622a2049",
+  "gate_a_approval_reference": "84a05702b744a6a710644299381e30e9a9a7aefb",
+  "namespace": "sir02-km-evidence-v1",
+  "fixture_schema": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+  "test_data_classification": "Synthetic",
+  "synthetic_tenant_ids": [
+    "sir02-test-tenant-a",
+    "sir02-test-tenant-b"
+  ],
+  "upstream_evidence_references": [
+    {
+      "id": "SIR02-KM-OE-01",
+      "path": "docs/governance/sir-02/operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json",
+      "evidenceCommit": "44a97a9b387235c67ae70cce24fb32cda0adfe70",
+      "reviewCommit": "a33c8220e595fafad317610e94d09d4f21ecc882",
+      "sha256": "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b"
+    },
+    {
+      "id": "SIR02-KM-OE-02",
+      "path": "docs/governance/sir-02/operational-evidence/oe-02/SIR-02-KM-OE-02-SOURCE-OWNER-TENANT-BINDING-v1.0.json",
+      "evidenceCommit": "9d4bc50d885e50b4fef8580918398f6764742b74",
+      "reviewCommit": "3328353ea04298729b6e68ca46061393edce2148",
+      "sha256": "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71"
+    },
+    {
+      "id": "SIR02-KM-OE-03",
+      "path": "docs/governance/sir-02/operational-evidence/oe-03/SIR-02-KM-OE-03-SOURCE-APPROVAL-RECONSTRUCTION-0003-v1.0.json",
+      "evidenceCommit": "74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a",
+      "reviewCommit": "77ae9c99b2601ec58a50bd20c772326688268e5d",
+      "sha256": "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345"
+    },
+    {
+      "id": "SIR02-KM-OE-04",
+      "path": "docs/governance/sir-02/operational-evidence/oe-04/SIR-02-KM-OE-04-SOURCE-VERSION-LINEAGE-v1.0.json",
+      "evidenceCommit": "eefc0cd3dcb74761af91bd17cfe271e872d88264",
+      "reviewCommit": "f5ce491bfe3a98af66031a64b9b9620c3bc51420",
+      "sha256": "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f"
+    },
+    {
+      "id": "SIR02-KM-OE-05",
+      "path": "docs/governance/sir-02/operational-evidence/oe-05/SIR-02-KM-OE-05-PROVENANCE-TRACE-v1.0.json",
+      "evidenceCommit": "a46a7018a54f2beb918ed9fe72403a6a769644df",
+      "reviewCommit": "3e8d3e1bcf24ccbc52a244bb728964e5cbd340a2",
+      "sha256": "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045"
+    },
+    {
+      "id": "SIR02-KM-OE-06",
+      "path": "docs/governance/sir-02/operational-evidence/oe-06/SIR-02-KM-OE-06-SUPERSESSION-TEST-v1.0.json",
+      "evidenceCommit": "f5cd7cc043c3bb99d9a745a1e546e2be30e7ddcc",
+      "reviewCommit": "6c821280369760a4fc8cdf10b611282ca332dea4",
+      "sha256": "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43"
+    },
+    {
+      "id": "SIR02-KM-OE-07",
+      "path": "docs/governance/sir-02/operational-evidence/oe-07/SIR-02-KM-OE-07-STALE-CONTENT-QUARANTINE-TEST-v1.0.json",
+      "evidenceCommit": "03791c7096adaa0ee5874110f7dae291858efd37",
+      "reviewCommit": "b7932b282833487b1a3eb2ccc6d7ca56015740a5",
+      "sha256": "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+    }
+  ],
+  "test_report": {
+    "path": "docs/governance/sir-02/operational-evidence/oe-11/SIR-02-KM-OE-11-VITEST-RESULTS-0002-v1.0.json",
+    "sha256": "7b35099f427deb1d208168693726f8e173783e3f058a8305a569f3782b6a1c6e",
+    "reporter_start_timestamp_utc": "2026-09-26T06:06:09.501Z",
+    "total": 44,
+    "passed": 44,
+    "failed": 0
+  },
+  "implementation_file_sha256": {
+    "fixture": "486ac363adec84fb89cb4f8b77e6e88fac11b457026c43f71ffd8a37abdc4a75",
+    "test": "1c6a34f4de642ae6fd59db39a0131ca6d182445615026d0f1f5f8d9b66e30478"
+  },
+  "pre_execution_attempt": {
+    "run_id": "SIR02-KM-OE-11-V1_0-20260926T060531Z-0001",
+    "timestamp_utc": "2026-09-26T06:05:31Z",
+    "result": "Tooling launch failure before tests",
+    "observed_error": "'vitest' is not recognized as an internal or external command, operable program or batch file.",
+    "tests_executed": 0,
+    "artifact_created": false
+  },
+  "positive_control": {
+    "id": "P01",
+    "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture P01 validates the complete accepted historical chain without enabling processing",
+    "status": "passed",
+    "decision": "Valid / Non-Operational Test State",
+    "caller_visible_reason": "VALIDATION_ONLY",
+    "complete_valid_chain": true,
+    "downstream_calls": {
+      "parsing_chunking": 0,
+      "embedding": 0,
+      "indexing": 0,
+      "vector_storage": 0,
+      "retrieval_preparation": 0,
+      "other_knowledge_processing": 0
+    },
+    "artifact_count": 0,
+    "protected_fields_disclosed": 0,
+    "cleanup": "Passed"
+  },
+  "negative_categories": 22,
+  "negative_subcases": 33,
+  "scenario_results": [
+    {
+      "category_id": "N01",
+      "subcase": "missing approval record",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N01' 'missing approval record' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "APPROVAL_RECORD_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "APPROVAL_RECORD_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N02",
+      "subcase": "missing approval decision",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N02' 'missing approval decision' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "APPROVAL_DECISION_MISSING_OR_INVALID",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "APPROVAL_DECISION_MISSING_OR_INVALID",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N03",
+      "subcase": "missing approver identity",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N03' 'missing approver identity' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "APPROVER_ID_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "APPROVER_ID_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N04",
+      "subcase": "missing approver authorization context",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N04' 'missing approver authorization context' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "APPROVER_AUTHORITY_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "APPROVER_AUTHORITY_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N04",
+      "subcase": "untrusted approver authorization context",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N04' 'untrusted approver authorization cont…' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "APPROVER_AUTHORITY_INVALID",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "APPROVER_AUTHORITY_INVALID",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N05",
+      "subcase": "missing source version",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N05' 'missing source version' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "VERSION_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "VERSION_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N06",
+      "subcase": "unknown source version",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N06' 'unknown source version' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "VERSION_UNKNOWN_OR_AMBIGUOUS",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "VERSION_UNKNOWN_OR_AMBIGUOUS",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N07",
+      "subcase": "missing provenance origin",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N07' 'missing provenance origin' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "PROVENANCE_ORIGIN_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "PROVENANCE_ORIGIN_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N08",
+      "subcase": "missing provenance reference",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N08' 'missing provenance reference' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "PROVENANCE_REFERENCE_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "PROVENANCE_REFERENCE_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N09",
+      "subcase": "broken provenance hop",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N09' 'broken provenance hop' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "PROVENANCE_CHAIN_BROKEN",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "PROVENANCE_CHAIN_BROKEN",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N10",
+      "subcase": "missing lineage root",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N10' 'missing lineage root' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "LINEAGE_ROOT_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "LINEAGE_ROOT_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N11",
+      "subcase": "missing source checksum",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N11' 'missing source checksum' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "CONTENT_CHECKSUM_INVALID",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "CONTENT_CHECKSUM_INVALID",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N12",
+      "subcase": "invalid source checksum",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N12' 'invalid source checksum' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "CONTENT_CHECKSUM_INVALID",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "CONTENT_CHECKSUM_INVALID",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N12",
+      "subcase": "mismatched source checksum",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N12' 'mismatched source checksum' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "CONTENT_CHECKSUM_CONFLICT",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "CONTENT_CHECKSUM_CONFLICT",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N13",
+      "subcase": "missing immutable commit",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N13' 'missing immutable commit' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "IMMUTABLE_REFERENCE_INVALID",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "IMMUTABLE_REFERENCE_INVALID",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N13",
+      "subcase": "invalid immutable commit",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N13' 'invalid immutable commit' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "IMMUTABLE_REFERENCE_INVALID",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "IMMUTABLE_REFERENCE_INVALID",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N14",
+      "subcase": "missing immutable artifact path",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N14' 'missing immutable artifact path' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "IMMUTABLE_PATH_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "IMMUTABLE_PATH_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N14",
+      "subcase": "invalid immutable artifact path",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N14' 'invalid immutable artifact path' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "IMMUTABLE_REFERENCE_MISMATCH",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "IMMUTABLE_REFERENCE_MISMATCH",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N15",
+      "subcase": "conflicting approval record",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N15' 'conflicting approval record' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "CONFLICTING_APPROVAL_RECORDS",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "CONFLICTING_APPROVAL_RECORDS",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N15",
+      "subcase": "conflicting version record",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N15' 'conflicting version record' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "AMBIGUOUS_AUTHORITATIVE_STATE",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "AMBIGUOUS_AUTHORITATIVE_STATE",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N15",
+      "subcase": "conflicting provenance record",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N15' 'conflicting provenance record' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "CONFLICTING_PROVENANCE_RECORDS",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "CONFLICTING_PROVENANCE_RECORDS",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N16",
+      "subcase": "wildcard approval identifier",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N16' 'wildcard approval identifier' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "APPROVER_ID_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "APPROVER_ID_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N16",
+      "subcase": "wildcard version identifier",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N16' 'wildcard version identifier' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "VERSION_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "VERSION_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N16",
+      "subcase": "wildcard provenance identifier",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N16' 'wildcard provenance identifier' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "PROVENANCE_REFERENCE_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "PROVENANCE_REFERENCE_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N17",
+      "subcase": "wrong-tenant approval evidence",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N17' 'wrong-tenant approval evidence' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "APPROVER_AUTHORITY_INVALID",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "APPROVER_AUTHORITY_INVALID",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N17",
+      "subcase": "wrong-tenant version evidence",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N17' 'wrong-tenant version evidence' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "TENANT_BINDING_CONFLICT",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "TENANT_BINDING_CONFLICT",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N17",
+      "subcase": "wrong-tenant provenance evidence",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N17' 'wrong-tenant provenance evidence' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "PROVENANCE_TENANT_CONFLICT",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "PROVENANCE_TENANT_CONFLICT",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N18",
+      "subcase": "Tenant B attempts to use Tenant A evidence",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N18' 'Tenant B attempts to use Tenant A evi…' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "TENANT_ACCESS_DENIED",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "TENANT_ACCESS_DENIED",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N19",
+      "subcase": "caller-supplied approval assertion",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N19' 'caller-supplied approval assertion' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "UNTRUSTED_AUTHORITY_ASSERTION",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "UNTRUSTED_AUTHORITY_ASSERTION",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N19",
+      "subcase": "AI-supplied provenance assertion",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N19' 'AI-supplied provenance assertion' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "UNTRUSTED_AUTHORITY_ASSERTION",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "UNTRUSTED_AUTHORITY_ASSERTION",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N20",
+      "subcase": "ambiguous authoritative state",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N20' 'ambiguous authoritative state' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "AMBIGUOUS_AUTHORITATIVE_STATE",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "AMBIGUOUS_AUTHORITATIVE_STATE",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N21",
+      "subcase": "missing tenant binding",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N21' 'missing tenant binding' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "TENANT_BINDING_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "TENANT_BINDING_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    },
+    {
+      "category_id": "N22",
+      "subcase": "missing owner binding",
+      "assertion": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture 'N22' 'missing owner binding' fails closed before every processing port",
+      "assertion_status": "passed",
+      "reason_code": "OWNER_BINDING_MISSING",
+      "decision": "Blocked / Fail Closed",
+      "caller_visible_denial": "KNOWLEDGE_SOURCE_DENIED",
+      "downstream_calls": {
+        "parsing_chunking": 0,
+        "embedding": 0,
+        "indexing": 0,
+        "vector_storage": 0,
+        "retrieval_preparation": 0,
+        "other_knowledge_processing": 0
+      },
+      "protected_fields_disclosed": 0,
+      "artifact_count": 0,
+      "audit": {
+        "event_type": "km_lifecycle_evidence_validated",
+        "outcome": "Blocked / Fail Closed",
+        "reason_code": "OWNER_BINDING_MISSING",
+        "sanitized": true,
+        "correlation_id_format": "sir02-oe11-[a-f0-9]{16}"
+      },
+      "cleanup": "Passed"
+    }
+  ],
+  "negative_summary": {
+    "categories_passed": 22,
+    "subcases_passed": 33,
+    "fail_closed": 33,
+    "zero_downstream_calls": 33,
+    "zero_artifacts": 33,
+    "sanitized_audit": 33,
+    "cleanup_passed": 33,
+    "approval_version_provenance_inference_or_permissive_fallback": "Denied by the reviewed validation path and passing negative assertions"
+  },
+  "tenant_b_protected_field_disclosure_count": 0,
+  "supporting_assertions": [
+    {
+      "name": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture covers exactly P01 and all 22 designed negative categories with required subcases",
+      "status": "passed"
+    },
+    {
+      "name": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture uses measured no-op processing spies rather than hard-coded counter claims",
+      "status": "passed"
+    },
+    {
+      "name": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture returns no Tenant A protected lifecycle field to Tenant B",
+      "status": "passed"
+    },
+    {
+      "name": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture cleans an unexpected adapter error and preserves the original error",
+      "status": "passed"
+    },
+    {
+      "name": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture cleans before a caller assertion fails",
+      "status": "passed"
+    },
+    {
+      "name": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture cleans an early tenant rejection before the next case",
+      "status": "passed"
+    },
+    {
+      "name": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture resets measured counters after a failed case before a new case",
+      "status": "passed"
+    },
+    {
+      "name": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture reports cleanup failure independently without hiding the primary failure",
+      "status": "passed"
+    },
+    {
+      "name": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture reports cleanup-only failure rather than returning a passing result",
+      "status": "passed"
+    },
+    {
+      "name": "SIR02-KM-OE-11 authorized test-only lifecycle validation fixture returns byte-stable validation results for identical synthetic inputs",
+      "status": "passed"
+    }
+  ],
+  "cleanup_result": {
+    "normal_paths": "Passed",
+    "exceptional_paths": "Passed",
+    "request_registry_governance_provenance_state_cleared": "Passed",
+    "downstream_counters_reset": "Passed",
+    "cross_case_and_cross_tenant_leakage": "None observed",
+    "primary_and_cleanup_failures_preserved_separately": "Passed"
+  },
+  "live_operation_counters": {
+    "ingestion": 0,
+    "rag": 0,
+    "embeddings": 0,
+    "indexing": 0,
+    "vector_store_population": 0,
+    "retrieval": 0,
+    "deployment": 0,
+    "credentials": 0,
+    "secrets": 0,
+    "traffic": 0
+  },
+  "persistent_live_knowledge_artifacts": 0,
+  "overall_execution_result": "Executed / Awaiting Independent Review",
+  "independent_evidence_review": "Not Reviewed",
+  "observation_basis": "Case values are assertions in the unchanged, accepted integration test confirmed by the passing immutable Vitest report. They are not separate raw fixture snapshots."
+}
