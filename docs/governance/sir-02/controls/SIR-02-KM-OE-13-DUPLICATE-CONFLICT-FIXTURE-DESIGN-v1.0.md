@@ -2,24 +2,24 @@
 
 ## Document control
 
-| Field                            | Value                                                      |
-| -------------------------------- | ---------------------------------------------------------- |
-| Document                         | `SIR-02-KM-OE-13-DUPLICATE-CONFLICT-FIXTURE-DESIGN`        |
-| Version                          | `v1.0`                                                     |
-| Status                           | `Proposed / Not Authorized`                                |
-| Evidence item                    | `SIR02-KM-OE-13 — Duplicate / Conflict Handling Test`      |
-| Environment                      | `Isolated Non-Live Evidence Execution`                     |
-| Namespace                        | `sir02-km-evidence-v1`                                     |
-| Fixture schema                   | `SIR02-KM-EVIDENCE-FIXTURE v1.0`                           |
-| Data classification              | `Synthetic` only                                           |
-| Owner                            | GANTUMUR Erdenedalai — Founder / Administrator             |
-| Reviewer                         | SODBILEG Erkhembayar — Administrator                       |
-| Decision date                    | `Owner Input Required`                                     |
-| Immutable exact-design reference | `Pending immutable publication; not an approval reference` |
-| Implementation authorization     | `Owner Input Required`                                     |
-| OE-13 evidence status            | `Not Executed`                                             |
+| Field                            | Value                                                 |
+| -------------------------------- | ----------------------------------------------------- |
+| Document                         | `SIR-02-KM-OE-13-DUPLICATE-CONFLICT-FIXTURE-DESIGN`   |
+| Version                          | `v1.0`                                                |
+| Status                           | `Authorized for Test-Only Implementation`             |
+| Evidence item                    | `SIR02-KM-OE-13 — Duplicate / Conflict Handling Test` |
+| Environment                      | `Isolated Non-Live Evidence Execution`                |
+| Namespace                        | `sir02-km-evidence-v1`                                |
+| Fixture schema                   | `SIR02-KM-EVIDENCE-FIXTURE v1.0`                      |
+| Data classification              | `Synthetic` only                                      |
+| Owner                            | GANTUMUR Erdenedalai — Founder / Administrator        |
+| Reviewer                         | SODBILEG Erkhembayar — Administrator                  |
+| Decision date                    | `2026-09-26`                                          |
+| Immutable exact-design reference | `92f08b23a77202a7773e09ff6b722db402d7c840`            |
+| Implementation authorization     | `Authorized for Test-Only Implementation`             |
+| OE-13 evidence status            | `Not Executed`                                        |
 
-This is an implementation design, not an implementation decision or an OE-13 result. No fixture, test, run ID, or operational evidence is created by this document.
+The owner has authorized test-only implementation of the exact `v1.0` design at the immutable reference above, limited to the two named test files and the conditions in the companion authorization record. This document contains no implemented fixture, test run, or OE-13 evidence result.
 
 ## Authority, scope, and prerequisite assessment
 
@@ -104,4 +104,4 @@ Every case starts with a new registry, logical artifact inventory, quarantine/co
 
 After separate owner authorization, implementation validation must include the complete OE-13 test suite, relevant repository regression tests, lint, typecheck, formatting, exact two-file change check, accepted OE-09/OE-11 byte integrity, deterministic replay, exceptional cleanup, and zero live-operation counters. Independent implementation review precedes formal controlled OE-13 execution. Any need for another file, adapter, dependency, migration, or runtime change requires a revised design and owner decision before coding.
 
-This design grants no implementation or execution authority. OE-13 remains `Not Executed`; the other 14 operational evidence statuses remain unchanged. `SIR02-DEF-02` remains `Missing / Not Reviewed`, and SIR-02 remains `Blocking`.
+Owner authorization permits only the test-only implementation described here. An independent implementation review and later separate formal execution are still required. OE-13 remains `Not Executed`; the other 14 operational evidence statuses remain unchanged. `SIR02-DEF-02` remains `Missing / Not Reviewed`, and SIR-02 remains `Blocking`.

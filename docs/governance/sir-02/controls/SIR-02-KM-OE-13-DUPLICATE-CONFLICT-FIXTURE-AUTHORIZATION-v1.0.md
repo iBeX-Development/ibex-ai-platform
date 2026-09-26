@@ -6,30 +6,30 @@
 | ------------------------------------------- | ----------------------------------------------------------- |
 | Document                                    | `SIR-02-KM-OE-13-DUPLICATE-CONFLICT-FIXTURE-AUTHORIZATION`  |
 | Version                                     | `v1.0`                                                      |
-| Status                                      | `Proposed / Not Authorized`                                 |
+| Status                                      | `Authorized for Test-Only Implementation`                   |
 | Evidence item                               | `SIR02-KM-OE-13`                                            |
-| Exact design proposed for decision          | `SIR-02-KM-OE-13-DUPLICATE-CONFLICT-FIXTURE-DESIGN-v1.0.md` |
-| Immutable exact-design reference            | `Owner Input Required after design publication`             |
+| Exact design authorized                     | `SIR-02-KM-OE-13-DUPLICATE-CONFLICT-FIXTURE-DESIGN-v1.0.md` |
+| Immutable exact-design reference            | `92f08b23a77202a7773e09ff6b722db402d7c840`                  |
 | Owner                                       | GANTUMUR Erdenedalai — Founder / Administrator              |
 | Reviewer                                    | SODBILEG Erkhembayar — Administrator                        |
-| Decision outcome                            | `Owner Input Required`                                      |
-| Decision date                               | `Owner Input Required`                                      |
-| Owner decision statement                    | `Owner Input Required`                                      |
-| Conditions accepted by owner                | `Owner Input Required`                                      |
-| Immutable completed-authorization reference | `Owner Input Required`                                      |
+| Decision outcome                            | `Authorized for Test-Only Implementation`                   |
+| Decision date                               | `2026-09-26`                                                |
+| Owner decision statement                    | Exact owner-approved statement below                        |
+| Conditions accepted by owner                | Exact implementation conditions below                       |
+| Immutable completed-authorization reference | `Pending decision-content commit and linkage`               |
 
-## Proposed decision scope
+## Formal owner authorization
 
-The owner is asked to decide whether to authorize implementation of the **exact, immutable v1.0 OE-13 design** as an isolated test-only capability. Publication of the proposed design is not authorization. The owner must supply an explicit decision (`Authorized for Test-Only Implementation`, `Rejected`, or `Deferred`), decision date, statement, accepted conditions, and completed immutable decision reference. The exact design commit must be recorded before implementation may begin.
+> The OE-13 Duplicate / Conflict Handling fixture design v1.0 is approved for implementation strictly as an isolated test-only capability required to execute SIR02-KM-OE-13.
 
-Only these two **proposed** implementation files are in scope:
+The owner authorizes only these two test-only files under exact design commit `92f08b23a77202a7773e09ff6b722db402d7c840`:
 
 1. `tests/testing/sir02-km-oe13-duplicate-conflict-fixture.ts`
 2. `tests/integration/sir02-km-oe13-duplicate-conflict.test.ts`
 
-Read-only imports from the accepted OE-09 immutable-input/reconciliation fixture and OE-11 fail-closed/spy/audit fixture may be authorized only where compatible with the exact OE-13 design. Their implementation files, tests, and accepted evidence remain unchanged. A helper that is not already exported cannot be obtained by editing those files under this proposed decision.
+OE-09 immutable-input/reconciliation components and OE-11 fail-closed, downstream-spy, denial, audit, and cleanup components may be reused **read-only where compatible**. Their implementation files, tests, and accepted evidence must remain unchanged. A helper that is not already exported cannot be obtained by editing those files under this decision. Any additional file or change outside the two named files requires a new design and owner authorization before coding.
 
-## Conditions proposed for owner acceptance
+## Exact implementation conditions
 
 - Synthetic data only, isolated namespace `sir02-km-evidence-v1`, fixture schema `SIR02-KM-EVIDENCE-FIXTURE v1.0`, and only Gate A synthetic tenant identifiers.
 - Deterministic in-memory registry, logical artifact inventory, submission handler, exact-repeat no-op, typed divergent-conflict classification, human-review quarantine record, exact before/after counts, sanitized audit, tenant-safe caller output, measured downstream spies, and fail-safe cleanup.
@@ -37,18 +37,21 @@ Read-only imports from the accepted OE-09 immutable-input/reconciliation fixture
 - Tenant B protected-field disclosure must equal `0`; cross-tenant claims must neither expose Tenant A state nor contaminate its registry or inventory.
 - Preserve OE-01 through OE-07 lifecycle chronology, accepted OE-09 and OE-11 evidence, and original immutable references.
 - No production/runtime source change, additional file, database migration, new dependency, configuration, deployment, credential, secret, storage, ingestion, RAG, embedding, indexing, vector-store, retrieval, or traffic change is within this proposed scope.
-- Independent implementation review and a separate formal controlled OE-13 run and independent evidence review are required later. Implementation authorization alone would not execute or accept OE-13 or reopen ingestion.
+- Implement all 20 approved scenario categories and independent subcases defined in the immutable design. Exact duplicate registration/version replay must preserve the authoritative record, produce a deterministic no-op, preserve provenance/audit traceability, and add `0` active or downstream artifacts.
+- Every unresolved divergent conflict must fail closed, leave authoritative lifecycle state unchanged, and produce a typed conflict/quarantine record requiring human decision. No silent merge, overwrite, newest-record selection, or inferred approval is allowed.
+- For every conflict, measured parsing/chunking, embedding, indexing, vector/storage-write, and retrieval-preparation calls must each equal `0`.
+- Independent implementation review and a separate formal controlled OE-13 run and independent evidence review are required later. Implementation authorization alone does not execute or accept OE-13 or reopen ingestion.
 
 ## Decision and review fields
 
-| Required field                                | Current value                   |
-| --------------------------------------------- | ------------------------------- |
-| Exact design commit/version decided           | `Owner Input Required` / `v1.0` |
-| Owner implementation decision                 | `Owner Input Required`          |
-| Owner decision statement                      | `Owner Input Required`          |
-| Owner decision date                           | `Owner Input Required`          |
-| Owner acceptance of conditions                | `Owner Input Required`          |
-| Independent review of future implementation   | `Not Performed`                 |
-| Immutable completed-decision commit/reference | `Owner Input Required`          |
+| Required field                                | Current value                                       |
+| --------------------------------------------- | --------------------------------------------------- |
+| Exact design commit/version decided           | `92f08b23a77202a7773e09ff6b722db402d7c840` / `v1.0` |
+| Owner implementation decision                 | `Authorized for Test-Only Implementation`           |
+| Owner decision statement                      | Exact owner-approved statement above                |
+| Owner decision date                           | `2026-09-26`                                        |
+| Owner acceptance of conditions                | Exact implementation conditions above               |
+| Independent review of future implementation   | `Not Performed — required before OE-13 execution`   |
+| Immutable completed-decision commit/reference | `Pending decision-content commit and linkage`       |
 
-Until those fields are supplied and the decision is immutably recorded, status remains `Proposed / Not Authorized`. No code or OE-13 evidence run may be produced from this record. OE-13 remains `Not Executed`; the other evidence statuses, including `SIR02-DEF-02` at `Missing / Not Reviewed`, remain unchanged. SIR-02 remains `Blocking`.
+This decision authorizes implementation only within the two named test-only files. It does not authorize OE-13 execution or acceptance, live or Shadow ingestion, RAG, embedding, indexing, vector storage, retrieval, application/runtime modification, database migration, dependency addition, deployment, configuration, credentials, secrets, traffic, or production use. OE-13 remains `Not Executed`; the other evidence statuses, including `SIR02-DEF-02` at `Missing / Not Reviewed`, remain unchanged. SIR-02 remains `Blocking`.
