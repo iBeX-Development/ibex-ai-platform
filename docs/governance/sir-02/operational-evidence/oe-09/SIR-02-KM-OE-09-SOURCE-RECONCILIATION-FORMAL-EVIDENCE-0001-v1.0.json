@@ -1,0 +1,2529 @@
+{
+  "document": "SIR-02-KM-OE-09-SOURCE-RECONCILIATION-FORMAL-EVIDENCE",
+  "version": "v1.0",
+  "evidence_id": "SIR02-KM-OE-09",
+  "run_id": "SIR02-KM-OE-09-V1_0-20260926T020627Z-0001",
+  "execution_timestamp_utc": "2026-09-26T02:06:27Z",
+  "executor": "GANTUMUR Erdenedalai — Founder / Administrator",
+  "reviewer": "SODBILEG Erkhembayar — Administrator",
+  "implementation_commit": "78e975b6d0b86a14a07a1956c93a1d3b04f704e0",
+  "implementation_review_commit": "4f05a088cbf91695f8a014e413206aed54c06089",
+  "execution_repository_commit": "4f05a088cbf91695f8a014e413206aed54c06089",
+  "plan_matrix_reference": "37212d5869709f85256618e6b03fffb0622a2049",
+  "lifecycle_control_reference": "48407614af13e8f8239a9e63454c013dc43e432b",
+  "gate_a_approval": "84a05702b744a6a710644299381e30e9a9a7aefb",
+  "namespace": "sir02-km-evidence-v1",
+  "fixture_schema": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+  "test_data_classification": "Synthetic",
+  "synthetic_tenant_ids": [
+    "sir02-test-tenant-a",
+    "sir02-test-tenant-b"
+  ],
+  "input_evidence_references": [
+    {
+      "id": "SIR02-KM-OE-01",
+      "path": "docs/governance/sir-02/operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json",
+      "evidenceCommit": "44a97a9b387235c67ae70cce24fb32cda0adfe70",
+      "reviewCommit": "a33c8220e595fafad317610e94d09d4f21ecc882",
+      "sha256": "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b"
+    },
+    {
+      "id": "SIR02-KM-OE-02",
+      "path": "docs/governance/sir-02/operational-evidence/oe-02/SIR-02-KM-OE-02-SOURCE-OWNER-TENANT-BINDING-v1.0.json",
+      "evidenceCommit": "9d4bc50d885e50b4fef8580918398f6764742b74",
+      "reviewCommit": "3328353ea04298729b6e68ca46061393edce2148",
+      "sha256": "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71"
+    },
+    {
+      "id": "SIR02-KM-OE-03",
+      "path": "docs/governance/sir-02/operational-evidence/oe-03/SIR-02-KM-OE-03-SOURCE-APPROVAL-RECONSTRUCTION-0003-v1.0.json",
+      "evidenceCommit": "74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a",
+      "reviewCommit": "77ae9c99b2601ec58a50bd20c772326688268e5d",
+      "sha256": "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345"
+    },
+    {
+      "id": "SIR02-KM-OE-04",
+      "path": "docs/governance/sir-02/operational-evidence/oe-04/SIR-02-KM-OE-04-SOURCE-VERSION-LINEAGE-v1.0.json",
+      "evidenceCommit": "eefc0cd3dcb74761af91bd17cfe271e872d88264",
+      "reviewCommit": "f5ce491bfe3a98af66031a64b9b9620c3bc51420",
+      "sha256": "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f"
+    },
+    {
+      "id": "SIR02-KM-OE-05",
+      "path": "docs/governance/sir-02/operational-evidence/oe-05/SIR-02-KM-OE-05-PROVENANCE-TRACE-v1.0.json",
+      "evidenceCommit": "a46a7018a54f2beb918ed9fe72403a6a769644df",
+      "reviewCommit": "3e8d3e1bcf24ccbc52a244bb728964e5cbd340a2",
+      "sha256": "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045"
+    },
+    {
+      "id": "SIR02-KM-OE-06",
+      "path": "docs/governance/sir-02/operational-evidence/oe-06/SIR-02-KM-OE-06-SUPERSESSION-TEST-v1.0.json",
+      "evidenceCommit": "f5cd7cc043c3bb99d9a745a1e546e2be30e7ddcc",
+      "reviewCommit": "6c821280369760a4fc8cdf10b611282ca332dea4",
+      "sha256": "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43"
+    },
+    {
+      "id": "SIR02-KM-OE-07",
+      "path": "docs/governance/sir-02/operational-evidence/oe-07/SIR-02-KM-OE-07-STALE-CONTENT-QUARANTINE-TEST-v1.0.json",
+      "evidenceCommit": "03791c7096adaa0ee5874110f7dae291858efd37",
+      "reviewCommit": "b7932b282833487b1a3eb2ccc6d7ca56015740a5",
+      "sha256": "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+    }
+  ],
+  "authoritative_inventory_sha256": "488710b08c1728c99cdb18abfc6e859226001be572f2f6011dac17f70d0cd6fa",
+  "derived_inventory_sha256": "6e480fef36c2d1cd241408e946281f1d003f1a3e539e9ee1dbe6382d7d75a096",
+  "clean_reconciliation_result": {
+    "decision": "Reconciled / Non-Operational Test State",
+    "namespace": "sir02-km-evidence-v1",
+    "schema": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+    "reconciliationTimestamp": "2026-09-26T02:06:27Z",
+    "sourceId": "sir02-km-source-a-001",
+    "registrationId": "sir02-km-registration-a-001",
+    "tenantId": "sir02-test-tenant-a",
+    "ownerId": "sir02-test-source-owner-a",
+    "authoritativeCurrentVersion": "v1.1",
+    "currentVersion": "v1.1",
+    "approvedVersions": [
+      "v1.0"
+    ],
+    "unapprovedVersions": [
+      "v1.1"
+    ],
+    "supersededVersions": [
+      "v1.0"
+    ],
+    "quarantinedVersions": [
+      "v1.0"
+    ],
+    "activeVersions": [],
+    "nonActiveVersions": [
+      "v1.0",
+      "v1.1"
+    ],
+    "versionDetails": [
+      {
+        "tenantId": "sir02-test-tenant-a",
+        "sourceId": "sir02-km-source-a-001",
+        "version": "v1.0",
+        "active": false,
+        "approvalState": "approved",
+        "supersessionState": "superseded",
+        "quarantineState": "quarantined",
+        "withdrawn": false,
+        "checksum": "436ea9892588b6527774dbd9ff1e174f6306bf8894afe2f8c91314fc6e7a916f",
+        "lineageRoot": "sir02-km-lineage-a-001",
+        "provenanceRef": "synthetic://sir02-km-evidence-v1/source-a",
+        "approvalRef": "77ae9c99b2601ec58a50bd20c772326688268e5d",
+        "supersessionRef": "sir02-km-supersession-a-v1.0-to-v1.1-001",
+        "quarantineRef": "sir02-km-quarantine-a-v1.0-001"
+      },
+      {
+        "tenantId": "sir02-test-tenant-a",
+        "sourceId": "sir02-km-source-a-001",
+        "version": "v1.1",
+        "active": false,
+        "approvalState": "unapproved",
+        "supersessionState": "successor",
+        "quarantineState": "none",
+        "withdrawn": false,
+        "checksum": "7b0ab8b22885b0a63b54b811efbd8e16f0bbdf6142be9b9190afd4e30027f93a",
+        "lineageRoot": "sir02-km-lineage-a-001",
+        "provenanceRef": "synthetic://sir02-km-evidence-v1/source-a",
+        "approvalRef": null,
+        "supersessionRef": "sir02-km-supersession-a-v1.0-to-v1.1-001",
+        "quarantineRef": null
+      }
+    ],
+    "inputManifest": [
+      {
+        "id": "SIR02-KM-OE-01",
+        "path": "docs/governance/sir-02/operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json",
+        "evidenceCommit": "44a97a9b387235c67ae70cce24fb32cda0adfe70",
+        "reviewCommit": "a33c8220e595fafad317610e94d09d4f21ecc882",
+        "sha256": "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b"
+      },
+      {
+        "id": "SIR02-KM-OE-02",
+        "path": "docs/governance/sir-02/operational-evidence/oe-02/SIR-02-KM-OE-02-SOURCE-OWNER-TENANT-BINDING-v1.0.json",
+        "evidenceCommit": "9d4bc50d885e50b4fef8580918398f6764742b74",
+        "reviewCommit": "3328353ea04298729b6e68ca46061393edce2148",
+        "sha256": "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71"
+      },
+      {
+        "id": "SIR02-KM-OE-03",
+        "path": "docs/governance/sir-02/operational-evidence/oe-03/SIR-02-KM-OE-03-SOURCE-APPROVAL-RECONSTRUCTION-0003-v1.0.json",
+        "evidenceCommit": "74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a",
+        "reviewCommit": "77ae9c99b2601ec58a50bd20c772326688268e5d",
+        "sha256": "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345"
+      },
+      {
+        "id": "SIR02-KM-OE-04",
+        "path": "docs/governance/sir-02/operational-evidence/oe-04/SIR-02-KM-OE-04-SOURCE-VERSION-LINEAGE-v1.0.json",
+        "evidenceCommit": "eefc0cd3dcb74761af91bd17cfe271e872d88264",
+        "reviewCommit": "f5ce491bfe3a98af66031a64b9b9620c3bc51420",
+        "sha256": "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f"
+      },
+      {
+        "id": "SIR02-KM-OE-05",
+        "path": "docs/governance/sir-02/operational-evidence/oe-05/SIR-02-KM-OE-05-PROVENANCE-TRACE-v1.0.json",
+        "evidenceCommit": "a46a7018a54f2beb918ed9fe72403a6a769644df",
+        "reviewCommit": "3e8d3e1bcf24ccbc52a244bb728964e5cbd340a2",
+        "sha256": "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045"
+      },
+      {
+        "id": "SIR02-KM-OE-06",
+        "path": "docs/governance/sir-02/operational-evidence/oe-06/SIR-02-KM-OE-06-SUPERSESSION-TEST-v1.0.json",
+        "evidenceCommit": "f5cd7cc043c3bb99d9a745a1e546e2be30e7ddcc",
+        "reviewCommit": "6c821280369760a4fc8cdf10b611282ca332dea4",
+        "sha256": "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43"
+      },
+      {
+        "id": "SIR02-KM-OE-07",
+        "path": "docs/governance/sir-02/operational-evidence/oe-07/SIR-02-KM-OE-07-STALE-CONTENT-QUARANTINE-TEST-v1.0.json",
+        "evidenceCommit": "03791c7096adaa0ee5874110f7dae291858efd37",
+        "reviewCommit": "b7932b282833487b1a3eb2ccc6d7ca56015740a5",
+        "sha256": "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+      }
+    ],
+    "inventorySummaries": {
+      "authoritative": {
+        "versionCount": 2,
+        "sourceCount": 1,
+        "tenantCount": 1,
+        "sha256": "488710b08c1728c99cdb18abfc6e859226001be572f2f6011dac17f70d0cd6fa",
+        "inputRefs": [
+          "SIR02-KM-OE-01",
+          "SIR02-KM-OE-03",
+          "SIR02-KM-OE-04",
+          "SIR02-KM-OE-06",
+          "SIR02-KM-OE-07"
+        ]
+      },
+      "derived": {
+        "versionCount": 2,
+        "sourceCount": 1,
+        "tenantCount": 1,
+        "sha256": "6e480fef36c2d1cd241408e946281f1d003f1a3e539e9ee1dbe6382d7d75a096",
+        "inputRefs": [
+          "SIR02-KM-OE-02",
+          "SIR02-KM-OE-04",
+          "SIR02-KM-OE-05",
+          "SIR02-KM-OE-06",
+          "SIR02-KM-OE-07"
+        ]
+      }
+    },
+    "discrepancies": [],
+    "counts": {
+      "authoritativeVersions": 2,
+      "derivedVersions": 2,
+      "matchedVersions": 2,
+      "discrepancies": 0,
+      "unresolved": 0,
+      "quarantined": 1,
+      "nonActive": 2,
+      "activeEligible": 0,
+      "byCode": {}
+    },
+    "audit": {
+      "requestId": "sir02-oe09-formal-0001-request",
+      "correlationId": "sir02-oe09-formal-0001",
+      "traceId": "sir02-oe09-formal-0001-trace",
+      "eventType": "km_source_reconciliation_evaluated",
+      "actorId": "sir02-test-reconciliation-actor",
+      "eventTimestamp": "2026-09-26T02:06:27Z",
+      "outcome": "Reconciled / Non-Operational Test State",
+      "tenantScope": "sir02-test-tenant-a",
+      "reasonCodes": [],
+      "affectedKeys": [],
+      "inputChecksumReferences": [
+        "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+        "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+        "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+        "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+        "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+        "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+        "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+      ],
+      "foreignTenantFieldsDisclosed": 0,
+      "knowledgeProcessingCalls": 0
+    }
+  },
+  "scenario_results": {
+    "test_assertions": [
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture loads seven immutable accepted synthetic inputs and builds inventories independently",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture reconciles the accepted chronology without creating an active knowledge version",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture emits complete deterministic reconciliation and sanitized audit fields",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture keeps the same version in another tenant distinct from Tenant A",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture keeps the same version in another canonical source distinct",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture fails closed when the tenantId identity component is missing",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture fails closed when the sourceId identity component is missing",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture fails closed when the version identity component is missing",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture fails closed when the tenantId identity property is absent",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture fails closed when the sourceId identity property is absent",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture fails closed when the version identity property is absent",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture does not let a cross-tenant injected record alter the authoritative inventory",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture returns zero Tenant A protected fields to a Tenant B reconcile attempt",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture returns zero Tenant A protected fields to a Tenant B inspect attempt",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture returns zero Tenant A protected fields to a Tenant B inject attempt",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture does not echo a caller correlation containing protected source identity",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'missing registration' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'missing approval reference' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'missing lineage or provenance' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'conflicting current version' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'conflicting approval state' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'conflicting supersession state' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'conflicting quarantine state' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'active plus superseded contradiction' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'active plus quarantined contradiction' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'wrong tenant' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'cross-tenant injected record' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'owner substitution' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'checksum or content identity mismatch' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'chronology conflict' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'wildcard identifier' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'ambiguous authoritative state' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'orphan derived version' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'duplicate derived version' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'missing derived version' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture blocks 'withdrawn state conflict' with a stable discrepancy",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture rejects a broken immutable artifact checksum before materializing either inventory",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture rejects 'missing immutable commit' without substituting evidence",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture rejects 'invalid immutable commit representati…' without substituting evidence",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture rejects 'nonexistent immutable commit' without substituting evidence",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture rejects 'missing immutable artifact path' without substituting evidence",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture rejects 'invalid artifact path representation' without substituting evidence",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture rejects 'nonexistent artifact path' without substituting evidence",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture rejects 'commit and path mismatch' without substituting evidence",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-09 test-only reconciliation fixture never infers successor approval or selects the newest conflicting record",
+        "status": "passed"
+      }
+    ],
+    "original_scenario_categories": 18,
+    "formal_suite": {
+      "total": 45,
+      "passed": 45,
+      "failed": 0
+    },
+    "conflict_cases": [
+      {
+        "name": "missing registration",
+        "expected_code": "REGISTRATION_MISSING_OR_MISMATCHED",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 4,
+          "unresolved": 4,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "REGISTRATION_MISSING_OR_MISMATCHED": 3,
+            "WILDCARD_OR_MISSING_IDENTIFIER": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "REGISTRATION_MISSING_OR_MISMATCHED",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          },
+          {
+            "code": "REGISTRATION_MISSING_OR_MISMATCHED",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          },
+          {
+            "code": "REGISTRATION_MISSING_OR_MISMATCHED",
+            "affectedId": "sir02-km-source-a-001@v1.1",
+            "blocked": true
+          },
+          {
+            "code": "WILDCARD_OR_MISSING_IDENTIFIER",
+            "affectedId": "registration",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-01-request",
+          "correlationId": "sir02-oe09-formal-0001-case-01",
+          "traceId": "sir02-oe09-formal-0001-case-01-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "REGISTRATION_MISSING_OR_MISMATCHED",
+            "REGISTRATION_MISSING_OR_MISMATCHED",
+            "REGISTRATION_MISSING_OR_MISMATCHED",
+            "WILDCARD_OR_MISSING_IDENTIFIER"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.1",
+            "registration"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "missing approval reference",
+        "expected_code": "APPROVAL_REFERENCE_MISSING",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 2,
+          "unresolved": 2,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "APPROVAL_REFERENCE_CONFLICT": 1,
+            "APPROVAL_REFERENCE_MISSING": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "APPROVAL_REFERENCE_CONFLICT",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          },
+          {
+            "code": "APPROVAL_REFERENCE_MISSING",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-02-request",
+          "correlationId": "sir02-oe09-formal-0001-case-02",
+          "traceId": "sir02-oe09-formal-0001-case-02-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "APPROVAL_REFERENCE_CONFLICT",
+            "APPROVAL_REFERENCE_MISSING"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "missing lineage/provenance",
+        "expected_code": "LINEAGE_OR_PROVENANCE_MISSING",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 1,
+          "unresolved": 1,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "LINEAGE_OR_PROVENANCE_MISSING": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "LINEAGE_OR_PROVENANCE_MISSING",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-03-request",
+          "correlationId": "sir02-oe09-formal-0001-case-03",
+          "traceId": "sir02-oe09-formal-0001-case-03-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "LINEAGE_OR_PROVENANCE_MISSING"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "conflicting current version",
+        "expected_code": "CURRENT_VERSION_CONFLICT",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 2,
+          "unresolved": 2,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+            "CURRENT_VERSION_CONFLICT": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          },
+          {
+            "code": "CURRENT_VERSION_CONFLICT",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-04-request",
+          "correlationId": "sir02-oe09-formal-0001-case-04",
+          "traceId": "sir02-oe09-formal-0001-case-04-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "CURRENT_VERSION_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "conflicting approval state",
+        "expected_code": "APPROVAL_STATE_CONFLICT",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 1,
+          "unresolved": 1,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "APPROVAL_STATE_CONFLICT": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "APPROVAL_STATE_CONFLICT",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-05-request",
+          "correlationId": "sir02-oe09-formal-0001-case-05",
+          "traceId": "sir02-oe09-formal-0001-case-05-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "APPROVAL_STATE_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "conflicting supersession state",
+        "expected_code": "SUPERSESSION_STATE_CONFLICT",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 1,
+          "unresolved": 1,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "SUPERSESSION_STATE_CONFLICT": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "SUPERSESSION_STATE_CONFLICT",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-06-request",
+          "correlationId": "sir02-oe09-formal-0001-case-06",
+          "traceId": "sir02-oe09-formal-0001-case-06-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "SUPERSESSION_STATE_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "conflicting quarantine state",
+        "expected_code": "QUARANTINE_STATE_CONFLICT",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 1,
+          "unresolved": 1,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "QUARANTINE_STATE_CONFLICT": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "QUARANTINE_STATE_CONFLICT",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-07-request",
+          "correlationId": "sir02-oe09-formal-0001-case-07",
+          "traceId": "sir02-oe09-formal-0001-case-07-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "QUARANTINE_STATE_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "active plus superseded",
+        "expected_code": "ACTIVE_SUPERSEDED_CONTRADICTION",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 3,
+          "unresolved": 3,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "ACTIVE_QUARANTINED_CONTRADICTION": 1,
+            "ACTIVE_STATE_CONFLICT": 1,
+            "ACTIVE_SUPERSEDED_CONTRADICTION": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "ACTIVE_QUARANTINED_CONTRADICTION",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          },
+          {
+            "code": "ACTIVE_STATE_CONFLICT",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          },
+          {
+            "code": "ACTIVE_SUPERSEDED_CONTRADICTION",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-08-request",
+          "correlationId": "sir02-oe09-formal-0001-case-08",
+          "traceId": "sir02-oe09-formal-0001-case-08-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "ACTIVE_QUARANTINED_CONTRADICTION",
+            "ACTIVE_STATE_CONFLICT",
+            "ACTIVE_SUPERSEDED_CONTRADICTION"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "active plus quarantined",
+        "expected_code": "ACTIVE_QUARANTINED_CONTRADICTION",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 3,
+          "unresolved": 3,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "ACTIVE_QUARANTINED_CONTRADICTION": 1,
+            "ACTIVE_STATE_CONFLICT": 1,
+            "ACTIVE_SUPERSEDED_CONTRADICTION": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "ACTIVE_QUARANTINED_CONTRADICTION",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          },
+          {
+            "code": "ACTIVE_STATE_CONFLICT",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          },
+          {
+            "code": "ACTIVE_SUPERSEDED_CONTRADICTION",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-09-request",
+          "correlationId": "sir02-oe09-formal-0001-case-09",
+          "traceId": "sir02-oe09-formal-0001-case-09-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "ACTIVE_QUARANTINED_CONTRADICTION",
+            "ACTIVE_STATE_CONFLICT",
+            "ACTIVE_SUPERSEDED_CONTRADICTION"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "wrong tenant",
+        "expected_code": "TENANT_MISMATCH",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 5,
+          "unresolved": 5,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+            "CROSS_TENANT_RECORD": 3,
+            "TENANT_MISMATCH": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          },
+          {
+            "code": "CROSS_TENANT_RECORD",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          },
+          {
+            "code": "CROSS_TENANT_RECORD",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          },
+          {
+            "code": "CROSS_TENANT_RECORD",
+            "affectedId": "sir02-km-source-a-001@v1.1",
+            "blocked": true
+          },
+          {
+            "code": "TENANT_MISMATCH",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-10-request",
+          "correlationId": "sir02-oe09-formal-0001-case-10",
+          "traceId": "sir02-oe09-formal-0001-case-10-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "CROSS_TENANT_RECORD",
+            "CROSS_TENANT_RECORD",
+            "CROSS_TENANT_RECORD",
+            "TENANT_MISMATCH"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.1",
+            "sir02-km-source-a-001"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "cross-tenant injected record",
+        "expected_code": "CROSS_TENANT_RECORD",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 3,
+          "matchedVersions": 2,
+          "discrepancies": 3,
+          "unresolved": 3,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+            "CROSS_TENANT_RECORD": 1,
+            "ORPHAN_DERIVED_RECORD": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          },
+          {
+            "code": "CROSS_TENANT_RECORD",
+            "affectedId": "REDACTED",
+            "blocked": true
+          },
+          {
+            "code": "ORPHAN_DERIVED_RECORD",
+            "affectedId": "REDACTED",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-11-request",
+          "correlationId": "sir02-oe09-formal-0001-case-11",
+          "traceId": "sir02-oe09-formal-0001-case-11-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "CROSS_TENANT_RECORD",
+            "ORPHAN_DERIVED_RECORD"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "REDACTED",
+            "REDACTED"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "owner substitution",
+        "expected_code": "OWNER_SUBSTITUTION",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 1,
+          "unresolved": 1,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "OWNER_SUBSTITUTION": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "OWNER_SUBSTITUTION",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-12-request",
+          "correlationId": "sir02-oe09-formal-0001-case-12",
+          "traceId": "sir02-oe09-formal-0001-case-12-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "OWNER_SUBSTITUTION"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "checksum/content mismatch",
+        "expected_code": "CONTENT_CHECKSUM_MISMATCH",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 1,
+          "unresolved": 1,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "CONTENT_CHECKSUM_MISMATCH": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "CONTENT_CHECKSUM_MISMATCH",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-13-request",
+          "correlationId": "sir02-oe09-formal-0001-case-13",
+          "traceId": "sir02-oe09-formal-0001-case-13-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "CONTENT_CHECKSUM_MISMATCH"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "chronology conflict",
+        "expected_code": "CHRONOLOGY_CONFLICT",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 1,
+          "unresolved": 1,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "CHRONOLOGY_CONFLICT": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "CHRONOLOGY_CONFLICT",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-14-request",
+          "correlationId": "sir02-oe09-formal-0001-case-14",
+          "traceId": "sir02-oe09-formal-0001-case-14-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "CHRONOLOGY_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "wildcard identifier",
+        "expected_code": "WILDCARD_OR_MISSING_IDENTIFIER",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 2,
+          "unresolved": 2,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "OWNER_SUBSTITUTION": 1,
+            "WILDCARD_OR_MISSING_IDENTIFIER": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "OWNER_SUBSTITUTION",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          },
+          {
+            "code": "WILDCARD_OR_MISSING_IDENTIFIER",
+            "affectedId": "derived-owner",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-15-request",
+          "correlationId": "sir02-oe09-formal-0001-case-15",
+          "traceId": "sir02-oe09-formal-0001-case-15-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "OWNER_SUBSTITUTION",
+            "WILDCARD_OR_MISSING_IDENTIFIER"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "derived-owner"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "ambiguous authoritative state",
+        "expected_code": "AMBIGUOUS_AUTHORITATIVE_STATE",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 2,
+          "unresolved": 2,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+            "CURRENT_VERSION_CONFLICT": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          },
+          {
+            "code": "CURRENT_VERSION_CONFLICT",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-16-request",
+          "correlationId": "sir02-oe09-formal-0001-case-16",
+          "traceId": "sir02-oe09-formal-0001-case-16-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "CURRENT_VERSION_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "orphan derived version",
+        "expected_code": "ORPHAN_DERIVED_RECORD",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 3,
+          "matchedVersions": 2,
+          "discrepancies": 2,
+          "unresolved": 2,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+            "ORPHAN_DERIVED_RECORD": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          },
+          {
+            "code": "ORPHAN_DERIVED_RECORD",
+            "affectedId": "sir02-km-source-a-001@v2.0",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-17-request",
+          "correlationId": "sir02-oe09-formal-0001-case-17",
+          "traceId": "sir02-oe09-formal-0001-case-17-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "ORPHAN_DERIVED_RECORD"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001@v2.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "duplicate derived version",
+        "expected_code": "DUPLICATE_VERSION_RECORD",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 3,
+          "matchedVersions": 2,
+          "discrepancies": 2,
+          "unresolved": 2,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+            "DUPLICATE_VERSION_RECORD": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          },
+          {
+            "code": "DUPLICATE_VERSION_RECORD",
+            "affectedId": "sir02-km-source-a-001@v1.1",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-18-request",
+          "correlationId": "sir02-oe09-formal-0001-case-18",
+          "traceId": "sir02-oe09-formal-0001-case-18-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "DUPLICATE_VERSION_RECORD"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001@v1.1"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "missing derived version",
+        "expected_code": "DERIVED_RECORD_MISSING",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 1,
+          "matchedVersions": 1,
+          "discrepancies": 2,
+          "unresolved": 2,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+            "DERIVED_RECORD_MISSING": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "affectedId": "sir02-km-source-a-001",
+            "blocked": true
+          },
+          {
+            "code": "DERIVED_RECORD_MISSING",
+            "affectedId": "sir02-km-source-a-001@v1.1",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-19-request",
+          "correlationId": "sir02-oe09-formal-0001-case-19",
+          "traceId": "sir02-oe09-formal-0001-case-19-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "DERIVED_RECORD_MISSING"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001@v1.1"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "withdrawn state conflict",
+        "expected_code": "WITHDRAWAL_STATE_CONFLICT",
+        "decision": "Blocked / Fail Closed",
+        "counts": {
+          "authoritativeVersions": 2,
+          "derivedVersions": 2,
+          "matchedVersions": 2,
+          "discrepancies": 1,
+          "unresolved": 1,
+          "quarantined": 1,
+          "nonActive": 2,
+          "activeEligible": 0,
+          "byCode": {
+            "WITHDRAWAL_STATE_CONFLICT": 1
+          }
+        },
+        "discrepancies": [
+          {
+            "code": "WITHDRAWAL_STATE_CONFLICT",
+            "affectedId": "sir02-km-source-a-001@v1.0",
+            "blocked": true
+          }
+        ],
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-20-request",
+          "correlationId": "sir02-oe09-formal-0001-case-20",
+          "traceId": "sir02-oe09-formal-0001-case-20-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "WITHDRAWAL_STATE_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      }
+    ],
+    "conflict_cases_blocked": 20
+  },
+  "positive_validation_result": "Passed",
+  "fail_closed_validation_result": "Passed",
+  "exact_conflict_counts": {
+    "clean": {
+      "authoritativeVersions": 2,
+      "derivedVersions": 2,
+      "matchedVersions": 2,
+      "discrepancies": 0,
+      "unresolved": 0,
+      "quarantined": 1,
+      "nonActive": 2,
+      "activeEligible": 0,
+      "byCode": {}
+    },
+    "blocked_cases": [
+      {
+        "name": "missing registration",
+        "discrepancies": 4,
+        "unresolved": 4,
+        "by_code": {
+          "REGISTRATION_MISSING_OR_MISMATCHED": 3,
+          "WILDCARD_OR_MISSING_IDENTIFIER": 1
+        }
+      },
+      {
+        "name": "missing approval reference",
+        "discrepancies": 2,
+        "unresolved": 2,
+        "by_code": {
+          "APPROVAL_REFERENCE_CONFLICT": 1,
+          "APPROVAL_REFERENCE_MISSING": 1
+        }
+      },
+      {
+        "name": "missing lineage/provenance",
+        "discrepancies": 1,
+        "unresolved": 1,
+        "by_code": {
+          "LINEAGE_OR_PROVENANCE_MISSING": 1
+        }
+      },
+      {
+        "name": "conflicting current version",
+        "discrepancies": 2,
+        "unresolved": 2,
+        "by_code": {
+          "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+          "CURRENT_VERSION_CONFLICT": 1
+        }
+      },
+      {
+        "name": "conflicting approval state",
+        "discrepancies": 1,
+        "unresolved": 1,
+        "by_code": {
+          "APPROVAL_STATE_CONFLICT": 1
+        }
+      },
+      {
+        "name": "conflicting supersession state",
+        "discrepancies": 1,
+        "unresolved": 1,
+        "by_code": {
+          "SUPERSESSION_STATE_CONFLICT": 1
+        }
+      },
+      {
+        "name": "conflicting quarantine state",
+        "discrepancies": 1,
+        "unresolved": 1,
+        "by_code": {
+          "QUARANTINE_STATE_CONFLICT": 1
+        }
+      },
+      {
+        "name": "active plus superseded",
+        "discrepancies": 3,
+        "unresolved": 3,
+        "by_code": {
+          "ACTIVE_QUARANTINED_CONTRADICTION": 1,
+          "ACTIVE_STATE_CONFLICT": 1,
+          "ACTIVE_SUPERSEDED_CONTRADICTION": 1
+        }
+      },
+      {
+        "name": "active plus quarantined",
+        "discrepancies": 3,
+        "unresolved": 3,
+        "by_code": {
+          "ACTIVE_QUARANTINED_CONTRADICTION": 1,
+          "ACTIVE_STATE_CONFLICT": 1,
+          "ACTIVE_SUPERSEDED_CONTRADICTION": 1
+        }
+      },
+      {
+        "name": "wrong tenant",
+        "discrepancies": 5,
+        "unresolved": 5,
+        "by_code": {
+          "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+          "CROSS_TENANT_RECORD": 3,
+          "TENANT_MISMATCH": 1
+        }
+      },
+      {
+        "name": "cross-tenant injected record",
+        "discrepancies": 3,
+        "unresolved": 3,
+        "by_code": {
+          "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+          "CROSS_TENANT_RECORD": 1,
+          "ORPHAN_DERIVED_RECORD": 1
+        }
+      },
+      {
+        "name": "owner substitution",
+        "discrepancies": 1,
+        "unresolved": 1,
+        "by_code": {
+          "OWNER_SUBSTITUTION": 1
+        }
+      },
+      {
+        "name": "checksum/content mismatch",
+        "discrepancies": 1,
+        "unresolved": 1,
+        "by_code": {
+          "CONTENT_CHECKSUM_MISMATCH": 1
+        }
+      },
+      {
+        "name": "chronology conflict",
+        "discrepancies": 1,
+        "unresolved": 1,
+        "by_code": {
+          "CHRONOLOGY_CONFLICT": 1
+        }
+      },
+      {
+        "name": "wildcard identifier",
+        "discrepancies": 2,
+        "unresolved": 2,
+        "by_code": {
+          "OWNER_SUBSTITUTION": 1,
+          "WILDCARD_OR_MISSING_IDENTIFIER": 1
+        }
+      },
+      {
+        "name": "ambiguous authoritative state",
+        "discrepancies": 2,
+        "unresolved": 2,
+        "by_code": {
+          "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+          "CURRENT_VERSION_CONFLICT": 1
+        }
+      },
+      {
+        "name": "orphan derived version",
+        "discrepancies": 2,
+        "unresolved": 2,
+        "by_code": {
+          "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+          "ORPHAN_DERIVED_RECORD": 1
+        }
+      },
+      {
+        "name": "duplicate derived version",
+        "discrepancies": 2,
+        "unresolved": 2,
+        "by_code": {
+          "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+          "DUPLICATE_VERSION_RECORD": 1
+        }
+      },
+      {
+        "name": "missing derived version",
+        "discrepancies": 2,
+        "unresolved": 2,
+        "by_code": {
+          "AMBIGUOUS_AUTHORITATIVE_STATE": 1,
+          "DERIVED_RECORD_MISSING": 1
+        }
+      },
+      {
+        "name": "withdrawn state conflict",
+        "discrepancies": 1,
+        "unresolved": 1,
+        "by_code": {
+          "WITHDRAWAL_STATE_CONFLICT": 1
+        }
+      }
+    ]
+  },
+  "tenant_b_caller_visible_result": {
+    "decision": "Blocked / Fail Closed",
+    "correlationId": "sir02-view-ce45ec88bf89bc54",
+    "protectedFieldsDisclosed": 0
+  },
+  "tenant_b_disclosed_protected_field_count": 0,
+  "audit_correlation_evidence": {
+    "clean": {
+      "requestId": "sir02-oe09-formal-0001-request",
+      "correlationId": "sir02-oe09-formal-0001",
+      "traceId": "sir02-oe09-formal-0001-trace",
+      "eventType": "km_source_reconciliation_evaluated",
+      "actorId": "sir02-test-reconciliation-actor",
+      "eventTimestamp": "2026-09-26T02:06:27Z",
+      "outcome": "Reconciled / Non-Operational Test State",
+      "tenantScope": "sir02-test-tenant-a",
+      "reasonCodes": [],
+      "affectedKeys": [],
+      "inputChecksumReferences": [
+        "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+        "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+        "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+        "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+        "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+        "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+        "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+      ],
+      "foreignTenantFieldsDisclosed": 0,
+      "knowledgeProcessingCalls": 0
+    },
+    "blocked_cases": [
+      {
+        "name": "missing registration",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-01-request",
+          "correlationId": "sir02-oe09-formal-0001-case-01",
+          "traceId": "sir02-oe09-formal-0001-case-01-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "REGISTRATION_MISSING_OR_MISMATCHED",
+            "REGISTRATION_MISSING_OR_MISMATCHED",
+            "REGISTRATION_MISSING_OR_MISMATCHED",
+            "WILDCARD_OR_MISSING_IDENTIFIER"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.1",
+            "registration"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "missing approval reference",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-02-request",
+          "correlationId": "sir02-oe09-formal-0001-case-02",
+          "traceId": "sir02-oe09-formal-0001-case-02-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "APPROVAL_REFERENCE_CONFLICT",
+            "APPROVAL_REFERENCE_MISSING"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "missing lineage/provenance",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-03-request",
+          "correlationId": "sir02-oe09-formal-0001-case-03",
+          "traceId": "sir02-oe09-formal-0001-case-03-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "LINEAGE_OR_PROVENANCE_MISSING"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "conflicting current version",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-04-request",
+          "correlationId": "sir02-oe09-formal-0001-case-04",
+          "traceId": "sir02-oe09-formal-0001-case-04-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "CURRENT_VERSION_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "conflicting approval state",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-05-request",
+          "correlationId": "sir02-oe09-formal-0001-case-05",
+          "traceId": "sir02-oe09-formal-0001-case-05-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "APPROVAL_STATE_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "conflicting supersession state",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-06-request",
+          "correlationId": "sir02-oe09-formal-0001-case-06",
+          "traceId": "sir02-oe09-formal-0001-case-06-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "SUPERSESSION_STATE_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "conflicting quarantine state",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-07-request",
+          "correlationId": "sir02-oe09-formal-0001-case-07",
+          "traceId": "sir02-oe09-formal-0001-case-07-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "QUARANTINE_STATE_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "active plus superseded",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-08-request",
+          "correlationId": "sir02-oe09-formal-0001-case-08",
+          "traceId": "sir02-oe09-formal-0001-case-08-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "ACTIVE_QUARANTINED_CONTRADICTION",
+            "ACTIVE_STATE_CONFLICT",
+            "ACTIVE_SUPERSEDED_CONTRADICTION"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "active plus quarantined",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-09-request",
+          "correlationId": "sir02-oe09-formal-0001-case-09",
+          "traceId": "sir02-oe09-formal-0001-case-09-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "ACTIVE_QUARANTINED_CONTRADICTION",
+            "ACTIVE_STATE_CONFLICT",
+            "ACTIVE_SUPERSEDED_CONTRADICTION"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "wrong tenant",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-10-request",
+          "correlationId": "sir02-oe09-formal-0001-case-10",
+          "traceId": "sir02-oe09-formal-0001-case-10-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "CROSS_TENANT_RECORD",
+            "CROSS_TENANT_RECORD",
+            "CROSS_TENANT_RECORD",
+            "TENANT_MISMATCH"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001@v1.0",
+            "sir02-km-source-a-001@v1.1",
+            "sir02-km-source-a-001"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "cross-tenant injected record",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-11-request",
+          "correlationId": "sir02-oe09-formal-0001-case-11",
+          "traceId": "sir02-oe09-formal-0001-case-11-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "CROSS_TENANT_RECORD",
+            "ORPHAN_DERIVED_RECORD"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "REDACTED",
+            "REDACTED"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "owner substitution",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-12-request",
+          "correlationId": "sir02-oe09-formal-0001-case-12",
+          "traceId": "sir02-oe09-formal-0001-case-12-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "OWNER_SUBSTITUTION"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "checksum/content mismatch",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-13-request",
+          "correlationId": "sir02-oe09-formal-0001-case-13",
+          "traceId": "sir02-oe09-formal-0001-case-13-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "CONTENT_CHECKSUM_MISMATCH"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "chronology conflict",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-14-request",
+          "correlationId": "sir02-oe09-formal-0001-case-14",
+          "traceId": "sir02-oe09-formal-0001-case-14-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "CHRONOLOGY_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "wildcard identifier",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-15-request",
+          "correlationId": "sir02-oe09-formal-0001-case-15",
+          "traceId": "sir02-oe09-formal-0001-case-15-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "OWNER_SUBSTITUTION",
+            "WILDCARD_OR_MISSING_IDENTIFIER"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "derived-owner"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "ambiguous authoritative state",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-16-request",
+          "correlationId": "sir02-oe09-formal-0001-case-16",
+          "traceId": "sir02-oe09-formal-0001-case-16-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "CURRENT_VERSION_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "orphan derived version",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-17-request",
+          "correlationId": "sir02-oe09-formal-0001-case-17",
+          "traceId": "sir02-oe09-formal-0001-case-17-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "ORPHAN_DERIVED_RECORD"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001@v2.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "duplicate derived version",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-18-request",
+          "correlationId": "sir02-oe09-formal-0001-case-18",
+          "traceId": "sir02-oe09-formal-0001-case-18-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "DUPLICATE_VERSION_RECORD"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001@v1.1"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "missing derived version",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-19-request",
+          "correlationId": "sir02-oe09-formal-0001-case-19",
+          "traceId": "sir02-oe09-formal-0001-case-19-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "AMBIGUOUS_AUTHORITATIVE_STATE",
+            "DERIVED_RECORD_MISSING"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001",
+            "sir02-km-source-a-001@v1.1"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      },
+      {
+        "name": "withdrawn state conflict",
+        "audit": {
+          "requestId": "sir02-oe09-formal-0001-case-20-request",
+          "correlationId": "sir02-oe09-formal-0001-case-20",
+          "traceId": "sir02-oe09-formal-0001-case-20-trace",
+          "eventType": "km_source_reconciliation_evaluated",
+          "actorId": "sir02-test-reconciliation-actor",
+          "eventTimestamp": "2026-09-26T02:06:27Z",
+          "outcome": "Blocked / Fail Closed",
+          "tenantScope": "sir02-test-tenant-a",
+          "reasonCodes": [
+            "WITHDRAWAL_STATE_CONFLICT"
+          ],
+          "affectedKeys": [
+            "sir02-km-source-a-001@v1.0"
+          ],
+          "inputChecksumReferences": [
+            "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+            "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+            "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+            "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+            "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+            "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+            "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4"
+          ],
+          "foreignTenantFieldsDisclosed": 0,
+          "knowledgeProcessingCalls": 0
+        }
+      }
+    ]
+  },
+  "chronology_result": "Preserved accepted OE-01 through OE-07 evidence; no source approval event created",
+  "cleanup_result": {
+    "in_memory_inventories_disposed": true,
+    "persistent_live_knowledge_artifacts": 0,
+    "result": "Passed"
+  },
+  "live_operation_counters": {
+    "ingestion": 0,
+    "rag": 0,
+    "embeddings": 0,
+    "indexing": 0,
+    "vector_store": 0,
+    "retrieval": 0,
+    "deployment": 0,
+    "configuration": 0,
+    "credentials": 0,
+    "secrets": 0,
+    "traffic": 0
+  },
+  "overall_execution_result": "Passed",
+  "evidence_status": "Executed / Awaiting Independent Review",
+  "independent_review_status": "Not Reviewed"
+}
