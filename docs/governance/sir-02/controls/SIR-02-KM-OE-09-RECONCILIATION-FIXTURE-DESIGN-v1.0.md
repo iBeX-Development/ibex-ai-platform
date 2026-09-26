@@ -2,21 +2,22 @@
 
 ## Document control
 
-| Field                               | Value                                           |
-| ----------------------------------- | ----------------------------------------------- |
-| Document                            | `SIR-02-KM-OE-09-RECONCILIATION-FIXTURE-DESIGN` |
-| Version                             | `v1.0`                                          |
-| Status                              | `Proposed / Not Authorized`                     |
-| Evidence item                       | `SIR02-KM-OE-09 — Source Reconciliation Test`   |
-| Environment                         | `Isolated Non-Live Evidence Execution`          |
-| Namespace                           | `sir02-km-evidence-v1`                          |
-| Fixture schema                      | `SIR02-KM-EVIDENCE-FIXTURE v1.0`                |
-| Owner                               | GANTUMUR Erdenedalai — Founder / Administrator  |
-| Reviewer                            | SODBILEG Erkhembayar — Administrator            |
-| Decision date                       | `Owner Input Required`                          |
-| Immutable design approval reference | `Owner Input Required`                          |
+| Field                            | Value                                           |
+| -------------------------------- | ----------------------------------------------- |
+| Document                         | `SIR-02-KM-OE-09-RECONCILIATION-FIXTURE-DESIGN` |
+| Version                          | `v1.0`                                          |
+| Status                           | `Authorized for Test-Only Implementation`       |
+| Evidence item                    | `SIR02-KM-OE-09 — Source Reconciliation Test`   |
+| Environment                      | `Isolated Non-Live Evidence Execution`          |
+| Namespace                        | `sir02-km-evidence-v1`                          |
+| Fixture schema                   | `SIR02-KM-EVIDENCE-FIXTURE v1.0`                |
+| Owner                            | GANTUMUR Erdenedalai — Founder / Administrator  |
+| Reviewer                         | SODBILEG Erkhembayar — Administrator            |
+| Decision date                    | `2026-09-26`                                    |
+| Immutable design reference       | `a06e68060def9557ece55c47d8aa21d57f1c88b6`      |
+| Authorization decision reference | `Pending decision-content commit linkage`       |
 
-This document proposes an implementation. It records no execution result and grants no implementation, ingestion, RAG, deployment, or Shadow activation authority. The companion authorization record is `SIR-02-KM-OE-09-RECONCILIATION-FIXTURE-AUTHORIZATION-v1.0.md`.
+The owner authorized implementation of the exact `v1.0` design in the immutable design reference above, limited to the two test-only files listed below. This document records no execution result and grants no ingestion, RAG, deployment, or Shadow activation authority. The companion decision record is `SIR-02-KM-OE-09-RECONCILIATION-FIXTURE-AUTHORIZATION-v1.0.md`.
 
 ## Controlling evidence
 
@@ -110,4 +111,4 @@ Cleanup must discard the in-memory/test-only inventories and mutations after the
 
 ## Acceptance and hold
 
-Implementation review must verify the two builders are independent, scenario expectations are separate from the comparison logic, all listed discrepancies fail closed, deterministic output is reproducible, tenant disclosure is zero, and no production/runtime file or behavior changes. The implementation may begin only after the companion authorization record contains an explicit owner decision, decision date, exact approved design version/scope, and an immutable approval reference. Implementation approval will not itself mark OE-09 executed or accepted. OE-09 remains `Not Executed`; `SIR02-DEF-02` remains `Missing / Not Reviewed`.
+Implementation review must verify the two builders are independent, scenario expectations are separate from the comparison logic, all listed discrepancies fail closed, deterministic output is reproducible, tenant disclosure is zero, and no production/runtime file or behavior changes. Owner authorization covers the exact design and the two test-only files; implementation is a separate later step. This authorization does not mark OE-09 executed or accepted. OE-09 remains `Not Executed`; `SIR02-DEF-02` remains `Missing / Not Reviewed`.

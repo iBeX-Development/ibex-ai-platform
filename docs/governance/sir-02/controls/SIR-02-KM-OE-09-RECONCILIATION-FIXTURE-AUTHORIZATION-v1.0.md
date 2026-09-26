@@ -6,40 +6,51 @@
 | ------------------------------------------- | ------------------------------------------------------- |
 | Document                                    | `SIR-02-KM-OE-09-RECONCILIATION-FIXTURE-AUTHORIZATION`  |
 | Version                                     | `v1.0`                                                  |
-| Status                                      | `Proposed / Not Authorized`                             |
+| Status                                      | `Authorized for Test-Only Implementation`               |
 | Evidence item                               | `SIR02-KM-OE-09`                                        |
 | Exact design for decision                   | `SIR-02-KM-OE-09-RECONCILIATION-FIXTURE-DESIGN-v1.0.md` |
-| Design immutable commit/reference           | `Owner Input Required`                                  |
+| Design immutable commit/reference           | `a06e68060def9557ece55c47d8aa21d57f1c88b6`              |
 | Owner                                       | GANTUMUR Erdenedalai — Founder / Administrator          |
 | Reviewer                                    | SODBILEG Erkhembayar — Administrator                    |
-| Decision outcome                            | `Owner Input Required`                                  |
-| Decision date                               | `Owner Input Required`                                  |
-| Owner decision statement                    | `Owner Input Required`                                  |
-| Conditions accepted by owner                | `Owner Input Required`                                  |
-| Immutable completed-authorization reference | `Owner Input Required`                                  |
+| Decision outcome                            | `Authorized for Test-Only Implementation`               |
+| Decision date                               | `2026-09-26`                                            |
+| Owner decision statement                    | Owner-approved statement below                          |
+| Conditions accepted by owner                | Exact implementation conditions below                   |
+| Immutable completed-authorization reference | `Pending decision-content commit linkage`               |
 
-## Requested decision
+## Formal owner authorization
 
-The owner must explicitly approve, reject, or defer implementation of the **exact versioned design** referenced above. Approval must identify the immutable design commit and authorize only the two proposed test-only files:
+> The OE-09 reconciliation fixture design v1.0 is approved for implementation strictly as an isolated test-only capability required to execute SIR02-KM-OE-09.
+
+The owner authorizes only these two test-only files under the exact design commit above:
 
 1. `tests/testing/sir02-km-oe09-reconciliation-fixture.ts`
 2. `tests/integration/sir02-km-oe09-reconciliation.test.ts`
 
-The decision must preserve Gate A synthetic-only classification, namespace `sir02-km-evidence-v1`, fixture schema `SIR02-KM-EVIDENCE-FIXTURE v1.0`, independently built in-memory inventories, fail-closed reconciliation, sanitized audit output, immutable OE-01–OE-07 input verification, cleanup, and independent review. Any material change to this design requires a new design version and separate decision.
+### Exact implementation conditions
+
+- No production/runtime source file may be modified; no database migration is authorized.
+- No live or Shadow ingestion, RAG, embeddings, indexing, vector-store population, retrieval, deployment, credentials, secrets, or traffic change is authorized.
+- Only synthetic test data may be used in namespace `sir02-km-evidence-v1` under fixture schema `SIR02-KM-EVIDENCE-FIXTURE v1.0`.
+- Authoritative and derived inventories must be constructed independently and compared deterministically.
+- Ambiguity or conflict must fail closed. Original OE-01 through OE-07 lifecycle evidence remains immutable.
+- Audit output must be sanitized; cleanup must leave no persistent live artifact.
+- Any implementation requirement outside the two named test-only files requires a new design and authorization decision before coding.
 
 ## Authorization boundary
 
-An owner decision on this record would authorize **implementation only**. It would not authorize OE-09 execution, acceptance, live ingestion, RAG, embeddings, indexing, vector storage, retrieval, application/runtime modifications, database migrations, deployment, Shadow activation, credentials, secrets, traffic, or production use. OE-08 retains its separate prerequisites. After implementation, a clean review of the exact test-only files and their isolation is required before an OE-09 evidence run.
+This owner decision authorizes **implementation only**. It does not authorize OE-09 execution or acceptance, live ingestion, RAG, embeddings, indexing, vector storage, retrieval, application/runtime modifications, database migrations, deployment, Shadow activation, credentials, secrets, traffic, or production use. OE-08 retains its separate prerequisites. After implementation, a clean review of the exact test-only files and their isolation is required before an OE-09 evidence run.
 
-## Decision and review fields for manual completion
+## Decision and review record
 
-| Field                                                                        | Required owner/reviewer entry |
-| ---------------------------------------------------------------------------- | ----------------------------- |
-| Exact design commit and version approved                                     | `Owner Input Required`        |
-| Decision (`Approved for Test-Only Implementation` / `Rejected` / `Deferred`) | `Owner Input Required`        |
-| Owner decision statement and conditions                                      | `Owner Input Required`        |
-| Owner decision date                                                          | `Owner Input Required`        |
-| Reviewer assessment of design scope and test-only boundary                   | `Owner Input Required`        |
-| Immutable completed-decision commit/reference                                | `Owner Input Required`        |
+| Field                                         | Recorded value                                      |
+| --------------------------------------------- | --------------------------------------------------- |
+| Exact design commit and version approved      | `a06e68060def9557ece55c47d8aa21d57f1c88b6` / `v1.0` |
+| Owner decision                                | `Authorized for Test-Only Implementation`           |
+| Owner decision statement and conditions       | Exact statement and conditions above                |
+| Owner decision date                           | `2026-09-26`                                        |
+| Assigned reviewer                             | SODBILEG Erkhembayar — Administrator                |
+| Independent review of implemented files       | `Not Performed — required before OE-09 execution`   |
+| Immutable completed-decision commit/reference | `Pending decision-content commit linkage`           |
 
-Until these fields are supplied and the approval is recorded immutably, status stays `Proposed / Not Authorized`. No code may be written under this record. `SIR02-KM-OE-09` remains `Not Executed`; `SIR02-DEF-02` remains `Missing / Not Reviewed`; the current operational-evidence count remains 7 Accepted and 8 Not Executed. SIR-02 remains blocking.
+This governance decision grants no evidence result. `SIR02-KM-OE-09` remains `Not Executed`; `SIR02-DEF-02` remains `Missing / Not Reviewed`; the current operational-evidence count remains 7 Accepted and 8 Not Executed. SIR-02 remains blocking.
