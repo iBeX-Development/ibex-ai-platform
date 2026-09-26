@@ -16,7 +16,7 @@
 | Decision date                               | `2026-09-26`                                         |
 | Owner decision statement                    | Exact owner-approved statement below                 |
 | Conditions accepted by owner                | Exact implementation conditions below                |
-| Immutable completed-authorization reference | `Pending decision-content commit linkage`            |
+| Immutable completed-authorization reference | `8689da1fa3e3edf2846c267d0a9103d7eb4cfbc0`           |
 
 ## Formal owner authorization
 
@@ -52,7 +52,7 @@ Any added file, change to an existing file (including OE-09), dependency, runtim
 | Owner decision date                      | `2026-09-26`                                        |
 | Assigned reviewer                        | SODBILEG Erkhembayar — Administrator                |
 | Independent review of implemented files  | `Not Performed — required before OE-11 execution`   |
-| Immutable completed-decision reference   | `Pending decision-content commit linkage`           |
+| Immutable completed-decision reference   | `8689da1fa3e3edf2846c267d0a9103d7eb4cfbc0`          |
 
 The assigned reviewer must later review the implemented files independently. Reviewer assignment does not constitute an implementation review or an OE-11 evidence acceptance.
 

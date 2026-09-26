@@ -2,20 +2,21 @@
 
 ## Document control
 
-| Field                      | Value                                                                        |
-| -------------------------- | ---------------------------------------------------------------------------- |
-| Document                   | `SIR-02-KM-OE-11-FAIL-CLOSED-FIXTURE-DESIGN`                                 |
-| Version                    | `v1.0`                                                                       |
-| Status                     | `Authorized for Test-Only Implementation`                                    |
-| Evidence item              | `SIR02-KM-OE-11 — Missing Approval / Version / Provenance Fail-Closed Tests` |
-| Environment                | `Isolated Non-Live Evidence Execution`                                       |
-| Namespace                  | `sir02-km-evidence-v1`                                                       |
-| Fixture schema             | `SIR02-KM-EVIDENCE-FIXTURE v1.0`                                             |
-| Data classification        | `Synthetic` only                                                             |
-| Owner                      | GANTUMUR Erdenedalai — Founder / Administrator                               |
-| Reviewer                   | SODBILEG Erkhembayar — Administrator                                         |
-| Decision date              | `2026-09-26`                                                                 |
-| Immutable design reference | `1d17f0c1f51386fc8b0161b60a6f30804e0aa9a2`                                   |
+| Field                            | Value                                                                        |
+| -------------------------------- | ---------------------------------------------------------------------------- |
+| Document                         | `SIR-02-KM-OE-11-FAIL-CLOSED-FIXTURE-DESIGN`                                 |
+| Version                          | `v1.0`                                                                       |
+| Status                           | `Authorized for Test-Only Implementation`                                    |
+| Evidence item                    | `SIR02-KM-OE-11 — Missing Approval / Version / Provenance Fail-Closed Tests` |
+| Environment                      | `Isolated Non-Live Evidence Execution`                                       |
+| Namespace                        | `sir02-km-evidence-v1`                                                       |
+| Fixture schema                   | `SIR02-KM-EVIDENCE-FIXTURE v1.0`                                             |
+| Data classification              | `Synthetic` only                                                             |
+| Owner                            | GANTUMUR Erdenedalai — Founder / Administrator                               |
+| Reviewer                         | SODBILEG Erkhembayar — Administrator                                         |
+| Decision date                    | `2026-09-26`                                                                 |
+| Immutable design reference       | `1d17f0c1f51386fc8b0161b60a6f30804e0aa9a2`                                   |
+| Authorization decision reference | `8689da1fa3e3edf2846c267d0a9103d7eb4cfbc0`                                   |
 
 The owner authorized implementation of the exact `v1.0` design in the immutable reference above, limited to the two test-only files below. The companion authorization record contains the exact owner statement and conditions. This design records no OE-11 execution result and grants no runtime or live-operation authority.
 
