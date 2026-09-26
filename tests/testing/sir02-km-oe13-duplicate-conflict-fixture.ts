@@ -75,6 +75,7 @@ export interface QuarantineDecision {
   sourceVersion: string;
   conflictType: ConflictCode;
   conflictingRecordReferences: string[];
+  affectedPairIds: string[];
   exactConflictCount: number;
   artifactCountBefore: LogicalArtifactCount;
   artifactCountAfter: LogicalArtifactCount;
@@ -150,6 +151,7 @@ export interface SubmissionResult {
 export interface FixtureState {
   registry: Map<string, SourceRecord[]>;
   artifactInventory: Map<string, { active: number; downstreamKnowledge: number }>;
+  syntheticScopedAuthority: Map<string, string>;
   preexistingQuarantineDecisions: Map<string, QuarantineDecision[]>;
   quarantine: QuarantineDecision[];
   auditEvents: AuditEvent[];
@@ -234,6 +236,7 @@ export function createFixture(inputs: ReturnType<typeof loadAcceptedEvidence>): 
   return {
     registry,
     artifactInventory,
+    syntheticScopedAuthority: new Map(),
     preexistingQuarantineDecisions: new Map(),
     quarantine: [],
     auditEvents: [],
@@ -261,8 +264,49 @@ export function makeSubmission(state: FixtureState, version = 'v1.0'): Submissio
   };
 }
 
+// A distinct, non-operational identity needs test-harness authority independent of
+// the accepted Tenant A evidence. The caller cannot grant this authority.
+export function authorizeSyntheticDistinct(state: FixtureState, record: SourceRecord): void {
+  const tenant = record.tenantId;
+  const source = record.sourceId;
+  if (
+    state.disposed ||
+    ![OE13_TENANT_A, OE13_TENANT_B].includes(tenant) ||
+    !validId(source) ||
+    record.registrationId !== `sir02-test-registration-${tenant}-${source}` ||
+    record.ownerId !== `sir02-test-owner-${tenant}` ||
+    record.provenanceRef !== `synthetic://${tenant}/${source}/v1.0` ||
+    record.lineageRoot !== `sir02-test-root-${tenant}-${source}` ||
+    record.immutableRefs.length !== 0 ||
+    record.approvalState !== 'unapproved' ||
+    record.approvalRef !== null ||
+    record.active ||
+    state.registry.has(keyOf(record)) ||
+    [...state.registry.values()]
+      .flat()
+      .some((prior) => prior.registrationId === record.registrationId)
+  )
+    throw new Error('INVALID_SYNTHETIC_SCOPED_AUTHORITY');
+  state.syntheticScopedAuthority.set(keyOf(record), hash(record));
+}
+
 const refPairs = (left: ImmutableReference[], right: ImmutableReference[]): string[] =>
   [...new Set([...left, ...right].map((entry) => entry.id))].sort();
+const recordIdentity = (record: SourceRecord): string => `record-sha256:${hash(record)}`;
+const referenceIdentity = (reference: ImmutableReference): string =>
+  `reference:${reference.id}:sha256:${hash(reference)}`;
+const acceptedReferenceIdentity = (item: (typeof ACCEPTED_INPUTS)[number]): string =>
+  referenceIdentity({
+    id: item.id,
+    commit: item.evidenceCommit,
+    path: item.path,
+    sha256: item.sha256
+  });
+interface ConflictObservation {
+  code: ConflictCode;
+  pairId: string;
+  references: string[];
+}
 const refsValid = (refs: ImmutableReference[]): boolean =>
   refs.length === ACCEPTED_INPUTS.length &&
   new Set(refs.map((ref) => ref.id)).size === ACCEPTED_INPUTS.length &&
@@ -276,10 +320,19 @@ const refsValid = (refs: ImmutableReference[]): boolean =>
     )
   );
 
-function classify(state: FixtureState, submission: Submission): ConflictCode[] {
+function classify(state: FixtureState, submission: Submission): ConflictObservation[] {
   const candidate = submission.record;
-  const codes = new Set<ConflictCode>();
-  const add = (code: ConflictCode): void => void codes.add(code);
+  const observations = new Map<string, ConflictObservation>();
+  const candidateIdentity = recordIdentity(candidate);
+  const add = (
+    code: ConflictCode,
+    left = `validation:${code}`,
+    right = candidateIdentity
+  ): void => {
+    const references = [left, right].sort();
+    const pairId = hash([keyOf(candidate), ...references]);
+    observations.set(`${code}:${pairId}`, { code, pairId, references });
+  };
   if (
     !validId(candidate.registrationId) ||
     !validId(candidate.sourceId) ||
@@ -314,94 +367,137 @@ function classify(state: FixtureState, submission: Submission): ConflictCode[] {
   if (candidate.approvalState === 'approved' && !candidate.approvalRef) add('APPROVAL_CONFLICT');
   if (!candidate.contentIdentity || candidate.contentIdentity !== candidate.checksum)
     add('CONTENT_IDENTITY_CONFLICT');
-  if (!candidate.immutableRefs.length) add('IMMUTABLE_COMMIT_CONFLICT');
+  const scopedAuthority = state.syntheticScopedAuthority.get(keyOf(candidate));
+  const authorizedDistinct =
+    scopedAuthority === hash(candidate) && candidate.immutableRefs.length === 0;
   for (const ref of candidate.immutableRefs) {
     const pinned = ACCEPTED_INPUTS.find((item) => item.id === ref.id);
     if (!pinned || pinned.evidenceCommit !== ref.commit || pinned.sha256 !== ref.sha256)
-      add('IMMUTABLE_COMMIT_CONFLICT');
-    if (!pinned || pinned.path !== ref.path) add('ARTIFACT_REFERENCE_CONFLICT');
+      add(
+        'IMMUTABLE_COMMIT_CONFLICT',
+        pinned ? acceptedReferenceIdentity(pinned) : 'reference:unknown',
+        referenceIdentity(ref)
+      );
+    if (!pinned || pinned.path !== ref.path)
+      add(
+        'ARTIFACT_REFERENCE_CONFLICT',
+        pinned ? acceptedReferenceIdentity(pinned) : 'reference:unknown',
+        referenceIdentity(ref)
+      );
   }
-  if (!refsValid(candidate.immutableRefs)) add('IMMUTABLE_COMMIT_CONFLICT');
+  if (!authorizedDistinct) {
+    for (const pinned of ACCEPTED_INPUTS) {
+      const matching = candidate.immutableRefs.filter((ref) => ref.id === pinned.id);
+      if (matching.length !== 1)
+        add(
+          'IMMUTABLE_COMMIT_CONFLICT',
+          acceptedReferenceIdentity(pinned),
+          matching.length === 0
+            ? 'reference:missing'
+            : `reference:duplicate:sha256:${hash(matching)}`
+        );
+    }
+    if (
+      !refsValid(candidate.immutableRefs) &&
+      ![...observations.values()].some((entry) => entry.code === 'IMMUTABLE_COMMIT_CONFLICT')
+    )
+      add('IMMUTABLE_COMMIT_CONFLICT');
+  }
 
   // Scope and registration checks occur before any foreign record can be disclosed.
   const all = [...state.registry.values()].flat();
   const registrationClaims = all.filter(
     (record) => record.registrationId === candidate.registrationId
   );
-  if (registrationClaims.some((record) => record.tenantId !== candidate.tenantId))
-    add('CROSS_TENANT_INJECTION');
-  if (
-    registrationClaims.some(
-      (record) => record.tenantId === candidate.tenantId && record.sourceId !== candidate.sourceId
-    )
-  )
-    add('REGISTRATION_ID_CONFLICT');
+  for (const record of registrationClaims) {
+    if (record.tenantId !== candidate.tenantId)
+      add('CROSS_TENANT_INJECTION', recordIdentity(record));
+    if (record.tenantId === candidate.tenantId && record.sourceId !== candidate.sourceId)
+      add('REGISTRATION_ID_CONFLICT', recordIdentity(record));
+  }
   const sameSource = all.filter(
     (record) => record.tenantId === candidate.tenantId && record.sourceId === candidate.sourceId
   );
-  if (
-    !state.registry.has(keyOf(candidate)) &&
-    sameSource.some(
-      (record) =>
+  if (!state.registry.has(keyOf(candidate))) {
+    for (const record of sameSource)
+      if (
         record.registrationId === candidate.registrationId &&
         record.version !== candidate.version &&
         candidate.predecessor !== record.version
-    )
-  )
-    add('SOURCE_VERSION_CONFLICT');
+      )
+        add('SOURCE_VERSION_CONFLICT', recordIdentity(record));
+  }
   const existing = state.registry.get(keyOf(candidate)) ?? [];
-  if (existing.length > 1) add('AMBIGUOUS_AUTHORITATIVE_STATE');
-  const authoritative = existing[0];
-  if (authoritative) {
-    if (authoritative.registrationId !== candidate.registrationId) add('REGISTRATION_ID_CONFLICT');
-    if (authoritative.ownerId !== candidate.ownerId) add('OWNER_CONFLICT');
+  if (existing.length === 0 && !authorizedDistinct)
+    add('TENANT_BINDING_CONFLICT', 'authority:missing');
+  if (existing.length > 1)
+    for (const record of existing) add('AMBIGUOUS_AUTHORITATIVE_STATE', recordIdentity(record));
+  for (const authoritative of existing) {
+    const addAgainst = (code: ConflictCode): void => {
+      add(code, recordIdentity(authoritative));
+    };
+    if (authoritative.registrationId !== candidate.registrationId)
+      addAgainst('REGISTRATION_ID_CONFLICT');
+    if (authoritative.ownerId !== candidate.ownerId) addAgainst('OWNER_CONFLICT');
     if (
       authoritative.checksum !== candidate.checksum ||
       authoritative.contentIdentity !== candidate.contentIdentity
     )
-      add('CONTENT_IDENTITY_CONFLICT');
+      addAgainst('CONTENT_IDENTITY_CONFLICT');
     if (
       authoritative.approvalState !== candidate.approvalState ||
       authoritative.approvalRef !== candidate.approvalRef ||
       authoritative.approvalAt !== candidate.approvalAt
     )
-      add('APPROVAL_CONFLICT');
-    if (authoritative.provenanceRef !== candidate.provenanceRef) add('PROVENANCE_CONFLICT');
+      addAgainst('APPROVAL_CONFLICT');
+    if (authoritative.provenanceRef !== candidate.provenanceRef) addAgainst('PROVENANCE_CONFLICT');
     if (
       authoritative.lineageRoot !== candidate.lineageRoot ||
       authoritative.predecessor !== candidate.predecessor
     )
-      add('LINEAGE_CONFLICT');
+      addAgainst('LINEAGE_CONFLICT');
     if (
       authoritative.supersessionState !== candidate.supersessionState ||
       authoritative.supersessionRef !== candidate.supersessionRef ||
       authoritative.supersessionAt !== candidate.supersessionAt
     )
-      add('SUPERSESSION_CONFLICT');
+      addAgainst('SUPERSESSION_CONFLICT');
     if (
       authoritative.quarantineState !== candidate.quarantineState ||
       authoritative.quarantineRef !== candidate.quarantineRef ||
       authoritative.quarantineAt !== candidate.quarantineAt ||
       authoritative.active !== candidate.active
     )
-      add('STALE_QUARANTINE_CONFLICT');
+      addAgainst('STALE_QUARANTINE_CONFLICT');
     if (
       authoritative.eventTimestamp !== candidate.eventTimestamp ||
       authoritative.createdAt !== candidate.createdAt
     )
-      add('CHRONOLOGY_CONFLICT');
+      addAgainst('CHRONOLOGY_CONFLICT');
     for (const ref of candidate.immutableRefs) {
       const prior = authoritative.immutableRefs.find((item) => item.id === ref.id);
       if (!prior || prior.commit !== ref.commit || prior.sha256 !== ref.sha256)
-        add('IMMUTABLE_COMMIT_CONFLICT');
-      if (!prior || prior.path !== ref.path) add('ARTIFACT_REFERENCE_CONFLICT');
+        add(
+          'IMMUTABLE_COMMIT_CONFLICT',
+          prior ? referenceIdentity(prior) : 'reference:missing',
+          referenceIdentity(ref)
+        );
+      if (!prior || prior.path !== ref.path)
+        add(
+          'ARTIFACT_REFERENCE_CONFLICT',
+          prior ? referenceIdentity(prior) : 'reference:missing',
+          referenceIdentity(ref)
+        );
     }
-    if (authoritative.immutableRefs.length !== candidate.immutableRefs.length)
-      add('IMMUTABLE_COMMIT_CONFLICT');
+    for (const prior of authoritative.immutableRefs)
+      if (!candidate.immutableRefs.some((ref) => ref.id === prior.id))
+        add('IMMUTABLE_COMMIT_CONFLICT', referenceIdentity(prior), 'reference:missing');
   }
   if ((state.preexistingQuarantineDecisions.get(keyOf(candidate))?.length ?? 0) > 0)
     add('QUARANTINE_DECISION_CONFLICT');
-  return [...codes].sort();
+  return [...observations.values()].sort(
+    (left, right) => left.code.localeCompare(right.code) || left.pairId.localeCompare(right.pairId)
+  );
 }
 
 function cleanup(state: FixtureState): void {
@@ -418,6 +514,9 @@ function cleanup(state: FixtureState): void {
   });
   clear(() => {
     state.artifactInventory.clear();
+  });
+  clear(() => {
+    state.syntheticScopedAuthority.clear();
   });
   clear(() => {
     state.preexistingQuarantineDecisions.clear();
@@ -455,14 +554,26 @@ export function executeSubmission(state: FixtureState, submission: Submission): 
     const registryHashBefore = hash(orderedRegistry(state.registry));
     const inventoryHashBefore = hash(orderedInventory(state.artifactInventory));
     state.beforeClassify?.();
-    const codes = classify(state, submission);
+    const observations = classify(state, submission);
     const key = keyOf(submission.record);
     const existing = state.registry.get(key) ?? [];
     const identical =
-      codes.length === 0 && existing.length === 1 && hash(existing[0]) === hash(submission.record);
-    const isDistinct = codes.length === 0 && existing.length === 0;
-    if (!identical && !isDistinct && codes.length === 0)
-      codes.push('AMBIGUOUS_AUTHORITATIVE_STATE');
+      observations.length === 0 &&
+      existing.length === 1 &&
+      hash(existing[0]) === hash(submission.record);
+    const isDistinct = observations.length === 0 && existing.length === 0;
+    if (!identical && !isDistinct && observations.length === 0) {
+      const references = [
+        recordIdentity(existing[0] ?? submission.record),
+        recordIdentity(submission.record)
+      ].sort();
+      observations.push({
+        code: 'AMBIGUOUS_AUTHORITATIVE_STATE',
+        pairId: hash([key, ...references]),
+        references
+      });
+    }
+    const codes = [...new Set(observations.map((entry) => entry.code))].sort();
     const decision: SubmissionResult['decision'] =
       codes.length > 0
         ? 'Conflict / Quarantined / Fail Closed'
@@ -508,7 +619,8 @@ export function executeSubmission(state: FixtureState, submission: Submission): 
     }
     const after = counts(state);
     const byCode: Partial<Record<ConflictCode, number>> = {};
-    for (const code of codes) byCode[code] = 1;
+    for (const observation of observations)
+      byCode[observation.code] = (byCode[observation.code] ?? 0) + 1;
     const quarantine: QuarantineDecision[] = codes.map((code) => ({
       id: `sir02-oe13-hold-${hash([key, code, correlationId]).slice(0, 16)}`,
       tenantId: submission.record.tenantId,
@@ -519,11 +631,19 @@ export function executeSubmission(state: FixtureState, submission: Submission): 
         submission.callerTenant === OE13_TENANT_B
           ? []
           : [
-              ...refPairs(existing[0]?.immutableRefs ?? [], submission.record.immutableRefs),
-              ...(existing[0] ? [`authoritative-record-sha256:${hash(existing[0])}`] : []),
-              `candidate-record-sha256:${hash(submission.record)}`
-            ],
-      exactConflictCount: 1,
+              ...new Set([
+                ...observations
+                  .filter((entry) => entry.code === code)
+                  .flatMap((entry) => entry.references),
+                ...refPairs(existing[0]?.immutableRefs ?? [], submission.record.immutableRefs),
+                `candidate-record-sha256:${hash(submission.record)}`
+              ])
+            ].sort(),
+      affectedPairIds: observations
+        .filter((entry) => entry.code === code)
+        .map((entry) => entry.pairId)
+        .sort(),
+      exactConflictCount: byCode[code] ?? 0,
       artifactCountBefore: copy(before),
       artifactCountAfter: copy(after),
       lifecycleState: 'Blocked / Quarantined / Non-Operational',
@@ -616,7 +736,7 @@ export function executeSubmission(state: FixtureState, submission: Submission): 
             : 'DISTINCT_SCOPED_IDENTITY',
       conflictCodes: codes,
       conflictCounts: byCode,
-      totalConflicts: codes.length,
+      totalConflicts: new Set(observations.map((entry) => entry.pairId)).size,
       artifactCountBefore: before,
       artifactCountAfter: after,
       registryHashBefore,
