@@ -53,7 +53,9 @@ Authoritative supporting references:
 - OE-07 execution evidence: `operational-evidence/oe-07/SIR-02-KM-OE-07-STALE-CONTENT-QUARANTINE-TEST-v1.0.json`; SHA-256 `c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4`; commit `03791c7096adaa0ee5874110f7dae291858efd37`; status `Executed / Awaiting Independent Review`.
 - OE-07 independent review: `operational-evidence/oe-07/SIR-02-KM-OE-07-INDEPENDENT-REVIEW-v1.0.md`; commit `b7932b282833487b1a3eb2ccc6d7ca56015740a5`; result and status `Accepted`.
 - OE-09 formal reconciliation evidence: `operational-evidence/oe-09/SIR-02-KM-OE-09-SOURCE-RECONCILIATION-FORMAL-EVIDENCE-0001-v1.0.json`; SHA-256 `f33f71447115e5c0835d112925d611eb848b9be24bc50c0de01c02dba3661b58`; evidence commit `de9cc392fc258156cbda9dad5d7197b46c8251f9`; status `Executed / Awaiting Independent Review`.
-- OE-09 technical review: `operational-evidence/oe-09/SIR-02-KM-OE-09-INDEPENDENT-REVIEW-v1.0.md`; commit `b423a0d50eaa6a9039f26788e92be512ee16ac91`; result `Needs Clarification` because SODBILEG Erkhembayar's formal-run independence attestation has not been supplied. OE-09 remains `Executed / Awaiting Independent Review`.
+- Earlier OE-09 technical review: `operational-evidence/oe-09/SIR-02-KM-OE-09-INDEPENDENT-REVIEW-v1.0.md`; commit `b423a0d50eaa6a9039f26788e92be512ee16ac91`; result `Needs Clarification` because SODBILEG Erkhembayar's formal-run independence attestation was not supplied at that time. OE-09 then remained `Executed / Awaiting Independent Review`.
+- OE-09 supplied reviewer attestation: `operational-evidence/oe-09/SIR-02-KM-OE-09-REVIEWER-ATTESTATION-v1.0.md`; commit `98cabf0ccf94508056f19252e649c269d655aecf`.
+- OE-09 final independent review: `operational-evidence/oe-09/SIR-02-KM-OE-09-INDEPENDENT-REVIEW-v2.0.md`; commit `564d545c6ec0e0d52e43d758c0ba7ff8810df6aa`; result and status `Accepted`. The earlier clarification remains preserved.
 
 These references remain supporting evidence. Knowledge Management owner decisions are now immutable at commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
 
@@ -86,10 +88,10 @@ These references remain supporting evidence. Knowledge Management owner decision
 - OE-05 execution and review: **The immutable four-hop provenance chain passed 1/1 positive and 21/21 negative cases; source/version/checksum, tenant, owner, approval, and lineage remain consistent; unapproved `v1.1` remains unapproved; zero new approval events, cross-tenant disclosures, live calls, or persistent artifacts occurred; independent review result is `Accepted`**.
 - OE-06 execution and review: **Corrected sequence `0002` passed 1/1 positive and 21/21 negative cases. Supersession is exact and tenant-bound; `v1.0` is non-active, `v1.1` remains unapproved and non-active, approval inheritance is denied, chronology is preserved, zero live artifacts or new approval events occurred, and the preserved `0001 → 0002` lineage was independently accepted.**
 - OE-07 execution and review: **The exact superseded `v1.0` record passed 1/1 positive and 22/22 negative cases. Stale content is version-specifically quarantined and remains unavailable for active or approved knowledge use; automatic release, unauthorized reactivation, rollback, wildcard, and cross-tenant attempts fail closed; independent review result is `Accepted`.**
-- OE-09 formal execution: **45/45 test assertions passed; the clean authoritative and independently derived inventories reconciled with zero discrepancies, and 20/20 conflict cases failed closed with 40 discrepancies in total. Tenant B disclosed protected-field count was zero. Technical review found no evidence mismatch but recorded `Needs Clarification` because the assigned reviewer's independence attestation is missing.**
+- OE-09 formal execution and final review: **45/45 test assertions passed; the clean authoritative and independently derived inventories reconciled with zero discrepancies, and 20/20 conflict cases failed closed with 40 discrepancies in total. Tenant B disclosed protected-field count was zero. The supplied reviewer attestation closed the prior independence gap; final review result and status are `Accepted`.**
 - Operational-evidence requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
-- Exact remaining blocker: OE-09 awaits independent review; 7 items remain `Not Executed`; the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
+- Exact remaining blocker: 7 items remain `Not Executed`; the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
 
 ### SIR02-DEF-03 — Knowledge Management review and expiry acceptance
 
@@ -115,4 +117,4 @@ These references remain supporting evidence. Knowledge Management owner decision
 
 ## Reviewer next action
 
-Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 through OE-07 are independently accepted. OE-09 has executed; SODBILEG Erkhembayar must attest to review independence and record the final disposition before OE-09 can be accepted. OE-08 retains its separate policy and non-live operational-environment prerequisites. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
+Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 through OE-07 and OE-09 are independently accepted. OE-11 is next in the approved execution order, subject to its own prerequisites and controlled test-only authorization; it has not been executed. OE-08 retains its separate policy and non-live operational-environment prerequisites. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
