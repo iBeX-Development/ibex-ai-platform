@@ -52,7 +52,7 @@ Ingestion cannot reopen until these controls are formally approved and operation
 - Lifecycle-control status: `Required before ingestion reopening`.
 - Operational evidence status: `Required before ingestion reopening`.
 - Controlled reopening confirmation: **Confirmed. Ingestion cannot reopen until lifecycle controls are approved and operationally evidenced.**
-- The original owner decision asserted neither reference. The subsequently approved lifecycle-control baseline now satisfies that portion. OE-09 formal execution evidence exists at commit `de9cc392fc258156cbda9dad5d7197b46c8251f9` and was independently accepted at `564d545c6ec0e0d52e43d758c0ba7ff8810df6aa`; the complete accepted operational-evidence package remains unavailable.
+- The original owner decision asserted neither reference. The subsequently approved lifecycle-control baseline now satisfies that portion. OE-09 formal execution evidence exists at commit `de9cc392fc258156cbda9dad5d7197b46c8251f9` and was independently accepted at `564d545c6ec0e0d52e43d758c0ba7ff8810df6aa`. OE-11 formal execution evidence exists at `363963e3f3aa87257d1fe276165d01150239b69d` and awaits independent review; the complete accepted operational-evidence package remains unavailable.
 
 ## Mandatory conditions
 
@@ -74,6 +74,7 @@ Ingestion cannot reopen until these controls are formally approved and operation
 - Approved Knowledge Management Lifecycle-Control Baseline `v1.0`: baseline commit `48407614af13e8f8239a9e63454c013dc43e432b`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`
 - Approved Operational Evidence Execution Plan and Acceptance Matrix `v1.0`: artifact commit `37212d5869709f85256618e6b03fffb0622a2049`; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960`
 - OE-09 formal reconciliation run: `operational-evidence/oe-09/SIR-02-KM-OE-09-SOURCE-RECONCILIATION-FORMAL-EVIDENCE-0001-v1.0.json`; SHA-256 `f33f71447115e5c0835d112925d611eb848b9be24bc50c0de01c02dba3661b58`; evidence commit `de9cc392fc258156cbda9dad5d7197b46c8251f9`; supplied reviewer attestation `98cabf0ccf94508056f19252e649c269d655aecf`; final accepted review `564d545c6ec0e0d52e43d758c0ba7ff8810df6aa`
+- OE-11 formal fail-closed run: `operational-evidence/oe-11/SIR-02-KM-OE-11-MISSING-LIFECYCLE-EVIDENCE-FORMAL-EVIDENCE-0002-v1.0.json`; SHA-256 `d6c520faae815bfa1e1ff84ecb8f288ae55a26a801eeb99ec6b7acc4da536d51`; evidence commit `363963e3f3aa87257d1fe276165d01150239b69d`; `Executed / Awaiting Independent Review`
 
 ## Acceptance-criteria mapping
 
@@ -121,4 +122,4 @@ Ingestion cannot reopen until these controls are formally approved and operation
 - Conditions: **Lifecycle controls must be approved and operationally evidenced before ingestion reopening.**
 - Immutable owner-decision reference: **`c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`**
 
-The owner decision, approved lifecycle-control reference, controlled operational-evidence execution plan, and Gate A prerequisites are complete. OE-01 through OE-07 and OE-09 are `Accepted` (8 total); the other 7 evidence items remain `Not Executed`. Evidence status remains `Missing / Not Reviewed` because the complete 15-item accepted operational-evidence package and immutable package reference do not yet exist. These records do not authorize ingestion reopening.
+The owner decision, approved lifecycle-control reference, controlled operational-evidence execution plan, and Gate A prerequisites are complete. OE-01 through OE-07 and OE-09 are `Accepted` (8 total); OE-11 is `Executed / Awaiting Independent Review`; the other 6 evidence items remain `Not Executed`. Evidence status remains `Missing / Not Reviewed` because the complete 15-item accepted operational-evidence package and immutable package reference do not yet exist. These records do not authorize ingestion reopening.

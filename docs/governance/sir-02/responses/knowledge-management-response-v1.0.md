@@ -56,6 +56,7 @@ Authoritative supporting references:
 - Earlier OE-09 technical review: `operational-evidence/oe-09/SIR-02-KM-OE-09-INDEPENDENT-REVIEW-v1.0.md`; commit `b423a0d50eaa6a9039f26788e92be512ee16ac91`; result `Needs Clarification` because SODBILEG Erkhembayar's formal-run independence attestation was not supplied at that time. OE-09 then remained `Executed / Awaiting Independent Review`.
 - OE-09 supplied reviewer attestation: `operational-evidence/oe-09/SIR-02-KM-OE-09-REVIEWER-ATTESTATION-v1.0.md`; commit `98cabf0ccf94508056f19252e649c269d655aecf`.
 - OE-09 final independent review: `operational-evidence/oe-09/SIR-02-KM-OE-09-INDEPENDENT-REVIEW-v2.0.md`; commit `564d545c6ec0e0d52e43d758c0ba7ff8810df6aa`; result and status `Accepted`. The earlier clarification remains preserved.
+- OE-11 formal fail-closed evidence: `operational-evidence/oe-11/SIR-02-KM-OE-11-MISSING-LIFECYCLE-EVIDENCE-FORMAL-EVIDENCE-0002-v1.0.json`; SHA-256 `d6c520faae815bfa1e1ff84ecb8f288ae55a26a801eeb99ec6b7acc4da536d51`; evidence commit `363963e3f3aa87257d1fe276165d01150239b69d`; run `SIR02-KM-OE-11-V1_0-20260926T060608Z-0002`; status `Executed / Awaiting Independent Review`. Sequence `0001` was a pre-test tooling launch failure and is recorded in the artifact.
 
 These references remain supporting evidence. Knowledge Management owner decisions are now immutable at commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
 
@@ -89,9 +90,10 @@ These references remain supporting evidence. Knowledge Management owner decision
 - OE-06 execution and review: **Corrected sequence `0002` passed 1/1 positive and 21/21 negative cases. Supersession is exact and tenant-bound; `v1.0` is non-active, `v1.1` remains unapproved and non-active, approval inheritance is denied, chronology is preserved, zero live artifacts or new approval events occurred, and the preserved `0001 → 0002` lineage was independently accepted.**
 - OE-07 execution and review: **The exact superseded `v1.0` record passed 1/1 positive and 22/22 negative cases. Stale content is version-specifically quarantined and remains unavailable for active or approved knowledge use; automatic release, unauthorized reactivation, rollback, wildcard, and cross-tenant attempts fail closed; independent review result is `Accepted`.**
 - OE-09 formal execution and final review: **45/45 test assertions passed; the clean authoritative and independently derived inventories reconciled with zero discrepancies, and 20/20 conflict cases failed closed with 40 discrepancies in total. Tenant B disclosed protected-field count was zero. The supplied reviewer attestation closed the prior independence gap; final review result and status are `Accepted`.**
+- OE-11 formal execution: **44/44 tests passed, including 22/22 negative categories, 33/33 negative subcases, and one positive control. Every negative subcase denied with zero downstream calls, zero artifact creation, sanitized audit, and cleanup. Tenant B protected-field disclosure was zero. Independent evidence review remains pending.**
 - Operational-evidence requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
-- Exact remaining blocker: 7 items remain `Not Executed`; the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
+- Exact remaining blocker: OE-11 awaits independent review; 6 items remain `Not Executed`; the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
 
 ### SIR02-DEF-03 — Knowledge Management review and expiry acceptance
 
@@ -117,4 +119,4 @@ These references remain supporting evidence. Knowledge Management owner decision
 
 ## Reviewer next action
 
-Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 through OE-07 and OE-09 are independently accepted. OE-11 is next in the approved execution order, subject to its own prerequisites and controlled test-only authorization; it has not been executed. OE-08 retains its separate policy and non-live operational-environment prerequisites. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
+Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 through OE-07 and OE-09 are independently accepted. The next action is SODBILEG Erkhembayar's independent review of formal OE-11 sequence `0002`, its checksums, 33 negative subcases, positive control, tenant-safe denial, audit, and cleanup. OE-08 retains its separate policy and non-live operational-environment prerequisites. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.

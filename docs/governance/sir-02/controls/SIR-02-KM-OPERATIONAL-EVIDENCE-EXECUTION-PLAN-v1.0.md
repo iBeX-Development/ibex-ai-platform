@@ -43,7 +43,7 @@
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
 
-Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-07 and OE-09 are `Accepted` (8 total); the other 7 evidence items remain `Not Executed`. OE-09's earlier `Needs Clarification` review remains preserved at commit `b423a0d50eaa6a9039f26788e92be512ee16ac91`; the exact supplied attestation at `98cabf0ccf94508056f19252e649c269d655aecf` supports its final `Accepted` review at `564d545c6ec0e0d52e43d758c0ba7ff8810df6aa`.
+Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-07 and OE-09 are `Accepted` (8 total); OE-11 is `Executed / Awaiting Independent Review`; the other 6 evidence items remain `Not Executed`. OE-09's earlier `Needs Clarification` review remains preserved at commit `b423a0d50eaa6a9039f26788e92be512ee16ac91`; the exact supplied attestation at `98cabf0ccf94508056f19252e649c269d655aecf` supports its final `Accepted` review at `564d545c6ec0e0d52e43d758c0ba7ff8810df6aa`.
 
 ## Purpose
 
@@ -307,7 +307,8 @@ Each produced evidence package must contain:
 - **Checksum/reference:** Checksummed results and immutable run reference.
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** All mandatory-missing and conflict cases fail closed at the earliest trusted boundary.
-- **Status:** `Not Executed`
+- **Execution evidence:** `operational-evidence/oe-11/SIR-02-KM-OE-11-MISSING-LIFECYCLE-EVIDENCE-FORMAL-EVIDENCE-0002-v1.0.json`; SHA-256 `d6c520faae815bfa1e1ff84ecb8f288ae55a26a801eeb99ec6b7acc4da536d51`; evidence commit `363963e3f3aa87257d1fe276165d01150239b69d`; run `SIR02-KM-OE-11-V1_0-20260926T060608Z-0002`; 44/44 tests passed, including 22/22 negative categories, 33/33 subcases, and one positive control. Sequence `0001` stopped before tests because Vitest was unavailable in the sandbox and is preserved in the artifact.
+- **Status:** `Executed / Awaiting Independent Review`
 
 ### SIR02-KM-OE-12 — Lifecycle audit evidence
 
