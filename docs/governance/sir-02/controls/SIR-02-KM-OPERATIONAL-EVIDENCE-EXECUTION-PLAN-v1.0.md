@@ -43,7 +43,7 @@
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
 
-Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-07 are independently reviewed and accepted; the other 8 evidence items remain `Not Executed`.
+Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-07 are independently reviewed and accepted; OE-09 is `Executed / Awaiting Independent Review` (evidence commit `de9cc392fc258156cbda9dad5d7197b46c8251f9`); the other 7 evidence items remain `Not Executed`.
 
 ## Purpose
 
@@ -270,7 +270,8 @@ Each produced evidence package must contain:
 - **Checksum/reference:** Inventory/report hashes and immutable run reference.
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** Reconciliation is complete, deterministic, tenant-safe, and reconstructable.
-- **Status:** `Not Executed`
+- **Execution evidence:** `operational-evidence/oe-09/SIR-02-KM-OE-09-SOURCE-RECONCILIATION-FORMAL-EVIDENCE-0001-v1.0.json`; SHA-256 `f33f71447115e5c0835d112925d611eb848b9be24bc50c0de01c02dba3661b58`; evidence commit `de9cc392fc258156cbda9dad5d7197b46c8251f9`; run `SIR02-KM-OE-09-V1_0-20260926T020627Z-0001`; 45/45 tests passed, 20/20 conflict cases blocked, independent review pending.
+- **Status:** `Executed / Awaiting Independent Review`
 
 ### SIR02-KM-OE-10 — Permission and tenant-isolation test
 
