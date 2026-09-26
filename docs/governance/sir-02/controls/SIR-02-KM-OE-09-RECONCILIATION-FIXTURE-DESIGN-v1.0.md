@@ -15,7 +15,7 @@
 | Reviewer                         | SODBILEG Erkhembayar — Administrator            |
 | Decision date                    | `2026-09-26`                                    |
 | Immutable design reference       | `a06e68060def9557ece55c47d8aa21d57f1c88b6`      |
-| Authorization decision reference | `Pending decision-content commit linkage`       |
+| Authorization decision reference | `72aa0bed8fa829bb2f6585ee80c0cdab3df48ff2`      |
 
 The owner authorized implementation of the exact `v1.0` design in the immutable design reference above, limited to the two test-only files listed below. This document records no execution result and grants no ingestion, RAG, deployment, or Shadow activation authority. The companion decision record is `SIR-02-KM-OE-09-RECONCILIATION-FIXTURE-AUTHORIZATION-v1.0.md`.
 

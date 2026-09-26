@@ -16,7 +16,7 @@
 | Decision date                               | `2026-09-26`                                            |
 | Owner decision statement                    | Owner-approved statement below                          |
 | Conditions accepted by owner                | Exact implementation conditions below                   |
-| Immutable completed-authorization reference | `Pending decision-content commit linkage`               |
+| Immutable completed-authorization reference | `72aa0bed8fa829bb2f6585ee80c0cdab3df48ff2`              |
 
 ## Formal owner authorization
 
@@ -51,6 +51,6 @@ This owner decision authorizes **implementation only**. It does not authorize OE
 | Owner decision date                           | `2026-09-26`                                        |
 | Assigned reviewer                             | SODBILEG Erkhembayar — Administrator                |
 | Independent review of implemented files       | `Not Performed — required before OE-09 execution`   |
-| Immutable completed-decision commit/reference | `Pending decision-content commit linkage`           |
+| Immutable completed-decision commit/reference | `72aa0bed8fa829bb2f6585ee80c0cdab3df48ff2`          |
 
 This governance decision grants no evidence result. `SIR02-KM-OE-09` remains `Not Executed`; `SIR02-DEF-02` remains `Missing / Not Reviewed`; the current operational-evidence count remains 7 Accepted and 8 Not Executed. SIR-02 remains blocking.
