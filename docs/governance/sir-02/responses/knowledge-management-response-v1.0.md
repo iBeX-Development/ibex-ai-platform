@@ -59,6 +59,7 @@ Authoritative supporting references:
 - OE-11 formal fail-closed evidence: `operational-evidence/oe-11/SIR-02-KM-OE-11-MISSING-LIFECYCLE-EVIDENCE-FORMAL-EVIDENCE-0002-v1.0.json`; SHA-256 `d6c520faae815bfa1e1ff84ecb8f288ae55a26a801eeb99ec6b7acc4da536d51`; evidence commit `363963e3f3aa87257d1fe276165d01150239b69d`; run `SIR02-KM-OE-11-V1_0-20260926T060608Z-0002`; status `Executed / Awaiting Independent Review`. Sequence `0001` was a pre-test tooling launch failure and is recorded in the artifact.
 - OE-11 supplied formal-run reviewer attestation: `operational-evidence/oe-11/SIR-02-KM-OE-11-REVIEWER-ATTESTATION-v1.0.md`; commit `16b1f8de44f6dd82d4f0c62700288b17abfce408`.
 - OE-11 independent review: `operational-evidence/oe-11/SIR-02-KM-OE-11-INDEPENDENT-REVIEW-v1.0.md`; commit `2bb7ebbcfe5d137b34f5cd19b2107ac68e24b1cc`; result and status `Accepted`. The `0001 → 0002` lineage remains preserved.
+- OE-13 formal duplicate/conflict execution: `operational-evidence/oe-13/SIR-02-KM-OE-13-DUPLICATE-CONFLICT-FORMAL-EVIDENCE-0001-v1.0.json`; SHA-256 `908843689d9ccb1b5139d2ab8939a12067d046fc2f04c857cda065ea41544bee`; evidence commit `a0bcdb4ef646b0322cca6e30ef1f8c3b282501c9`; run `SIR02-KM-OE-13-V1_0-20260926T131738Z-0001`; status `Executed / Awaiting Independent Review`. The prior `EPERM` tooling attempt is preserved in the artifact.
 
 These references remain supporting evidence. Knowledge Management owner decisions are now immutable at commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
 
@@ -93,9 +94,10 @@ These references remain supporting evidence. Knowledge Management owner decision
 - OE-07 execution and review: **The exact superseded `v1.0` record passed 1/1 positive and 22/22 negative cases. Stale content is version-specifically quarantined and remains unavailable for active or approved knowledge use; automatic release, unauthorized reactivation, rollback, wildcard, and cross-tenant attempts fail closed; independent review result is `Accepted`.**
 - OE-09 formal execution and final review: **45/45 test assertions passed; the clean authoritative and independently derived inventories reconciled with zero discrepancies, and 20/20 conflict cases failed closed with 40 discrepancies in total. Tenant B disclosed protected-field count was zero. The supplied reviewer attestation closed the prior independence gap; final review result and status are `Accepted`.**
 - OE-11 formal execution and review: **44/44 tests passed, including 22/22 negative categories, 33/33 negative subcases, and one positive control. Every negative subcase denied with zero downstream calls, zero artifact creation, sanitized audit, and cleanup. Tenant B protected-field disclosure was zero. The separately supplied formal-run attestation supports the independent review result `Accepted`.**
+- OE-13 formal execution: **39/39 Vitest tests passed across the 20 mapped scenario categories. Exact repeats created zero additional authoritative, active, or downstream artifacts; typed conflicts quarantined for human decision with zero downstream calls; unique affected-pair counts, ordering independence, tenant-safe non-enumerability, zero Tenant B disclosure, sanitized audit, and cleanup passed the accepted assertions. Independent review remains required. The JSON reporter did not emit raw per-case registry hashes or pair IDs; the reviewer must assess that capture limit.**
 - Operational-evidence requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
-- Exact remaining blocker: 6 items remain `Not Executed`; the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
+- Exact remaining blocker: OE-13 awaits independent review and 5 items remain `Not Executed`; the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
 
 ### SIR02-DEF-03 — Knowledge Management review and expiry acceptance
 
@@ -121,4 +123,4 @@ These references remain supporting evidence. Knowledge Management owner decision
 
 ## Reviewer next action
 
-Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 through OE-07, OE-09, and OE-11 are independently accepted. The next remaining item in the approved lifecycle sequence is OE-13 duplicate/conflict handling, subject to its prerequisite and test-only fixture authorization assessment. OE-08 retains its separate policy and non-live operational-environment prerequisites. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
+Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 through OE-07, OE-09, and OE-11 are independently accepted. SODBILEG Erkhembayar must independently review the formal OE-13 run, including integrity, reviewer independence, and the JSON reporter's raw-value capture limit, before any OE-13 acceptance. OE-08 retains its separate policy and non-live operational-environment prerequisites. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.

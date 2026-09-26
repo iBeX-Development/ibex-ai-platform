@@ -343,7 +343,8 @@ Each produced evidence package must contain:
 - **Checksum/reference:** Checksummed results and immutable run reference.
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** Every duplicate/conflict path is deterministic, tenant-safe, auditable, and fail closed.
-- **Status:** `Not Executed`
+- **Execution evidence:** `operational-evidence/oe-13/SIR-02-KM-OE-13-DUPLICATE-CONFLICT-FORMAL-EVIDENCE-0001-v1.0.json`; SHA-256 `908843689d9ccb1b5139d2ab8939a12067d046fc2f04c857cda065ea41544bee`; evidence commit `a0bcdb4ef646b0322cca6e30ef1f8c3b282501c9`. The retained Vitest report passed 39/39 tests across the 20 mapped scenario categories. The earlier pre-scenario `EPERM` attempt remains embedded in the evidence artifact. Raw per-case registry hashes and pair IDs were not emitted by the accepted JSON reporter; the independent reviewer must assess capture sufficiency.
+- **Status:** `Executed / Awaiting Independent Review`
 
 ### SIR02-KM-OE-14 — Re-ingestion/re-indexing idempotency test
 
