@@ -6,7 +6,7 @@
 | -------------------------- | ---------------------------------------------------------------------------- |
 | Document                   | `SIR-02-KM-OE-11-FAIL-CLOSED-FIXTURE-DESIGN`                                 |
 | Version                    | `v1.0`                                                                       |
-| Status                     | `Proposed / Not Authorized`                                                  |
+| Status                     | `Authorized for Test-Only Implementation`                                    |
 | Evidence item              | `SIR02-KM-OE-11 — Missing Approval / Version / Provenance Fail-Closed Tests` |
 | Environment                | `Isolated Non-Live Evidence Execution`                                       |
 | Namespace                  | `sir02-km-evidence-v1`                                                       |
@@ -14,10 +14,10 @@
 | Data classification        | `Synthetic` only                                                             |
 | Owner                      | GANTUMUR Erdenedalai — Founder / Administrator                               |
 | Reviewer                   | SODBILEG Erkhembayar — Administrator                                         |
-| Decision date              | `Owner Input Required`                                                       |
-| Immutable design reference | `Owner Input Required — assigned only after this exact design is committed`  |
+| Decision date              | `2026-09-26`                                                                 |
+| Immutable design reference | `1d17f0c1f51386fc8b0161b60a6f30804e0aa9a2`                                   |
 
-This document proposes a test-only implementation. It neither authorizes implementation nor records an OE-11 execution result.
+The owner authorized implementation of the exact `v1.0` design in the immutable reference above, limited to the two test-only files below. The companion authorization record contains the exact owner statement and conditions. This design records no OE-11 execution result and grants no runtime or live-operation authority.
 
 ## Controlling references and prerequisite assessment
 
@@ -28,16 +28,16 @@ This document proposes a test-only implementation. It neither authorizes impleme
 
 The accepted OE-01 through OE-07 artifacts provide immutable lifecycle inputs. The existing `tests/testing/sir02-km-oe09-reconciliation-fixture.ts` exports a read-only `loadAcceptedEvidence` function, pinned accepted-input manifest, namespace/schema constants, and inventory types. Those may be imported without editing the accepted OE-09 implementation. Its inventory reconciliation and constant `knowledgeProcessingCalls: 0` do not measure OE-11 processing boundaries or cover every mandatory approval/authority case. Phase 6 RAG tests and fixtures provide partial denial and spy patterns, but their generic tenant fixtures and runtime behavior are not the OE-11 lifecycle gate or approved Gate A evidence execution. No existing fixture satisfies the complete OE-11 precondition.
 
-## Exact implementation boundary and proposed files
+## Exact implementation boundary and authorized files
 
-Only the following **new** test-only files are proposed for a later, separately authorized implementation:
+Only the following **new** test-only files are authorized for implementation:
 
 | Path                                                  | Responsibility                                                                                                                                                                                                                    |
 | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `tests/testing/sir02-km-oe11-fail-closed-fixture.ts`  | Read-only accepted-input loading; deterministic synthetic registry, approval/governance, and provenance/lineage adapters; trusted validation gate; instrumented no-op downstream ports; sanitized denial and audit serialization. |
 | `tests/integration/sir02-km-oe11-fail-closed.test.ts` | One positive control and isolated mutations for every required negative case; independent expected results; counter, disclosure, audit, cleanup, determinism, and safety assertions.                                              |
 
-The two governance documents prepared now are `SIR-02-KM-OE-11-FAIL-CLOSED-FIXTURE-DESIGN-v1.0.md` and `SIR-02-KM-OE-11-FAIL-CLOSED-FIXTURE-AUTHORIZATION-v1.0.md`. No other file is proposed for implementation. In particular, do not change the OE-09 fixture or tests, `apps/`, `packages/`, runtime configuration, dependencies, migrations, storage, deployment, credentials, secrets, or traffic. If implementation needs another file or a change to either existing runtime behavior or the accepted OE-09 code, stop and seek a new design and owner authorization.
+The companion decision record is `SIR-02-KM-OE-11-FAIL-CLOSED-FIXTURE-AUTHORIZATION-v1.0.md`. No other file is authorized for implementation. In particular, do not change the OE-09 fixture or tests, `apps/`, `packages/`, runtime configuration, dependencies, migrations, storage, deployment, credentials, secrets, or traffic. If implementation needs another file or a change to either existing runtime behavior or the accepted OE-09 code, stop and seek a new design and owner authorization.
 
 Use the existing Vitest and Node facilities. The new fixture must import no live ingestion, RAG, embedding, indexing, vector-store, retrieval, or traffic adapter. It performs validation against in-memory synthetic projections only. The approved OE evidence artifacts are read from immutable Git commits and never changed. Each negative is a fresh in-memory copy of the valid input; mutations cannot leak between cases or modify the clean control.
 
@@ -111,4 +111,4 @@ Cleanup discards all in-memory copies and spy state after each case and after th
 
 ## Review and hold
 
-Implementation requires a separate explicit owner decision on the companion authorization record and an immutable reference to this exact `v1.0` design. After implementation, an independent review must verify the exact file scope, all case/subcase assertions, real spy measurements, deterministic output, tenant-safe denial, sanitized audit, and cleanup before a formal OE-11 run. This proposed design grants no implementation or execution authority. OE-11 remains `Not Executed`; `SIR02-DEF-02` remains `Missing / Not Reviewed`; the other operational-evidence items and later SIR-02 stages remain unchanged.
+The companion authorization record documents the explicit owner decision on this immutable `v1.0` design. After implementation, an independent review must verify the exact file scope, all case/subcase assertions, real spy measurements, deterministic output, tenant-safe denial, sanitized audit, and cleanup before a formal OE-11 run. Authorization covers implementation only; it does not authorize formal OE-11 execution or evidence acceptance. OE-11 remains `Not Executed`; `SIR02-DEF-02` remains `Missing / Not Reviewed`; the other operational-evidence items and later SIR-02 stages remain unchanged.
