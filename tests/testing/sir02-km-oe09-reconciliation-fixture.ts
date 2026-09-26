@@ -7,6 +7,7 @@ export const OE09_NAMESPACE = 'sir02-km-evidence-v1';
 export const OE09_SCHEMA = 'SIR02-KM-EVIDENCE-FIXTURE v1.0';
 export const OE09_TENANT_A = 'sir02-test-tenant-a';
 export const OE09_TENANT_B = 'sir02-test-tenant-b';
+const OE09_SOURCE_A = 'sir02-km-source-a-001';
 
 export interface ImmutableEvidenceInput {
   readonly id: string;
@@ -120,12 +121,49 @@ export interface ReconciliationResult {
   reconciliationTimestamp: string;
   sourceId: string;
   registrationId: string;
+  tenantId: string;
+  ownerId: string;
+  authoritativeCurrentVersion: string | null;
   currentVersion: string | null;
   approvedVersions: string[];
   unapprovedVersions: string[];
   supersededVersions: string[];
   quarantinedVersions: string[];
   activeVersions: string[];
+  nonActiveVersions: string[];
+  versionDetails: Array<{
+    tenantId: string;
+    sourceId: string;
+    version: string;
+    active: boolean;
+    approvalState: 'approved' | 'unapproved';
+    supersessionState: 'none' | 'superseded' | 'successor';
+    quarantineState: 'none' | 'quarantined';
+    withdrawn: boolean;
+    checksum: string;
+    lineageRoot: string;
+    provenanceRef: string;
+    approvalRef: string | null;
+    supersessionRef: string | null;
+    quarantineRef: string | null;
+  }>;
+  inputManifest: ImmutableEvidenceInput[];
+  inventorySummaries: {
+    authoritative: {
+      versionCount: number;
+      sourceCount: number;
+      tenantCount: number;
+      sha256: string;
+      inputRefs: string[];
+    };
+    derived: {
+      versionCount: number;
+      sourceCount: number;
+      tenantCount: number;
+      sha256: string;
+      inputRefs: string[];
+    };
+  };
   discrepancies: Discrepancy[];
   counts: {
     authoritativeVersions: number;
@@ -133,6 +171,9 @@ export interface ReconciliationResult {
     matchedVersions: number;
     discrepancies: number;
     unresolved: number;
+    quarantined: number;
+    nonActive: number;
+    activeEligible: number;
     byCode: Record<string, number>;
   };
   audit: {
@@ -140,11 +181,22 @@ export interface ReconciliationResult {
     correlationId: string;
     traceId: string;
     eventType: 'km_source_reconciliation_evaluated';
+    actorId: string;
+    eventTimestamp: string;
+    outcome: 'Reconciled / Non-Operational Test State' | 'Blocked / Fail Closed';
     tenantScope: string;
     reasonCodes: string[];
+    affectedKeys: string[];
+    inputChecksumReferences: string[];
     foreignTenantFieldsDisclosed: 0;
     knowledgeProcessingCalls: 0;
   };
+}
+
+export interface CallerVisibleReconciliation {
+  decision: 'Blocked / Fail Closed' | 'Reconciled / Non-Operational Test State';
+  correlationId: string;
+  protectedFieldsDisclosed: number;
 }
 
 const object = (value: unknown, label: string): JsonRecord => {
@@ -188,10 +240,29 @@ export function loadAcceptedEvidence(
   }
   const loaded: Record<string, JsonRecord> = {};
   for (const item of manifest) {
-    if (!/^SIR02-KM-OE-0[1-7]$/.test(item.id) || !/^[a-f0-9]{40}$/.test(item.evidenceCommit)) {
+    if (
+      !/^SIR02-KM-OE-0[1-7]$/.test(item.id) ||
+      !/^[a-f0-9]{40}$/.test(item.evidenceCommit) ||
+      !/^[a-f0-9]{40}$/.test(item.reviewCommit)
+    ) {
       throw new Error('INVALID_IMMUTABLE_REFERENCE');
     }
-    const bytes = execFileSync('git', ['show', `${item.evidenceCommit}:${item.path}`]);
+    if (
+      !item.path ||
+      !/^docs\/governance\/sir-02\/operational-evidence\/oe-0[1-7]\/[A-Za-z0-9.-]+\.json$/u.test(
+        item.path
+      )
+    ) {
+      throw new Error(`INVALID_IMMUTABLE_PATH:${item.id}`);
+    }
+    let bytes: Buffer;
+    try {
+      bytes = execFileSync('git', ['show', `${item.evidenceCommit}:${item.path}`], {
+        stdio: ['ignore', 'pipe', 'pipe']
+      });
+    } catch {
+      throw new Error(`IMMUTABLE_REFERENCE_UNRESOLVED:${item.id}`);
+    }
     // Historical .sha256 files were calculated over Windows checkout bytes. Git stores
     // normalized LF blobs; verify only the exact documented LF/CRLF checkout forms.
     const canonical = bytes.toString('utf8');
@@ -209,9 +280,15 @@ export function loadAcceptedEvidence(
         ? 'SIR-02-KM-OE-03-INDEPENDENT-REVIEW-0003-v1.0.md'
         : `SIR-02-KM-OE-${number}-INDEPENDENT-REVIEW-v1.0.md`
     );
-    const review = execFileSync('git', ['show', `${item.reviewCommit}:${reviewPath}`], {
-      encoding: 'utf8'
-    });
+    let review: string;
+    try {
+      review = execFileSync('git', ['show', `${item.reviewCommit}:${reviewPath}`], {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe']
+      });
+    } catch {
+      throw new Error(`IMMUTABLE_REVIEW_UNRESOLVED:${item.id}`);
+    }
     if (
       !review.includes(`| Evidence ID | \`${item.id}\``) ||
       !/\| Review result \| `Accepted` \|/.test(review) ||
@@ -489,11 +566,48 @@ export function buildDerivedInventory(inputs: Record<string, JsonRecord>): Inven
   };
 }
 
-const validId = (value: string): boolean =>
-  value.trim() !== '' && !/[?*]/u.test(value) && value !== 'all' && value !== 'global';
+const validId = (value: unknown): value is string =>
+  typeof value === 'string' &&
+  value.trim() !== '' &&
+  !/[?*]/u.test(value) &&
+  value !== 'all' &&
+  value !== 'global';
 const validUtc = (value: string): boolean =>
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/u.test(value) && !Number.isNaN(Date.parse(value));
-const versionKey = (version: InventoryVersion): string => version.version;
+const versionKey = (version: InventoryVersion): string =>
+  JSON.stringify([version.tenantId, version.sourceId, version.version]);
+const inventorySummary = (
+  inventory: Inventory
+): {
+  versionCount: number;
+  sourceCount: number;
+  tenantCount: number;
+  sha256: string;
+  inputRefs: string[];
+} => {
+  const versions = [...inventory.versions].sort((left, right) =>
+    versionKey(left).localeCompare(versionKey(right))
+  );
+  return {
+    versionCount: versions.length,
+    sourceCount: new Set(versions.map((version) => version.sourceId)).size,
+    tenantCount: new Set(versions.map((version) => version.tenantId)).size,
+    sha256: createHash('sha256')
+      .update(
+        JSON.stringify({
+          kind: inventory.kind,
+          registrationId: inventory.registrationId,
+          sourceId: inventory.sourceId,
+          tenantId: inventory.tenantId,
+          ownerId: inventory.ownerId,
+          currentVersion: inventory.currentVersion,
+          versions
+        })
+      )
+      .digest('hex'),
+    inputRefs: [...inventory.inputRefs].sort()
+  };
+};
 
 export function reconcile(
   authoritative: Inventory,
@@ -502,16 +616,24 @@ export function reconcile(
   correlationId: string
 ): ReconciliationResult {
   if (!validUtc(reconciliationTimestamp)) throw new Error('INVALID_RECONCILIATION_TIMESTAMP');
+  if (!/^[a-z0-9-]+$/u.test(correlationId)) throw new Error('INVALID_CORRELATION_ID');
   const found = new Map<string, Discrepancy>();
   const add = (code: string, affectedId: string): void => {
     const safeId =
       authoritative.tenantId === OE09_TENANT_A &&
+      authoritative.sourceId === OE09_SOURCE_A &&
       validId(affectedId) &&
-      affectedId !== OE09_TENANT_B
+      !affectedId.includes(OE09_TENANT_B)
         ? affectedId
         : 'REDACTED';
     found.set(`${code}\u0000${safeId}`, { code, affectedId: safeId, blocked: true });
   };
+  const scopedVersionId = (version: InventoryVersion): string =>
+    version.tenantId === OE09_TENANT_A &&
+    version.sourceId === OE09_SOURCE_A &&
+    validId(version.version)
+      ? `${version.sourceId}@${version.version}`
+      : 'REDACTED';
   if (authoritative.kind !== 'authoritative' || derived.kind !== 'derived')
     add('INVALID_INVENTORY_KIND', authoritative.sourceId);
   for (const [name, value] of [
@@ -545,20 +667,48 @@ export function reconcile(
   const duplicates = (inventory: Inventory): void => {
     const seen = new Set<string>();
     for (const version of inventory.versions) {
-      if (seen.has(version.version))
-        add('DUPLICATE_VERSION_RECORD', `${authoritative.sourceId}@${version.version}`);
-      seen.add(version.version);
+      const key = versionKey(version);
+      if (seen.has(key)) add('DUPLICATE_VERSION_RECORD', scopedVersionId(version));
+      seen.add(key);
     }
-    if (!seen.has(inventory.currentVersion) || seen.size === 0)
+    const currentRecords = inventory.versions.filter(
+      (version) =>
+        version.tenantId === inventory.tenantId &&
+        version.sourceId === inventory.sourceId &&
+        version.version === inventory.currentVersion
+    );
+    if (currentRecords.length !== 1 || seen.size === 0)
       add('AMBIGUOUS_AUTHORITATIVE_STATE', authoritative.sourceId);
   };
   duplicates(authoritative);
   duplicates(derived);
   for (const inventory of [authoritative, derived]) {
+    for (const version of inventory.versions) {
+      if (!validId(version.tenantId) || !validId(version.sourceId) || !validId(version.version)) {
+        add('WILDCARD_OR_MISSING_IDENTIFIER', scopedVersionId(version));
+      }
+      if (version.tenantId !== inventory.tenantId)
+        add('CROSS_TENANT_RECORD', scopedVersionId(version));
+      if (version.sourceId !== inventory.sourceId)
+        add('SOURCE_ID_MISMATCH', scopedVersionId(version));
+    }
     const leaves = inventory.versions.filter(
-      (candidate) => !inventory.versions.some((child) => child.predecessor === candidate.version)
+      (candidate) =>
+        !inventory.versions.some(
+          (child) =>
+            child.tenantId === candidate.tenantId &&
+            child.sourceId === candidate.sourceId &&
+            child.predecessor === candidate.version
+        )
     );
-    if (leaves.length !== 1 || leaves[0]?.version !== inventory.currentVersion) {
+    const leaf = leaves.at(0);
+    if (
+      leaves.length !== 1 ||
+      leaf === undefined ||
+      leaf.tenantId !== inventory.tenantId ||
+      leaf.sourceId !== inventory.sourceId ||
+      leaf.version !== inventory.currentVersion
+    ) {
       add('AMBIGUOUS_AUTHORITATIVE_STATE', authoritative.sourceId);
     }
   }
@@ -602,7 +752,7 @@ export function reconcile(
           Date.parse(version.quarantineAt) < Date.parse(version.supersessionAt)))
     )
       add('CHRONOLOGY_CONFLICT', affected);
-    const other = dVersions.get(version.version);
+    const other = dVersions.get(versionKey(version));
     if (!other) {
       add('DERIVED_RECORD_MISSING', affected);
       continue;
@@ -666,8 +816,8 @@ export function reconcile(
     if (other.active && other.withdrawn) add('WITHDRAWN_ACTIVE_CONTRADICTION', affected);
   }
   for (const version of derived.versions) {
-    const affected = `${authoritative.sourceId}@${version.version}`;
-    if (!aVersions.has(version.version)) add('ORPHAN_DERIVED_RECORD', affected);
+    const affected = scopedVersionId(version);
+    if (!aVersions.has(versionKey(version))) add('ORPHAN_DERIVED_RECORD', affected);
     if (version.tenantId !== OE09_TENANT_A) add('CROSS_TENANT_RECORD', affected);
   }
   const discrepancies = [...found.values()].sort(
@@ -679,14 +829,38 @@ export function reconcile(
     discrepancies.length === 0
       ? 'Reconciled / Non-Operational Test State'
       : 'Blocked / Fail Closed';
+  const trustedAuthority =
+    authoritative.tenantId === OE09_TENANT_A && authoritative.sourceId === OE09_SOURCE_A;
+  const versionDetails = trustedAuthority
+    ? [...authoritative.versions]
+        .sort((left, right) => versionKey(left).localeCompare(versionKey(right)))
+        .map((version) => ({
+          tenantId: version.tenantId,
+          sourceId: version.sourceId,
+          version: version.version,
+          active: version.active,
+          approvalState: version.approvalState,
+          supersessionState: version.supersessionState,
+          quarantineState: version.quarantineState,
+          withdrawn: version.withdrawn,
+          checksum: version.checksum,
+          lineageRoot: version.lineageRoot,
+          provenanceRef: version.provenanceRef,
+          approvalRef: version.approvalRef,
+          supersessionRef: version.supersessionRef,
+          quarantineRef: version.quarantineRef
+        }))
+    : [];
   return {
     decision,
     namespace: OE09_NAMESPACE,
     schema: OE09_SCHEMA,
     reconciliationTimestamp,
-    sourceId: authoritative.tenantId === OE09_TENANT_A ? authoritative.sourceId : 'REDACTED',
-    registrationId:
-      authoritative.tenantId === OE09_TENANT_A ? authoritative.registrationId : 'REDACTED',
+    sourceId: trustedAuthority ? authoritative.sourceId : 'REDACTED',
+    registrationId: trustedAuthority ? authoritative.registrationId : 'REDACTED',
+    tenantId: trustedAuthority ? authoritative.tenantId : 'REDACTED',
+    ownerId: trustedAuthority ? authoritative.ownerId : 'REDACTED',
+    authoritativeCurrentVersion: trustedAuthority ? authoritative.currentVersion : null,
     currentVersion: decision === 'Blocked / Fail Closed' ? null : authoritative.currentVersion,
     approvedVersions:
       decision === 'Blocked / Fail Closed'
@@ -723,6 +897,16 @@ export function reconcile(
             .filter((v) => v.active)
             .map((v) => v.version)
             .sort(),
+    nonActiveVersions: authoritative.versions
+      .filter((version) => !version.active)
+      .map((version) => version.version)
+      .sort(),
+    versionDetails,
+    inputManifest: ACCEPTED_INPUTS.map((entry) => ({ ...entry })),
+    inventorySummaries: {
+      authoritative: inventorySummary(authoritative),
+      derived: inventorySummary(derived)
+    },
     discrepancies,
     counts: {
       authoritativeVersions: authoritative.versions.length,
@@ -730,6 +914,11 @@ export function reconcile(
       matchedVersions,
       discrepancies: discrepancies.length,
       unresolved: discrepancies.length,
+      quarantined: authoritative.versions.filter(
+        (version) => version.quarantineState === 'quarantined'
+      ).length,
+      nonActive: authoritative.versions.filter((version) => !version.active).length,
+      activeEligible: authoritative.versions.filter((version) => version.active).length,
       byCode
     },
     audit: {
@@ -737,12 +926,57 @@ export function reconcile(
       correlationId,
       traceId: `${correlationId}-trace`,
       eventType: 'km_source_reconciliation_evaluated',
+      actorId: 'sir02-test-reconciliation-actor',
+      eventTimestamp: reconciliationTimestamp,
+      outcome: decision,
       tenantScope: OE09_TENANT_A,
       reasonCodes: discrepancies.map((d) => d.code),
+      affectedKeys: discrepancies.map((d) => d.affectedId),
+      inputChecksumReferences: ACCEPTED_INPUTS.map((entry) => entry.sha256),
       foreignTenantFieldsDisclosed: 0,
       knowledgeProcessingCalls: 0
     }
   };
+}
+
+// Only this minimal projection may be returned to a test caller. The internal
+// reconciliation result and its scoped lifecycle details stay in the audit domain.
+export function reconcileForViewer(
+  authoritative: Inventory,
+  derived: Inventory,
+  viewerTenantId: string,
+  reconciliationTimestamp: string,
+  correlationId: string
+): CallerVisibleReconciliation {
+  const safeCorrelationId = `sir02-view-${createHash('sha256')
+    .update(correlationId)
+    .digest('hex')
+    .slice(0, 16)}`;
+  const allowed = viewerTenantId === OE09_TENANT_A && authoritative.tenantId === OE09_TENANT_A;
+  const decision = allowed
+    ? reconcile(authoritative, derived, reconciliationTimestamp, safeCorrelationId).decision
+    : 'Blocked / Fail Closed';
+  const visible = { decision, correlationId: safeCorrelationId };
+  const encoded = JSON.stringify(visible);
+  const protectedValues = new Set(
+    authoritative.versions.flatMap((version) => [
+      version.registrationId,
+      version.sourceId,
+      version.tenantId,
+      version.ownerId,
+      version.version,
+      version.checksum,
+      version.approvalRef,
+      version.lineageRoot,
+      version.provenanceRef,
+      version.supersessionRef,
+      version.quarantineRef
+    ])
+  );
+  const protectedFieldsDisclosed = [...protectedValues].filter(
+    (value) => typeof value === 'string' && value.length > 0 && encoded.includes(value)
+  ).length;
+  return { ...visible, protectedFieldsDisclosed };
 }
 
 // Future controlled execution can hash these bytes without writing a live artifact.
