@@ -175,6 +175,21 @@ export interface ValidationResult {
   classification: 'Synthetic';
 }
 
+export class FixtureExecutionFailure extends AggregateError {
+  readonly cleanup = 'Failed' as const;
+
+  constructor(
+    readonly primaryError: unknown,
+    readonly cleanupError: unknown
+  ) {
+    super(
+      primaryError === null ? [cleanupError] : [primaryError, cleanupError],
+      'OE11_CLEANUP_FAILED'
+    );
+    this.name = 'FixtureExecutionFailure';
+  }
+}
+
 export function loadOe11Inputs(): Evidence {
   // The accepted OE-09 loader verifies every immutable artifact, checksum, review,
   // schema, namespace, and synthetic classification. It is imported read-only.
@@ -508,68 +523,134 @@ function protectedFieldCount(publicOutput: string, accepted: Evidence): number {
 }
 
 function cleanup(state: FixtureState): 'Passed' {
-  state.inputs = {};
-  state.manifest.splice(0);
-  state.injected.registry.splice(0);
-  state.injected.approvals.splice(0);
-  state.injected.provenance.splice(0);
-  state.auditEvents.splice(0);
+  const failures: unknown[] = [];
+  const attempt = (action: () => void): void => {
+    try {
+      action();
+    } catch (error) {
+      failures.push(error);
+    }
+  };
+
+  attempt(() => {
+    state.inputs = {};
+  });
+  attempt(() => {
+    state.manifest.splice(0);
+  });
+  attempt(() => {
+    state.injected.registry.splice(0);
+  });
+  attempt(() => {
+    state.injected.approvals.splice(0);
+  });
+  attempt(() => {
+    state.injected.provenance.splice(0);
+  });
+  attempt(() => {
+    state.auditEvents.splice(0);
+  });
+  attempt(() => {
+    state.request.tenantId = '';
+    state.request.registrationId = '';
+    state.request.sourceId = '';
+    state.request.version = '';
+    state.request.correlationId = '';
+    delete state.request.untrustedApproval;
+    delete state.request.untrustedProvenance;
+  });
+  attempt(() => {
+    state.request = {
+      tenantId: '',
+      registrationId: '',
+      sourceId: '',
+      version: '',
+      correlationId: ''
+    };
+  });
+  attempt(() => {
+    state.spies.reset();
+  });
+  attempt(() => {
+    state.spies = createProcessingSpies();
+  });
   state.disposed = true;
+  if (failures.length !== 0) throw new AggregateError(failures, 'OE11_CLEANUP_STEP_FAILED');
   return 'Passed';
 }
 
 export function executeValidation(state: FixtureState, accepted: Evidence): ValidationResult {
-  let decision: ValidationResult['decision'] = 'Valid / Non-Operational Test State';
-  let reasonCodes: string[] = [];
+  let result: Omit<ValidationResult, 'cleanup'> | undefined;
+  let primaryError: unknown;
+  let primaryFailed = false;
+  let cleanupError: unknown;
+  let cleanupFailed = false;
   try {
-    validate(state);
+    let decision: ValidationResult['decision'] = 'Valid / Non-Operational Test State';
+    let reasonCodes: string[] = [];
+    try {
+      validate(state);
+    } catch (error) {
+      if (!(error instanceof Denial)) throw error;
+      decision = 'Blocked / Fail Closed';
+      reasonCodes = [error.code];
+    }
+    const counts = state.spies.snapshot();
+    if (portNames.some((name) => counts[name] !== 0)) throw new Error('DOWNSTREAM_PROCESSING_CALL');
+    const correlationId = `sir02-oe11-${createHash('sha256')
+      .update(state.request.correlationId)
+      .digest('hex')
+      .slice(0, 16)}`;
+    const callerVisible = {
+      decision,
+      reason: decision === 'Blocked / Fail Closed' ? 'KNOWLEDGE_SOURCE_DENIED' : 'VALIDATION_ONLY',
+      correlationId
+    } as const;
+    const protectedFieldsDisclosed = protectedFieldCount(JSON.stringify(callerVisible), accepted);
+    if (protectedFieldsDisclosed !== 0) throw new Error('PROTECTED_FIELD_DISCLOSURE');
+    const audit: AuditResult = {
+      eventType: 'km_lifecycle_evidence_validated',
+      eventTimestamp: OE11_EVALUATION_TIME,
+      actorId: 'sir02-test-validator',
+      tenantScope: state.request.tenantId === OE11_TENANT_B ? OE11_TENANT_B : OE11_TENANT_A,
+      requestId: `${correlationId}-request`,
+      correlationId,
+      traceId: `${correlationId}-trace`,
+      outcome: decision,
+      reasonCodes,
+      inputReferenceIds:
+        state.request.tenantId === OE11_TENANT_B ? [] : state.manifest.map((entry) => entry.id),
+      protectedFieldsDisclosed,
+      processingCalls: counts
+    };
+    state.auditEvents.push(audit);
+    if (state.auditEvents.length !== 1) throw new Error('AUDIT_EVENT_MISSING_OR_DUPLICATE');
+    result = {
+      decision,
+      reasonCodes,
+      callerVisible,
+      protectedFieldsDisclosed,
+      processingCalls: counts,
+      audit,
+      artifactCount: 0,
+      namespace: OE11_NAMESPACE,
+      schema: OE11_SCHEMA,
+      classification: 'Synthetic'
+    };
   } catch (error) {
-    if (!(error instanceof Denial)) throw error;
-    decision = 'Blocked / Fail Closed';
-    reasonCodes = [error.code];
+    primaryError = error;
+    primaryFailed = true;
+  } finally {
+    try {
+      cleanup(state);
+    } catch (error) {
+      cleanupError = error;
+      cleanupFailed = true;
+    }
   }
-  const counts = state.spies.snapshot();
-  if (portNames.some((name) => counts[name] !== 0)) throw new Error('DOWNSTREAM_PROCESSING_CALL');
-  const correlationId = `sir02-oe11-${createHash('sha256')
-    .update(state.request.correlationId)
-    .digest('hex')
-    .slice(0, 16)}`;
-  const callerVisible = {
-    decision,
-    reason: decision === 'Blocked / Fail Closed' ? 'KNOWLEDGE_SOURCE_DENIED' : 'VALIDATION_ONLY',
-    correlationId
-  } as const;
-  const protectedFieldsDisclosed = protectedFieldCount(JSON.stringify(callerVisible), accepted);
-  if (protectedFieldsDisclosed !== 0) throw new Error('PROTECTED_FIELD_DISCLOSURE');
-  const audit: AuditResult = {
-    eventType: 'km_lifecycle_evidence_validated',
-    eventTimestamp: OE11_EVALUATION_TIME,
-    actorId: 'sir02-test-validator',
-    tenantScope: state.request.tenantId === OE11_TENANT_B ? OE11_TENANT_B : OE11_TENANT_A,
-    requestId: `${correlationId}-request`,
-    correlationId,
-    traceId: `${correlationId}-trace`,
-    outcome: decision,
-    reasonCodes,
-    inputReferenceIds:
-      state.request.tenantId === OE11_TENANT_B ? [] : state.manifest.map((entry) => entry.id),
-    protectedFieldsDisclosed,
-    processingCalls: counts
-  };
-  state.auditEvents.push(audit);
-  if (state.auditEvents.length !== 1) throw new Error('AUDIT_EVENT_MISSING_OR_DUPLICATE');
-  const result: ValidationResult = {
-    decision,
-    reasonCodes,
-    callerVisible,
-    protectedFieldsDisclosed,
-    processingCalls: counts,
-    audit,
-    artifactCount: 0,
-    cleanup: cleanup(state),
-    namespace: OE11_NAMESPACE,
-    schema: OE11_SCHEMA,
-    classification: 'Synthetic'
-  };
-  return result;
+  if (cleanupFailed)
+    throw new FixtureExecutionFailure(primaryFailed ? primaryError : null, cleanupError);
+  if (primaryFailed) throw primaryError;
+  if (!result) throw new Error('OE11_VALIDATION_RESULT_MISSING');
+  return { ...result, cleanup: 'Passed' };
 }

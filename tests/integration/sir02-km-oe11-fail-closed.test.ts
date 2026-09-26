@@ -7,6 +7,7 @@ import {
   createFixture,
   createProcessingSpies,
   executeValidation,
+  FixtureExecutionFailure,
   loadOe11Inputs,
   recordAt,
   type FixtureState,
@@ -28,6 +29,22 @@ const zeroCalls: ProcessingCallCounters = {
   retrievalPreparation: 0,
   otherKnowledgeProcessing: 0
 };
+
+function expectCleanState(state: FixtureState): void {
+  expect(state.disposed).toBe(true);
+  expect(state.inputs).toEqual({});
+  expect(state.manifest).toEqual([]);
+  expect(state.injected).toEqual({ registry: [], approvals: [], provenance: [] });
+  expect(state.auditEvents).toEqual([]);
+  expect(state.request).toEqual({
+    tenantId: '',
+    registrationId: '',
+    sourceId: '',
+    version: '',
+    correlationId: ''
+  });
+  expect(state.spies.snapshot()).toEqual(zeroCalls);
+}
 
 function firstManifest(state: FixtureState): (typeof state.manifest)[number] {
   const item = state.manifest[0];
@@ -316,15 +333,13 @@ describe('SIR02-KM-OE-11 authorized test-only lifecycle validation fixture', () 
     expect(result.processingCalls).toEqual(zeroCalls);
     expect(result.audit.processingCalls).toEqual(zeroCalls);
     expect(result.audit.reasonCodes).toEqual([]);
-    expect(state.auditEvents).toHaveLength(0);
     expect(result.artifactCount).toBe(0);
     expect(result.protectedFieldsDisclosed).toBe(0);
     expect(result.cleanup).toBe('Passed');
     expect(result.namespace).toBe(OE11_NAMESPACE);
     expect(result.schema).toBe(OE11_SCHEMA);
     expect(result.classification).toBe('Synthetic');
-    expect(state.disposed).toBe(true);
-    expect(state.inputs).toEqual({});
+    expectCleanState(state);
     expect(JSON.stringify(accepted)).toBe(acceptedSnapshot);
   });
 
@@ -347,13 +362,11 @@ describe('SIR02-KM-OE-11 authorized test-only lifecycle validation fixture', () 
       expect(result.audit.reasonCodes).toEqual(result.reasonCodes);
       expect(result.audit.eventType).toBe('km_lifecycle_evidence_validated');
       expect(result.audit.outcome).toBe('Blocked / Fail Closed');
-      expect(state.auditEvents).toHaveLength(0);
       expect(result.artifactCount).toBe(0);
       expect(result.protectedFieldsDisclosed).toBe(0);
       expect(result.audit.protectedFieldsDisclosed).toBe(0);
       expect(result.cleanup).toBe('Passed');
-      expect(state.disposed).toBe(true);
-      expect(state.inputs).toEqual({});
+      expectCleanState(state);
       expect(JSON.stringify(accepted)).toBe(acceptedSnapshot);
     }
   );
@@ -370,6 +383,119 @@ describe('SIR02-KM-OE-11 authorized test-only lifecycle validation fixture', () 
     expect(visible).not.toContain(OE11_TENANT_A);
     expect(visible).not.toContain('sir02-km-source-a-001');
     expect(visible).not.toContain('sir02-test-source-owner-a');
+    expectCleanState(state);
+  });
+
+  it('cleans an unexpected adapter error and preserves the original error', () => {
+    const state = createFixture(accepted);
+    const fault = new Error('SYNTHETIC_ADAPTER_FAULT');
+    Object.defineProperty(state.inputs, 'SIR02-KM-OE-01', {
+      get: () => {
+        throw fault;
+      }
+    });
+    let thrown: unknown;
+    try {
+      executeValidation(state, accepted);
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBe(fault);
+    expectCleanState(state);
+  });
+
+  it('cleans before a caller assertion fails', () => {
+    const state = createFixture(accepted);
+    const result = executeValidation(state, accepted);
+    let assertionError: unknown;
+    try {
+      expect(result.decision).toBe('Blocked / Fail Closed');
+    } catch (error) {
+      assertionError = error;
+    }
+    expect(assertionError).toBeInstanceOf(Error);
+    expectCleanState(state);
+  });
+
+  it('cleans an early tenant rejection before the next case', () => {
+    const tenantB = createFixture(accepted);
+    tenantB.request.tenantId = OE11_TENANT_B;
+    tenantB.request.untrustedApproval = { decision: 'Approved' };
+    const denied = executeValidation(tenantB, accepted);
+    expect(denied.reasonCodes).toEqual(['TENANT_ACCESS_DENIED']);
+    expectCleanState(tenantB);
+
+    const tenantA = createFixture(accepted);
+    const valid = executeValidation(tenantA, accepted);
+    expect(valid.decision).toBe('Valid / Non-Operational Test State');
+    expect(valid.audit.tenantScope).toBe(OE11_TENANT_A);
+    expect(valid.processingCalls).toEqual(zeroCalls);
+    expectCleanState(tenantA);
+
+    const nextTenantB = createFixture(accepted);
+    nextTenantB.request.tenantId = OE11_TENANT_B;
+    const nextDenial = executeValidation(nextTenantB, accepted);
+    expect(nextDenial.reasonCodes).toEqual(['TENANT_ACCESS_DENIED']);
+    expect(nextDenial.audit.tenantScope).toBe(OE11_TENANT_B);
+    expect(nextDenial.audit.inputReferenceIds).toEqual([]);
+    expect(nextDenial.protectedFieldsDisclosed).toBe(0);
+    expectCleanState(nextTenantB);
+  });
+
+  it('resets measured counters after a failed case before a new case', () => {
+    const first = createFixture(accepted);
+    first.spies.ports.parsingChunking();
+    expect(() => executeValidation(first, accepted)).toThrow('DOWNSTREAM_PROCESSING_CALL');
+    expectCleanState(first);
+
+    const second = createFixture(accepted);
+    expect(second.spies.snapshot()).toEqual(zeroCalls);
+    expect(executeValidation(second, accepted).decision).toBe('Valid / Non-Operational Test State');
+    expectCleanState(second);
+  });
+
+  it('reports cleanup failure independently without hiding the primary failure', () => {
+    const state = createFixture(accepted);
+    const cleanupFault = new Error('SYNTHETIC_SPY_RESET_FAULT');
+    state.spies.ports.parsingChunking();
+    state.spies.reset = () => {
+      throw cleanupFault;
+    };
+    let thrown: unknown;
+    try {
+      executeValidation(state, accepted);
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBeInstanceOf(FixtureExecutionFailure);
+    const failure = thrown as FixtureExecutionFailure;
+    expect(failure.cleanup).toBe('Failed');
+    expect(failure.primaryError).toBeInstanceOf(Error);
+    expect((failure.primaryError as Error).message).toBe('DOWNSTREAM_PROCESSING_CALL');
+    expect(failure.cleanupError).toBeInstanceOf(AggregateError);
+    expect((failure.cleanupError as AggregateError).errors).toEqual([cleanupFault]);
+    expect(failure.errors).toEqual([failure.primaryError, failure.cleanupError]);
+    expectCleanState(state);
+  });
+
+  it('reports cleanup-only failure rather than returning a passing result', () => {
+    const state = createFixture(accepted);
+    const cleanupFault = new Error('SYNTHETIC_CLEANUP_ONLY_FAULT');
+    state.spies.reset = () => {
+      throw cleanupFault;
+    };
+    let thrown: unknown;
+    try {
+      executeValidation(state, accepted);
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBeInstanceOf(FixtureExecutionFailure);
+    const failure = thrown as FixtureExecutionFailure;
+    expect(failure.primaryError).toBeNull();
+    expect((failure.cleanupError as AggregateError).errors).toEqual([cleanupFault]);
+    expect(failure.errors).toEqual([failure.cleanupError]);
+    expectCleanState(state);
   });
 
   it('returns byte-stable validation results for identical synthetic inputs', () => {
