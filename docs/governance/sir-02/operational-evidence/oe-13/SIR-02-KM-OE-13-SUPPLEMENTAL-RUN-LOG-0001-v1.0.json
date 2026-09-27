@@ -1,0 +1,21 @@
+{
+  "document": "SIR-02 KM OE-13 Supplemental Clarification Run Log",
+  "version": "v1.0",
+  "captureId": "SIR02-KM-OE-13-SUPPLEMENTAL-V1_0-20260927T012529Z-0001",
+  "originalFormalRun": "SIR02-KM-OE-13-V1_0-20260926T131738Z-0001",
+  "command": "corepack pnpm exec vitest run tests/integration/sir02-km-oe13-duplicate-conflict.test.ts --reporter=json --outputFile=\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe13-supplemental-20260927T012529Z\\vitest-results.json\"",
+  "networkPolicy": "No network; COREPACK_ENABLE_NETWORK=0; npm_config_offline=true",
+  "startedUtc": "2026-09-27T01:25:29.0019185Z",
+  "endedUtc": "2026-09-27T01:25:30.8478356Z",
+  "elapsedSeconds": 1.846,
+  "timeoutSeconds": 120,
+  "timedOut": false,
+  "exitCode": 0,
+  "executionRepositoryCommit": "7ad0c29f50cc271f99de199872e16e799b686e8b",
+  "stdout": "JSON report written to C:/Users/gantu/AppData/Local/Temp/sir02-oe13-supplemental-20260927T012529Z/vitest-results.json\n\r\n",
+  "stderr": "\r\n",
+  "sourceReportPaths": {
+    "measurements": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe13-supplemental-20260927T012529Z\\raw-measurements.json",
+    "vitest": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe13-supplemental-20260927T012529Z\\vitest-results.json"
+  }
+}
