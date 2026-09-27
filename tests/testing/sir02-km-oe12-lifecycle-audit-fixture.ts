@@ -14,6 +14,7 @@ import {
   type SecurityObservation
 } from '../../packages/audit/src/index.js';
 import { createTrustedRequestContext } from '../../packages/security/src/index.js';
+import { isSensitiveTelemetryKey } from '../../packages/observability/src/index.js';
 import {
   ACCEPTED_INPUTS,
   OE09_NAMESPACE,
@@ -47,6 +48,28 @@ export const EVENT_FAMILIES = [
   'synthetic_withdrawal_retention'
 ] as const;
 export type EventFamily = (typeof EVENT_FAMILIES)[number];
+
+const projectedEventId = (index: number): string =>
+  `sir02-km-oe12-${OE12_TENANT_A}-event-${String(index).padStart(2, '0')}`;
+
+// These are audit dependencies, not a claim that independent historical denials
+// happened in the order of their OE-12 test projections.
+const FAMILY_DEPENDENCIES: Readonly<Record<EventFamily, readonly EventFamily[]>> = {
+  source_registration: [],
+  tenant_owner_binding: ['source_registration'],
+  source_approval: ['source_registration', 'tenant_owner_binding'],
+  source_rejection: ['source_registration', 'tenant_owner_binding'],
+  version_lineage: ['source_registration', 'tenant_owner_binding', 'source_approval'],
+  provenance: ['version_lineage'],
+  supersession: ['source_approval', 'version_lineage', 'provenance'],
+  stale_quarantine: ['supersession'],
+  duplicate_conflict: ['source_registration', 'version_lineage', 'stale_quarantine'],
+  human_decision_hold: ['duplicate_conflict'],
+  fail_closed_denial: ['source_registration'],
+  permission_tenant_denial: ['tenant_owner_binding'],
+  reconciliation: ['source_registration', 'source_approval', 'version_lineage', 'provenance'],
+  synthetic_withdrawal_retention: ['stale_quarantine']
+};
 
 export interface PinnedEvidenceInput {
   readonly id: string;
@@ -290,6 +313,8 @@ export interface KmLifecycleAuditEvent extends AuditEvent {
   readonly source_registration_id: string;
   readonly source_version: string;
   readonly source_owner_id: string;
+  readonly projected_event_id: string;
+  readonly dependency_event_ids: readonly string[];
   readonly actor_id: string;
   readonly decision: AuditDecision;
   readonly outcome?: 'accepted' | 'rejected';
@@ -342,38 +367,31 @@ const familyEvidence: readonly string[] = [
   '09',
   '07'
 ];
-const decisions: readonly AuditDecision[] = [
-  'recorded',
-  'recorded',
-  'approved',
-  'denied',
-  'recorded',
-  'recorded',
-  'recorded',
-  'recorded',
-  'no_op',
-  'held',
-  'denied',
-  'denied',
-  'recorded',
-  'recorded'
-];
-const transitions: readonly (readonly [LifecycleState, LifecycleState])[] = [
-  ['unregistered', 'registered'],
-  ['registered', 'registered'],
-  ['registered', 'approved'],
-  ['approved', 'approved'],
-  ['approved', 'approved'],
-  ['approved', 'approved'],
-  ['approved', 'superseded'],
-  ['superseded', 'quarantined'],
-  ['quarantined', 'quarantined'],
-  ['quarantined', 'quarantined'],
-  ['quarantined', 'quarantined'],
-  ['quarantined', 'quarantined'],
-  ['quarantined', 'quarantined'],
-  ['quarantined', 'quarantined']
-];
+const allowedTransitions: Readonly<
+  Record<
+    EventFamily,
+    Readonly<{ before: LifecycleState; after: LifecycleState; decision: AuditDecision }>
+  >
+> = Object.freeze({
+  source_registration: { before: 'unregistered', after: 'registered', decision: 'recorded' },
+  tenant_owner_binding: { before: 'registered', after: 'registered', decision: 'recorded' },
+  source_approval: { before: 'registered', after: 'approved', decision: 'approved' },
+  source_rejection: { before: 'approved', after: 'approved', decision: 'denied' },
+  version_lineage: { before: 'approved', after: 'approved', decision: 'recorded' },
+  provenance: { before: 'approved', after: 'approved', decision: 'recorded' },
+  supersession: { before: 'approved', after: 'superseded', decision: 'recorded' },
+  stale_quarantine: { before: 'superseded', after: 'quarantined', decision: 'recorded' },
+  duplicate_conflict: { before: 'quarantined', after: 'quarantined', decision: 'no_op' },
+  human_decision_hold: { before: 'quarantined', after: 'quarantined', decision: 'held' },
+  fail_closed_denial: { before: 'quarantined', after: 'quarantined', decision: 'denied' },
+  permission_tenant_denial: { before: 'quarantined', after: 'quarantined', decision: 'denied' },
+  reconciliation: { before: 'quarantined', after: 'quarantined', decision: 'recorded' },
+  synthetic_withdrawal_retention: {
+    before: 'quarantined',
+    after: 'quarantined',
+    decision: 'recorded'
+  }
+});
 
 function trustedContext(tenantId: string, index: number) {
   return createTrustedRequestContext({
@@ -394,10 +412,10 @@ export function buildLifecycleEvents(basis: EvidenceBasis): KmLifecycleAuditEven
   return EVENT_FAMILIES.map((family, index) => {
     const number = familyEvidence[index];
     const ref = basis.refs.find((input) => input.id === `SIR02-KM-OE-${String(number)}`);
-    const transition = transitions[index];
-    const decision = decisions[index];
+    const transition = allowedTransitions[family];
+    const decision = transition.decision;
     const sourceEventTime = sourceTimes[index];
-    if (!ref || !transition || !decision || !sourceEventTime) {
+    if (!ref || !sourceEventTime) {
       throw new Error('INCOMPLETE_PROJECTION_DEFINITION');
     }
     const timestamp = new Date(Date.UTC(2026, 8, 27, 1, 0, index)).toISOString();
@@ -418,12 +436,16 @@ export function buildLifecycleEvents(basis: EvidenceBasis): KmLifecycleAuditEven
       source_registration_id: basis.registrationId,
       source_version: basis.version,
       source_owner_id: basis.ownerId,
+      projected_event_id: projectedEventId(index),
+      dependency_event_ids: FAMILY_DEPENDENCIES[family].map((dependency) =>
+        projectedEventId(EVENT_FAMILIES.indexOf(dependency))
+      ),
       actor_id: 'sir02-km-audit-executor',
       decision,
       outcome: decision === 'denied' ? 'rejected' : 'accepted',
       ...(decision === 'denied' ? { error_code: 'POLICY_DENIED' } : {}),
-      state_before: transition[0],
-      state_after: transition[1],
+      state_before: transition.before,
+      state_after: transition.after,
       source_event_time: family === 'source_approval' ? basis.approvalAt : sourceEventTime,
       projection_time: timestamp,
       test_emission_time: timestamp,
@@ -494,6 +516,8 @@ const kmAuditInputSchema = auditEventSchema
     source_registration_id: z.string().min(1),
     source_version: z.string().min(1),
     source_owner_id: z.string().min(1),
+    projected_event_id: z.string().min(1),
+    dependency_event_ids: z.array(z.string().min(1)),
     actor_id: z.string().min(1),
     decision: z.enum(['recorded', 'approved', 'denied', 'no_op', 'held']),
     outcome: z.enum(['accepted', 'rejected']).optional(),
@@ -527,6 +551,7 @@ export function validateKmEvent(event: KmLifecycleAuditEvent): void {
     event.source_registration_id,
     event.source_version,
     event.source_owner_id,
+    event.projected_event_id,
     event.actor_id,
     event.evidence_id,
     event.evidence_commit,
@@ -567,34 +592,103 @@ export interface ReconstructionResult {
     after: LifecycleState;
     evidenceId: string;
   }>[];
+  readonly dependencyMap: readonly Readonly<{ eventId: string; dependsOn: readonly string[] }>[];
+  readonly failedAuditOperation?: Readonly<{
+    eventId: string;
+    outcome: 'failed' | 'partial';
+    persistedItemCount: number;
+  }>;
   readonly syntheticOe08OperationalCount: 0;
   readonly downstreamCalls: 0;
   readonly foreignProtectedFieldsDisclosed: 0;
 }
 
-const blocked = (reason: string): ReconstructionResult => ({
+const blocked = (
+  reason: string,
+  failedAuditOperation?: ReconstructionResult['failedAuditOperation']
+): ReconstructionResult => ({
   decision: 'Blocked / Fail Closed',
   reason,
   eventIds: [],
   typeCounts: {},
   transitionMap: [],
+  dependencyMap: [],
+  ...(failedAuditOperation ? { failedAuditOperation } : {}),
   syntheticOe08OperationalCount: 0,
   downstreamCalls: 0,
   foreignProtectedFieldsDisclosed: 0
 });
 
-export function reconstructLifecycle(
-  events: readonly CanonicalAuditEvent[],
+interface ObservedLifecycleEvent {
+  readonly eventId: unknown;
+  readonly eventType: unknown;
+  readonly timestamp: unknown;
+  readonly contextStatus: unknown;
+  readonly contextTenant: unknown;
+  readonly requestId: unknown;
+  readonly correlationId: unknown;
+  readonly traceId: unknown;
+  readonly source: Readonly<Record<string, unknown>>;
+}
+
+const hasSensitiveKey = (value: unknown): boolean => {
+  if (Array.isArray(value)) return value.some(hasSensitiveKey);
+  if (value === null || typeof value !== 'object') return false;
+  return Object.entries(value).some(
+    ([key, child]) => isSensitiveTelemetryKey(key) || hasSensitiveKey(child)
+  );
+};
+
+const causalDependencies: Readonly<Partial<Record<EventFamily, readonly EventFamily[]>>> = {
+  tenant_owner_binding: ['source_registration'],
+  source_approval: ['source_registration', 'tenant_owner_binding'],
+  source_rejection: ['tenant_owner_binding'],
+  version_lineage: ['source_approval'],
+  provenance: ['version_lineage'],
+  supersession: ['version_lineage', 'provenance'],
+  stale_quarantine: ['supersession'],
+  duplicate_conflict: ['stale_quarantine'],
+  human_decision_hold: ['duplicate_conflict'],
+  synthetic_withdrawal_retention: ['stale_quarantine']
+};
+
+function hasCycle(
+  events: readonly ObservedLifecycleEvent[],
+  positions: ReadonlyMap<string, number>
+): boolean {
+  const visiting = new Set<string>();
+  const visited = new Set<string>();
+  const visit = (id: string): boolean => {
+    if (visiting.has(id)) return true;
+    if (visited.has(id)) return false;
+    const index = positions.get(id);
+    if (index === undefined) return false;
+    visiting.add(id);
+    const dependencies = events[index]?.source.dependency_event_ids;
+    if (Array.isArray(dependencies)) {
+      for (const dependency of dependencies) {
+        if (typeof dependency === 'string' && visit(dependency)) return true;
+      }
+    }
+    visiting.delete(id);
+    visited.add(id);
+    return false;
+  };
+  return [...positions.keys()].some(visit);
+}
+
+function evaluateLifecycle(
+  events: readonly ObservedLifecycleEvent[],
   basis: EvidenceBasis,
   refs: readonly PinnedEvidenceInput[] = PINNED_INPUTS
 ): ReconstructionResult {
   if (events.length !== EVENT_FAMILIES.length) return blocked('MISSING_LIFECYCLE_EVENT');
   const first = events[0];
   if (!first) return blocked('MISSING_LIFECYCLE_EVENT');
-  const sourceIdentity = first.evidence.canonical_source_id;
-  const registrationIdentity = first.evidence.source_registration_id;
-  const versionIdentity = first.evidence.source_version;
-  const ownerIdentity = first.evidence.source_owner_id;
+  const sourceIdentity = first.source.canonical_source_id;
+  const registrationIdentity = first.source.source_registration_id;
+  const versionIdentity = first.source.source_version;
+  const ownerIdentity = first.source.source_owner_id;
   if (
     sourceIdentity !== basis.sourceId ||
     registrationIdentity !== basis.registrationId ||
@@ -603,7 +697,13 @@ export function reconstructLifecycle(
   ) {
     return blocked('SOURCE_VERSION_OWNER_CONFLICT');
   }
-  const ids = new Set<string>();
+  const positions = new Map<string, number>();
+  for (const [index, event] of events.entries()) {
+    if (!validString(event.eventId)) return blocked('MISSING_AUDIT_BINDING');
+    if (positions.has(event.eventId)) return blocked('DUPLICATE_EVENT_ID');
+    positions.set(event.eventId, index);
+  }
+  if (hasCycle(events, positions)) return blocked('CIRCULAR_DEPENDENCY');
   let state: LifecycleState = 'unregistered';
   const transitionsFound: Array<{
     eventId: string;
@@ -611,25 +711,26 @@ export function reconstructLifecycle(
     after: LifecycleState;
     evidenceId: string;
   }> = [];
+  const dependencyMap: Array<{ eventId: string; dependsOn: readonly string[] }> = [];
   const counts: Record<string, number> = {};
   for (const [index, event] of events.entries()) {
     const family = EVENT_FAMILIES[index];
-    const source = event.evidence;
-    if (!family || event.event_type !== `km.lifecycle.${family}`)
+    const source = event.source;
+    if (!family || event.eventType !== `km.lifecycle.${family}`)
       return blocked('EVENT_ORDER_CONFLICT');
-    if (ids.has(event.event_id)) return blocked('DUPLICATE_EVENT_ID');
-    ids.add(event.event_id);
+    if (event.eventId !== projectedEventId(index) || source.projected_event_id !== event.eventId)
+      return blocked('EVENT_ID_CONFLICT');
     if (
-      event.context.status !== 'trusted' ||
-      event.context.tenant_id !== OE12_TENANT_A ||
+      event.contextStatus !== 'trusted' ||
+      event.contextTenant !== OE12_TENANT_A ||
       source.tenant_id !== OE12_TENANT_A
     ) {
       return blocked('TENANT_BINDING_CONFLICT');
     }
     if (
-      !validString(event.request_id) ||
-      !validString(event.correlation_id) ||
-      !validString(event.trace_id) ||
+      !validString(event.requestId) ||
+      !validString(event.correlationId) ||
+      !validString(event.traceId) ||
       !validString(source.canonical_source_id) ||
       !validString(source.source_registration_id) ||
       !validString(source.source_version) ||
@@ -637,6 +738,17 @@ export function reconstructLifecycle(
       !validString(source.actor_id)
     ) {
       return blocked('MISSING_AUDIT_BINDING');
+    }
+    if (
+      !event.requestId.includes(OE12_TENANT_A) ||
+      !event.correlationId.includes(OE12_TENANT_A) ||
+      !event.traceId.includes(OE12_TENANT_A) ||
+      (typeof source.metadata === 'object' &&
+        source.metadata !== null &&
+        !Array.isArray(source.metadata) &&
+        Object.hasOwn(source.metadata, 'caller_tenant_override'))
+    ) {
+      return blocked('TENANT_BINDING_CONFLICT');
     }
     if (
       source.canonical_source_id !== sourceIdentity ||
@@ -647,62 +759,209 @@ export function reconstructLifecycle(
       return blocked('SOURCE_VERSION_OWNER_CONFLICT');
     }
     if (
-      typeof source.metadata === 'object' &&
-      source.metadata !== null &&
-      !Array.isArray(source.metadata) &&
-      (source.metadata as Record<string, unknown>).ambiguous_authoritative_state === true
+      typeof source.metadata !== 'object' ||
+      source.metadata === null ||
+      Array.isArray(source.metadata)
     ) {
+      return blocked('INVALID_AUDIT_INPUT');
+    }
+    const metadata = source.metadata as Record<string, unknown>;
+    if (metadata.ambiguous_authoritative_state === true) {
       return blocked('AMBIGUOUS_AUTHORITATIVE_STATE');
     }
     const ref = refs.find((item) => item.id === source.evidence_id);
     if (
       !ref ||
+      ref.id !== `SIR02-KM-OE-${String(familyEvidence[index])}` ||
       ref.commit !== source.evidence_commit ||
       ref.path !== source.evidence_path ||
       ref.sha256 !== source.evidence_sha256
     ) {
       return blocked('IMMUTABLE_REFERENCE_CONFLICT');
     }
-    if (source.state_before !== state || !validString(source.state_after)) {
+    const rule = allowedTransitions[family];
+    if (
+      source.state_before !== state ||
+      source.state_before !== rule.before ||
+      source.state_after !== rule.after ||
+      source.decision !== rule.decision
+    ) {
       return blocked('STATE_TRANSITION_CONFLICT');
+    }
+    const rawDependencies: unknown = source.dependency_event_ids;
+    if (!Array.isArray(rawDependencies)) {
+      return blocked('MISSING_DEPENDENCY');
+    }
+    const dependencies: string[] = [];
+    for (const id of rawDependencies as unknown[]) {
+      if (!validString(id)) return blocked('MISSING_DEPENDENCY');
+      dependencies.push(id);
+    }
+    if (new Set(dependencies).size !== dependencies.length) return blocked('AMBIGUOUS_DEPENDENCY');
+    const expectedDependencies = FAMILY_DEPENDENCIES[family].map((parent) =>
+      projectedEventId(EVENT_FAMILIES.indexOf(parent))
+    );
+    for (const dependency of dependencies) {
+      const parentIndex = positions.get(dependency);
+      if (parentIndex === undefined) return blocked('UNSEEN_DEPENDENCY');
+      if (parentIndex >= index) return blocked('FUTURE_DEPENDENCY');
+      const parent = events[parentIndex];
+      if (
+        !parent ||
+        parent.contextTenant !== event.contextTenant ||
+        parent.source.canonical_source_id !== source.canonical_source_id ||
+        parent.source.source_registration_id !== source.source_registration_id ||
+        parent.source.source_version !== source.source_version ||
+        parent.source.source_owner_id !== source.source_owner_id
+      ) {
+        return blocked('DEPENDENCY_BINDING_CONFLICT');
+      }
+      if (Date.parse(String(parent.timestamp)) > Date.parse(String(event.timestamp))) {
+        return blocked('CHRONOLOGY_CONFLICT');
+      }
+    }
+    if (JSON.stringify(dependencies) !== JSON.stringify(expectedDependencies)) {
+      return blocked('DEPENDENCY_CONFLICT');
     }
     if (
       typeof source.source_event_time !== 'string' ||
       typeof source.projection_time !== 'string' ||
       Date.parse(source.source_event_time) > Date.parse(source.projection_time) ||
-      event.timestamp !== source.test_emission_time
+      event.timestamp !== source.test_emission_time ||
+      Number.isNaN(Date.parse(source.source_event_time)) ||
+      Number.isNaN(Date.parse(source.projection_time))
     ) {
       return blocked('CHRONOLOGY_CONFLICT');
     }
     if (family === 'source_approval' && source.source_event_time !== basis.approvalAt) {
       return blocked('ORIGINAL_APPROVAL_CHRONOLOGY_CONFLICT');
     }
+    for (const parentFamily of causalDependencies[family] ?? []) {
+      const parentIndex = EVENT_FAMILIES.indexOf(parentFamily);
+      const parentTime = events[parentIndex]?.source.source_event_time;
+      const currentTime = Date.parse(source.source_event_time);
+      const priorTime = Date.parse(String(parentTime));
+      const sameOriginalEvent =
+        (family === 'tenant_owner_binding' || family === 'source_approval') &&
+        currentTime === Date.parse(basis.approvalAt) &&
+        priorTime === Date.parse(basis.approvalAt);
+      const sameConflictEvent =
+        family === 'human_decision_hold' && source.source_event_time === parentTime;
+      if (
+        Number.isNaN(priorTime) ||
+        currentTime < priorTime ||
+        (currentTime === priorTime && !sameOriginalEvent && !sameConflictEvent)
+      ) {
+        return blocked('CHRONOLOGY_CONFLICT');
+      }
+    }
     if (
-      source.synthetic_audit_only === true &&
-      (family !== 'synthetic_withdrawal_retention' || source.operational_oe08_evidence !== false)
+      (family === 'source_approval' &&
+        (metadata.reconstructed_prior_event !== true ||
+          metadata.prior_attempt_0001 !== 'pre_artifact_tooling_failure' ||
+          metadata.prior_attempt_0002_evidence_commit !==
+            'fa51d26ab43abd53f354d544da7ab5bfca394276' ||
+          metadata.chronology_clarification_review_commit !==
+            '79f2d74ab31335e2487fa4e6c7dce4158c9a7b1f' ||
+          metadata.corrected_0003_evidence_commit !==
+            '74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a')) ||
+      (family === 'source_rejection' && metadata.new_approval_events !== 0) ||
+      (family === 'duplicate_conflict' &&
+        (metadata.exact_repeat_scenario_id !== basis.exactRepeatScenarioId ||
+          metadata.additional_authoritative_artifacts !== 0 ||
+          metadata.additional_downstream_artifacts !== 0)) ||
+      (family === 'version_lineage' && metadata.successor_version !== 'v1.1') ||
+      (family === 'version_lineage' && metadata.successor_approved !== false) ||
+      (family === 'source_rejection' && metadata.rejection_case_id !== basis.rejectionCaseId) ||
+      (family === 'human_decision_hold' &&
+        (metadata.conflict_scenario_id !== basis.conflict.scenarioId ||
+          metadata.conflict_type !== basis.conflict.type ||
+          metadata.pair_id !== basis.conflict.pairId ||
+          metadata.left_reference_id !== basis.conflict.leftReferenceId ||
+          metadata.right_reference_id !== basis.conflict.rightReferenceId ||
+          metadata.human_decision_hold_reference !== basis.conflict.holdReference))
+    ) {
+      return blocked('DEPENDENCY_REFERENCE_CONFLICT');
+    }
+    if (
+      source.synthetic_audit_only !== (family === 'synthetic_withdrawal_retention') ||
+      source.operational_oe08_evidence !== false ||
+      (family === 'synthetic_withdrawal_retention' &&
+        metadata.boundary_label !==
+          'Synthetic Audit-Only Transition — Not OE-08 Operational Evidence')
     ) {
       return blocked('OE08_BOUNDARY_VIOLATION');
     }
     state = source.state_after as LifecycleState;
     transitionsFound.push({
-      eventId: event.event_id,
+      eventId: event.eventId,
       before: source.state_before as LifecycleState,
       after: state,
       evidenceId: ref.id
     });
+    dependencyMap.push({ eventId: event.eventId, dependsOn: [...dependencies] });
     counts[family] = (counts[family] ?? 0) + 1;
   }
   if (state !== 'quarantined') return blocked('INCOMPLETE_FINAL_STATE');
   return {
     decision: 'Complete / Test-Only',
     reason: 'COMPLETE',
-    eventIds: events.map((event) => event.event_id),
+    eventIds: events.map((event) => event.eventId as string),
     typeCounts: counts,
     transitionMap: transitionsFound,
+    dependencyMap,
     syntheticOe08OperationalCount: 0,
     downstreamCalls: 0,
     foreignProtectedFieldsDisclosed: 0
   };
+}
+
+export function preflightLifecycle(
+  events: readonly KmLifecycleAuditEvent[],
+  basis: EvidenceBasis
+): ReconstructionResult {
+  if (events.some(hasSensitiveKey)) return blocked('PROHIBITED_AUDIT_DATA');
+  const observed: ObservedLifecycleEvent[] = events.map((event) => ({
+    eventId: event.projected_event_id,
+    eventType: event.event_type,
+    timestamp: event.test_emission_time,
+    contextStatus: validString(event.tenant_id) ? 'trusted' : 'unavailable',
+    contextTenant: event.tenant_id,
+    requestId: event.request_id,
+    correlationId: event.correlation_id,
+    traceId: event.trace_id,
+    source: { ...event }
+  }));
+  const result = evaluateLifecycle(observed, basis);
+  if (result.decision === 'Blocked / Fail Closed') return result;
+  try {
+    for (const event of events) validateKmEvent(event);
+  } catch {
+    return blocked('INVALID_AUDIT_INPUT');
+  }
+  return result;
+}
+
+export function reconstructLifecycle(
+  events: readonly CanonicalAuditEvent[],
+  basis: EvidenceBasis,
+  refs: readonly PinnedEvidenceInput[] = PINNED_INPUTS
+): ReconstructionResult {
+  return evaluateLifecycle(
+    events.map((event) => ({
+      eventId: event.event_id,
+      eventType: event.event_type,
+      timestamp: event.timestamp,
+      contextStatus: event.context.status,
+      contextTenant: event.context.tenant_id,
+      requestId: event.request_id,
+      correlationId: event.correlation_id,
+      traceId: event.trace_id,
+      source: event.evidence
+    })),
+    basis,
+    refs
+  );
 }
 
 export interface FixtureState {
@@ -714,6 +973,13 @@ export interface FixtureState {
   readonly eventIds: string[];
   readonly requestScopes: string[];
   readonly tenantScopes: string[];
+  readonly writeAttempts: number;
+  readonly sinkFailure:
+    | Readonly<{
+        sink: AuditHealthEvidence['failed_component'] | 'health_exporter';
+        phase: 'persist' | 'export';
+      }>
+    | undefined;
   readonly pipeline: AuditTelemetryPipeline;
   disposed: boolean;
   cleanup(): void;
@@ -737,44 +1003,57 @@ export function createFixture(options: FixtureOptions = {}): FixtureState {
   const eventIds: string[] = [];
   const requestScopes: string[] = [];
   const tenantScopes: string[] = [];
+  let writeAttempts = 0;
+  let sinkFailure: FixtureState['sinkFailure'];
   let nextId = 0;
   const dependencies: AuditTelemetryPipelineDependencies = {
     evidenceStore: {
       persistAudit: async (event) => {
-        if (options.failPersistAt === store.audits.length)
+        writeAttempts += 1;
+        if (options.failPersistAt === store.audits.length) {
+          sinkFailure = { sink: 'evidence_store', phase: 'persist' };
           throw new Error('SYNTHETIC_STORE_FAILURE');
+        }
         await store.persistAudit(event);
       },
       persistHealth: (evidence) => store.persistHealth(evidence)
     },
     auditExporter: {
       export: (event) => {
-        if (options.failAuditExportAt === exported.length)
+        if (options.failAuditExportAt === exported.length) {
+          sinkFailure = { sink: 'audit_exporter', phase: 'export' };
           return Promise.reject(new Error('SYNTHETIC_EXPORT_FAILURE'));
+        }
         exported.push(event);
         return Promise.resolve();
       }
     },
     securityExporter: {
       export: (item) => {
-        if (options.failSecurityExportAt === security.length)
+        if (options.failSecurityExportAt === security.length) {
+          sinkFailure = { sink: 'security_exporter', phase: 'export' };
           return Promise.reject(new Error('SYNTHETIC_SECURITY_EXPORT_FAILURE'));
+        }
         security.push(item);
         return Promise.resolve();
       }
     },
     metricsExporter: {
       export: (items) => {
-        if (options.failMetricsExportAt === metricBatches.length)
+        if (options.failMetricsExportAt === metricBatches.length) {
+          sinkFailure = { sink: 'metrics_exporter', phase: 'export' };
           return Promise.reject(new Error('SYNTHETIC_METRICS_EXPORT_FAILURE'));
+        }
         metricBatches.push(items);
         return Promise.resolve();
       }
     },
     healthExporter: {
       export: (item) => {
-        if (options.failHealthExport)
+        if (options.failHealthExport) {
+          if (!sinkFailure) sinkFailure = { sink: 'health_exporter', phase: 'export' };
           return Promise.reject(new Error('SYNTHETIC_HEALTH_EXPORT_FAILURE'));
+        }
         health.push(item);
         return Promise.resolve();
       }
@@ -796,6 +1075,12 @@ export function createFixture(options: FixtureOptions = {}): FixtureState {
     eventIds,
     requestScopes,
     tenantScopes,
+    get writeAttempts() {
+      return writeAttempts;
+    },
+    get sinkFailure() {
+      return sinkFailure;
+    },
     pipeline: new AuditTelemetryPipeline(dependencies),
     disposed: false,
     cleanup() {
@@ -808,10 +1093,49 @@ export function createFixture(options: FixtureOptions = {}): FixtureState {
       eventIds.length = 0;
       requestScopes.length = 0;
       tenantScopes.length = 0;
+      writeAttempts = 0;
+      sinkFailure = undefined;
       this.disposed = true;
       if (options.failCleanup) throw new Error('SYNTHETIC_CLEANUP_FAILURE');
     }
   };
+}
+
+export interface AuditSinkObservation {
+  readonly attemptedEventIds: readonly string[];
+  readonly committedEventIds: readonly string[];
+  readonly failedEvent?: Readonly<{
+    eventId: string;
+    tenantId: string;
+    sourceId: string;
+    eventType: string;
+    stateBefore: LifecycleState;
+    stateAfter: LifecycleState;
+    decision: string;
+    requestId: string;
+    correlationId: string;
+    traceId: string;
+    immutableReference: Readonly<{ id: string; commit: string; path: string; sha256: string }>;
+    timestamp: string;
+  }>;
+  readonly failedSink?: AuditHealthEvidence['failed_component'] | 'health_exporter';
+  readonly failedPhase?: 'persist' | 'export';
+  readonly failureCode?: 'AUDIT_DELIVERY_FAILURE' | 'AUDIT_VALIDATION_FAILURE';
+  readonly outcome: 'complete' | 'failed' | 'partial';
+  readonly writeOccurred: boolean;
+  readonly partialWrite: boolean;
+  readonly expectedItemCount: number;
+  readonly attemptedWriteCount: number;
+  readonly actualPersistedCount: number;
+  readonly health: readonly Readonly<{
+    eventId?: string;
+    timestamp: string;
+    failedComponent: string;
+    reasonCode: string;
+  }>[];
+  readonly callerVisibleResult:
+    ReturnType<typeof callerVisibleDenial> | Readonly<{ decision: 'recorded' }>;
+  readonly protectedFieldsDisclosed: 0;
 }
 
 export interface ExecutionObservation {
@@ -822,6 +1146,8 @@ export interface ExecutionObservation {
   readonly metricsExported: number;
   readonly healthCount: number;
   readonly pipelineHealth: 'healthy' | 'degraded';
+  readonly writeAttempts: number;
+  readonly sink: AuditSinkObservation;
   readonly reconstruction: ReconstructionResult;
   readonly retained: readonly CanonicalAuditEvent[];
   readonly cleanup: 'Passed';
@@ -835,17 +1161,28 @@ export async function executeLifecycle(
 ): Promise<ExecutionObservation> {
   const fixture = createFixture(options);
   let primaryError: string | undefined;
+  let preflightResult: ReconstructionResult | undefined;
   let cleanupError: string | undefined;
   let observation: ExecutionObservation;
   try {
-    for (const event of events) {
-      validateKmEvent(event);
-      fixture.requestScopes.push(event.request_id);
-      fixture.tenantScopes.push(event.tenant_id);
-      await fixture.pipeline.emit(event);
+    preflightResult = preflightLifecycle(events, basis);
+    if (preflightResult.decision === 'Blocked / Fail Closed') {
+      primaryError =
+        preflightResult.reason === 'PROHIBITED_AUDIT_DATA'
+          ? 'Audit evidence contains prohibited data'
+          : preflightResult.reason;
+    } else {
+      for (const event of events) {
+        fixture.requestScopes.push(event.request_id);
+        fixture.tenantScopes.push(event.tenant_id);
+        await fixture.pipeline.emit(event);
+      }
     }
   } catch (error) {
-    primaryError = error instanceof Error ? error.message : 'UNKNOWN_EXECUTION_FAILURE';
+    primaryError =
+      error instanceof Error && error.message === 'Required audit evidence could not be delivered'
+        ? error.message
+        : 'AUDIT_EXECUTION_FAILURE';
   } finally {
     const retained = [...fixture.store.audits];
     if (
@@ -856,6 +1193,78 @@ export async function executeLifecycle(
     ) {
       primaryError = `${primaryError};HEALTH_OUTPUT_UNAVAILABLE`;
     }
+    const attemptedEventIds = [...fixture.eventIds];
+    const committedEventIds = retained.map((event) => event.event_id);
+    const failedSource =
+      fixture.sinkFailure && attemptedEventIds.length > 0
+        ? events[attemptedEventIds.length - 1]
+        : undefined;
+    const failedEventId = attemptedEventIds.at(-1);
+    const sinkOutcome: AuditSinkObservation['outcome'] = primaryError
+      ? retained.length > 0
+        ? 'partial'
+        : 'failed'
+      : 'complete';
+    const healthRecords = fixture.health.length > 0 ? fixture.health : fixture.store.health;
+    const sink: AuditSinkObservation = {
+      attemptedEventIds,
+      committedEventIds,
+      ...(failedSource && failedEventId
+        ? {
+            failedEvent: {
+              eventId: failedEventId,
+              tenantId: failedSource.tenant_id,
+              sourceId: failedSource.canonical_source_id,
+              eventType: failedSource.event_type,
+              stateBefore: failedSource.state_before,
+              stateAfter: failedSource.state_after,
+              decision: failedSource.decision,
+              requestId: failedSource.request_id,
+              correlationId: failedSource.correlation_id,
+              traceId: failedSource.trace_id,
+              immutableReference: {
+                id: failedSource.evidence_id,
+                commit: failedSource.evidence_commit,
+                path: failedSource.evidence_path,
+                sha256: failedSource.evidence_sha256
+              },
+              timestamp: failedSource.test_emission_time
+            }
+          }
+        : {}),
+      ...(fixture.sinkFailure
+        ? { failedSink: fixture.sinkFailure.sink, failedPhase: fixture.sinkFailure.phase }
+        : {}),
+      ...(primaryError
+        ? {
+            failureCode: fixture.sinkFailure
+              ? ('AUDIT_DELIVERY_FAILURE' as const)
+              : ('AUDIT_VALIDATION_FAILURE' as const)
+          }
+        : {}),
+      outcome: sinkOutcome,
+      writeOccurred: retained.length > 0,
+      partialWrite: sinkOutcome === 'partial',
+      expectedItemCount: events.length,
+      attemptedWriteCount: fixture.writeAttempts,
+      actualPersistedCount: retained.length,
+      health: healthRecords.map((item) => ({
+        ...(item.event_id ? { eventId: item.event_id } : {}),
+        timestamp: item.timestamp,
+        failedComponent: item.failed_component,
+        reasonCode: item.reason_code
+      })),
+      callerVisibleResult: primaryError ? callerVisibleDenial() : { decision: 'recorded' },
+      protectedFieldsDisclosed: 0
+    };
+    const failedAuditOperation =
+      failedEventId && fixture.sinkFailure
+        ? {
+            eventId: failedEventId,
+            outcome: sinkOutcome === 'partial' ? ('partial' as const) : ('failed' as const),
+            persistedItemCount: retained.length
+          }
+        : undefined;
     observation = {
       attempted: fixture.eventIds.length,
       committed: retained.length,
@@ -864,9 +1273,14 @@ export async function executeLifecycle(
       metricsExported: fixture.metricBatches.length,
       healthCount: fixture.health.length,
       pipelineHealth: fixture.pipeline.healthStatus().status,
-      reconstruction: primaryError
-        ? blocked('AUDIT_DELIVERY_OR_VALIDATION_FAILURE')
-        : reconstructLifecycle(retained, basis),
+      writeAttempts: fixture.writeAttempts,
+      sink,
+      reconstruction:
+        preflightResult?.decision === 'Blocked / Fail Closed'
+          ? preflightResult
+          : primaryError
+            ? blocked('AUDIT_DELIVERY_OR_VALIDATION_FAILURE', failedAuditOperation)
+            : reconstructLifecycle(retained, basis),
       retained,
       cleanup: 'Passed',
       ...(primaryError ? { primaryError } : {})
@@ -881,7 +1295,9 @@ export async function executeLifecycle(
         fixture.security.length ||
         fixture.metricBatches.length ||
         fixture.requestScopes.length ||
-        fixture.tenantScopes.length
+        fixture.tenantScopes.length ||
+        fixture.writeAttempts ||
+        fixture.sinkFailure
       ) {
         cleanupError = 'INCOMPLETE_STATE_RESET';
       }
