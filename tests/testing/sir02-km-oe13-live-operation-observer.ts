@@ -30,7 +30,32 @@ export type LiveOperationCounters = Record<LiveOperationCategory, number> & {
   unknownProhibitedActions: number;
 };
 
+export interface ScenarioObservationSnapshot {
+  scenarioId: string;
+  phase: 'Before Fixture Cleanup';
+  initialCounters: LiveOperationCounters;
+  counters: LiveOperationCounters;
+  blockedAudit: Array<{
+    reason: 'PROHIBITED_OPERATION_BLOCKED';
+    category: LiveOperationCategory | 'unknownProhibitedActions';
+  }>;
+  environmentUnchanged: boolean;
+}
+
+const processingOperationCategories = {
+  parsingChunking: 'liveParsingChunking',
+  embedding: 'liveEmbedding',
+  indexing: 'liveIndexing',
+  vectorStorage: 'liveVectorStoreWritePopulation',
+  retrievalPreparation: 'liveRetrievalPreparation',
+  otherKnowledgeProcessing: 'unknownProhibitedActions'
+} as const;
+const requiredProcessingPorts = Object.keys(processingOperationCategories).sort();
+const environmentSnapshot = (): string =>
+  JSON.stringify(Object.entries(process.env).sort(([left], [right]) => left.localeCompare(right)));
+
 export class BlockedLiveOperation extends Error {
+  observation?: ScenarioObservationSnapshot;
   constructor(readonly category: LiveOperationCategory | 'unknownProhibitedActions') {
     super(`OE13_LIVE_OPERATION_BLOCKED:${category}`);
     this.name = 'BlockedLiveOperation';
@@ -66,6 +91,12 @@ export class LiveOperationObserver {
   private restorers: Array<() => void> = [];
   private armed = false;
   private readonly guardedSurfaces = new Set<string>();
+  private scenarioId: string | null = null;
+  private initialEnvironment: string | null = null;
+  private initialCounters: LiveOperationCounters | null = null;
+  private processingPortsBound = false;
+  private captured: ScenarioObservationSnapshot | null = null;
+  private blockedAudit: ScenarioObservationSnapshot['blockedAudit'] = [];
 
   readonly ports: Record<LiveOperationCategory, () => never> = Object.fromEntries(
     LIVE_OPERATION_CATEGORIES.map((category) => [category, () => this.block(category)])
@@ -74,7 +105,53 @@ export class LiveOperationObserver {
   block(category: LiveOperationCategory): never {
     if (!this.armed) throw new Error('OE13_OBSERVER_NOT_ARMED');
     this.counters[category] += 1;
+    this.blockedAudit.push({ reason: 'PROHIBITED_OPERATION_BLOCKED', category });
     throw new BlockedLiveOperation(category);
+  }
+
+  /** Every fixture processing port must enter this active, blocking scope. */
+  bindProcessingPorts(names: string[]): void {
+    if (!this.armed) throw new Error('OE13_OBSERVER_NOT_ARMED');
+    if (JSON.stringify([...names].sort()) !== JSON.stringify(requiredProcessingPorts))
+      throw new Error('OE13_OBSERVER_PROCESSING_PORT_COVERAGE_UNAVAILABLE');
+    this.processingPortsBound = true;
+  }
+
+  attemptOperation(name: string): never {
+    if (!this.armed) throw new Error('OE13_OBSERVER_NOT_ARMED');
+    const category = Object.hasOwn(processingOperationCategories, name)
+      ? processingOperationCategories[name as keyof typeof processingOperationCategories]
+      : LIVE_OPERATION_CATEGORIES.includes(name as LiveOperationCategory)
+        ? (name as LiveOperationCategory)
+        : 'unknownProhibitedActions';
+    this.counters[category] += 1;
+    this.blockedAudit.push({ reason: 'PROHIBITED_OPERATION_BLOCKED', category });
+    throw new BlockedLiveOperation(category);
+  }
+
+  assertActive(scenarioId: string): void {
+    if (!this.armed || this.scenarioId !== scenarioId)
+      throw new Error('OE13_OBSERVER_SCENARIO_SCOPE_MISSING');
+  }
+
+  captureBeforeFixtureCleanup(scenarioId: string): ScenarioObservationSnapshot {
+    this.assertActive(scenarioId);
+    if (!this.processingPortsBound || !this.initialCounters || this.captured)
+      throw new Error('OE13_OBSERVER_COVERAGE_INCOMPLETE');
+    const snapshot: ScenarioObservationSnapshot = {
+      scenarioId,
+      phase: 'Before Fixture Cleanup',
+      initialCounters: { ...this.initialCounters },
+      counters: { ...this.counters },
+      blockedAudit: this.blockedAudit.map((entry) => ({ ...entry })),
+      environmentUnchanged: this.initialEnvironment === environmentSnapshot()
+    };
+    this.captured = snapshot;
+    return snapshot;
+  }
+
+  capturedSnapshot(): ScenarioObservationSnapshot | null {
+    return this.captured;
   }
 
   private patch(target: object, name: string, category: LiveOperationCategory): void {
@@ -96,10 +173,16 @@ export class LiveOperationObserver {
     this.restorers.push(() => Object.defineProperty(target, name, original));
   }
 
-  arm(): void {
+  arm(scenarioId = 'synthetic-observer-probe'): void {
     if (this.armed) throw new Error('OE13_OBSERVER_ALREADY_ARMED');
     this.counters = emptyCounters();
     this.guardedSurfaces.clear();
+    this.scenarioId = scenarioId;
+    this.initialEnvironment = environmentSnapshot();
+    this.initialCounters = { ...this.counters };
+    this.processingPortsBound = false;
+    this.captured = null;
+    this.blockedAudit = [];
     this.armed = true;
     try {
       this.patch(globalThis, 'fetch', 'trafficNetworkActions');
@@ -210,33 +293,60 @@ export class LiveOperationObserver {
     this.restorers = [];
     this.armed = false;
     this.counters = emptyCounters();
+    this.scenarioId = null;
+    this.initialEnvironment = null;
+    this.initialCounters = null;
+    this.processingPortsBound = false;
+    this.captured = null;
+    this.blockedAudit = [];
     syncBuiltinESMExports();
     if (errors.length) throw new AggregateError(errors, 'OE13_OBSERVER_CLEANUP_FAILED');
   }
 
   isClean(): boolean {
-    return !this.armed && this.restorers.length === 0 && allZero(this.counters);
+    return (
+      !this.armed &&
+      this.restorers.length === 0 &&
+      allZero(this.counters) &&
+      this.scenarioId === null &&
+      this.initialEnvironment === null &&
+      this.initialCounters === null &&
+      !this.processingPortsBound &&
+      this.captured === null &&
+      this.blockedAudit.length === 0
+    );
   }
 }
 
 export interface ObservedScenario<T> {
   result: T;
   liveOperationCounters: LiveOperationCounters;
+  observation: ScenarioObservationSnapshot;
   observerCleanup: 'Passed';
 }
 
-export function observeScenario<T>(run: () => T): ObservedScenario<T> {
+export function observeScenario<T>(
+  scenarioId: string,
+  run: (observer: LiveOperationObserver) => T
+): ObservedScenario<T> {
   const observer = new LiveOperationObserver();
   let result: T | undefined;
   let counters: LiveOperationCounters | undefined;
+  let observation: ScenarioObservationSnapshot | null = null;
   let primaryError: unknown;
   let cleanupError: unknown;
-  observer.arm();
+  observer.arm(scenarioId);
   try {
-    result = run();
-    counters = observer.assertMeasuredZero();
+    result = run(observer);
+    observation = observer.capturedSnapshot();
+    if (!observation || observation.scenarioId !== scenarioId || !observation.environmentUnchanged)
+      throw new Error('OE13_OBSERVER_COVERAGE_INCOMPLETE');
+    counters = observation.counters;
+    if (!allZero(counters)) throw new Error('OE13_OBSERVER_NONZERO_LIVE_OPERATION');
   } catch (error) {
     primaryError = error;
+    observation = observer.capturedSnapshot();
+    if (error instanceof BlockedLiveOperation && observation) error.observation = observation;
   } finally {
     try {
       observer.disarm();
@@ -252,9 +362,9 @@ export function observeScenario<T>(run: () => T): ObservedScenario<T> {
   if (primaryError instanceof Error) throw primaryError;
   if (primaryError !== undefined)
     throw new Error('OE13_OBSERVER_PRIMARY_FAILURE', { cause: primaryError });
-  if (!counters || result === undefined || !observer.isClean())
+  if (!counters || !observation || result === undefined || !observer.isClean())
     throw new Error('OE13_OBSERVER_INCOMPLETE');
-  return { result, liveOperationCounters: counters, observerCleanup: 'Passed' };
+  return { result, liveOperationCounters: counters, observation, observerCleanup: 'Passed' };
 }
 
 /** No real service is reached: each probe enters the same blocked port as a guarded call. */

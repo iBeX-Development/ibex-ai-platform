@@ -23,15 +23,21 @@ import {
   type Submission
 } from '../testing/sir02-km-oe13-duplicate-conflict-fixture.js';
 import {
+  BlockedLiveOperation,
   LIVE_OPERATION_CATEGORIES,
+  LiveOperationObserver,
   observeScenario,
   verifyGuardedEntryPointProbes,
   verifySyntheticBlockedProbes,
-  type LiveOperationCounters
+  type LiveOperationCounters,
+  type ScenarioObservationSnapshot
 } from '../testing/sir02-km-oe13-live-operation-observer.js';
 
 type Inputs = ReturnType<typeof loadOe13Inputs>;
 type Mutate = (state: FixtureState, submission: Submission) => void;
+type ObservedSubmission = ReturnType<typeof executeSubmission> & {
+  observerSnapshot: ScenarioObservationSnapshot;
+};
 let inputs: Inputs;
 const caseCaptures: Array<{
   scenarioId: string;
@@ -56,6 +62,7 @@ const caseCaptures: Array<{
   protectedFieldsDisclosed: number;
   downstreamCalls: ReturnType<typeof executeSubmission>['processingCalls'];
   liveOperationCounters: LiveOperationCounters;
+  observerSnapshot: ScenarioObservationSnapshot;
   cleanup: 'Passed';
 }> = [];
 const scenarioSequence = new Map<string, number>();
@@ -86,13 +93,26 @@ const categoryMatchers: Array<[string, string]> = [
 
 function executeObserved(
   state: FixtureState,
-  submission: Submission
-): ReturnType<typeof executeSubmission> {
+  submission: Submission,
+  configureScope?: (observer: LiveOperationObserver) => void
+): ObservedSubmission {
   const scenarioId = expect.getState().currentTestName;
   if (!scenarioId) throw new Error('OE13_SCENARIO_ID_MISSING');
-  const { result, liveOperationCounters, observerCleanup } = observeScenario(() =>
-    executeSubmission(state, submission)
+  const { result, liveOperationCounters, observation, observerCleanup } = observeScenario(
+    scenarioId,
+    (observer) => {
+      configureScope?.(observer);
+      return executeSubmission(state, submission, observer, scenarioId);
+    }
   );
+  expect(observation.scenarioId).toBe(scenarioId);
+  expect(observation.phase).toBe('Before Fixture Cleanup');
+  expect(observation.initialCounters).toEqual(
+    Object.fromEntries(Object.keys(liveOperationCounters).map((key) => [key, 0]))
+  );
+  expect(observation.counters).toEqual(liveOperationCounters);
+  expect(observation.environmentUnchanged).toBe(true);
+  const observedResult: ObservedSubmission = { ...result, observerSnapshot: observation };
   const subcaseId = (scenarioSequence.get(scenarioId) ?? 0) + 1;
   scenarioSequence.set(scenarioId, subcaseId);
   const pairs = result.conflictPairs;
@@ -156,9 +176,10 @@ function executeObserved(
     protectedFieldsDisclosed: result.protectedFieldsDisclosed,
     downstreamCalls: structuredClone(result.processingCalls),
     liveOperationCounters,
+    observerSnapshot: structuredClone(observation),
     cleanup: observerCleanup
   });
-  return result;
+  return observedResult;
 }
 
 beforeAll(() => {
@@ -384,19 +405,144 @@ describe('SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture', () =>
   });
 
   it('cleans observer state after normal and exceptional scoped execution', () => {
-    const first = observeScenario(() => 'synthetic-tenant-a');
-    expect(first.result).toBe('synthetic-tenant-a');
-    expect(Object.values(first.liveOperationCounters).every((count) => count === 0)).toBe(true);
-    expect(first.observerCleanup).toBe('Passed');
+    const firstState = createFixture(inputs);
+    const first = executeObserved(firstState, makeSubmission(firstState));
+    expect(first.observerSnapshot.phase).toBe('Before Fixture Cleanup');
+    expect(Object.values(first.observerSnapshot.counters).every((count) => count === 0)).toBe(true);
+    expectClean(firstState);
+    const failedState = createFixture(inputs);
+    failedState.beforeClassify = () => {
+      throw new Error('SYNTHETIC_OBSERVER_ERROR');
+    };
+    expect(() => executeObserved(failedState, makeSubmission(failedState))).toThrow(
+      'SYNTHETIC_OBSERVER_ERROR'
+    );
+    expectClean(failedState);
+    const secondState = createFixture(inputs);
+    const second = executeObserved(secondState, makeSubmission(secondState));
+    expect(
+      Object.values(second.observerSnapshot.initialCounters).every((count) => count === 0)
+    ).toBe(true);
+    expect(Object.values(second.observerSnapshot.counters).every((count) => count === 0)).toBe(
+      true
+    );
+    expectClean(secondState);
+  });
+
+  it('blocks a known fixture processing attempt inside the measured scenario', () => {
+    const state = createFixture(inputs);
+    state.beforeClassify = () => {
+      state.spies.ports.embedding();
+    };
+    let blocked: BlockedLiveOperation | undefined;
+    try {
+      executeObserved(state, makeSubmission(state));
+    } catch (error) {
+      if (error instanceof BlockedLiveOperation) blocked = error;
+      else throw error;
+    }
+    expect(blocked?.category).toBe('liveEmbedding');
+    expect(blocked?.observation?.phase).toBe('Before Fixture Cleanup');
+    expect(blocked?.observation?.counters.liveEmbedding).toBe(1);
+    expect(blocked?.observation?.blockedAudit).toEqual([
+      { reason: 'PROHIBITED_OPERATION_BLOCKED', category: 'liveEmbedding' }
+    ]);
+    expectClean(state);
+  });
+
+  it('blocks unknown fixture processing and resets counters before the next scenario', () => {
+    const state = createFixture(inputs);
+    state.beforeClassify = () => {
+      state.spies.ports.otherKnowledgeProcessing();
+    };
+    let blocked: BlockedLiveOperation | undefined;
+    try {
+      executeObserved(state, makeSubmission(state));
+    } catch (error) {
+      if (error instanceof BlockedLiveOperation) blocked = error;
+      else throw error;
+    }
+    expect(blocked?.category).toBe('unknownProhibitedActions');
+    expect(blocked?.observation?.counters.unknownProhibitedActions).toBe(1);
+    expect(blocked?.observation?.blockedAudit).toEqual([
+      { reason: 'PROHIBITED_OPERATION_BLOCKED', category: 'unknownProhibitedActions' }
+    ]);
+    expectClean(state);
+    const nextState = createFixture(inputs);
+    const next = executeObserved(nextState, makeSubmission(nextState));
+    expect(Object.values(next.observerSnapshot.initialCounters).every((count) => count === 0)).toBe(
+      true
+    );
+    expect(Object.values(next.observerSnapshot.counters).every((count) => count === 0)).toBe(true);
+    expectClean(nextState);
+  });
+
+  it('measures all known categories inside the real scenario path and blocks side effects', () => {
+    for (const category of LIVE_OPERATION_CATEGORIES) {
+      const state = createFixture(inputs);
+      let sideEffectReached = false;
+      let blocked: BlockedLiveOperation | undefined;
+      try {
+        executeObserved(state, makeSubmission(state), (observer) => {
+          state.beforeClassify = () => {
+            observer.attemptOperation(category);
+            sideEffectReached = true;
+          };
+        });
+      } catch (error) {
+        if (error instanceof BlockedLiveOperation) blocked = error;
+        else throw error;
+      }
+      expect(blocked?.category).toBe(category);
+      expect(blocked?.observation?.counters[category]).toBe(1);
+      expect(
+        Object.values(blocked?.observation?.counters ?? {}).reduce((sum, count) => sum + count, 0)
+      ).toBe(1);
+      expect(blocked?.observation?.blockedAudit).toEqual([
+        { reason: 'PROHIBITED_OPERATION_BLOCKED', category }
+      ]);
+      expect(sideEffectReached).toBe(false);
+      expectClean(state);
+    }
+  });
+
+  it('intercepts an unmapped prohibited operation inside the real scenario path', () => {
+    const state = createFixture(inputs);
+    let sideEffectReached = false;
+    let blocked: BlockedLiveOperation | undefined;
+    try {
+      executeObserved(state, makeSubmission(state), (observer) => {
+        state.beforeClassify = () => {
+          observer.attemptOperation('sir02-synthetic-unrecognized-action');
+          sideEffectReached = true;
+        };
+      });
+    } catch (error) {
+      if (error instanceof BlockedLiveOperation) blocked = error;
+      else throw error;
+    }
+    expect(blocked?.category).toBe('unknownProhibitedActions');
+    expect(blocked?.observation?.counters.unknownProhibitedActions).toBe(1);
+    expect(
+      Object.values(blocked?.observation?.counters ?? {}).reduce((sum, count) => sum + count, 0)
+    ).toBe(1);
+    expect(blocked?.observation?.blockedAudit).toEqual([
+      { reason: 'PROHIBITED_OPERATION_BLOCKED', category: 'unknownProhibitedActions' }
+    ]);
+    expect(sideEffectReached).toBe(false);
+    expectClean(state);
+  });
+
+  it('fails closed when the observer does not cover the real fixture invocation', () => {
+    const state = createFixture(inputs);
+    const unarmed = new LiveOperationObserver();
     expect(() =>
-      observeScenario(() => {
-        throw new Error('SYNTHETIC_OBSERVER_ERROR');
-      })
-    ).toThrow('SYNTHETIC_OBSERVER_ERROR');
-    const second = observeScenario(() => 'synthetic-tenant-b');
-    expect(second.result).toBe('synthetic-tenant-b');
-    expect(Object.values(second.liveOperationCounters).every((count) => count === 0)).toBe(true);
-    expect(second.observerCleanup).toBe('Passed');
+      executeSubmission(state, makeSubmission(state), unarmed, 'unarmed-scenario')
+    ).toThrow('OE13_CLEANUP_FAILED');
+    expectClean(state);
+    expect(() => observeScenario('missing-fixture-capture', () => 'synthetic-only')).toThrow(
+      'OE13_OBSERVER_COVERAGE_INCOMPLETE'
+    );
   });
 
   it('loads the accepted immutable baseline and suppresses repeated exact registration/version submissions', () => {

@@ -14,6 +14,7 @@ import {
   type ProcessingCallCounters,
   type ProcessingSpies
 } from './sir02-km-oe11-fail-closed-fixture.js';
+import type { LiveOperationObserver } from './sir02-km-oe13-live-operation-observer.js';
 
 export const OE13_NAMESPACE = OE09_NAMESPACE;
 export const OE13_SCHEMA = OE09_SCHEMA;
@@ -557,12 +558,21 @@ function cleanup(state: FixtureState): void {
   if (failures.length) throw new AggregateError(failures, 'OE13_CLEANUP_STEP_FAILED');
 }
 
-export function executeSubmission(state: FixtureState, submission: Submission): SubmissionResult {
+export function executeSubmission(
+  state: FixtureState,
+  submission: Submission,
+  observer: LiveOperationObserver,
+  scenarioId: string
+): SubmissionResult {
   let result: Omit<SubmissionResult, 'cleanup'> | undefined;
   let primaryError: unknown = null;
   let cleanupError: unknown = null;
   try {
     if (state.disposed) throw new Error('OE13_FIXTURE_DISPOSED');
+    observer.assertActive(scenarioId);
+    const portNames = Object.keys(state.spies.ports) as Array<keyof ProcessingSpies['ports']>;
+    for (const name of portNames) state.spies.ports[name] = () => observer.attemptOperation(name);
+    observer.bindProcessingPorts(portNames);
     state.request = copy(submission);
     const before = counts(state);
     const registryHashBefore = hash(orderedRegistry(state.registry));
@@ -783,9 +793,17 @@ export function executeSubmission(state: FixtureState, submission: Submission): 
     primaryError = error;
   } finally {
     try {
-      cleanup(state);
+      observer.captureBeforeFixtureCleanup(scenarioId);
     } catch (error) {
       cleanupError = error;
+    }
+    try {
+      cleanup(state);
+    } catch (error) {
+      cleanupError =
+        cleanupError === null
+          ? error
+          : new AggregateError([cleanupError, error], 'OE13_OBSERVER_AND_FIXTURE_CLEANUP_FAILED');
     }
   }
   if (cleanupError !== null) throw new FixtureExecutionFailure(primaryError, cleanupError);
