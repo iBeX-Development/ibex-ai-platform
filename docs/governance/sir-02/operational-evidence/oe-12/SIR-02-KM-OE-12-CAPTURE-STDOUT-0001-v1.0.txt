@@ -1,0 +1,1 @@
+{"runId":"SIR02-KM-OE-12-V1_0-20260927T090557Z-0001","eventCount":14,"eventSetSha256":"c00e6f32d372286ac320376a396bec30c87996bbb1fd46a9c6b2c2e1c9e4d09e","sinkFull":"failed","sinkPartial":"partial","tenantBProtectedFieldsDisclosed":0,"cleanup":"Passed"}

@@ -1,0 +1,30 @@
+{
+  "document": "SIR-02 KM OE-12 Tenant Isolation",
+  "runId": "SIR02-KM-OE-12-V1_0-20260927T090557Z-0001",
+  "foreignTenantInjection": {
+    "decision": "Blocked / Fail Closed",
+    "reason": "TENANT_BINDING_CONFLICT",
+    "writeAttempts": 0,
+    "committed": 0,
+    "callerVisible": {
+      "decision": "denied",
+      "reasonCode": "AUDIT_EVIDENCE_UNAVAILABLE",
+      "protectedFieldsDisclosed": 0
+    },
+    "protectedFieldsDisclosed": 0,
+    "cleanup": "Passed"
+  },
+  "callerTenantSubstitution": {
+    "decision": "Blocked / Fail Closed",
+    "reason": "TENANT_BINDING_CONFLICT",
+    "writeAttempts": 0,
+    "committed": 0,
+    "callerVisible": {
+      "decision": "denied",
+      "reasonCode": "AUDIT_EVIDENCE_UNAVAILABLE",
+      "protectedFieldsDisclosed": 0
+    },
+    "protectedFieldsDisclosed": 0,
+    "cleanup": "Passed"
+  }
+}

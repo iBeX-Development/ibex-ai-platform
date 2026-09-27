@@ -1,0 +1,87 @@
+{
+  "document": "SIR-02 KM OE-12 Cleanup and Operational Safety",
+  "runId": "SIR02-KM-OE-12-V1_0-20260927T090557Z-0001",
+  "cleanup": {
+    "positive": "Passed",
+    "fullSinkFailure": "Passed",
+    "partialSinkFailure": "Passed",
+    "tenantInjection": "Passed",
+    "callerSubstitution": "Passed",
+    "prohibitedField": "Passed"
+  },
+  "fixtureDownstreamCalls": 0,
+  "noPersistentLiveKnowledgeState": true,
+  "executionBoundary": "Isolated in-memory synthetic fixture; no live integration path invoked",
+  "liveOperationCounters": {
+    "ingestion": 0,
+    "parsingChunking": 0,
+    "embedding": 0,
+    "indexing": 0,
+    "vectorStorageWrite": 0,
+    "retrieval": 0,
+    "productionStorageWrite": 0,
+    "deployment": 0,
+    "configurationMutation": 0,
+    "credentialOperation": 0,
+    "secretOperation": 0,
+    "traffic": 0
+  },
+  "counterBasis": "Fixture exposes no live operation adapter; zero values denote no invoked live integration from this isolated capture, not an external process-wide observer",
+  "oe08Boundary": {
+    "label": "Synthetic Audit-Only Transition — Not OE-08 Operational Evidence",
+    "operationalDeletionOrRetention": false,
+    "satisfiesOE08": false,
+    "event": {
+      "schema_version": "1.0",
+      "event_type": "km.lifecycle.synthetic_withdrawal_retention",
+      "timestamp": "2026-09-27T01:00:13.000Z",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-13",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-13",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-13",
+      "tenant_id": "sir02-test-tenant-a",
+      "user_id": "sir02-km-audit-executor",
+      "role": "administrator",
+      "session_id": "sir02-km-audit-sir02-test-tenant-a-session-13",
+      "permission_refs": [
+        "km:audit:test"
+      ],
+      "entitlement_refs": [
+        "km:evidence:test"
+      ],
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+      "namespace_id": "sir02-km-evidence-v1",
+      "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+      "canonical_source_id": "sir02-km-source-a-001",
+      "source_registration_id": "sir02-km-registration-a-001",
+      "source_version": "v1.0",
+      "source_owner_id": "sir02-test-source-owner-a",
+      "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-13",
+      "dependency_event_ids": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-07"
+      ],
+      "actor_id": "sir02-km-audit-executor",
+      "decision": "recorded",
+      "outcome": "accepted",
+      "state_before": "quarantined",
+      "state_after": "quarantined",
+      "source_event_time": "2026-09-27T00:00:00.000Z",
+      "projection_time": "2026-09-27T01:00:13.000Z",
+      "test_emission_time": "2026-09-27T01:00:13.000Z",
+      "evidence_id": "SIR02-KM-OE-07",
+      "evidence_commit": "03791c7096adaa0ee5874110f7dae291858efd37",
+      "evidence_path": "docs/governance/sir-02/operational-evidence/oe-07/SIR-02-KM-OE-07-STALE-CONTENT-QUARANTINE-TEST-v1.0.json",
+      "evidence_sha256": "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4",
+      "audit_sink_result": "submitted_for_persistence",
+      "caller_result": "recorded",
+      "synthetic_audit_only": true,
+      "operational_oe08_evidence": false,
+      "metadata": {
+        "reason_code": "SYNTHETIC_WITHDRAWAL_RETENTION",
+        "source_version": "v1.0",
+        "boundary_label": "Synthetic Audit-Only Transition — Not OE-08 Operational Evidence"
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "document": "SIR-02 KM OE-12 SHA-256 Evidence Manifest",
+  "version": "v1.0",
+  "runId": "SIR02-KM-OE-12-V1_0-20260927T090557Z-0001",
+  "algorithm": "SHA-256",
+  "payloadArtifactCount": 14,
+  "artifacts": [
+    {
+      "path": "SIR-02-KM-OE-12-LIFECYCLE-AUDIT-FORMAL-EVIDENCE-0001-v1.0.json",
+      "bytes": 9584,
+      "sha256": "da1e237b4af9924c78ce446e581168145928006dcc08349713edefd4085c83a6"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-RAW-NORMALIZED-LIFECYCLE-EVENTS-0001-v1.0.json",
+      "bytes": 53489,
+      "sha256": "aa269f55872ce4c792fd8de698fba9ce460e0ee33ec9f8f35ae3f4a5a337a206"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-TRANSITION-DEPENDENCY-RECONSTRUCTION-0001-v1.0.json",
+      "bytes": 15133,
+      "sha256": "4aea17b3bdb39ffb8ecce26c27500b813214450a92d81f2d9b12e635a7d93742"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-NEGATIVE-CASE-RESULTS-0001-v1.0.json",
+      "bytes": 10860,
+      "sha256": "41cfaa492f5af9d9aaa3e9f0acf44805ea885cd8eb083f4c4725c2b4c8edc847"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-SINK-FAILURE-PARTIAL-WRITE-0001-v1.0.json",
+      "bytes": 5787,
+      "sha256": "9f13d581f2445a1ecd302182e3599513aee192d45f3d2846a4efe2d013c7dcd1"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-TENANT-ISOLATION-0001-v1.0.json",
+      "bytes": 839,
+      "sha256": "cdb25741fa8cf046944b74bfce390ed1568b885b5b8614e21e25103fe001f2fd"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-SANITIZATION-REDACTION-0001-v1.0.json",
+      "bytes": 452,
+      "sha256": "0364862cf0977bff36425b5001b379a8adc90eeb315d9f050b7f3fe028fd0b1f"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-CLEANUP-OPERATIONAL-SAFETY-0001-v1.0.json",
+      "bytes": 3550,
+      "sha256": "f15d906c0e01a352e98267bf79ada50980cedafc176427ef54ee7dbbbf2dcc27"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-VITEST-RESULTS-0001-v1.0.json",
+      "bytes": 25279,
+      "sha256": "9a0df53848a367dc858bbb74501d552b491884c6a3782b46186b43d272918635"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-FORMAL-RUN-LOG-0001-v1.0.json",
+      "bytes": 2566,
+      "sha256": "2c2e47a1f074e8d5d5e8c14708b6102bb2086eb83f0c858618359f124a54ff8f"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-VITEST-STDOUT-0001-v1.0.txt",
+      "bytes": 117,
+      "sha256": "63ad9e83956b3d1420752ad4e1f08c7d46b569dbf5d883b6d2976e45430b1744"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-VITEST-STDERR-0001-v1.0.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-CAPTURE-STDOUT-0001-v1.0.txt",
+      "bytes": 253,
+      "sha256": "82316c8088946483629840f7ee3d7c48f269701704fdc6fea9a413a6c6eba6dc"
+    },
+    {
+      "path": "SIR-02-KM-OE-12-CAPTURE-STDERR-0001-v1.0.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "selfHashConvention": "Manifest SHA-256 is retained in a separate .sha256 sidecar; the manifest does not list itself."
+}

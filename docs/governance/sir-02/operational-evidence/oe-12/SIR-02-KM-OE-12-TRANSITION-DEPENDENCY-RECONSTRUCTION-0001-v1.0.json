@@ -1,0 +1,431 @@
+{
+  "document": "SIR-02 KM OE-12 Transition and Dependency Reconstruction",
+  "runId": "SIR02-KM-OE-12-V1_0-20260927T090557Z-0001",
+  "reconstruction": {
+    "decision": "Complete / Test-Only",
+    "reason": "COMPLETE",
+    "eventIds": [
+      "sir02-km-oe12-sir02-test-tenant-a-event-00",
+      "sir02-km-oe12-sir02-test-tenant-a-event-01",
+      "sir02-km-oe12-sir02-test-tenant-a-event-02",
+      "sir02-km-oe12-sir02-test-tenant-a-event-03",
+      "sir02-km-oe12-sir02-test-tenant-a-event-04",
+      "sir02-km-oe12-sir02-test-tenant-a-event-05",
+      "sir02-km-oe12-sir02-test-tenant-a-event-06",
+      "sir02-km-oe12-sir02-test-tenant-a-event-07",
+      "sir02-km-oe12-sir02-test-tenant-a-event-08",
+      "sir02-km-oe12-sir02-test-tenant-a-event-09",
+      "sir02-km-oe12-sir02-test-tenant-a-event-10",
+      "sir02-km-oe12-sir02-test-tenant-a-event-11",
+      "sir02-km-oe12-sir02-test-tenant-a-event-12",
+      "sir02-km-oe12-sir02-test-tenant-a-event-13"
+    ],
+    "typeCounts": {
+      "source_registration": 1,
+      "tenant_owner_binding": 1,
+      "source_approval": 1,
+      "source_rejection": 1,
+      "version_lineage": 1,
+      "provenance": 1,
+      "supersession": 1,
+      "stale_quarantine": 1,
+      "duplicate_conflict": 1,
+      "human_decision_hold": 1,
+      "fail_closed_denial": 1,
+      "permission_tenant_denial": 1,
+      "reconciliation": 1,
+      "synthetic_withdrawal_retention": 1
+    },
+    "transitionMap": [
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-00",
+        "before": "unregistered",
+        "after": "registered",
+        "evidenceId": "SIR02-KM-OE-01"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-01",
+        "before": "registered",
+        "after": "registered",
+        "evidenceId": "SIR02-KM-OE-02"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-02",
+        "before": "registered",
+        "after": "approved",
+        "evidenceId": "SIR02-KM-OE-03"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-03",
+        "before": "approved",
+        "after": "approved",
+        "evidenceId": "SIR02-KM-OE-03"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-04",
+        "before": "approved",
+        "after": "approved",
+        "evidenceId": "SIR02-KM-OE-04"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-05",
+        "before": "approved",
+        "after": "approved",
+        "evidenceId": "SIR02-KM-OE-05"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-06",
+        "before": "approved",
+        "after": "superseded",
+        "evidenceId": "SIR02-KM-OE-06"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-07",
+        "before": "superseded",
+        "after": "quarantined",
+        "evidenceId": "SIR02-KM-OE-07"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-08",
+        "before": "quarantined",
+        "after": "quarantined",
+        "evidenceId": "SIR02-KM-OE-13-SUPPLEMENTAL"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-09",
+        "before": "quarantined",
+        "after": "quarantined",
+        "evidenceId": "SIR02-KM-OE-13-SUPPLEMENTAL"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-10",
+        "before": "quarantined",
+        "after": "quarantined",
+        "evidenceId": "SIR02-KM-OE-11"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-11",
+        "before": "quarantined",
+        "after": "quarantined",
+        "evidenceId": "SIR02-KM-OE-10"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-12",
+        "before": "quarantined",
+        "after": "quarantined",
+        "evidenceId": "SIR02-KM-OE-09"
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-13",
+        "before": "quarantined",
+        "after": "quarantined",
+        "evidenceId": "SIR02-KM-OE-07"
+      }
+    ],
+    "dependencyMap": [
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-00",
+        "dependsOn": []
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-01",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00"
+        ]
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-02",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00",
+          "sir02-km-oe12-sir02-test-tenant-a-event-01"
+        ]
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-03",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00",
+          "sir02-km-oe12-sir02-test-tenant-a-event-01"
+        ]
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-04",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00",
+          "sir02-km-oe12-sir02-test-tenant-a-event-01",
+          "sir02-km-oe12-sir02-test-tenant-a-event-02"
+        ]
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-05",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-04"
+        ]
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-06",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-02",
+          "sir02-km-oe12-sir02-test-tenant-a-event-04",
+          "sir02-km-oe12-sir02-test-tenant-a-event-05"
+        ]
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-07",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-06"
+        ]
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-08",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00",
+          "sir02-km-oe12-sir02-test-tenant-a-event-04",
+          "sir02-km-oe12-sir02-test-tenant-a-event-07"
+        ]
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-09",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-08"
+        ]
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-10",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00"
+        ]
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-11",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-01"
+        ]
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-12",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00",
+          "sir02-km-oe12-sir02-test-tenant-a-event-02",
+          "sir02-km-oe12-sir02-test-tenant-a-event-04",
+          "sir02-km-oe12-sir02-test-tenant-a-event-05"
+        ]
+      },
+      {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-13",
+        "dependsOn": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-07"
+        ]
+      }
+    ],
+    "syntheticOe08OperationalCount": 0,
+    "downstreamCalls": 0,
+    "foreignProtectedFieldsDisclosed": 0
+  },
+  "sourceEventChronology": [
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-00",
+      "eventType": "km.lifecycle.source_registration",
+      "sourceEventTime": "2026-09-25T05:22:58.000Z",
+      "projectionTime": "2026-09-27T01:00:00.000Z",
+      "dependencyEventIds": [],
+      "evidenceId": "SIR02-KM-OE-01",
+      "evidenceCommit": "44a97a9b387235c67ae70cce24fb32cda0adfe70",
+      "stateBefore": "unregistered",
+      "stateAfter": "registered",
+      "decision": "recorded"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-01",
+      "eventType": "km.lifecycle.tenant_owner_binding",
+      "sourceEventTime": "2026-09-25T05:22:58.000Z",
+      "projectionTime": "2026-09-27T01:00:01.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-00"
+      ],
+      "evidenceId": "SIR02-KM-OE-02",
+      "evidenceCommit": "9d4bc50d885e50b4fef8580918398f6764742b74",
+      "stateBefore": "registered",
+      "stateAfter": "registered",
+      "decision": "recorded"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-02",
+      "eventType": "km.lifecycle.source_approval",
+      "sourceEventTime": "2026-09-25T05:22:58Z",
+      "projectionTime": "2026-09-27T01:00:02.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-00",
+        "sir02-km-oe12-sir02-test-tenant-a-event-01"
+      ],
+      "evidenceId": "SIR02-KM-OE-03",
+      "evidenceCommit": "74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a",
+      "stateBefore": "registered",
+      "stateAfter": "approved",
+      "decision": "approved"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-03",
+      "eventType": "km.lifecycle.source_rejection",
+      "sourceEventTime": "2026-09-25T07:59:08.000Z",
+      "projectionTime": "2026-09-27T01:00:03.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-00",
+        "sir02-km-oe12-sir02-test-tenant-a-event-01"
+      ],
+      "evidenceId": "SIR02-KM-OE-03",
+      "evidenceCommit": "74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a",
+      "stateBefore": "approved",
+      "stateAfter": "approved",
+      "decision": "denied"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-04",
+      "eventType": "km.lifecycle.version_lineage",
+      "sourceEventTime": "2026-09-25T08:52:07.000Z",
+      "projectionTime": "2026-09-27T01:00:04.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-00",
+        "sir02-km-oe12-sir02-test-tenant-a-event-01",
+        "sir02-km-oe12-sir02-test-tenant-a-event-02"
+      ],
+      "evidenceId": "SIR02-KM-OE-04",
+      "evidenceCommit": "eefc0cd3dcb74761af91bd17cfe271e872d88264",
+      "stateBefore": "approved",
+      "stateAfter": "approved",
+      "decision": "recorded"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-05",
+      "eventType": "km.lifecycle.provenance",
+      "sourceEventTime": "2026-09-25T12:02:00.000Z",
+      "projectionTime": "2026-09-27T01:00:05.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-04"
+      ],
+      "evidenceId": "SIR02-KM-OE-05",
+      "evidenceCommit": "a46a7018a54f2beb918ed9fe72403a6a769644df",
+      "stateBefore": "approved",
+      "stateAfter": "approved",
+      "decision": "recorded"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-06",
+      "eventType": "km.lifecycle.supersession",
+      "sourceEventTime": "2026-09-25T12:18:03.000Z",
+      "projectionTime": "2026-09-27T01:00:06.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-02",
+        "sir02-km-oe12-sir02-test-tenant-a-event-04",
+        "sir02-km-oe12-sir02-test-tenant-a-event-05"
+      ],
+      "evidenceId": "SIR02-KM-OE-06",
+      "evidenceCommit": "f5cd7cc043c3bb99d9a745a1e546e2be30e7ddcc",
+      "stateBefore": "approved",
+      "stateAfter": "superseded",
+      "decision": "recorded"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-07",
+      "eventType": "km.lifecycle.stale_quarantine",
+      "sourceEventTime": "2026-09-25T12:32:37.000Z",
+      "projectionTime": "2026-09-27T01:00:07.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-06"
+      ],
+      "evidenceId": "SIR02-KM-OE-07",
+      "evidenceCommit": "03791c7096adaa0ee5874110f7dae291858efd37",
+      "stateBefore": "superseded",
+      "stateAfter": "quarantined",
+      "decision": "recorded"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-08",
+      "eventType": "km.lifecycle.duplicate_conflict",
+      "sourceEventTime": "2026-09-26T13:17:38.000Z",
+      "projectionTime": "2026-09-27T01:00:08.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-00",
+        "sir02-km-oe12-sir02-test-tenant-a-event-04",
+        "sir02-km-oe12-sir02-test-tenant-a-event-07"
+      ],
+      "evidenceId": "SIR02-KM-OE-13-SUPPLEMENTAL",
+      "evidenceCommit": "d7626372612d60c4959bbdf51a89c00a80b3b9b1",
+      "stateBefore": "quarantined",
+      "stateAfter": "quarantined",
+      "decision": "no_op"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-09",
+      "eventType": "km.lifecycle.human_decision_hold",
+      "sourceEventTime": "2026-09-26T13:17:38.000Z",
+      "projectionTime": "2026-09-27T01:00:09.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-08"
+      ],
+      "evidenceId": "SIR02-KM-OE-13-SUPPLEMENTAL",
+      "evidenceCommit": "d7626372612d60c4959bbdf51a89c00a80b3b9b1",
+      "stateBefore": "quarantined",
+      "stateAfter": "quarantined",
+      "decision": "held"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-10",
+      "eventType": "km.lifecycle.fail_closed_denial",
+      "sourceEventTime": "2026-09-26T06:06:08.000Z",
+      "projectionTime": "2026-09-27T01:00:10.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-00"
+      ],
+      "evidenceId": "SIR02-KM-OE-11",
+      "evidenceCommit": "363963e3f3aa87257d1fe276165d01150239b69d",
+      "stateBefore": "quarantined",
+      "stateAfter": "quarantined",
+      "decision": "denied"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-11",
+      "eventType": "km.lifecycle.permission_tenant_denial",
+      "sourceEventTime": "2026-09-27T00:00:00.000Z",
+      "projectionTime": "2026-09-27T01:00:11.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-01"
+      ],
+      "evidenceId": "SIR02-KM-OE-10",
+      "evidenceCommit": "40653085601a651c9fc40f6f7911af2aecbadbac",
+      "stateBefore": "quarantined",
+      "stateAfter": "quarantined",
+      "decision": "denied"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-12",
+      "eventType": "km.lifecycle.reconciliation",
+      "sourceEventTime": "2026-09-26T02:06:27.000Z",
+      "projectionTime": "2026-09-27T01:00:12.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-00",
+        "sir02-km-oe12-sir02-test-tenant-a-event-02",
+        "sir02-km-oe12-sir02-test-tenant-a-event-04",
+        "sir02-km-oe12-sir02-test-tenant-a-event-05"
+      ],
+      "evidenceId": "SIR02-KM-OE-09",
+      "evidenceCommit": "de9cc392fc258156cbda9dad5d7197b46c8251f9",
+      "stateBefore": "quarantined",
+      "stateAfter": "quarantined",
+      "decision": "recorded"
+    },
+    {
+      "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-13",
+      "eventType": "km.lifecycle.synthetic_withdrawal_retention",
+      "sourceEventTime": "2026-09-27T00:00:00.000Z",
+      "projectionTime": "2026-09-27T01:00:13.000Z",
+      "dependencyEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-07"
+      ],
+      "evidenceId": "SIR02-KM-OE-07",
+      "evidenceCommit": "03791c7096adaa0ee5874110f7dae291858efd37",
+      "stateBefore": "quarantined",
+      "stateAfter": "quarantined",
+      "decision": "recorded"
+    }
+  ]
+}

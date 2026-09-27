@@ -1,0 +1,42 @@
+{
+  "document": "SIR-02 KM OE-12 Formal Run Log",
+  "version": "v1.0",
+  "runId": "SIR02-KM-OE-12-V1_0-20260927T090557Z-0001",
+  "executionRepositoryCommit": "d64f5d46c059baa382abdb95c77e81fd14995e86",
+  "implementationCommit": "826376cc84521a5d648462fdcc985cd2d412a24c",
+  "startUtc": "2026-09-27T09:05:57.3098316Z",
+  "timeoutSecondsPerStage": 120,
+  "networkPolicy": "No network; COREPACK_ENABLE_NETWORK=0; npm_config_offline=true",
+  "fixtureHashBefore": "3d3f597ad28be8a2a816eb4e5769fed20a674c60387a0fca230007c22b1ee3bb",
+  "testHashBefore": "2e05526e803d4de582a4af13fe1ec9c51756a523dc18248b8b758117a3d3d600",
+  "outputDirectory": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-formal-20260927T090557Z-0001",
+  "stages": [
+    {
+      "name": "vitest",
+      "command": "C:\\Program Files\\nodejs\\node.exe C:\\Users\\gantu\\OneDrive\\Documents\\GitHub\\ibex-ai-platform\\node_modules\\vitest\\vitest.mjs run tests/integration/sir02-km-oe12-lifecycle-audit.test.ts --reporter=json --outputFile=C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-formal-20260927T090557Z-0001\\vitest-results.json",
+      "startedUtc": "2026-09-27T09:05:57.3329601Z",
+      "endedUtc": "2026-09-27T09:05:59.1785042Z",
+      "elapsedMilliseconds": 1846.0,
+      "timedOut": false,
+      "exitCode": 0,
+      "stdoutPath": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-formal-20260927T090557Z-0001\\vitest-stdout.txt",
+      "stderrPath": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-formal-20260927T090557Z-0001\\vitest-stderr.txt"
+    },
+    {
+      "name": "fixture-capture",
+      "command": "C:\\Program Files\\nodejs\\node.exe C:\\Users\\gantu\\OneDrive\\Documents\\GitHub\\ibex-ai-platform\\node_modules\\tsx\\dist\\cli.mjs C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-formal-capture.mts",
+      "startedUtc": "2026-09-27T09:05:59.1884409Z",
+      "endedUtc": "2026-09-27T09:06:00.5351436Z",
+      "elapsedMilliseconds": 1347.0,
+      "timedOut": false,
+      "exitCode": 0,
+      "stdoutPath": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-formal-20260927T090557Z-0001\\capture-stdout.txt",
+      "stderrPath": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-formal-20260927T090557Z-0001\\capture-stderr.txt"
+    }
+  ],
+  "outcome": "Passed",
+  "fixtureHashAfter": "3d3f597ad28be8a2a816eb4e5769fed20a674c60387a0fca230007c22b1ee3bb",
+  "testHashAfter": "2e05526e803d4de582a4af13fe1ec9c51756a523dc18248b8b758117a3d3d600",
+  "endUtc": "2026-09-27T09:06:00.5744020Z",
+  "elapsedMilliseconds": 3265.0
+}

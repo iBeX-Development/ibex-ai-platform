@@ -1,0 +1,214 @@
+{
+  "document": "SIR-02 KM OE-12 Formal Negative-Case Results",
+  "version": "v1.0",
+  "runId": "SIR02-KM-OE-12-V1_0-20260927T090557Z-0001",
+  "sourceReport": "vitest-results.json",
+  "testDefinitionCommit": "826376cc84521a5d648462fdcc985cd2d412a24c",
+  "totalCases": 20,
+  "passedCases": 20,
+  "prePersistenceCases": 18,
+  "sinkFailureCases": 2,
+  "measurementNote": "Vitest records individual pass/fail; zero-write expectations are asserted by the immutable test source. Direct raw write counts are retained only where separately captured by the accepted fixture; null means no separate raw count was captured, not an inferred measurement.",
+  "cases": [
+    {
+      "caseId": "N01",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N01' rejects 'missing required lifecycle event' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N02",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N02' rejects 'missing trusted tenant binding' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N03",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N03' rejects 'missing source identity' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N04",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N04' rejects 'missing actor' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N05",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N05' rejects 'missing request ID' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N06",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N06' rejects 'missing correlation ID' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N07",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N07' rejects 'missing immutable evidence reference' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N08",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N08' rejects 'duplicate event ID' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N09",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N09' rejects 'conflicting state transition' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N10",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N10' rejects 'out-of-order causal chronology' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N11",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N11' rejects 'cross-tenant injected event' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": 0,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N12",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N12' rejects 'spoofed trusted tenant context' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": 0,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N13",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N13' rejects 'caller-supplied audit tenant override' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N14",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N14' rejects 'conflicting source version' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N15",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N15' rejects 'invalid before and after state' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N16",
+      "scenario": "OE-12 isolated lifecycle audit projection N16 blocks an unredacted sensitive field before persistence",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": 0,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N17",
+      "scenario": "OE-12 isolated lifecycle audit projection N17 blocks a nested alias for prohibited reasoning content",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    },
+    {
+      "caseId": "N18",
+      "scenario": "OE-12 isolated lifecycle audit projection N18 fails closed when the audit evidence store fails before write",
+      "result": "passed",
+      "classification": "Injected sink/persistence failure",
+      "expectedAuthoritativeWriteAttempts": null,
+      "directlyCapturedWriteAttempts": 1,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": "sink-failure-and-partial-write.json"
+    },
+    {
+      "caseId": "N19",
+      "scenario": "OE-12 isolated lifecycle audit projection N19 retains the committed prefix and blocks partial audit delivery",
+      "result": "passed",
+      "classification": "Injected sink/persistence failure",
+      "expectedAuthoritativeWriteAttempts": null,
+      "directlyCapturedWriteAttempts": 5,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": "sink-failure-and-partial-write.json"
+    },
+    {
+      "caseId": "N20",
+      "scenario": "OE-12 isolated lifecycle audit projection 'N20' rejects 'ambiguous authoritative state' before any authoritative write",
+      "result": "passed",
+      "classification": "Whole-batch pre-persistence rejection",
+      "expectedAuthoritativeWriteAttempts": 0,
+      "directlyCapturedWriteAttempts": null,
+      "assertionBasis": "Accepted committed integration test assertions plus retained passing formal Vitest result",
+      "sinkEvidenceReference": null
+    }
+  ]
+}
