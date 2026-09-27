@@ -5,36 +5,36 @@
 | Field | Value |
 | --- | --- |
 | Document/version | `SIR-02-OE-13-LOCAL-TEST-DEPENDENCY-REPAIR-AUTHORIZATION` / `v1.0` |
-| Status | **`Proposed / Not Authorized`** |
-| Exact design proposed | `SIR-02-OE-13-LOCAL-TEST-DEPENDENCY-REPAIR-DESIGN-v1.0.md` |
+| Status | **`Authorized for Offline Local Dependency Repair`** |
+| Exact design authorized | `SIR-02-OE-13-LOCAL-TEST-DEPENDENCY-REPAIR-DESIGN-v1.0.md`; commit `03438c6a30dd5df8cbbaab0421e67fda2b22af9d` |
 | Owner | GANTUMUR Erdenedalai — Founder / Administrator |
 | Reviewer | SODBILEG Erkhembayar — Administrator |
-| Decision date | `Owner Input Required` |
-| Owner decision/outcome | `Owner Input Required` |
-| Owner decision statement | `Owner Input Required` |
-| Exact commands permitted | `Owner approval required` |
-| Local `node_modules` reconstruction permission | `Owner Input Required` |
-| Network permission | `Owner approval required if needed` |
-| Immutable completed-authorization reference | `Owner Input Required` |
+| Decision date | `2026-09-27` |
+| Owner decision/outcome | `Authorized for Offline Local Dependency Repair` |
+| Owner decision statement | Owner authorizes only the offline, frozen-lockfile command and local ignored dependency-link repair under the conditions below. |
+| Exact repair command permitted | `corepack pnpm install --offline --frozen-lockfile` |
+| Local `node_modules` reconstruction permission | Pnpm-managed repair of ignored local dependency links only; no wholesale deletion |
+| Network permission | **Not authorized** |
+| Immutable completed-authorization reference | Decision commit for this record; exact SHA recorded in the subsequent governance linkage commit |
 
-## Proposed decision scope for owner review
+## Formal owner decision and conditions
 
-The requested future decision is limited to repairing the **local installed test dependency layout** so the already accepted OE-13 supplemental instrumentation can be run. It would not authorize a dependency-version change, a tracked repository edit, an OE-13 evidence run, or OE-13 acceptance. The design identifies a conditional offline frozen install and, only if separately approved, a frozen install that may fetch the **existing locked package versions**. The owner must explicitly decide which exact command is permitted, whether pnpm may reconstruct ignored local `node_modules`, and whether any network access is permitted. A decision to approve offline repair does not imply approval of online repair.
+GANTUMUR Erdenedalai — Founder / Administrator authorizes one local-only offline dependency-layout repair attempt using **exactly** `corepack pnpm install --offline --frozen-lockfile`. This decision is limited to restoring ignored local `node_modules` and pnpm links for the accepted OE-13 supplemental test runner. It does not authorize a dependency-version change, a tracked repository edit, an OE-13 evidence run, or OE-13 acceptance.
 
-Proposed commands for a future exact-command decision:
+The command must run from the existing checkout, noninteractively, with a bounded timeout and network disabled. Preserve the exact command, UTC start/end, elapsed time, exit code, and stdout/stderr. Before execution, verify a clean working tree, record `package.json` and lockfile hashes, record branch HEAD, and verify the accepted OE-13 instrumentation reference `23c150b494b8ec66b21e56776b32923f9607acfb`. After execution, verify those tracked files and all other tracked files are unchanged and inspect Vitest's shim and `@vitest/utils` resolution.
 
-| Stage | Proposed command | Current authorization |
+| Stage | Command | Authorization |
 | --- | --- | --- |
-| First local-only repair attempt | `corepack pnpm install --offline --frozen-lockfile` | **Not authorized** |
-| Network candidate, only if local content is insufficient | `corepack pnpm install --frozen-lockfile` | **Not authorized; separate explicit network approval required** |
-| Post-repair runner smoke check | `corepack pnpm exec vitest --version` | **Not authorized as part of a repair yet** |
+| Offline local repair | `corepack pnpm install --offline --frozen-lockfile` | **Authorized once** |
+| Online install | `corepack pnpm install --frozen-lockfile` | **Not authorized; separate explicit owner and network authorization required** |
+| Post-repair toolchain validation, only after successful repair | `corepack pnpm exec vitest --version` or equivalent bounded noninteractive version check | **Authorized as validation only; not an OE-13 scenario or supplemental capture** |
 
-All future commands must be bounded, noninteractive, run from the existing checkout, and retain exact logs and pre/post Git and dependency-layout checks. No manual `node_modules` deletion, repository move, broad/full-access permission, dependency update, or lockfile edit is proposed. If pnpm cannot preserve the tracked baseline, stop for a new decision.
+No package addition, upgrade, downgrade, `package.json` change, lockfile change, production/runtime source change, implementation change, repository move, or wholesale `node_modules` deletion is authorized. If local package content is unavailable, the offline attempt fails or requests network, or pnpm cannot preserve the tracked baseline, **stop** and report the exact blocker. Do not fall back automatically. The owner must separately authorize any online command and network access.
 
 ## Supporting context and status hold
 
 - Accepted supplemental instrumentation: `23c150b494b8ec66b21e56776b32923f9607acfb`; accepted review: `1f22bf2ff5d02d9c9b8266c0874e99fca4a65d41`.
 - Preserved tooling-attempt lineage: commit `4c9e597d1c0aa91613c328dbb5ffbe834ff2cbc9`; artifact SHA-256 `e7702360622c5ca86ed56ef7186f570b391b834a50e9dc171cec1fdf0197fec0`.
 - The original formal OE-13 run remains `SIR02-KM-OE-13-V1_0-20260926T131738Z-0001`; no supplemental scenario ran during the two repair-triggering tooling attempts.
-- This record supplies **no owner approval**. It neither authorizes running `pnpm install` nor permits a network request, test execution, code edit, or evidence-status change.
+- This record authorizes only the bounded offline command and conditional version smoke check above. It permits no network request, OE-13 scenario or supplemental capture, code edit, or evidence-status change.
 - OE-13 remains `Executed / Awaiting Independent Review`; operational evidence remains `9 Accepted / 1 Awaiting Independent Review / 5 Not Executed`. `SIR02-DEF-02` remains `Missing / Not Reviewed`; SIR-02 remains `Blocking`.
