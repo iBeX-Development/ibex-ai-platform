@@ -1,0 +1,36 @@
+{
+  "classification": "Read-only post-run process verification",
+  "captureId": "SIR02-KM-OE-12-LAUNCHER-SMOKE-V4-20260927T125158Z",
+  "manualKillPerformed": false,
+  "originalJobPidList": [
+    45408,
+    45200
+  ],
+  "processes": [
+    {
+      "pid": 48040,
+      "present": false,
+      "processName": null,
+      "observedUtc": "2026-09-27T12:53:44.9743521Z"
+    },
+    {
+      "pid": 19620,
+      "present": false,
+      "processName": null,
+      "observedUtc": "2026-09-27T12:53:44.9793055Z"
+    },
+    {
+      "pid": 45408,
+      "present": false,
+      "processName": null,
+      "observedUtc": "2026-09-27T12:53:44.9794193Z"
+    },
+    {
+      "pid": 45200,
+      "present": false,
+      "processName": null,
+      "observedUtc": "2026-09-27T12:53:44.9794768Z"
+    }
+  ],
+  "finding": "All observed synthetic/candidate PIDs absent after launcher safety fallback; primary kill-on-close S7 was not proven"
+}

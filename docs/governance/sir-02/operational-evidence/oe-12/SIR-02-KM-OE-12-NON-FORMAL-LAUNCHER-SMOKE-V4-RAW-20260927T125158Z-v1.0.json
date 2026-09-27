@@ -1,0 +1,1669 @@
+﻿{
+    "label":  "Non-Formal Launcher Smoke Validation — Not OE-12 Operational Evidence",
+    "smokeVersion":  "v4",
+    "captureId":  "SIR02-KM-OE-12-LAUNCHER-SMOKE-V4-20260927T125158Z",
+    "remediationCommit":  "13d8623bf9c4b4dacf268f963558eebfe91a537a",
+    "authorizationDecision":  "3bec178eef5978600d28a7b5344fe9fc78390ded",
+    "authorizationLinkage":  "b92e5c79a7fc4664787f73fbf3c9e50c44c965fb",
+    "acceptedImplementation":  "826376cc84521a5d648462fdcc985cd2d412a24c",
+    "shell":  "Windows PowerShell 5.1",
+    "powershellVersion":  "5.1.26100.9444",
+    "nodeExecutable":  "C:\\Program Files\\nodejs\\node.exe",
+    "nodeVersion":  "v22.23.2",
+    "launcherMechanism":  "JSON scalar; indexed typed decode; deterministic Windows quoting; ProcessStartInfo.FileName plus Arguments; native CreateProcessW CREATE_SUSPENDED; verified Job Object kill-on-close; restricted handle inheritance; concurrent stdout/stderr capture",
+    "network":  "COREPACK_ENABLE_NETWORK=0; npm_config_offline=true; synthetic probe contains no network call",
+    "startUtc":  "2026-09-27T12:51:58.0352032Z",
+    "endUtc":  "2026-09-27T12:52:00.5202440Z",
+    "elapsedMilliseconds":  2485,
+    "t0Result":  "PASS",
+    "t0":  [
+               {
+                   "stage":  "echo",
+                   "utc":  "2026-09-27T12:51:58.5935609Z",
+                   "serializedJson":  "[\"C:\\\\Users\\\\gantu\\\\AppData\\\\Local\\\\Temp\\\\sir02-oe12-smoke-v4-prep\\\\probe with spaces.cjs\",\"echo\",\"ordinary\",\"text with spaces\",\"\",\"repeat-value\",\"repeat-value\",\"embedded \\\"quote\\\"\",\"backslash\\\\\\\"quote\",\"trailing\\\\\",\"C:\\\\synthetic path\\\\source v1.json\",\"\\u0026 echo SHELL_INTERPRETED \\u003e \\\"C:\\\\Users\\\\gantu\\\\AppData\\\\Local\\\\Temp\\\\sir02-oe12-smoke-v4-prep\\\\SHELL_INTERPRETED_MARKER.txt\\\"\"]",
+                   "expectedCount":  12,
+                   "decodedCount":  12,
+                   "decodedType":  "System.Object[]",
+                   "expectedVector":  [
+                                          "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                          "echo",
+                                          "ordinary",
+                                          "text with spaces",
+                                          "",
+                                          "repeat-value",
+                                          "repeat-value",
+                                          "embedded \"quote\"",
+                                          "backslash\\\"quote",
+                                          "trailing\\",
+                                          "C:\\synthetic path\\source v1.json",
+                                          "\u0026 echo SHELL_INTERPRETED \u003e \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\SHELL_INTERPRETED_MARKER.txt\""
+                                      ],
+                   "decodedVector":  [
+                                         "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                         "echo",
+                                         "ordinary",
+                                         "text with spaces",
+                                         "",
+                                         "repeat-value",
+                                         "repeat-value",
+                                         "embedded \"quote\"",
+                                         "backslash\\\"quote",
+                                         "trailing\\",
+                                         "C:\\synthetic path\\source v1.json",
+                                         "\u0026 echo SHELL_INTERPRETED \u003e \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\SHELL_INTERPRETED_MARKER.txt\""
+                                     ],
+                   "perIndex":  [
+                                    {
+                                        "index":  0,
+                                        "expected":  "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                        "decoded":  "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  1,
+                                        "expected":  "echo",
+                                        "decoded":  "echo",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  2,
+                                        "expected":  "ordinary",
+                                        "decoded":  "ordinary",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  3,
+                                        "expected":  "text with spaces",
+                                        "decoded":  "text with spaces",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  4,
+                                        "expected":  "",
+                                        "decoded":  "",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  5,
+                                        "expected":  "repeat-value",
+                                        "decoded":  "repeat-value",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  6,
+                                        "expected":  "repeat-value",
+                                        "decoded":  "repeat-value",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  7,
+                                        "expected":  "embedded \"quote\"",
+                                        "decoded":  "embedded \"quote\"",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  8,
+                                        "expected":  "backslash\\\"quote",
+                                        "decoded":  "backslash\\\"quote",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  9,
+                                        "expected":  "trailing\\",
+                                        "decoded":  "trailing\\",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  10,
+                                        "expected":  "C:\\synthetic path\\source v1.json",
+                                        "decoded":  "C:\\synthetic path\\source v1.json",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  11,
+                                        "expected":  "\u0026 echo SHELL_INTERPRETED \u003e \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\SHELL_INTERPRETED_MARKER.txt\"",
+                                        "decoded":  "\u0026 echo SHELL_INTERPRETED \u003e \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\SHELL_INTERPRETED_MARKER.txt\"",
+                                        "match":  true
+                                    }
+                                ],
+                   "emptyPreserved":  true,
+                   "duplicatesPreserved":  true,
+                   "probePathPreserved":  true,
+                   "result":  "PASS",
+                   "failure":  null
+               },
+               {
+                   "stage":  "nonzero",
+                   "utc":  "2026-09-27T12:51:58.8176734Z",
+                   "serializedJson":  "[\"C:\\\\Users\\\\gantu\\\\AppData\\\\Local\\\\Temp\\\\sir02-oe12-smoke-v4-prep\\\\probe with spaces.cjs\",\"nonzero\"]",
+                   "expectedCount":  2,
+                   "decodedCount":  2,
+                   "decodedType":  "System.Object[]",
+                   "expectedVector":  [
+                                          "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                          "nonzero"
+                                      ],
+                   "decodedVector":  [
+                                         "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                         "nonzero"
+                                     ],
+                   "perIndex":  [
+                                    {
+                                        "index":  0,
+                                        "expected":  "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                        "decoded":  "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  1,
+                                        "expected":  "nonzero",
+                                        "decoded":  "nonzero",
+                                        "match":  true
+                                    }
+                                ],
+                   "emptyPreserved":  "Not Applicable",
+                   "duplicatesPreserved":  "Not Applicable",
+                   "probePathPreserved":  true,
+                   "result":  "PASS",
+                   "failure":  null
+               },
+               {
+                   "stage":  "hold",
+                   "utc":  "2026-09-27T12:51:58.8741790Z",
+                   "serializedJson":  "[\"C:\\\\Users\\\\gantu\\\\AppData\\\\Local\\\\Temp\\\\sir02-oe12-smoke-v4-prep\\\\probe with spaces.cjs\",\"hold\"]",
+                   "expectedCount":  2,
+                   "decodedCount":  2,
+                   "decodedType":  "System.Object[]",
+                   "expectedVector":  [
+                                          "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                          "hold"
+                                      ],
+                   "decodedVector":  [
+                                         "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                         "hold"
+                                     ],
+                   "perIndex":  [
+                                    {
+                                        "index":  0,
+                                        "expected":  "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                        "decoded":  "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                        "match":  true
+                                    },
+                                    {
+                                        "index":  1,
+                                        "expected":  "hold",
+                                        "decoded":  "hold",
+                                        "match":  true
+                                    }
+                                ],
+                   "emptyPreserved":  "Not Applicable",
+                   "duplicatesPreserved":  "Not Applicable",
+                   "probePathPreserved":  true,
+                   "result":  "PASS",
+                   "failure":  null
+               }
+           ],
+    "expectedProcessArgv":  [
+                                "C:\\Program Files\\nodejs\\node.exe",
+                                "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                "echo",
+                                "ordinary",
+                                "text with spaces",
+                                "",
+                                "repeat-value",
+                                "repeat-value",
+                                "embedded \"quote\"",
+                                "backslash\\\"quote",
+                                "trailing\\",
+                                "C:\\synthetic path\\source v1.json",
+                                "\u0026 echo SHELL_INTERPRETED \u003e \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\SHELL_INTERPRETED_MARKER.txt\""
+                            ],
+    "actualProcessArgv":  [
+                              "C:\\Program Files\\nodejs\\node.exe",
+                              "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                              "echo",
+                              "ordinary",
+                              "text with spaces",
+                              "",
+                              "repeat-value",
+                              "repeat-value",
+                              "embedded \"quote\"",
+                              "backslash\\\"quote",
+                              "trailing\\",
+                              "C:\\synthetic path\\source v1.json",
+                              "\u0026 echo SHELL_INTERPRETED \u003e \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\SHELL_INTERPRETED_MARKER.txt\""
+                          ],
+    "processArgvExactMatch":  true,
+    "cases":  [
+                  {
+                      "id":  "S1",
+                      "expected":  "Probe executed, exit 0, job assignment before resume",
+                      "actual":  "exit=0; assigned=True; receivedProbe=C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                      "result":  "PASS"
+                  },
+                  {
+                      "id":  "S2",
+                      "expected":  "Full process.argv exact element-wise match, including empty/duplicates/quote/backslash/path",
+                      "actual":  "match=True; expected=13; actual=13",
+                      "result":  "PASS"
+                  },
+                  {
+                      "id":  "S3",
+                      "expected":  "Space-containing executable, probe and path payload intact",
+                      "actual":  "probe=C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs; path=C:\\synthetic path\\source v1.json",
+                      "result":  "PASS"
+                  },
+                  {
+                      "id":  "S4",
+                      "expected":  "Exact stdout marker plus one structured argv line",
+                      "actual":  "marker=SMOKE_V4_STDOUT_MARKER; lineCount=3",
+                      "result":  "PASS"
+                  },
+                  {
+                      "id":  "S5",
+                      "expected":  "Exact separate stderr marker",
+                      "actual":  "stderr=SMOKE_V4_STDERR_MARKER",
+                      "result":  "PASS"
+                  },
+                  {
+                      "id":  "S6",
+                      "expected":  "Exact nonzero exit 23 classified as failure; both streams retained",
+                      "actual":  "exit=23; outcome=FailedExit",
+                      "result":  "PASS"
+                  },
+                  {
+                      "id":  "S7",
+                      "expected":  "Bounded timeout and automatic Job Object close terminate the synthetic child",
+                      "actual":  "pid=45408; timedOut=True; jobClosed=False; absent=True; elapsedMs=1514",
+                      "result":  "FAIL"
+                  },
+                  {
+                      "id":  "S8",
+                      "expected":  "Required Smoke v4 behavior",
+                      "actual":  "Not reached after earlier failure",
+                      "result":  "Not Reached"
+                  },
+                  {
+                      "id":  "S9",
+                      "expected":  "Shell-significant payload exact; no marker or unexpected file",
+                      "actual":  "payloadMatch=True; markerExists=False; tempFilesUnchanged=True",
+                      "result":  "PASS"
+                  },
+                  {
+                      "id":  "S10",
+                      "expected":  "No formal Run ID, payload, manifest, sidecar, linkage or status effect; repository snapshot unchanged",
+                      "actual":  "snapshotMatch=True; head=b92e5c79a7fc4664787f73fbf3c9e50c44c965fb; status=",
+                      "result":  "PASS"
+                  }
+              ],
+    "raw":  {
+                "echo":  {
+                             "stage":  "echo",
+                             "fileName":  "C:\\Program Files\\nodejs\\node.exe",
+                             "serializedTransport":  "[\"C:\\\\Users\\\\gantu\\\\AppData\\\\Local\\\\Temp\\\\sir02-oe12-smoke-v4-prep\\\\probe with spaces.cjs\",\"echo\",\"ordinary\",\"text with spaces\",\"\",\"repeat-value\",\"repeat-value\",\"embedded \\\"quote\\\"\",\"backslash\\\\\\\"quote\",\"trailing\\\\\",\"C:\\\\synthetic path\\\\source v1.json\",\"\\u0026 echo SHELL_INTERPRETED \\u003e \\\"C:\\\\Users\\\\gantu\\\\AppData\\\\Local\\\\Temp\\\\sir02-oe12-smoke-v4-prep\\\\SHELL_INTERPRETED_MARKER.txt\\\"\"]",
+                             "decodedArgumentVector":  [
+                                                           "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                                           "echo",
+                                                           "ordinary",
+                                                           "text with spaces",
+                                                           "",
+                                                           "repeat-value",
+                                                           "repeat-value",
+                                                           "embedded \"quote\"",
+                                                           "backslash\\\"quote",
+                                                           "trailing\\",
+                                                           "C:\\synthetic path\\source v1.json",
+                                                           "\u0026 echo SHELL_INTERPRETED \u003e \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\SHELL_INTERPRETED_MARKER.txt\""
+                                                       ],
+                             "quotedArgumentRepresentations":  [
+                                                                   "\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs\"",
+                                                                   "\"echo\"",
+                                                                   "\"ordinary\"",
+                                                                   "\"text with spaces\"",
+                                                                   "\"\"",
+                                                                   "\"repeat-value\"",
+                                                                   "\"repeat-value\"",
+                                                                   "\"embedded \\\"quote\\\"\"",
+                                                                   "\"backslash\\\\\\\"quote\"",
+                                                                   "\"trailing\\\\\"",
+                                                                   "\"C:\\synthetic path\\source v1.json\"",
+                                                                   "\"\u0026 echo SHELL_INTERPRETED \u003e \\\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\SHELL_INTERPRETED_MARKER.txt\\\"\""
+                                                               ],
+                             "processStartInfoArguments":  "\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs\" \"echo\" \"ordinary\" \"text with spaces\" \"\" \"repeat-value\" \"repeat-value\" \"embedded \\\"quote\\\"\" \"backslash\\\\\\\"quote\" \"trailing\\\\\" \"C:\\synthetic path\\source v1.json\" \"\u0026 echo SHELL_INTERPRETED \u003e \\\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\SHELL_INTERPRETED_MARKER.txt\\\"\"",
+                             "expectedArgumentCount":  12,
+                             "actualPrelaunchArgumentCount":  12,
+                             "pid":  48040,
+                             "timeoutMs":  5000,
+                             "timedOut":  false,
+                             "parentStillActive":  false,
+                             "exitCode":  0,
+                             "outcome":  "Success",
+                             "stdout":  "SMOKE_V4_STDOUT_MARKER\nARGV_JSON=[\"C:\\\\Program Files\\\\nodejs\\\\node.exe\",\"C:\\\\Users\\\\gantu\\\\AppData\\\\Local\\\\Temp\\\\sir02-oe12-smoke-v4-prep\\\\probe with spaces.cjs\",\"echo\",\"ordinary\",\"text with spaces\",\"\",\"repeat-value\",\"repeat-value\",\"embedded \\\"quote\\\"\",\"backslash\\\\\\\"quote\",\"trailing\\\\\",\"C:\\\\synthetic path\\\\source v1.json\",\"\u0026 echo SHELL_INTERPRETED \u003e \\\"C:\\\\Users\\\\gantu\\\\AppData\\\\Local\\\\Temp\\\\sir02-oe12-smoke-v4-prep\\\\SHELL_INTERPRETED_MARKER.txt\\\"\"]\n",
+                             "stderr":  "SMOKE_V4_STDERR_MARKER\n",
+                             "startUtc":  "2026-09-27T12:51:58.7163370Z",
+                             "endUtc":  "2026-09-27T12:51:58.7795100Z",
+                             "elapsedMilliseconds":  63,
+                             "native":  {
+                                            "stage":  "echo",
+                                            "startUtc":  "2026-09-27T12:51:58.7163370Z",
+                                            "endUtc":  "2026-09-27T12:51:58.7795100Z",
+                                            "elapsedMilliseconds":  63,
+                                            "fileName":  "C:\\Program Files\\nodejs\\node.exe",
+                                            "processStartInfoArguments":  "\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs\" \"echo\" \"ordinary\" \"text with spaces\" \"\" \"repeat-value\" \"repeat-value\" \"embedded \\\"quote\\\"\" \"backslash\\\\\\\"quote\" \"trailing\\\\\" \"C:\\synthetic path\\source v1.json\" \"\u0026 echo SHELL_INTERPRETED \u003e \\\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\SHELL_INTERPRETED_MARKER.txt\\\"\"",
+                                            "commandLine":  "\"C:\\Program Files\\nodejs\\node.exe\" \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs\" \"echo\" \"ordinary\" \"text with spaces\" \"\" \"repeat-value\" \"repeat-value\" \"embedded \\\"quote\\\"\" \"backslash\\\\\\\"quote\" \"trailing\\\\\" \"C:\\synthetic path\\source v1.json\" \"\u0026 echo SHELL_INTERPRETED \u003e \\\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\SHELL_INTERPRETED_MARKER.txt\\\"\"",
+                                            "timeoutMs":  5000,
+                                            "jobCreated":  true,
+                                            "killOnCloseConfigured":  true,
+                                            "killOnCloseVerified":  true,
+                                            "parentPid":  48040,
+                                            "descendantPid":  0,
+                                            "parentCreationTime":  134349871187190022,
+                                            "descendantCreationTime":  0,
+                                            "parentAssignedBeforeResume":  true,
+                                            "parentInJobBeforeResume":  true,
+                                            "descendantInJobBeforeClose":  false,
+                                            "jobPidsBeforeClose":  [
+
+                                                                   ],
+                                            "parentAliveBeforeClose":  false,
+                                            "descendantAliveBeforeClose":  false,
+                                            "timeoutDetected":  false,
+                                            "nativeWaitResult":  0,
+                                            "jobClosedForTimeout":  false,
+                                            "parentExitedAfterClose":  true,
+                                            "descendantExitedAfterClose":  false,
+                                            "parentExitCode":  0,
+                                            "descendantExitCode":  0,
+                                            "parentOriginalPidStillPresent":  false,
+                                            "descendantOriginalPidStillPresent":  false,
+                                            "stdout":  "SMOKE_V4_STDOUT_MARKER\nARGV_JSON=[\"C:\\\\Program Files\\\\nodejs\\\\node.exe\",\"C:\\\\Users\\\\gantu\\\\AppData\\\\Local\\\\Temp\\\\sir02-oe12-smoke-v4-prep\\\\probe with spaces.cjs\",\"echo\",\"ordinary\",\"text with spaces\",\"\",\"repeat-value\",\"repeat-value\",\"embedded \\\"quote\\\"\",\"backslash\\\\\\\"quote\",\"trailing\\\\\",\"C:\\\\synthetic path\\\\source v1.json\",\"\u0026 echo SHELL_INTERPRETED \u003e \\\"C:\\\\Users\\\\gantu\\\\AppData\\\\Local\\\\Temp\\\\sir02-oe12-smoke-v4-prep\\\\SHELL_INTERPRETED_MARKER.txt\\\"\"]\n",
+                                            "stderr":  "SMOKE_V4_STDERR_MARKER\n",
+                                            "outputTasksCompleted":  true,
+                                            "fallbackSafetyCleanupUsed":  false,
+                                            "manualSafetyCleanupRequired":  false,
+                                            "failure":  null,
+                                            "steps":  [
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "CreateJobObjectW",
+                                                              "utc":  "2026-09-27T12:51:58.7163370Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "anonymous job; non-inheritable handle",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "SetInformationJobObject",
+                                                              "utc":  "2026-09-27T12:51:58.7163370Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE; no breakaway",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "QueryInformationJobObject(JobObjectExtendedLimitInformation)",
+                                                              "utc":  "2026-09-27T12:51:58.7163370Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "effectiveFlags=8192; returned=144",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "CreatePipe(stdin)",
+                                                              "utc":  "2026-09-27T12:51:58.7175177Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "synthetic release channel",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "CreatePipe(stdout)",
+                                                              "utc":  "2026-09-27T12:51:58.7175177Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "stdout capture",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "CreatePipe(stderr)",
+                                                              "utc":  "2026-09-27T12:51:58.7175177Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "stderr capture",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "SetHandleInformation(stdin parent)",
+                                                              "utc":  "2026-09-27T12:51:58.7175177Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "non-inheritable parent end",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "SetHandleInformation(stdout parent)",
+                                                              "utc":  "2026-09-27T12:51:58.7175177Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "non-inheritable parent end",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "SetHandleInformation(stderr parent)",
+                                                              "utc":  "2026-09-27T12:51:58.7175177Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "non-inheritable parent end",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "InitializeProcThreadAttributeList(size)",
+                                                              "utc":  "2026-09-27T12:51:58.7175177Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "bytes=48",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "InitializeProcThreadAttributeList",
+                                                              "utc":  "2026-09-27T12:51:58.7175177Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "one handle-list attribute",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "UpdateProcThreadAttribute(HANDLE_LIST)",
+                                                              "utc":  "2026-09-27T12:51:58.7175177Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "exactly stdin/stdout/stderr child handles",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "CreateProcessW(CREATE_SUSPENDED)",
+                                                              "utc":  "2026-09-27T12:51:58.7245250Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "absolute application and mutable command line",
+                                                              "syntheticPid":  48040
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "GetProcessTimes(parent)",
+                                                              "utc":  "2026-09-27T12:51:58.7245250Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "creationTime=134349871187190022",
+                                                              "syntheticPid":  48040
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "CloseHandle",
+                                                              "utc":  "2026-09-27T12:51:58.7245250Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "owned handle",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "CloseHandle",
+                                                              "utc":  "2026-09-27T12:51:58.7245250Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "owned handle",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "CloseHandle",
+                                                              "utc":  "2026-09-27T12:51:58.7245250Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "owned handle",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "AssignProcessToJobObject",
+                                                              "utc":  "2026-09-27T12:51:58.7256875Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "suspended parent",
+                                                              "syntheticPid":  48040
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "IsProcessInJob(parent)",
+                                                              "utc":  "2026-09-27T12:51:58.7256875Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "membership query",
+                                                              "syntheticPid":  48040
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "ResumeThread",
+                                                              "utc":  "2026-09-27T12:51:58.7256875Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "previousSuspendCount=1",
+                                                              "syntheticPid":  48040
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "synthetic release",
+                                                              "utc":  "2026-09-27T12:51:58.7256875Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "sent only after verified assignment",
+                                                              "syntheticPid":  48040
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "WaitForSingleObject(parent)",
+                                                              "utc":  "2026-09-27T12:51:58.7784989Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "result=0; timeoutMs=5000",
+                                                              "syntheticPid":  48040
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "GetExitCodeProcess(parent)",
+                                                              "utc":  "2026-09-27T12:51:58.7784989Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "ordinary exit",
+                                                              "syntheticPid":  48040
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "QueryInformationJobObject(JobObjectBasicProcessIdList)",
+                                                              "utc":  "2026-09-27T12:51:58.7795100Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "capacity=8; returned=8",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "stdout/stderr capture",
+                                                              "utc":  "2026-09-27T12:51:58.7795100Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "both streams drained",
+                                                              "syntheticPid":  48040
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "CloseHandle",
+                                                              "utc":  "2026-09-27T12:51:58.7795100Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "owned handle",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "CloseHandle",
+                                                              "utc":  "2026-09-27T12:51:58.7795100Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "owned handle",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "echo",
+                                                              "api":  "CloseHandle",
+                                                              "utc":  "2026-09-27T12:51:58.7795100Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "owned handle",
+                                                              "syntheticPid":  0
+                                                          }
+                                                      ]
+                                        }
+                         },
+                "nonzero":  {
+                                "stage":  "nonzero",
+                                "fileName":  "C:\\Program Files\\nodejs\\node.exe",
+                                "serializedTransport":  "[\"C:\\\\Users\\\\gantu\\\\AppData\\\\Local\\\\Temp\\\\sir02-oe12-smoke-v4-prep\\\\probe with spaces.cjs\",\"nonzero\"]",
+                                "decodedArgumentVector":  [
+                                                              "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                                              "nonzero"
+                                                          ],
+                                "quotedArgumentRepresentations":  [
+                                                                      "\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs\"",
+                                                                      "\"nonzero\""
+                                                                  ],
+                                "processStartInfoArguments":  "\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs\" \"nonzero\"",
+                                "expectedArgumentCount":  2,
+                                "actualPrelaunchArgumentCount":  2,
+                                "pid":  19620,
+                                "timeoutMs":  5000,
+                                "timedOut":  false,
+                                "parentStillActive":  false,
+                                "exitCode":  23,
+                                "outcome":  "FailedExit",
+                                "stdout":  "NONZERO_STDOUT_MARKER\n",
+                                "stderr":  "NONZERO_STDERR_MARKER\n",
+                                "startUtc":  "2026-09-27T12:51:58.8197273Z",
+                                "endUtc":  "2026-09-27T12:51:58.8721637Z",
+                                "elapsedMilliseconds":  52,
+                                "native":  {
+                                               "stage":  "nonzero",
+                                               "startUtc":  "2026-09-27T12:51:58.8197273Z",
+                                               "endUtc":  "2026-09-27T12:51:58.8721637Z",
+                                               "elapsedMilliseconds":  52,
+                                               "fileName":  "C:\\Program Files\\nodejs\\node.exe",
+                                               "processStartInfoArguments":  "\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs\" \"nonzero\"",
+                                               "commandLine":  "\"C:\\Program Files\\nodejs\\node.exe\" \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs\" \"nonzero\"",
+                                               "timeoutMs":  5000,
+                                               "jobCreated":  true,
+                                               "killOnCloseConfigured":  true,
+                                               "killOnCloseVerified":  true,
+                                               "parentPid":  19620,
+                                               "descendantPid":  0,
+                                               "parentCreationTime":  134349871188205027,
+                                               "descendantCreationTime":  0,
+                                               "parentAssignedBeforeResume":  true,
+                                               "parentInJobBeforeResume":  true,
+                                               "descendantInJobBeforeClose":  false,
+                                               "jobPidsBeforeClose":  [
+
+                                                                      ],
+                                               "parentAliveBeforeClose":  false,
+                                               "descendantAliveBeforeClose":  false,
+                                               "timeoutDetected":  false,
+                                               "nativeWaitResult":  0,
+                                               "jobClosedForTimeout":  false,
+                                               "parentExitedAfterClose":  true,
+                                               "descendantExitedAfterClose":  false,
+                                               "parentExitCode":  23,
+                                               "descendantExitCode":  0,
+                                               "parentOriginalPidStillPresent":  false,
+                                               "descendantOriginalPidStillPresent":  false,
+                                               "stdout":  "NONZERO_STDOUT_MARKER\n",
+                                               "stderr":  "NONZERO_STDERR_MARKER\n",
+                                               "outputTasksCompleted":  true,
+                                               "fallbackSafetyCleanupUsed":  false,
+                                               "manualSafetyCleanupRequired":  false,
+                                               "failure":  null,
+                                               "steps":  [
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "CreateJobObjectW",
+                                                                 "utc":  "2026-09-27T12:51:58.8197273Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "anonymous job; non-inheritable handle",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "SetInformationJobObject",
+                                                                 "utc":  "2026-09-27T12:51:58.8197273Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE; no breakaway",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "QueryInformationJobObject(JobObjectExtendedLimitInformation)",
+                                                                 "utc":  "2026-09-27T12:51:58.8197273Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "effectiveFlags=8192; returned=144",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "CreatePipe(stdin)",
+                                                                 "utc":  "2026-09-27T12:51:58.8197273Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "synthetic release channel",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "CreatePipe(stdout)",
+                                                                 "utc":  "2026-09-27T12:51:58.8197273Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "stdout capture",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "CreatePipe(stderr)",
+                                                                 "utc":  "2026-09-27T12:51:58.8197273Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "stderr capture",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "SetHandleInformation(stdin parent)",
+                                                                 "utc":  "2026-09-27T12:51:58.8197273Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "non-inheritable parent end",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "SetHandleInformation(stdout parent)",
+                                                                 "utc":  "2026-09-27T12:51:58.8197273Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "non-inheritable parent end",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "SetHandleInformation(stderr parent)",
+                                                                 "utc":  "2026-09-27T12:51:58.8197273Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "non-inheritable parent end",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "InitializeProcThreadAttributeList(size)",
+                                                                 "utc":  "2026-09-27T12:51:58.8197273Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "bytes=48",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "InitializeProcThreadAttributeList",
+                                                                 "utc":  "2026-09-27T12:51:58.8197273Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "one handle-list attribute",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "UpdateProcThreadAttribute(HANDLE_LIST)",
+                                                                 "utc":  "2026-09-27T12:51:58.8197273Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "exactly stdin/stdout/stderr child handles",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "CreateProcessW(CREATE_SUSPENDED)",
+                                                                 "utc":  "2026-09-27T12:51:58.8228345Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "absolute application and mutable command line",
+                                                                 "syntheticPid":  19620
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "GetProcessTimes(parent)",
+                                                                 "utc":  "2026-09-27T12:51:58.8228345Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "creationTime=134349871188205027",
+                                                                 "syntheticPid":  19620
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "CloseHandle",
+                                                                 "utc":  "2026-09-27T12:51:58.8228345Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "owned handle",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "CloseHandle",
+                                                                 "utc":  "2026-09-27T12:51:58.8228345Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "owned handle",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "CloseHandle",
+                                                                 "utc":  "2026-09-27T12:51:58.8228345Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "owned handle",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "AssignProcessToJobObject",
+                                                                 "utc":  "2026-09-27T12:51:58.8228345Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "suspended parent",
+                                                                 "syntheticPid":  19620
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "IsProcessInJob(parent)",
+                                                                 "utc":  "2026-09-27T12:51:58.8228345Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "membership query",
+                                                                 "syntheticPid":  19620
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "ResumeThread",
+                                                                 "utc":  "2026-09-27T12:51:58.8228345Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "previousSuspendCount=1",
+                                                                 "syntheticPid":  19620
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "synthetic release",
+                                                                 "utc":  "2026-09-27T12:51:58.8228345Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "sent only after verified assignment",
+                                                                 "syntheticPid":  19620
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "WaitForSingleObject(parent)",
+                                                                 "utc":  "2026-09-27T12:51:58.8721637Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "result=0; timeoutMs=5000",
+                                                                 "syntheticPid":  19620
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "GetExitCodeProcess(parent)",
+                                                                 "utc":  "2026-09-27T12:51:58.8721637Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "ordinary exit",
+                                                                 "syntheticPid":  19620
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "QueryInformationJobObject(JobObjectBasicProcessIdList)",
+                                                                 "utc":  "2026-09-27T12:51:58.8721637Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "capacity=8; returned=8",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "stdout/stderr capture",
+                                                                 "utc":  "2026-09-27T12:51:58.8721637Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "both streams drained",
+                                                                 "syntheticPid":  19620
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "CloseHandle",
+                                                                 "utc":  "2026-09-27T12:51:58.8721637Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "owned handle",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "CloseHandle",
+                                                                 "utc":  "2026-09-27T12:51:58.8721637Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "owned handle",
+                                                                 "syntheticPid":  0
+                                                             },
+                                                             {
+                                                                 "stage":  "nonzero",
+                                                                 "api":  "CloseHandle",
+                                                                 "utc":  "2026-09-27T12:51:58.8721637Z",
+                                                                 "success":  true,
+                                                                 "errorCode":  0,
+                                                                 "detail":  "owned handle",
+                                                                 "syntheticPid":  0
+                                                             }
+                                                         ]
+                                           }
+                            },
+                "hold":  {
+                             "stage":  "hold",
+                             "fileName":  "C:\\Program Files\\nodejs\\node.exe",
+                             "serializedTransport":  "[\"C:\\\\Users\\\\gantu\\\\AppData\\\\Local\\\\Temp\\\\sir02-oe12-smoke-v4-prep\\\\probe with spaces.cjs\",\"hold\"]",
+                             "decodedArgumentVector":  [
+                                                           "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs",
+                                                           "hold"
+                                                       ],
+                             "quotedArgumentRepresentations":  [
+                                                                   "\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs\"",
+                                                                   "\"hold\""
+                                                               ],
+                             "processStartInfoArguments":  "\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs\" \"hold\"",
+                             "expectedArgumentCount":  2,
+                             "actualPrelaunchArgumentCount":  2,
+                             "pid":  45408,
+                             "timeoutMs":  1500,
+                             "timedOut":  true,
+                             "parentStillActive":  false,
+                             "exitCode":  0,
+                             "outcome":  "LauncherFailed",
+                             "stdout":  null,
+                             "stderr":  null,
+                             "startUtc":  "2026-09-27T12:51:58.8771865Z",
+                             "endUtc":  "2026-09-27T12:52:00.3917026Z",
+                             "elapsedMilliseconds":  1514,
+                             "native":  {
+                                            "stage":  "hold",
+                                            "startUtc":  "2026-09-27T12:51:58.8771865Z",
+                                            "endUtc":  "2026-09-27T12:52:00.3917026Z",
+                                            "elapsedMilliseconds":  1514,
+                                            "fileName":  "C:\\Program Files\\nodejs\\node.exe",
+                                            "processStartInfoArguments":  "\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs\" \"hold\"",
+                                            "commandLine":  "\"C:\\Program Files\\nodejs\\node.exe\" \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\probe with spaces.cjs\" \"hold\"",
+                                            "timeoutMs":  1500,
+                                            "jobCreated":  true,
+                                            "killOnCloseConfigured":  true,
+                                            "killOnCloseVerified":  true,
+                                            "parentPid":  45408,
+                                            "descendantPid":  0,
+                                            "parentCreationTime":  134349871188785270,
+                                            "descendantCreationTime":  0,
+                                            "parentAssignedBeforeResume":  true,
+                                            "parentInJobBeforeResume":  true,
+                                            "descendantInJobBeforeClose":  false,
+                                            "jobPidsBeforeClose":  [
+                                                                       45408,
+                                                                       45200
+                                                                   ],
+                                            "parentAliveBeforeClose":  true,
+                                            "descendantAliveBeforeClose":  false,
+                                            "timeoutDetected":  true,
+                                            "nativeWaitResult":  258,
+                                            "jobClosedForTimeout":  false,
+                                            "parentExitedAfterClose":  false,
+                                            "descendantExitedAfterClose":  false,
+                                            "parentExitCode":  0,
+                                            "descendantExitCode":  0,
+                                            "parentOriginalPidStillPresent":  false,
+                                            "descendantOriginalPidStillPresent":  false,
+                                            "stdout":  null,
+                                            "stderr":  null,
+                                            "outputTasksCompleted":  false,
+                                            "fallbackSafetyCleanupUsed":  true,
+                                            "manualSafetyCleanupRequired":  true,
+                                            "failure":  "InvalidOperationException: Job PID list contains missing or unrelated process",
+                                            "steps":  [
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "CreateJobObjectW",
+                                                              "utc":  "2026-09-27T12:51:58.8771865Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "anonymous job; non-inheritable handle",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "SetInformationJobObject",
+                                                              "utc":  "2026-09-27T12:51:58.8771865Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE; no breakaway",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "QueryInformationJobObject(JobObjectExtendedLimitInformation)",
+                                                              "utc":  "2026-09-27T12:51:58.8771865Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "effectiveFlags=8192; returned=144",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "CreatePipe(stdin)",
+                                                              "utc":  "2026-09-27T12:51:58.8771865Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "synthetic release channel",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "CreatePipe(stdout)",
+                                                              "utc":  "2026-09-27T12:51:58.8771865Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "stdout capture",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "CreatePipe(stderr)",
+                                                              "utc":  "2026-09-27T12:51:58.8771865Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "stderr capture",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "SetHandleInformation(stdin parent)",
+                                                              "utc":  "2026-09-27T12:51:58.8771865Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "non-inheritable parent end",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "SetHandleInformation(stdout parent)",
+                                                              "utc":  "2026-09-27T12:51:58.8771865Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "non-inheritable parent end",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "SetHandleInformation(stderr parent)",
+                                                              "utc":  "2026-09-27T12:51:58.8771865Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "non-inheritable parent end",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "InitializeProcThreadAttributeList(size)",
+                                                              "utc":  "2026-09-27T12:51:58.8771865Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "bytes=48",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "InitializeProcThreadAttributeList",
+                                                              "utc":  "2026-09-27T12:51:58.8771865Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "one handle-list attribute",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "UpdateProcThreadAttribute(HANDLE_LIST)",
+                                                              "utc":  "2026-09-27T12:51:58.8771865Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "exactly stdin/stdout/stderr child handles",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "CreateProcessW(CREATE_SUSPENDED)",
+                                                              "utc":  "2026-09-27T12:51:58.8813447Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "absolute application and mutable command line",
+                                                              "syntheticPid":  45408
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "GetProcessTimes(parent)",
+                                                              "utc":  "2026-09-27T12:51:58.8813447Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "creationTime=134349871188785270",
+                                                              "syntheticPid":  45408
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "CloseHandle",
+                                                              "utc":  "2026-09-27T12:51:58.8813447Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "owned handle",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "CloseHandle",
+                                                              "utc":  "2026-09-27T12:51:58.8813447Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "owned handle",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "CloseHandle",
+                                                              "utc":  "2026-09-27T12:51:58.8813447Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "owned handle",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "AssignProcessToJobObject",
+                                                              "utc":  "2026-09-27T12:51:58.8813447Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "suspended parent",
+                                                              "syntheticPid":  45408
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "IsProcessInJob(parent)",
+                                                              "utc":  "2026-09-27T12:51:58.8813447Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "membership query",
+                                                              "syntheticPid":  45408
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "ResumeThread",
+                                                              "utc":  "2026-09-27T12:51:58.8813447Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "previousSuspendCount=1",
+                                                              "syntheticPid":  45408
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "synthetic release",
+                                                              "utc":  "2026-09-27T12:51:58.8813447Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "sent only after verified assignment",
+                                                              "syntheticPid":  45408
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "WaitForSingleObject(parent)",
+                                                              "utc":  "2026-09-27T12:52:00.3901442Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "result=258; timeoutMs=1500",
+                                                              "syntheticPid":  45408
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "WaitForSingleObject(pre-close liveness)",
+                                                              "utc":  "2026-09-27T12:52:00.3901442Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "parentAlive=True; descendantAlive=False",
+                                                              "syntheticPid":  45408
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "QueryInformationJobObject(JobObjectBasicProcessIdList)",
+                                                              "utc":  "2026-09-27T12:52:00.3901442Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "capacity=8; returned=24",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "launcher failure",
+                                                              "utc":  "2026-09-27T12:52:00.3907036Z",
+                                                              "success":  false,
+                                                              "errorCode":  0,
+                                                              "detail":  "InvalidOperationException: Job PID list contains missing or unrelated process",
+                                                              "syntheticPid":  45408
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "TerminateJobObject(safety)",
+                                                              "utc":  "2026-09-27T12:52:00.3917026Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "fallback, never PASS",
+                                                              "syntheticPid":  45408
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "TerminateProcess(parent safety)",
+                                                              "utc":  "2026-09-27T12:52:00.3917026Z",
+                                                              "success":  false,
+                                                              "errorCode":  5,
+                                                              "detail":  "exact owned process",
+                                                              "syntheticPid":  45408
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "CloseHandle",
+                                                              "utc":  "2026-09-27T12:52:00.3917026Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "owned handle",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "CloseHandle",
+                                                              "utc":  "2026-09-27T12:52:00.3917026Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "owned handle",
+                                                              "syntheticPid":  0
+                                                          },
+                                                          {
+                                                              "stage":  "hold",
+                                                              "api":  "CloseHandle",
+                                                              "utc":  "2026-09-27T12:52:00.3917026Z",
+                                                              "success":  true,
+                                                              "errorCode":  0,
+                                                              "detail":  "owned handle",
+                                                              "syntheticPid":  0
+                                                          }
+                                                      ]
+                                        }
+                         }
+            },
+    "beforeSnapshot":  {
+                           "head":  "b92e5c79a7fc4664787f73fbf3c9e50c44c965fb",
+                           "status":  "",
+                           "artifactHashes":  [
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-CAPTURE-STDERR-0001-v1.0.txt",
+                                                      "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-CAPTURE-STDOUT-0001-v1.0.txt",
+                                                      "sha256":  "82316C8088946483629840F7EE3D7C48F269701704FDC6FEA9A413A6C6EBA6DC"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-CLEANUP-OPERATIONAL-SAFETY-0001-v1.0.json",
+                                                      "sha256":  "F15D906C0E01A352E98267BF79ADA50980CEDAFC176427EF54EE7DBBBF2DCC27"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-EXECUTION-ATTEMPT-0001-INTEGRITY-FAILED-v1.0.md",
+                                                      "sha256":  "79397D711F1A2944EE3379BFA929E40DB3F4787C660128C95D7D0D642937CF75"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-EXECUTION-ATTEMPT-0002-TOOLING-FAILED-v1.0.md",
+                                                      "sha256":  "0B7DC111E8D67C25078C342995BDCA817976A9828B874CD639DF1E2B9A67122A"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-EXECUTION-ATTEMPT-0002-TOOLING-LAUNCHER-v1.0.ps1.txt",
+                                                      "sha256":  "E0132750F3F9F2B751916F689D195AC9D981F7A0277726D93E5939CA27597E46"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-EXECUTION-ATTEMPT-0002-TOOLING-RUN-LOG-v1.0.json",
+                                                      "sha256":  "1EA83609E710A9FD14ECB853D1CD7196790D75F73A85AD54F37CC6207CDEDC19"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-FORMAL-RUN-LOG-0001-v1.0.json",
+                                                      "sha256":  "2C2E47A1F074E8D5D5E8C14708B6102BB2086EB83F0C858618359F124A54FF8F"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-IMPLEMENTATION-TECHNICAL-REVIEW-v1.0.md",
+                                                      "sha256":  "60CDFA133DEFCAEB955EB346763BAB6EF0C0EEC023970E22138A0D12F93B5588"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-LIFECYCLE-AUDIT-FORMAL-EVIDENCE-0001-v1.0.json",
+                                                      "sha256":  "DA1E237B4AF9924C78CE446E581168145928006DCC08349713EDEFD4085C83A6"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NEGATIVE-CASE-RESULTS-0001-v1.0.json",
+                                                      "sha256":  "41CFAA492F5AF9D9AAA3E9F0ACF44805EA885CD8EB083F4C4725C2B4C8EDC847"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-LAUNCHER-v1.0.ps1.txt",
+                                                      "sha256":  "620BE62010DDDEFB61C76D76205D8A81E644DF03AF6EA43315E68E6CB5D5D437"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-PROBE-v1.0.cjs.txt",
+                                                      "sha256":  "0D482BC03F4D5709C09EFA3D0BAAE299E9736C47011EFD9B32B79955E8B85ACC"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-RAW-v1.0.json",
+                                                      "sha256":  "E1ECFAD734F0183D31876B4FC59D356F69F1A186F5CC05F24068392E1506438D"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V2-LAUNCHER-v1.0.ps1.txt",
+                                                      "sha256":  "D31A294CAC84FD3B7D789C83EB47A4434E3D32FE66FF16A1E4629E640308A3D8"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V2-PROBE-v1.0.cjs.txt",
+                                                      "sha256":  "08BC575D29F90EF8D2E4AD61D17072A5E0D98FF09BF25FBFF5053135D7D73716"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V2-RAW-v1.0.json",
+                                                      "sha256":  "4C3920760F534AEA19AAE5CD3AD866E3EBB5FB38FF021DC2E16795DBACAD8F95"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V2-VALIDATION-v1.0.md",
+                                                      "sha256":  "37F6696059D728BB263F6F2575B15D744B34C3D0BD2CD1FF8FE84729B123BBE5"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V3-LAUNCHER-20260927T120119Z-v1.0.ps1.txt",
+                                                      "sha256":  "2C97726C00E865B0BE382D294F93B993034256688B4DCB47F41D4C122EEFB5BD"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V3-PROBE-20260927T120119Z-v1.0.cjs.txt",
+                                                      "sha256":  "CDF296F0E44ECB008FC9F41AD1CC055ED7F2E45EE2B69CFFFF1B45A1DFB6980B"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V3-RAW-20260927T120119Z-v1.0.json",
+                                                      "sha256":  "7FA5A80CA297AE9645D49967F1963340C18B09CFEC6BB352A3169C6843EC53A9"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V3-VALIDATION-20260927T120119Z-v1.0.md",
+                                                      "sha256":  "7B20E66C5BB910F72F3EC64FEF88F7D5E590BA32D794DB0764E0E4937D51C54A"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-VALIDATION-v1.0.md",
+                                                      "sha256":  "79FA54A46708B730B001C995337B358D5787D3A8546B51BF334D7474E9FF69DF"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-RAW-NORMALIZED-LIFECYCLE-EVENTS-0001-v1.0.json",
+                                                      "sha256":  "AA269F55872CE4C792FD8DE698FBA9CE460E0EE33EC9F8F35AE3F4A5A337A206"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-REMEDIATED-IMPLEMENTATION-FINAL-REVIEW-v1.0.md",
+                                                      "sha256":  "6855E10430F079E889D4DF8A744274623F2870EBDC62436FB05E763C9F5BBDDE"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-REMEDIATED-IMPLEMENTATION-REVIEWER-ATTESTATION-v1.0.txt",
+                                                      "sha256":  "5A1EE178854F6D762953D76E09046F16095DD4CCB4C667122DC2EFBC689CE1F7"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-REMEDIATED-IMPLEMENTATION-REVIEW-v1.0.md",
+                                                      "sha256":  "146CDF398A62C3061E161885A8AC895806BBC1A946B83D1B4F472D9416860EFC"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-SANITIZATION-REDACTION-0001-v1.0.json",
+                                                      "sha256":  "0364862CF0977BFF36425B5001B379A8ADC90EEB315D9F050B7F3FE028FD0B1F"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-SHA256-MANIFEST-0001-v1.0.json",
+                                                      "sha256":  "5AA43AFCD6954CFE95A4DDEB9A5B816118EA7D68A02EB385341081F55F03C37B"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-SHA256-MANIFEST-0001-v1.0.json.sha256",
+                                                      "sha256":  "DB2F3F290713B999672830BC7D37A72489F28DF65409AF21A7BC880F4A945C50"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-SINK-FAILURE-PARTIAL-WRITE-0001-v1.0.json",
+                                                      "sha256":  "9F13D581F2445A1ECD302182E3599513AEE192D45F3D2846A4EFE2D013C7DCD1"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-TENANT-ISOLATION-0001-v1.0.json",
+                                                      "sha256":  "CDB25741FA8CF046944B74BFCE390ED1568B885B5B8614E21E25103FE001F2FD"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-TRANSITION-DEPENDENCY-RECONSTRUCTION-0001-v1.0.json",
+                                                      "sha256":  "4AEA17B3BDB39FFB8ECCE26C27500B813214450A92D81F2D9B12E635A7D93742"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-VITEST-RESULTS-0001-v1.0.json",
+                                                      "sha256":  "9A0DF53848A367DC858BBB74501D552B491884C6A3782B46186B43D272918635"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-VITEST-STDERR-0001-v1.0.txt",
+                                                      "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+                                                  },
+                                                  {
+                                                      "name":  "SIR-02-KM-OE-12-VITEST-STDOUT-0001-v1.0.txt",
+                                                      "sha256":  "63AD9E83956B3D1420752AD4E1F08C7D46B569DBF5D883B6D2976E45430B1744"
+                                                  }
+                                              ],
+                           "guardHashes":  [
+                                               {
+                                                   "path":  "package.json",
+                                                   "sha256":  "55F690C21E6402CC76D894E7DB7EC6A93A7ED14FCE25FB475D574A1144A5C5CF"
+                                               },
+                                               {
+                                                   "path":  "pnpm-lock.yaml",
+                                                   "sha256":  "9805474D25601BE7B1333A0704A376D33F8F35633F7D8A9BD7A5E184E3E52255"
+                                               },
+                                               {
+                                                   "path":  "tests\\testing\\sir02-km-oe12-lifecycle-audit-fixture.ts",
+                                                   "sha256":  "3D3F597AD28BE8A2A816EB4E5769FED20A674C60387A0FCA230007C22B1EE3BB"
+                                               },
+                                               {
+                                                   "path":  "tests\\integration\\sir02-km-oe12-lifecycle-audit.test.ts",
+                                                   "sha256":  "2E05526E803D4DE582A4AF13FE1EC9C51756A523DC18248B8B758117A3D3D600"
+                                               },
+                                               {
+                                                   "path":  "docs\\governance\\sir-02\\controls\\SIR-02-KM-OPERATIONAL-EVIDENCE-EXECUTION-PLAN-v1.0.md",
+                                                   "sha256":  "79C4AB3CB7FCC8EDD1CB87313DCB246273F15B3F9CAC279C015C8E8BCC20B72C"
+                                               },
+                                               {
+                                                   "path":  "docs\\governance\\sir-02\\controls\\SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+                                                   "sha256":  "DFEFAEFA59E21F5DDD97C1DADC94EF82CB41789D7C005E659201B8AB3E7B317B"
+                                               },
+                                               {
+                                                   "path":  "docs\\governance\\sir-02\\controls\\SIR-02-KM-OE-12-FORMAL-EXECUTION-RETRY-0003-AUTHORIZATION-v1.0.md",
+                                                   "sha256":  "01F757D3E5BD160EFBA185CF25BA77A5701A9E60B48216FCFB0808E41B501623"
+                                               }
+                                           ]
+                       },
+    "afterSnapshot":  {
+                          "head":  "b92e5c79a7fc4664787f73fbf3c9e50c44c965fb",
+                          "status":  "",
+                          "artifactHashes":  [
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-CAPTURE-STDERR-0001-v1.0.txt",
+                                                     "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-CAPTURE-STDOUT-0001-v1.0.txt",
+                                                     "sha256":  "82316C8088946483629840F7EE3D7C48F269701704FDC6FEA9A413A6C6EBA6DC"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-CLEANUP-OPERATIONAL-SAFETY-0001-v1.0.json",
+                                                     "sha256":  "F15D906C0E01A352E98267BF79ADA50980CEDAFC176427EF54EE7DBBBF2DCC27"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-EXECUTION-ATTEMPT-0001-INTEGRITY-FAILED-v1.0.md",
+                                                     "sha256":  "79397D711F1A2944EE3379BFA929E40DB3F4787C660128C95D7D0D642937CF75"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-EXECUTION-ATTEMPT-0002-TOOLING-FAILED-v1.0.md",
+                                                     "sha256":  "0B7DC111E8D67C25078C342995BDCA817976A9828B874CD639DF1E2B9A67122A"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-EXECUTION-ATTEMPT-0002-TOOLING-LAUNCHER-v1.0.ps1.txt",
+                                                     "sha256":  "E0132750F3F9F2B751916F689D195AC9D981F7A0277726D93E5939CA27597E46"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-EXECUTION-ATTEMPT-0002-TOOLING-RUN-LOG-v1.0.json",
+                                                     "sha256":  "1EA83609E710A9FD14ECB853D1CD7196790D75F73A85AD54F37CC6207CDEDC19"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-FORMAL-RUN-LOG-0001-v1.0.json",
+                                                     "sha256":  "2C2E47A1F074E8D5D5E8C14708B6102BB2086EB83F0C858618359F124A54FF8F"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-IMPLEMENTATION-TECHNICAL-REVIEW-v1.0.md",
+                                                     "sha256":  "60CDFA133DEFCAEB955EB346763BAB6EF0C0EEC023970E22138A0D12F93B5588"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-LIFECYCLE-AUDIT-FORMAL-EVIDENCE-0001-v1.0.json",
+                                                     "sha256":  "DA1E237B4AF9924C78CE446E581168145928006DCC08349713EDEFD4085C83A6"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NEGATIVE-CASE-RESULTS-0001-v1.0.json",
+                                                     "sha256":  "41CFAA492F5AF9D9AAA3E9F0ACF44805EA885CD8EB083F4C4725C2B4C8EDC847"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-LAUNCHER-v1.0.ps1.txt",
+                                                     "sha256":  "620BE62010DDDEFB61C76D76205D8A81E644DF03AF6EA43315E68E6CB5D5D437"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-PROBE-v1.0.cjs.txt",
+                                                     "sha256":  "0D482BC03F4D5709C09EFA3D0BAAE299E9736C47011EFD9B32B79955E8B85ACC"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-RAW-v1.0.json",
+                                                     "sha256":  "E1ECFAD734F0183D31876B4FC59D356F69F1A186F5CC05F24068392E1506438D"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V2-LAUNCHER-v1.0.ps1.txt",
+                                                     "sha256":  "D31A294CAC84FD3B7D789C83EB47A4434E3D32FE66FF16A1E4629E640308A3D8"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V2-PROBE-v1.0.cjs.txt",
+                                                     "sha256":  "08BC575D29F90EF8D2E4AD61D17072A5E0D98FF09BF25FBFF5053135D7D73716"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V2-RAW-v1.0.json",
+                                                     "sha256":  "4C3920760F534AEA19AAE5CD3AD866E3EBB5FB38FF021DC2E16795DBACAD8F95"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V2-VALIDATION-v1.0.md",
+                                                     "sha256":  "37F6696059D728BB263F6F2575B15D744B34C3D0BD2CD1FF8FE84729B123BBE5"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V3-LAUNCHER-20260927T120119Z-v1.0.ps1.txt",
+                                                     "sha256":  "2C97726C00E865B0BE382D294F93B993034256688B4DCB47F41D4C122EEFB5BD"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V3-PROBE-20260927T120119Z-v1.0.cjs.txt",
+                                                     "sha256":  "CDF296F0E44ECB008FC9F41AD1CC055ED7F2E45EE2B69CFFFF1B45A1DFB6980B"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V3-RAW-20260927T120119Z-v1.0.json",
+                                                     "sha256":  "7FA5A80CA297AE9645D49967F1963340C18B09CFEC6BB352A3169C6843EC53A9"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-V3-VALIDATION-20260927T120119Z-v1.0.md",
+                                                     "sha256":  "7B20E66C5BB910F72F3EC64FEF88F7D5E590BA32D794DB0764E0E4937D51C54A"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-NON-FORMAL-LAUNCHER-SMOKE-VALIDATION-v1.0.md",
+                                                     "sha256":  "79FA54A46708B730B001C995337B358D5787D3A8546B51BF334D7474E9FF69DF"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-RAW-NORMALIZED-LIFECYCLE-EVENTS-0001-v1.0.json",
+                                                     "sha256":  "AA269F55872CE4C792FD8DE698FBA9CE460E0EE33EC9F8F35AE3F4A5A337A206"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-REMEDIATED-IMPLEMENTATION-FINAL-REVIEW-v1.0.md",
+                                                     "sha256":  "6855E10430F079E889D4DF8A744274623F2870EBDC62436FB05E763C9F5BBDDE"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-REMEDIATED-IMPLEMENTATION-REVIEWER-ATTESTATION-v1.0.txt",
+                                                     "sha256":  "5A1EE178854F6D762953D76E09046F16095DD4CCB4C667122DC2EFBC689CE1F7"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-REMEDIATED-IMPLEMENTATION-REVIEW-v1.0.md",
+                                                     "sha256":  "146CDF398A62C3061E161885A8AC895806BBC1A946B83D1B4F472D9416860EFC"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-SANITIZATION-REDACTION-0001-v1.0.json",
+                                                     "sha256":  "0364862CF0977BFF36425B5001B379A8ADC90EEB315D9F050B7F3FE028FD0B1F"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-SHA256-MANIFEST-0001-v1.0.json",
+                                                     "sha256":  "5AA43AFCD6954CFE95A4DDEB9A5B816118EA7D68A02EB385341081F55F03C37B"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-SHA256-MANIFEST-0001-v1.0.json.sha256",
+                                                     "sha256":  "DB2F3F290713B999672830BC7D37A72489F28DF65409AF21A7BC880F4A945C50"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-SINK-FAILURE-PARTIAL-WRITE-0001-v1.0.json",
+                                                     "sha256":  "9F13D581F2445A1ECD302182E3599513AEE192D45F3D2846A4EFE2D013C7DCD1"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-TENANT-ISOLATION-0001-v1.0.json",
+                                                     "sha256":  "CDB25741FA8CF046944B74BFCE390ED1568B885B5B8614E21E25103FE001F2FD"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-TRANSITION-DEPENDENCY-RECONSTRUCTION-0001-v1.0.json",
+                                                     "sha256":  "4AEA17B3BDB39FFB8ECCE26C27500B813214450A92D81F2D9B12E635A7D93742"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-VITEST-RESULTS-0001-v1.0.json",
+                                                     "sha256":  "9A0DF53848A367DC858BBB74501D552B491884C6A3782B46186B43D272918635"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-VITEST-STDERR-0001-v1.0.txt",
+                                                     "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+                                                 },
+                                                 {
+                                                     "name":  "SIR-02-KM-OE-12-VITEST-STDOUT-0001-v1.0.txt",
+                                                     "sha256":  "63AD9E83956B3D1420752AD4E1F08C7D46B569DBF5D883B6D2976E45430B1744"
+                                                 }
+                                             ],
+                          "guardHashes":  [
+                                              {
+                                                  "path":  "package.json",
+                                                  "sha256":  "55F690C21E6402CC76D894E7DB7EC6A93A7ED14FCE25FB475D574A1144A5C5CF"
+                                              },
+                                              {
+                                                  "path":  "pnpm-lock.yaml",
+                                                  "sha256":  "9805474D25601BE7B1333A0704A376D33F8F35633F7D8A9BD7A5E184E3E52255"
+                                              },
+                                              {
+                                                  "path":  "tests\\testing\\sir02-km-oe12-lifecycle-audit-fixture.ts",
+                                                  "sha256":  "3D3F597AD28BE8A2A816EB4E5769FED20A674C60387A0FCA230007C22B1EE3BB"
+                                              },
+                                              {
+                                                  "path":  "tests\\integration\\sir02-km-oe12-lifecycle-audit.test.ts",
+                                                  "sha256":  "2E05526E803D4DE582A4AF13FE1EC9C51756A523DC18248B8B758117A3D3D600"
+                                              },
+                                              {
+                                                  "path":  "docs\\governance\\sir-02\\controls\\SIR-02-KM-OPERATIONAL-EVIDENCE-EXECUTION-PLAN-v1.0.md",
+                                                  "sha256":  "79C4AB3CB7FCC8EDD1CB87313DCB246273F15B3F9CAC279C015C8E8BCC20B72C"
+                                              },
+                                              {
+                                                  "path":  "docs\\governance\\sir-02\\controls\\SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+                                                  "sha256":  "DFEFAEFA59E21F5DDD97C1DADC94EF82CB41789D7C005E659201B8AB3E7B317B"
+                                              },
+                                              {
+                                                  "path":  "docs\\governance\\sir-02\\controls\\SIR-02-KM-OE-12-FORMAL-EXECUTION-RETRY-0003-AUTHORIZATION-v1.0.md",
+                                                  "sha256":  "01F757D3E5BD160EFBA185CF25BA77A5701A9E60B48216FCFB0808E41B501623"
+                                              }
+                                          ]
+                      },
+    "fatalPhase":  "Launcher or assertion",
+    "fatalError":  "Hold-stage timeout/termination assertion failed; tree scenario not started",
+    "overall":  "FAIL",
+    "formalRunIdGenerated":  false,
+    "formalRetry0003Executed":  false,
+    "oe12StatusChanged":  false
+}

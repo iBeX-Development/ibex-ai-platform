@@ -1,0 +1,37 @@
+const fs = require('node:fs');
+const { spawn } = require('node:child_process');
+const mode = process.argv[2];
+if (mode === 'echo') {
+  process.stdout.write('SMOKE_V4_STDOUT_MARKER\n');
+  process.stdout.write('ARGV_JSON=' + JSON.stringify(process.argv) + '\n');
+  process.stderr.write('SMOKE_V4_STDERR_MARKER\n');
+} else if (mode === 'nonzero') {
+  process.stdout.write('NONZERO_STDOUT_MARKER\n');
+  process.stderr.write('NONZERO_STDERR_MARKER\n');
+  process.exitCode = 23;
+} else if (mode === 'hold') {
+  process.stdin.once('data', (data) => {
+    if (data.toString('ascii') !== 'GO\n') process.exit(26);
+    process.stdout.write('HOLD_PARENT_PID=' + process.pid + '\n');
+    setInterval(() => {}, 1000);
+  });
+} else if (mode === 'tree') {
+  const pidPath = process.argv[3];
+  process.stdin.once('data', (data) => {
+    if (data.toString('ascii') !== 'GO\n') process.exit(27);
+    const child = spawn(process.execPath, [__filename, 'hold-child'], { stdio: 'ignore', windowsHide: true });
+    child.on('error', (error) => {
+      process.stderr.write('TREE_CHILD_ERROR=' + error.message + '\n');
+      process.exitCode = 28;
+    });
+    fs.writeFileSync(pidPath, String(child.pid), { flag: 'wx' });
+    process.stdout.write('TREE_PARENT_PID=' + process.pid + '\n');
+    process.stdout.write('TREE_CHILD_PID=' + child.pid + '\n');
+    setInterval(() => {}, 1000);
+  });
+} else if (mode === 'hold-child') {
+  setInterval(() => {}, 1000);
+} else {
+  process.stderr.write('UNKNOWN_MODE\n');
+  process.exitCode = 25;
+}

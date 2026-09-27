@@ -1,0 +1,4 @@
+C:\Users\gantu\AppData\Local\Temp\sir02-oe12-smoke-v4-prep\smoke-v4-raw.json
+SMOKE_V4_RESULT=FAIL
+CAPTURE_ID=SIR02-KM-OE-12-LAUNCHER-SMOKE-V4-20260927T125158Z
+FATAL=Hold-stage timeout/termination assertion failed; tree scenario not started
