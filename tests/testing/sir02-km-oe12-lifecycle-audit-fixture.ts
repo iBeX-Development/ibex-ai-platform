@@ -166,6 +166,7 @@ export interface EvidenceBasis {
   readonly ownerId: string;
   readonly version: string;
   readonly approvalAt: string;
+  readonly rejectionCaseId: string;
   readonly exactRepeatScenarioId: string;
   readonly conflict: Readonly<{
     scenarioId: string;
@@ -231,6 +232,23 @@ function supplementalFacts(
 
 export function loadEvidenceBasis(): EvidenceBasis {
   const inputs = loadAcceptedEvidence();
+  const oe03 = requiredObject(inputs['SIR02-KM-OE-03'], 'OE-03');
+  if (!Array.isArray(oe03.execution_observations)) {
+    throw new Error('MISSING_OE03_DENIAL_OBSERVATIONS');
+  }
+  const rejection = requiredObject(
+    (oe03.execution_observations as unknown[]).find(
+      (item) => requiredObject(item, 'OE-03 observation').case_id === 'missing-approval-decision'
+    ),
+    'OE-03 denial'
+  );
+  if (
+    rejection.expected !== 'Denied' ||
+    rejection.actual !== 'Denied' ||
+    rejection.approval_event_creation_calls !== 0
+  ) {
+    throw new Error('INVALID_OE03_DENIAL_BASIS');
+  }
   const laterBytes = new Map(laterInputs.map((input) => [input.id, verifiedGitBytes(input)]));
   const rawSupplement = laterBytes.get('SIR02-KM-OE-13-SUPPLEMENTAL');
   if (!rawSupplement) throw new Error('MISSING_ACCEPTED_SUPPLEMENTAL_EVIDENCE');
@@ -254,6 +272,7 @@ export function loadEvidenceBasis(): EvidenceBasis {
     ownerId: inventory.ownerId,
     version: 'v1.0',
     approvalAt: root.approvalAt,
+    rejectionCaseId: requiredText(rejection.case_id, 'OE-03 denial case'),
     ...oe13,
     refs: PINNED_INPUTS
   };
@@ -447,6 +466,9 @@ export function buildLifecycleEvents(basis: EvidenceBasis): KmLifecycleAuditEven
               chronology_clarification_review_commit: '79f2d74ab31335e2487fa4e6c7dce4158c9a7b1f',
               corrected_0003_evidence_commit: '74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a'
             }
+          : {}),
+        ...(family === 'source_rejection'
+          ? { rejection_case_id: basis.rejectionCaseId, new_approval_events: 0 }
           : {}),
         ...(family === 'synthetic_withdrawal_retention'
           ? { boundary_label: 'Synthetic Audit-Only Transition — Not OE-08 Operational Evidence' }

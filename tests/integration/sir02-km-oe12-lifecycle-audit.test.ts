@@ -140,6 +140,10 @@ describe('OE-12 isolated lifecycle audit projection', () => {
     expect(approval.evidence.source_event_time).toBe(basis.approvalAt);
     expect(approval.evidence.source_event_time).not.toBe(approval.timestamp);
     expect(approval.evidence.metadata).toMatchObject({ reconstructed_prior_event: true });
+    expect(at(positive.retained, 3).evidence.metadata).toMatchObject({
+      rejection_case_id: 'missing-approval-decision',
+      new_approval_events: 0
+    });
     expect(syntheticRetention.evidence).toMatchObject({
       synthetic_audit_only: true,
       operational_oe08_evidence: false,
