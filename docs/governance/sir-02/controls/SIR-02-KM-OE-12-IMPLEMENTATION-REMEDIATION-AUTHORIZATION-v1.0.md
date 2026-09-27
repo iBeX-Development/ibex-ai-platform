@@ -13,6 +13,7 @@
 | Reviewer | SODBILEG Erkhembayar — Administrator |
 | Status | `Authorized for Test-Only Remediation Implementation` |
 | Decision date | `2026-09-27` |
+| Immutable authorization decision reference | `9291dd5f2150b7e54f234907c91f5c07915b1255` |
 | OE-12 operational evidence status | `Not Executed` |
 
 The proposed record at design publication commit `2c6a902853eb0171afbe93436936214a2f53de0c` is preserved as the prior decision state. This completed owner decision authorizes only test-only remediation of the rejected technical findings. It does not attest to reviewer independence, review the future remediated implementation, execute OE-12, or accept operational evidence.
@@ -43,6 +44,7 @@ No production/runtime file, dependency, migration, configuration, validation byp
 | Gate | Current value |
 | --- | --- |
 | Implementation remediation | `Authorized for Test-Only Remediation Implementation` in the two named files only |
+| Completed owner decision reference | `9291dd5f2150b7e54f234907c91f5c07915b1255` |
 | SODBILEG implementation-review attestation | Required separately for the exact final remediated implementation commit; this authorization is not that attestation |
 | Independent implementation review | `Not Performed` on the future remediated commit |
 | Formal OE-12 execution | `Not Authorized` until the separate implementation review is accepted |

@@ -6,14 +6,16 @@
 | --- | --- |
 | Evidence item | `SIR02-KM-OE-12 — Lifecycle Audit Evidence` |
 | Design version | `v1.0` |
+| Immutable exact-design reference | `2c6a902853eb0171afbe93436936214a2f53de0c` |
 | Original implementation | `048baf7e3444713937318c7150df0e712898c2f1` |
 | Rejected technical review | `6ce397b29fb72531ecfedbe051ed7eace8204c93` |
 | Original fixture design | `997be74295dd826cb93b370b51fcfb1d56a0d689` |
 | Original implementation authorization | `50479eaabfb25e388941253e2451e717785f16cc` |
-| Remediation authorization | `Proposed / Not Authorized` |
+| Remediation authorization | `Authorized for Test-Only Remediation Implementation` at decision `9291dd5f2150b7e54f234907c91f5c07915b1255` |
+| Owner decision date | `2026-09-27` |
 | OE-12 status | `Not Executed` |
 
-This design addresses only findings F1–F4 in the preserved rejected review. The authorized two-file boundary, public Phase 7 reuse, 14 event-family labels, 20 named negative cases, tenant-safe denial, sanitization, cleanup, and OE-08 audit-only boundary remain valid and must not be weakened. Existing accepted OE evidence and the rejected review remain immutable. No implementation, test run, or formal evidence execution occurs in this design step.
+This design addresses only findings F1–F4 in the preserved rejected review. The owner subsequently authorized this exact design for the two test-only files at the decision reference above. The authorized two-file boundary, public Phase 7 reuse, 14 event-family labels, 20 named negative cases, tenant-safe denial, sanitization, cleanup, and OE-08 audit-only boundary remain valid and must not be weakened. Existing accepted OE evidence and the rejected review remain immutable. This design and linkage contain no implementation, test run, or formal evidence execution.
 
 ## Exact implementation boundary and feasibility
 
