@@ -6,7 +6,10 @@
 | --- | --- |
 | Document | `SIR-02-KM-OE-12-LIFECYCLE-AUDIT-FIXTURE-DESIGN` |
 | Design version | `v1.0` |
-| Design status | `Prepared for Owner Decision / Implementation Not Authorized` |
+| Design status | `Authorized for Test-Only Implementation` |
+| Immutable exact-design reference | `997be74295dd826cb93b370b51fcfb1d56a0d689` |
+| Authorization decision reference | `50479eaabfb25e388941253e2451e717785f16cc` |
+| Owner decision date | `2026-09-27` |
 | Evidence item | `SIR02-KM-OE-12 — Lifecycle Audit Evidence` |
 | Owner | GANTUMUR Erdenedalai — Founder / Administrator |
 | Reviewer | SODBILEG Erkhembayar — Administrator |
@@ -16,7 +19,7 @@
 | Data classification | `Synthetic` only |
 | OE-12 status | `Not Executed` |
 
-This is a design, not an implementation, test result, approval, or operational audit record. The companion authorization record remains `Proposed / Not Authorized`. Owner approval of this exact version and file scope is required before coding. Formal OE-12 execution and independent evidence review are later, separate steps.
+The owner authorized implementation of the exact `v1.0` technical design at the immutable design reference above, limited to the two test-only files and read-only reuse conditions in the companion authorization record. This document remains a design, not an implementation, test result, or operational audit record. Formal OE-12 execution and independent evidence review are later, separate steps.
 
 ## Authority and current sufficiency finding
 

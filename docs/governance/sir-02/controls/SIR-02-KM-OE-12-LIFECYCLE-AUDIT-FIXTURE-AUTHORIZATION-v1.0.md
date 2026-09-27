@@ -11,6 +11,7 @@
 | Owner | GANTUMUR Erdenedalai — Founder / Administrator |
 | Reviewer | SODBILEG Erkhembayar — Administrator |
 | Decision date | `2026-09-27` |
+| Immutable authorization decision reference | `50479eaabfb25e388941253e2451e717785f16cc` |
 | Exact authorized file list | The two named test-only files below |
 | Read-only reuse scope | Accepted OE evidence and compatible public Phase 7 interfaces/helpers only; accepted implementations remain unchanged |
 | OE-12 evidence status | `Not Executed` |
@@ -49,6 +50,7 @@ Accepted OE evidence may be loaded read-only. Compatible exported Phase 7 audit 
 | Implementation decision | `Authorized for Test-Only Implementation` |
 | Owner decision statement | Exact statement above |
 | Owner decision date | `2026-09-27` |
+| Immutable completed-decision reference | `50479eaabfb25e388941253e2451e717785f16cc` |
 | Exact permitted implementation files | The two named test-only files above; no other file |
 | Read-only reuse approved | Accepted OE evidence and compatible public Phase 7 interfaces/helpers; existing accepted implementations unchanged |
 | Independent review of future implementation | `Not Performed` |
