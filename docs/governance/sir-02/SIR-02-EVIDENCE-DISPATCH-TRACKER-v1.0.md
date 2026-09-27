@@ -70,7 +70,7 @@ The Data Governance response supplies all four owner decisions, and all four hav
 
 The Platform Operations response and completed-decision commit `8cd55532ef4052c13eaaca42ac5c8299c18133ed` establish custody, exact configuration acceptance, secret-management governance ownership, and the separate activation requirement. Both assignments are `Ready for Review / Accepted`; neither is evidence-level `Approved`.
 
-The Knowledge Management response records immutable owner decisions for all three assignments. `SIR02-DEF-01` and `SIR02-DEF-03` are `Ready for Review / Accepted`. The approved `v1.0` lifecycle baseline, Plan/Matrix, and Gate A govern controlled evidence execution. OE-01 through OE-07, OE-09, and OE-11 are `Accepted` (9 total); OE-13 is `Executed / Awaiting Independent Review`; 5 items remain `Not Executed`. OE-09's earlier clarification and final reviewer attestation remain separately referenced. `SIR02-DEF-02` remains `Missing / Not Reviewed`, and ingestion reopening remains prohibited.
+The Knowledge Management response records immutable owner decisions for all three assignments. `SIR02-DEF-01` and `SIR02-DEF-03` are `Ready for Review / Accepted`. The approved `v1.0` lifecycle baseline, Plan/Matrix, and Gate A govern controlled evidence execution. OE-01 through OE-07, OE-09, OE-11, and OE-13 are `Accepted` (10 total); 5 items remain `Not Executed`. OE-13 exact-run attestation `001483a23420af2a54e89c7701ea3f7cc5c0ab01` and final review `f415701fe52eb4b0c347b6b96d3e3d2008343e23` remain traceable. OE-09's earlier clarification and final reviewer attestation remain separately referenced. `SIR02-DEF-02` remains `Missing / Not Reviewed`, and ingestion reopening remains prohibited.
 
 ## SIR-02 completion dashboard
 
