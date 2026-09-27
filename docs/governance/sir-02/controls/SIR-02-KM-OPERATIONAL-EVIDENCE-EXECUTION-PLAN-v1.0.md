@@ -43,7 +43,7 @@
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
 
-Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-07, OE-09, and OE-11 are `Accepted` (9 total); the other 6 evidence items remain `Not Executed`. OE-09's earlier `Needs Clarification` review remains preserved at commit `b423a0d50eaa6a9039f26788e92be512ee16ac91`; the exact supplied attestation at `98cabf0ccf94508056f19252e649c269d655aecf` supports its final `Accepted` review at `564d545c6ec0e0d52e43d758c0ba7ff8810df6aa`. OE-11's supplied formal-run attestation is preserved at `16b1f8de44f6dd82d4f0c62700288b17abfce408`, with final accepted review at `2bb7ebbcfe5d137b34f5cd19b2107ac68e24b1cc`.
+Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-07, OE-09, and OE-11 are `Accepted` (9 total); OE-13 is `Executed / Awaiting Independent Review`, and 5 items remain `Not Executed`. OE-09's earlier `Needs Clarification` review remains preserved at commit `b423a0d50eaa6a9039f26788e92be512ee16ac91`; the exact supplied attestation at `98cabf0ccf94508056f19252e649c269d655aecf` supports its final `Accepted` review at `564d545c6ec0e0d52e43d758c0ba7ff8810df6aa`. OE-11's supplied formal-run attestation is preserved at `16b1f8de44f6dd82d4f0c62700288b17abfce408`, with final accepted review at `2bb7ebbcfe5d137b34f5cd19b2107ac68e24b1cc`.
 
 ## Purpose
 
@@ -344,6 +344,7 @@ Each produced evidence package must contain:
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** Every duplicate/conflict path is deterministic, tenant-safe, auditable, and fail closed.
 - **Execution evidence:** `operational-evidence/oe-13/SIR-02-KM-OE-13-DUPLICATE-CONFLICT-FORMAL-EVIDENCE-0001-v1.0.json`; SHA-256 `908843689d9ccb1b5139d2ab8939a12067d046fc2f04c857cda065ea41544bee`; evidence commit `a0bcdb4ef646b0322cca6e30ef1f8c3b282501c9`. The retained Vitest report passed 39/39 tests across the 20 mapped scenario categories. The earlier pre-scenario `EPERM` attempt remains embedded in the evidence artifact. Raw per-case registry hashes and pair IDs were not emitted by the accepted JSON reporter; the independent reviewer must assess capture sufficiency.
+- **Supplemental clarification evidence:** `operational-evidence/oe-13/SIR-02-KM-OE-13-SUPPLEMENTAL-CLARIFICATION-EVIDENCE-0001-v1.0.json`; SHA-256 `6409af465cb4ea89403a62d5400ed7077eb1f3ce862b6edbbac944a96b6ba2ad`; capture `SIR02-KM-OE-13-SUPPLEMENTAL-V1_0-20260927T012529Z-0001`; evidence commit `d7626372612d60c4959bbdf51a89c00a80b3b9b1`. Separate checksummed raw measurements and Vitest report retain 46 case captures, 184 raw hash values, affected-pair IDs/references/counts, observer counters and probes, and 47/47 passing tests across all 20 categories. This later capture does not replace formal run `0001`; supplemental status is `Captured / Awaiting Independent Review`, and the OE-13 clarification review remains open.
 - **Status:** `Executed / Awaiting Independent Review`
 
 ### SIR02-KM-OE-14 — Re-ingestion/re-indexing idempotency test
