@@ -15,7 +15,7 @@
 | Reviewer | SODBILEG Erkhembayar — Administrator |
 | Authorization status | `Authorized for Controlled Formal Retry` |
 | Decision date | `2026-09-27` |
-| Authorization decision reference | `Pending immutable governance linkage` |
+| Authorization decision reference | `2c787752bc81879148f2db90e18cc5665e35bb7c` |
 | Exact permitted execution | One bounded formal OE-12 sequence `0002` run and R1–R5 staged/committed-byte integrity procedure in the exact authorized plan |
 | Network permission | `Not Authorized` |
 | OE-12 operational-evidence status | `Not Executed` |
@@ -25,6 +25,8 @@
 > The OE-12 Formal Execution Integrity Remediation v1.0 published at commit b70971c4da908e62226fe500e27c56c7de9a11a1 is approved for one new controlled formal retry using sequence 0002. Failed attempt 0001 remains immutable and must not be rewritten, replaced, or reclassified.
 
 The authorized retry must pass gates R1–R5 in order. Staged/index bytes, not potentially transformed worktree bytes, must establish payload and manifest SHA-256 values. The committed evidence blobs must then be independently rehashed and compared 100% to the committed manifest and separate sidecar before status or success linkage changes. The manifest lists payload hashes only; the sidecar authenticates the manifest without self-reference. Any mismatch preserves the new attempt as a failure and stops further work without an automatic rerun.
+
+The proposed `v1.0` plan and `Proposed / Not Authorized` record remain immutably visible at `b70971c4da908e62226fe500e27c56c7de9a11a1`. The completed owner authorization decision is preserved at `2c787752bc81879148f2db90e18cc5665e35bb7c`. This governance linkage records the decision reference only; it is not an OE-12 execution or evidence-success linkage.
 
 ## Authorized scope and exclusions
 
