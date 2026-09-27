@@ -11,6 +11,7 @@
 | Reviewer | `SODBILEG Erkhembayar — Administrator` |
 | Decision date | `2026-09-28` |
 | Authorization status | **Authorized for One Non-Formal Job Membership Diagnostic** |
+| Authorization decision reference | `70755e8571e8c2ccf8bdf182064993f1a91511e1` |
 | Immutable Class B forensic basis | `SIR-02-KM-OE-12-SMOKE-V4-JOB-MEMBERSHIP-FORENSIC-ANALYSIS-v1.0.md` at `fa656ca968129bbb6dea05e853c66d859ae5f1b1` |
 | Failed Smoke v4 | `SIR02-KM-OE-12-LAUNCHER-SMOKE-V4-20260927T125158Z`; evidence `98bb5c30fd1619efbc0fba99d5062f258a65d811`; **FAIL** |
 | Exact temporary diagnostic source/invocation | Must be reviewable against every gate below before the one permitted execution; no source or invocation was created by this decision |
@@ -22,6 +23,8 @@
 ## Owner decision
 
 > The OE-12 Job Membership Diagnostic is authorized for one non-formal tooling diagnostic only, based on the Class B — Identity Not Recoverable finding at commit fa656ca968129bbb6dea05e853c66d859ae5f1b1. Its sole purpose is to identify every member of the newly created synthetic Job Object and establish ownership before any future destructive Job-level termination test. This authorization does not authorize Smoke v5 or formal retry 0003 and does not constitute OE-12 operational evidence.
+
+The owner decision is preserved immutably at `70755e8571e8c2ccf8bdf182064993f1a91511e1`. This linkage records that decision reference only; it is neither a diagnostic result nor a Smoke v5 or formal OE-12 success linkage.
 
 The sole diagnostic question is: **Who are all members of the newly created synthetic Job Object, and can every member be conclusively attributed to the current synthetic diagnostic execution before any destructive Job-level termination action?** This decision does not run the diagnostic. Before execution, the exact temporary launcher/helper/probe source, full noninteractive command, native API and handle plan, output location, finite bounds, no-network controls, and safe cleanup must be reviewable. If the source cannot satisfy this authorization without new repository code, dependency, configuration, security-policy, or elevation changes, stop for separate change control rather than execute.
 
