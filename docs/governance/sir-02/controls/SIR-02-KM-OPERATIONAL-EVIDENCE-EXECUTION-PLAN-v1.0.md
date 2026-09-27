@@ -43,7 +43,7 @@
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
 
-Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-07, OE-09, OE-11, and OE-13 are `Accepted` (10 total); 5 items remain `Not Executed`. OE-13's original clarification, accepted supplemental evidence, and final accepted review remain separately traceable below. OE-09's earlier `Needs Clarification` review remains preserved at commit `b423a0d50eaa6a9039f26788e92be512ee16ac91`; the exact supplied attestation at `98cabf0ccf94508056f19252e649c269d655aecf` supports its final `Accepted` review at `564d545c6ec0e0d52e43d758c0ba7ff8810df6aa`. OE-11's supplied formal-run attestation is preserved at `16b1f8de44f6dd82d4f0c62700288b17abfce408`, with final accepted review at `2bb7ebbcfe5d137b34f5cd19b2107ac68e24b1cc`.
+Gate A approved controlled evidence execution under the immutable Gate A approval reference above. OE-01 through OE-07, OE-09, OE-11, and OE-13 are `Accepted` (10 total); OE-10 is `Evidence Assembled / Awaiting Independent Review`; 4 items remain `Not Executed`. OE-13's original clarification, accepted supplemental evidence, and final accepted review remain separately traceable below. OE-09's earlier `Needs Clarification` review remains preserved at commit `b423a0d50eaa6a9039f26788e92be512ee16ac91`; the exact supplied attestation at `98cabf0ccf94508056f19252e649c269d655aecf` supports its final `Accepted` review at `564d545c6ec0e0d52e43d758c0ba7ff8810df6aa`. OE-11's supplied formal-run attestation is preserved at `16b1f8de44f6dd82d4f0c62700288b17abfce408`, with final accepted review at `2bb7ebbcfe5d137b34f5cd19b2107ac68e24b1cc`.
 
 ## Purpose
 
@@ -290,7 +290,8 @@ Each produced evidence package must contain:
 - **Checksum/reference:** Existing immutable commits plus checksum of the evidence index.
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** Reviewer confirms existing tests cover all required dimensions and evidence is immutable and reconstructable.
-- **Status:** `Not Executed`
+- **Reference-only evidence package:** `operational-evidence/oe-10/SIR-02-KM-OE-10-EXISTING-EVIDENCE-INDEX-REUSE-ASSESSMENT-v1.0.md`; SHA-256 `e79b722be7a08f9743b7c7e8664e6c52b301b372a4c6a3ea37bde64f82d287b3`; immutable package commit `40653085601a651c9fc40f6f7911af2aecbadbac`. It maps 15/15 OE-10 criteria to immutable Phase 1/6/7/10 and accepted OE-01/02/09/11 evidence. No OE-10 test was executed for this assembly; independent review is pending.
+- **Status:** `Evidence Assembled / Awaiting Independent Review`
 
 ### SIR02-KM-OE-11 — Missing approval/version/provenance fail-closed tests
 
