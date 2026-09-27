@@ -12,6 +12,7 @@
 | Reviewer | SODBILEG Erkhembayar — Administrator |
 | Authorization status | Authorized for Non-Formal Smoke v2 |
 | Decision date | 2026-09-27 |
+| Authorization decision reference | ea9f1fbb36d51f6b3453304c026d219ed0c503c8 |
 | Exact permitted execution | One bounded non-formal Windows PowerShell 5.1 Smoke v2 under the exact v1.1 amendment, using existing node.exe, temporary launcher/probe, synthetic arguments, and no network |
 | Smoke v2 execution status | Authorized / Not Yet Executed |
 | Network permission | Not Authorized |
@@ -21,6 +22,8 @@
 ## Formal owner decision
 
 > The OE-12 Launcher Remediation v1.1 at commit e0d7d711f08063bc3e83159ec04d33edc5beff3e is approved for one non-formal Smoke v2 validation only. This authorization does not authorize formal retry 0003 and does not constitute OE-12 operational evidence.
+
+The proposed v1.1 amendment and Proposed / Not Authorized authorization remain visible at e0d7d711f08063bc3e83159ec04d33edc5beff3e. The owner decision is preserved at ea9f1fbb36d51f6b3453304c026d219ed0c503c8. This linkage adds the immutable decision reference only; it is not a smoke execution or formal OE-12 success linkage.
 
 This decision permits only the future non-formal Smoke v2. No launcher or smoke is executed in this authorization step. Before execution, the exact temporary launcher and synthetic probe, executable path, command, output location, bounded timeouts, and non-network controls must be made reviewable against the amendment. The corrected launcher must remain outside repository implementation paths. The accepted OE-12 implementation at 826376cc84521a5d648462fdcc985cd2d412a24c remains unchanged.
 
