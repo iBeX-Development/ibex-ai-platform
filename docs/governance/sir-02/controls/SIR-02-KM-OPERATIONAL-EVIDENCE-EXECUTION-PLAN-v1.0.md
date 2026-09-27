@@ -291,6 +291,7 @@ Each produced evidence package must contain:
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** Reviewer confirms existing tests cover all required dimensions and evidence is immutable and reconstructable.
 - **Reference-only evidence package:** `operational-evidence/oe-10/SIR-02-KM-OE-10-EXISTING-EVIDENCE-INDEX-REUSE-ASSESSMENT-v1.0.md`; SHA-256 `e79b722be7a08f9743b7c7e8664e6c52b301b372a4c6a3ea37bde64f82d287b3`; immutable package commit `40653085601a651c9fc40f6f7911af2aecbadbac`. It maps 15/15 OE-10 criteria to immutable Phase 1/6/7/10 and accepted OE-01/02/09/11 evidence. No OE-10 test was executed for this assembly; independent review is pending.
+- **Technical review:** `operational-evidence/oe-10/SIR-02-KM-OE-10-INDEPENDENT-REVIEW-v1.0.md`; SHA-256 `27ce731bcf4feb30ad51fdfa64d4bbcd1a00fce405fe3243c0be5c236a9fcea2`; immutable review commit `f165365cac37bfa0a039a480891d71927b9c7cb4`. All 15 mappings and package integrity pass technical review, but the single result is `Needs Clarification` because SODBILEG's exact-package personal independence attestation has not been supplied. No acceptance or status advance is recorded.
 - **Status:** `Evidence Assembled / Awaiting Independent Review`
 
 ### SIR02-KM-OE-11 — Missing approval/version/provenance fail-closed tests
