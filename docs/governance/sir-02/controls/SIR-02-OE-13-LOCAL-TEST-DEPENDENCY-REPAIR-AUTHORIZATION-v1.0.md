@@ -15,7 +15,7 @@
 | Exact repair command permitted | `corepack pnpm install --offline --frozen-lockfile` |
 | Local `node_modules` reconstruction permission | Pnpm-managed repair of ignored local dependency links only; no wholesale deletion |
 | Network permission | **Not authorized** |
-| Immutable completed-authorization reference | Decision commit for this record; exact SHA recorded in the subsequent governance linkage commit |
+| Immutable completed-authorization reference | `ca8ab9747eb556b12908af610e284175270bb441` |
 
 ## Formal owner decision and conditions
 
