@@ -1,0 +1,331 @@
+{
+    "classification":  "Non-Formal Tooling Diagnostic â€” Not OE-12 Operational Evidence",
+    "authorizationDecision":  "70755e8571e8c2ccf8bdf182064993f1a91511e1",
+    "forensicBasis":  "fa656ca968129bbb6dea05e853c66d859ae5f1b1",
+    "diagnosticToken":  "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-20260927T231728980Z",
+    "startUtc":  "2026-09-27T23:17:28.9805222Z",
+    "endUtc":  "2026-09-27T23:17:29.9071000Z",
+    "expectedTopology":  [
+                             {
+                                 "role":  "PowerShell diagnostic launcher",
+                                 "executable":  "powershell.exe",
+                                 "pid":  32736,
+                                 "creator":  "invoking shell",
+                                 "jobMemberExpected":  false,
+                                 "membership":  "outside new Job",
+                                 "cleanup":  "natural exit after bounded diagnostic"
+                             },
+                             {
+                                 "role":  "Native helper",
+                                 "executable":  "in-process Add-Type native-helper.cs",
+                                 "pid":  32736,
+                                 "creator":  "diagnostic launcher",
+                                 "jobMemberExpected":  false,
+                                 "membership":  "same process as launcher",
+                                 "cleanup":  "no separate process"
+                             },
+                             {
+                                 "role":  "Watchdog",
+                                 "executable":  null,
+                                 "pid":  null,
+                                 "creator":  null,
+                                 "jobMemberExpected":  false,
+                                 "membership":  "not created",
+                                 "cleanup":  "not applicable"
+                             },
+                             {
+                                 "role":  "Synthetic Node parent",
+                                 "executable":  "C:\\Program Files\\nodejs\\node.exe",
+                                 "pid":  37444,
+                                 "creator":  "diagnostic launcher",
+                                 "jobMemberExpected":  true,
+                                 "membership":  "explicit assignment before resume",
+                                 "cleanup":  "cooperative release or finite natural exit; exact owned-handle fallback only on failure"
+                             },
+                             {
+                                 "role":  "Synthetic Node descendant",
+                                 "executable":  null,
+                                 "pid":  null,
+                                 "creator":  null,
+                                 "jobMemberExpected":  false,
+                                 "membership":  "not created by probe",
+                                 "cleanup":  "not applicable"
+                             }
+                         ],
+    "intendedParentPid":  37444,
+    "expectedSyntheticMemberPidSet":  [
+                                          37444
+                                      ],
+    "observedJobMemberPidSet":  [
+                                    33504,
+                                    37444
+                                ],
+    "unexpectedJobMemberPidSet":  [
+                                      33504
+                                  ],
+    "missingExpectedPidSet":  [
+
+                              ],
+    "members":  [
+                    {
+                        "pid":  33504,
+                        "executableImagePath":  "C:\\Windows\\System32\\conhost.exe",
+                        "parentPid":  37444,
+                        "creationFileTimeUtc":  134350246493425692,
+                        "cimCreationUtc":  "2026-09-27T23:17:29.3425690Z",
+                        "commandLine":  "\\??\\C:\\Windows\\system32\\conhost.exe 0x4",
+                        "diagnosticTokenObserved":  false,
+                        "expectedRole":  "Unknown",
+                        "membershipClass":  "Unknown / Not Allowlisted",
+                        "explicitAssignment":  false,
+                        "inheritedMembership":  false,
+                        "inJob":  true,
+                        "imageMatchesInstalledNode":  false,
+                        "creationMatchesOwnedHandle":  false,
+                        "parentReadyRecordMatches":  true,
+                        "nativeOpenError":  0,
+                        "nativeImageError":  0,
+                        "nativeMembershipError":  0,
+                        "cimErrorCategory":  null,
+                        "evidenceSources":  [
+                                                "CreateProcessW handle and PID",
+                                                "GetProcessTimes",
+                                                "QueryFullProcessImageNameW",
+                                                "IsProcessInJob",
+                                                "JobObjectBasicProcessIdList",
+                                                "local Win32_Process CIM",
+                                                "synthetic probe ready record"
+                                            ]
+                    },
+                    {
+                        "pid":  37444,
+                        "executableImagePath":  "C:\\Program Files\\nodejs\\node.exe",
+                        "parentPid":  32736,
+                        "creationFileTimeUtc":  134350246493323733,
+                        "cimCreationUtc":  "2026-09-27T23:17:29.3323730Z",
+                        "commandLine":  "\"C:\\Program Files\\nodejs\\node.exe\" \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-job-membership-source-20260927T231653057Z\\probe.cjs\" \"SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-20260927T231728980Z\" \"C:\\Users\\gantu\\AppData\\Local\\Temp\\SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-20260927T231728980Z\\parent-ready.json\" \"C:\\Users\\gantu\\AppData\\Local\\Temp\\SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-20260927T231728980Z\\parent-release.flag\"",
+                        "diagnosticTokenObserved":  true,
+                        "expectedRole":  "Synthetic Node parent",
+                        "membershipClass":  "Allowlisted â€” Explicitly Assigned",
+                        "explicitAssignment":  true,
+                        "inheritedMembership":  false,
+                        "inJob":  true,
+                        "imageMatchesInstalledNode":  true,
+                        "creationMatchesOwnedHandle":  true,
+                        "parentReadyRecordMatches":  true,
+                        "nativeOpenError":  0,
+                        "nativeImageError":  0,
+                        "nativeMembershipError":  0,
+                        "cimErrorCategory":  null,
+                        "evidenceSources":  [
+                                                "CreateProcessW handle and PID",
+                                                "GetProcessTimes",
+                                                "QueryFullProcessImageNameW",
+                                                "IsProcessInJob",
+                                                "JobObjectBasicProcessIdList",
+                                                "local Win32_Process CIM",
+                                                "synthetic probe ready record"
+                                            ]
+                    }
+                ],
+    "allowlistGate":  "FAIL â€” Unknown or unexpected Job member, or missing intended parent",
+    "nativeSteps":  [
+                        {
+                            "Api":  "CreateJobObjectW",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  0,
+                            "Detail":  "anonymous; non-inheritable handle"
+                        },
+                        {
+                            "Api":  "SetInformationJobObject",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  0,
+                            "Detail":  "zero limits; no kill-on-close and no breakaway"
+                        },
+                        {
+                            "Api":  "QueryInformationJobObject(JobObjectExtendedLimitInformation)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  0,
+                            "Detail":  "effective limit read-back"
+                        },
+                        {
+                            "Api":  "VerifyNonDestructiveJobLimits",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  0,
+                            "Detail":  "flags=0"
+                        },
+                        {
+                            "Api":  "CreateProcessW(CREATE_SUSPENDED)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  0,
+                            "Detail":  "synthetic Node parent; no inherited handles"
+                        },
+                        {
+                            "Api":  "GetProcessTimes(parent)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "creationFileTimeUtc=134350246493323733"
+                        },
+                        {
+                            "Api":  "AssignProcessToJobObject",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "only explicit assignment"
+                        },
+                        {
+                            "Api":  "IsProcessInJob(parent)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "pre-resume membership query"
+                        },
+                        {
+                            "Api":  "ResumeThread(parent)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "previousSuspendCount=1"
+                        },
+                        {
+                            "Api":  "CloseHandle(parent thread)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "owned thread handle"
+                        },
+                        {
+                            "Api":  "QueryInformationJobObject(JobObjectBasicProcessIdList)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  0,
+                            "Detail":  "capacity=8; returned=24"
+                        },
+                        {
+                            "Api":  "OpenProcess(member read-only)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  33504,
+                            "Detail":  "query and synchronize only"
+                        },
+                        {
+                            "Api":  "GetProcessTimes(member)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  33504,
+                            "Detail":  "creationFileTimeUtc=134350246493425692"
+                        },
+                        {
+                            "Api":  "QueryFullProcessImageNameW(member)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  33504,
+                            "Detail":  "read-only image query"
+                        },
+                        {
+                            "Api":  "IsProcessInJob(member)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  33504,
+                            "Detail":  "read-only membership query"
+                        },
+                        {
+                            "Api":  "CloseHandle(member query handle)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  33504,
+                            "Detail":  "read-only member handle"
+                        },
+                        {
+                            "Api":  "OpenProcess(member read-only)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "query and synchronize only"
+                        },
+                        {
+                            "Api":  "GetProcessTimes(member)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "creationFileTimeUtc=134350246493323733"
+                        },
+                        {
+                            "Api":  "QueryFullProcessImageNameW(member)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "read-only image query"
+                        },
+                        {
+                            "Api":  "IsProcessInJob(member)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "read-only membership query"
+                        },
+                        {
+                            "Api":  "CloseHandle(member query handle)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "read-only member handle"
+                        },
+                        {
+                            "Api":  "WaitForSingleObject(owned parent)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "result=0; boundMs=12000"
+                        },
+                        {
+                            "Api":  "OriginalParentIdentityAndLiveness",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "sameCreationAndAlive=False"
+                        },
+                        {
+                            "Api":  "CloseHandle(original parent verification)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "read-only verification handle"
+                        },
+                        {
+                            "Api":  "CloseHandle(parent process)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  37444,
+                            "Detail":  "owned process handle"
+                        },
+                        {
+                            "Api":  "CloseHandle(non-destructive Job)",
+                            "Success":  true,
+                            "ErrorCode":  0,
+                            "Pid":  0,
+                            "Detail":  "zero Job limit flags verified before child creation"
+                        }
+                    ],
+    "safeCleanup":  {
+                        "cooperativeSignalIssued":  true,
+                        "knownParentExited":  true,
+                        "originalParentIdentityStillPresent":  false,
+                        "exactOwnedHandleFallbackUsed":  false,
+                        "unidentifiedMemberTerminated":  false,
+                        "jobWideTerminationUsed":  false,
+                        "nativeHandleCleanupSucceeded":  true,
+                        "result":  "CooperativeOrNaturalExitVerified",
+                        "errorCategory":  null
+                    },
+    "errorCategory":  null,
+    "result":  "FAIL â€” Unknown or Unsafe Member Present",
+    "formalRunIdGenerated":  false,
+    "oe12StatusChanged":  false
+}
