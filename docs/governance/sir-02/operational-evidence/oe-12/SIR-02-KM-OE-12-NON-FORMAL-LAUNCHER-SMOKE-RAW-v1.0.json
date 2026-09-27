@@ -1,0 +1,66 @@
+﻿{
+    "label":  "Non-Formal Launcher Smoke Validation â€” Not OE-12 Operational Evidence",
+    "remediationCommit":  "544f8fe578f749c67713f5d45587e8ba987a3860",
+    "acceptedImplementationCommit":  "826376cc84521a5d648462fdcc985cd2d412a24c",
+    "shell":  "Windows PowerShell 5.1",
+    "powershellVersion":  "5.1.26100.9444",
+    "nodeExecutable":  "C:\\Program Files\\nodejs\\node.exe",
+    "nodeVersion":  "v22.23.2",
+    "launcherMechanism":  "ProcessStartInfo.FileName + independently quoted Arguments; UseShellExecute=false; async stdout/stderr; taskkill /PID /T /F on timeout; no ArgumentList",
+    "network":  "Disabled through COREPACK_ENABLE_NETWORK=0 and npm_config_offline=true; probe contains no network action",
+    "startUtc":  "2026-09-27T10:57:58.6485675Z",
+    "endUtc":  "2026-09-27T10:57:59.1060591Z",
+    "elapsedMilliseconds":  457,
+    "cases":  [
+                  {
+                      "id":  "S1",
+                      "expected":  "Node starts, exits 0, stages Prepared/Started/Completed",
+                      "actual":  "exit=0; stages=Prepared,Started,Completed",
+                      "result":  "PASS"
+                  },
+                  {
+                      "id":  "S2",
+                      "expected":  "Exact structured argument match including empty, quote and slash cases",
+                      "actual":  "argumentMatch=False; count=0",
+                      "result":  "FAIL"
+                  }
+              ],
+    "raw":  {
+                "echo":  {
+                             "fileName":  "C:\\Program Files\\nodejs\\node.exe",
+                             "arguments":  [
+
+                                           ],
+                             "quotedArgumentString":  "",
+                             "pid":  47924,
+                             "timeoutMs":  5000,
+                             "timedOut":  false,
+                             "exitCode":  0,
+                             "stdout":  "",
+                             "stderr":  "",
+                             "killExitCode":  null,
+                             "killOutput":  "",
+                             "parentStillActive":  false,
+                             "startUtc":  "2026-09-27T10:57:58.8626382Z",
+                             "endUtc":  "2026-09-27T10:57:59.0303651Z",
+                             "stages":  [
+                                            {
+                                                "name":  "Prepared",
+                                                "utc":  "2026-09-27T10:57:58.8626382Z"
+                                            },
+                                            {
+                                                "name":  "Started",
+                                                "utc":  "2026-09-27T10:57:58.8711882Z"
+                                            },
+                                            {
+                                                "name":  "Completed",
+                                                "utc":  "2026-09-27T10:57:59.0241024Z"
+                                            }
+                                        ]
+                         }
+            },
+    "fatalError":  "Cannot index into a null array.",
+    "overall":  "FAIL",
+    "formalRunIdGenerated":  false,
+    "oe12StatusChanged":  false
+}

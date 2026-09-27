@@ -1,0 +1,155 @@
+$ErrorActionPreference = 'Stop'
+$env:COREPACK_ENABLE_NETWORK = '0'
+$env:npm_config_offline = 'true'
+$repo = 'C:\Users\gantu\OneDrive\Documents\GitHub\ibex-ai-platform'
+$smokeDir = 'C:\Users\gantu\AppData\Local\Temp\sir02 oe12 launcher smoke v1'
+$probe = Join-Path $smokeDir 'probe with spaces.cjs'
+$node = 'C:\Program Files\nodejs\node.exe'
+$outputPath = Join-Path $smokeDir 'smoke-result.json'
+$marker = Join-Path $smokeDir 'SHELL_INTERPRETED_MARKER.txt'
+$started = [DateTime]::UtcNow
+$cases = New-Object System.Collections.ArrayList
+function Quote-WindowsArgument([string]$value) {
+  if ($value.IndexOf([char]0) -ge 0) { throw 'NUL in process argument' }
+  $builder = New-Object System.Text.StringBuilder
+  $slash = [string][char]92
+  $quote = [string][char]34
+  [void]$builder.Append($quote)
+  $backslashes = 0
+  foreach ($ch in $value.ToCharArray()) {
+    if ($ch -eq [char]92) { $backslashes++; continue }
+    if ($ch -eq [char]34) {
+      [void]$builder.Append(($slash * (2 * $backslashes + 1)))
+      [void]$builder.Append($quote)
+      $backslashes = 0
+      continue
+    }
+    if ($backslashes -gt 0) {
+      [void]$builder.Append(($slash * $backslashes))
+      $backslashes = 0
+    }
+    [void]$builder.Append($ch)
+  }
+  if ($backslashes -gt 0) { [void]$builder.Append(($slash * (2 * $backslashes))) }
+  [void]$builder.Append($quote)
+  return $builder.ToString()
+}
+function Add-Case([string]$id,[string]$expected,[string]$actual,[bool]$pass) {
+  [void]$cases.Add([ordered]@{ id=$id; expected=$expected; actual=$actual; result=$(if($pass){'PASS'}else{'FAIL'}) })
+}
+function Invoke-Probe([string[]]$args,[int]$timeoutMs) {
+  $stages = New-Object System.Collections.ArrayList
+  $psi = New-Object System.Diagnostics.ProcessStartInfo
+  $psi.FileName = $node
+  $quoted = @($args | ForEach-Object { Quote-WindowsArgument $_ })
+  $psi.Arguments = [string]::Join(' ', [string[]]$quoted)
+  $psi.WorkingDirectory = $repo
+  $psi.UseShellExecute = $false
+  $psi.CreateNoWindow = $true
+  $psi.RedirectStandardOutput = $true
+  $psi.RedirectStandardError = $true
+  $psi.StandardOutputEncoding = [System.Text.UTF8Encoding]::new($false)
+  $psi.StandardErrorEncoding = [System.Text.UTF8Encoding]::new($false)
+  $process = New-Object System.Diagnostics.Process
+  $process.StartInfo = $psi
+  $stageStart = [DateTime]::UtcNow
+  [void]$stages.Add([ordered]@{name='Prepared'; utc=$stageStart.ToString('o')})
+  $startedOk = $process.Start()
+  if (-not $startedOk) { throw 'Process.Start returned false' }
+  [void]$stages.Add([ordered]@{name='Started'; utc=([DateTime]::UtcNow).ToString('o')})
+  $pidValue = $process.Id
+  $outTask = $process.StandardOutput.ReadToEndAsync()
+  $errTask = $process.StandardError.ReadToEndAsync()
+  $finished = $process.WaitForExit($timeoutMs)
+  $killOutput = ''
+  $killExit = $null
+  if (-not $finished) {
+    [void]$stages.Add([ordered]@{name='TimedOut'; utc=([DateTime]::UtcNow).ToString('o')})
+    $killOutput = (& "$env:SystemRoot\System32\taskkill.exe" /PID $pidValue /T /F 2>&1 | Out-String).Trim()
+    $killExit = $LASTEXITCODE
+    $finished = $process.WaitForExit(5000)
+    [void]$stages.Add([ordered]@{name='TerminationAttempted'; utc=([DateTime]::UtcNow).ToString('o')})
+  }
+  if (-not $finished) { throw "Process $pidValue remained active after timeout cleanup" }
+  $process.WaitForExit()
+  $stdout = $outTask.GetAwaiter().GetResult()
+  $stderr = $errTask.GetAwaiter().GetResult()
+  [void]$stages.Add([ordered]@{name='Completed'; utc=([DateTime]::UtcNow).ToString('o')})
+  $stillActive = $null -ne (Get-Process -Id $pidValue -ErrorAction SilentlyContinue)
+  $record = [ordered]@{
+    fileName=$psi.FileName; arguments=$args; quotedArgumentString=$psi.Arguments
+    pid=$pidValue; timeoutMs=$timeoutMs; timedOut=($killExit -ne $null)
+    exitCode=$process.ExitCode; stdout=$stdout; stderr=$stderr
+    killExitCode=$killExit; killOutput=$killOutput; parentStillActive=$stillActive
+    startUtc=$stageStart.ToString('o'); endUtc=([DateTime]::UtcNow).ToString('o')
+    stages=@($stages)
+  }
+  $process.Dispose()
+  return $record
+}
+$raw = [ordered]@{}
+$overall = 'FAIL'
+$fatal = $null
+try {
+  if (-not (Test-Path -LiteralPath $probe)) { throw "Probe missing: $probe" }
+  if (-not (Test-Path -LiteralPath $node)) { throw "Node missing: $node" }
+  if (Test-Path -LiteralPath $marker) { throw "Shell marker already exists: $marker" }
+  $headBefore = (& git -C $repo rev-parse HEAD).Trim()
+  $treeBefore = (& git -C $repo status --porcelain | Out-String).Trim()
+  $artifactDir = Join-Path $repo 'docs\governance\sir-02\operational-evidence\oe-12'
+  $filesBefore = @(Get-ChildItem -LiteralPath $artifactDir -File | Select-Object -ExpandProperty Name | Sort-Object)
+  $nodeVersion = (& $node --version).Trim()
+  $psVersion = $PSVersionTable.PSVersion.ToString()
+  $syntheticArgs = @('ordinary','text with spaces','quoted "text"','C:\synthetic path\source v1.json','','slash-before\"quote','trailing\',('& echo SHOULD_NOT_EXECUTE > "' + $marker + '"'))
+  $echoArgs = @($probe,'echo') + $syntheticArgs
+  $raw.echo = Invoke-Probe $echoArgs 5000
+  $line = ($raw.echo.stdout -split '[\r\n]+' | Where-Object { $_ -like 'STDOUT_MARKER:*' } | Select-Object -First 1)
+  $actualArgs = if ($line) { @(ConvertFrom-Json ($line.Substring('STDOUT_MARKER:'.Length))) } else { @() }
+  $argMatch = (ConvertTo-Json -InputObject $actualArgs -Compress) -ceq (ConvertTo-Json -InputObject $syntheticArgs -Compress)
+  Add-Case 'S1' 'Node starts, exits 0, stages Prepared/Started/Completed' ("exit=$($raw.echo.exitCode); stages=$((@($raw.echo.stages | ForEach-Object {$_.name}) -join ','))") ($raw.echo.exitCode -eq 0 -and (@($raw.echo.stages | ForEach-Object {$_.name}) -join ',') -eq 'Prepared,Started,Completed')
+  Add-Case 'S2' 'Exact structured argument match including empty, quote and slash cases' ("argumentMatch=$argMatch; count=$($actualArgs.Count)") $argMatch
+  Add-Case 'S3' 'Space-containing Node/script/argument paths remain intact' ("node=$node; probe=$probe; pathArg=$($actualArgs[3])") ($argMatch -and $node.Contains(' ') -and $probe.Contains(' ') -and $actualArgs[3] -ceq $syntheticArgs[3])
+  Add-Case 'S4' 'Exact stdout JSON marker, separately captured' ("stdout=$($raw.echo.stdout.Trim())") ($raw.echo.stdout -ceq ('STDOUT_MARKER:' + (ConvertTo-Json -InputObject $syntheticArgs -Compress) + [string][char]10))
+  Add-Case 'S5' 'Exact stderr marker, separately captured' ("stderr=$($raw.echo.stderr.Trim())") ($raw.echo.stderr -ceq ('STDERR_MARKER' + [string][char]10))
+  $raw.nonzero = Invoke-Probe @($probe,'nonzero') 5000
+  Add-Case 'S6' 'Exit code 23 reported as failure; both streams retained' ("exit=$($raw.nonzero.exitCode); stdout=$($raw.nonzero.stdout.Trim()); stderr=$($raw.nonzero.stderr.Trim())") ($raw.nonzero.exitCode -eq 23 -and $raw.nonzero.stdout -ceq ('NONZERO_STDOUT' + [string][char]10) -and $raw.nonzero.stderr -ceq ('NONZERO_STDERR' + [string][char]10))
+  $raw.tree = Invoke-Probe @($probe,'tree') 1200
+  $childLine = ($raw.tree.stdout -split '[\r\n]+' | Where-Object { $_ -like 'TREE_CHILD_PID=*' } | Select-Object -First 1)
+  $childPid = if ($childLine) { [int]($childLine.Substring('TREE_CHILD_PID='.Length)) } else { $null }
+  Start-Sleep -Milliseconds 300
+  $childStillActive = if ($childPid) { $null -ne (Get-Process -Id $childPid -ErrorAction SilentlyContinue) } else { $null }
+  Add-Case 'S7' '1.2 second watchdog detects timeout, records failed stage, terminates boundedly' ("timedOut=$($raw.tree.timedOut); killExit=$($raw.tree.killExitCode); stages=$((@($raw.tree.stages | ForEach-Object {$_.name}) -join ','))") ($raw.tree.timedOut -and $raw.tree.killExitCode -eq 0 -and -not $raw.tree.parentStillActive)
+  Add-Case 'S8' 'Synthetic parent and child both terminated, no orphan' ("parentPid=$($raw.tree.pid); childPid=$childPid; parentActive=$($raw.tree.parentStillActive); childActive=$childStillActive") ($childPid -and -not $raw.tree.parentStillActive -and -not $childStillActive)
+  $markerExists = Test-Path -LiteralPath $marker
+  Add-Case 'S9' 'Shell-significant payload arrives exactly as data, marker not created' ("argMatch=$argMatch; markerExists=$markerExists") ($argMatch -and -not $markerExists)
+  $headAfter = (& git -C $repo rev-parse HEAD).Trim()
+  $treeAfter = (& git -C $repo status --porcelain | Out-String).Trim()
+  $filesAfter = @(Get-ChildItem -LiteralPath $artifactDir -File | Select-Object -ExpandProperty Name | Sort-Object)
+  $filesMatch = (ConvertTo-Json -InputObject $filesBefore -Compress) -ceq (ConvertTo-Json -InputObject $filesAfter -Compress)
+  Add-Case 'S10' 'No formal run/artifact/manifest/sidecar/linkage/status effect' ("headUnchanged=$($headBefore -eq $headAfter); treeClean=$([string]::IsNullOrEmpty($treeAfter)); artifactNamesUnchanged=$filesMatch") ($headBefore -eq $headAfter -and [string]::IsNullOrEmpty($treeBefore) -and [string]::IsNullOrEmpty($treeAfter) -and $filesMatch)
+  $overall = if (@($cases | Where-Object {$_.result -ne 'PASS'}).Count -eq 0) {'PASS'} else {'FAIL'}
+} catch {
+  $fatal = $_.Exception.Message
+  $overall = 'FAIL'
+}
+$ended = [DateTime]::UtcNow
+$record = [ordered]@{
+  label='Non-Formal Launcher Smoke Validation — Not OE-12 Operational Evidence'
+  remediationCommit='544f8fe578f749c67713f5d45587e8ba987a3860'
+  acceptedImplementationCommit='826376cc84521a5d648462fdcc985cd2d412a24c'
+  shell='Windows PowerShell 5.1'
+  powershellVersion=$psVersion
+  nodeExecutable=$node
+  nodeVersion=$nodeVersion
+  launcherMechanism='ProcessStartInfo.FileName + independently quoted Arguments; UseShellExecute=false; async stdout/stderr; taskkill /PID /T /F on timeout; no ArgumentList'
+  network='Disabled through COREPACK_ENABLE_NETWORK=0 and npm_config_offline=true; probe contains no network action'
+  startUtc=$started.ToString('o'); endUtc=$ended.ToString('o')
+  elapsedMilliseconds=[math]::Round(($ended-$started).TotalMilliseconds)
+  cases=@($cases); raw=$raw; fatalError=$fatal; overall=$overall
+  formalRunIdGenerated=$false; oe12StatusChanged=$false
+}
+$record | ConvertTo-Json -Depth 14 | Set-Content -LiteralPath $outputPath -Encoding UTF8
+Write-Output $outputPath
+Write-Output "SMOKE_RESULT=$overall"
+if ($fatal) { Write-Output "FATAL=$fatal" }
+
