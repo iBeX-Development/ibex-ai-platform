@@ -13,6 +13,7 @@
 | Reviewer | SODBILEG Erkhembayar — Administrator |
 | Authorization status | Authorized for Non-Formal Smoke v3 |
 | Decision date | 2026-09-27 |
+| Authorization decision reference | f955087dbad6a39a6e58bbb2ab16c637adcc23f9 |
 | Exact permitted execution | One bounded non-formal Windows PowerShell 5.1 Smoke v3 under the exact v1.2 remediation, using existing node.exe, temporary launcher/probe, synthetic arguments, and no network |
 | Smoke v3 execution status | Authorized / Not Yet Executed |
 | Network permission | Not Authorized |
@@ -24,6 +25,8 @@
 > The OE-12 Launcher Remediation v1.2 at commit 032b2244886e04b8704a265a09e33f067fb10ed8 is approved for one non-formal Smoke v3 validation only. This authorization does not authorize formal retry 0003 and does not constitute OE-12 operational evidence.
 
 The proposed v1.2 remediation and Proposed / Not Authorized record remain visible at 032b2244886e04b8704a265a09e33f067fb10ed8. This decision permits exactly one future non-formal Smoke v3; it does not execute a launcher or smoke in this authorization step. Before execution, the exact temporary launcher/probe, existing executable, command, output location, finite timeout, JSON parser availability, and no-network controls must be reviewable against the remediation. The temporary tooling stays outside repository implementation paths.
+
+The owner decision is preserved at f955087dbad6a39a6e58bbb2ab16c637adcc23f9. This linkage records that immutable decision reference only; it is neither a Smoke v3 result nor a formal OE-12 success linkage.
 
 Smoke v3 must transport the fixed synthetic child argument vector as one nonempty JSON array string through the PowerShell 5.1 binder. It must decode into a dedicated local typed array without losing the deliberate zero-length string, order, or duplicate values. T0 must compare encoded and decoded counts and values per index, reject null/non-string or missing elements, and verify the probe path before any Node launch. A T0 failure stops before S1–S10; Node must not start and the result cannot be PASS. Only after T0 PASS may S1–S10 run under the v1.2 and v1.1 launcher controls, including exact process.argv, streams, exit code, timeout/tree cleanup, shell-significant literal data, and zero formal OE-12 side effects. Any FAIL or Needs Clarification must be retained without an automatic fix or rerun.
 
