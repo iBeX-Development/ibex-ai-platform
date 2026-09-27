@@ -10,6 +10,7 @@
 | Reviewer | SODBILEG Erkhembayar — Administrator |
 | Authorization status | Authorized for Non-Formal Smoke v4 |
 | Decision date | 2026-09-27 |
+| Authorization decision reference | `3bec178eef5978600d28a7b5344fe9fc78390ded` |
 | Authorized remediation | `SIR-02-KM-OE-12-EXECUTION-LAUNCHER-REMEDIATION-v1.3.md` at `13d8623bf9c4b4dacf268f963558eebfe91a537a` |
 | Failed Smoke v3 | `SIR02-KM-OE-12-LAUNCHER-SMOKE-V3-20260927T120119Z`; `8af764bbf9e8525d33637e7e9291cc3dbb052994`; FAIL; unchanged |
 | Earlier failed lineage | Formal attempts 0001/0002 and Smoke v1/v2 remain immutable |
@@ -24,6 +25,8 @@
 > The OE-12 Launcher Remediation v1.3 at commit `13d8623bf9c4b4dacf268f963558eebfe91a537a` is approved for exactly one non-formal Smoke v4 validation. This authorization does not authorize formal retry `0003` and does not constitute OE-12 operational evidence.
 
 This decision permits one future non-formal Smoke v4; it does not execute a launcher or smoke in this authorization step. Before execution, the exact temporary PowerShell/C# interop source, synthetic probe, existing executable path, full noninteractive command, output location, finite timeouts, API/handle plan, no-network controls, and cleanup behavior must be reviewable against v1.3. Any required repository implementation, dependency, configuration, security-policy, or elevation change requires separate change control and is outside this decision.
+
+The owner decision is preserved at `3bec178eef5978600d28a7b5344fe9fc78390ded`. This linkage records that immutable decision reference only; it is neither a Smoke v4 result nor a formal OE-12 success linkage.
 
 Smoke v4 must use only synthetic local data and no network. It must carry forward the v1.2 JSON scalar transport, indexed decode, T0 gate, deterministic Windows quoting, `ProcessStartInfo.FileName`/`.Arguments` values, and exact child `process.argv` comparison. Its new Job Object mechanism must set and verify `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`, start the child suspended, assign and verify job membership before resume, prohibit breakaway, retain exact parent/descendant identities, capture every native result/error, and close all handles deterministically. No broad PID, image-name, or unrelated-process termination is permitted.
 
