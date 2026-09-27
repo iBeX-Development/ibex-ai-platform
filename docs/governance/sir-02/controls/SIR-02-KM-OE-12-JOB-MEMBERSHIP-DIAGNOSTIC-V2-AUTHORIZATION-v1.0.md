@@ -10,6 +10,7 @@
 | Reviewer | `SODBILEG Erkhembayar — Administrator` |
 | Decision date | `2026-09-28` |
 | Authorization status | **Authorized for One Non-Formal Job Membership Diagnostic v2** |
+| Authorization decision reference | `2f9cfcc687e376ab8ff5372886e8820ea5cce2bb` |
 | Authorized execution count | Exactly one non-formal v2 attempt, after exact-source readiness passes; **not executed by this decision** |
 | Diagnostic v2 execution | **Authorized / Not Yet Executed** |
 | Immutable attribution analysis and proposal | `SIR-02-KM-OE-12-CONHOST-MEMBERSHIP-ATTRIBUTION-ANALYSIS-v1.0.md` and this record as proposed at `9136b1aa0a49e7753efd9e23d652787d6d398549` |
@@ -23,6 +24,8 @@
 ## Owner decision
 
 > The OE-12 Job Membership Diagnostic v2 is authorized for one non-formal attribution diagnostic only, based on the immutable Conhost Membership Attribution Analysis v1.0 at commit 9136b1aa0a49e7753efd9e23d652787d6d398549. The sole purpose is to determine whether the complete Job Object membership can be conclusively attributed to the current synthetic Node parent plus, conditionally, one approved Windows Console Host companion without guessing. This authorization does not authorize launcher v1.4, Smoke v5, or formal retry 0003 and does not constitute OE-12 operational evidence.
+
+The owner decision is preserved immutably at `2f9cfcc687e376ab8ff5372886e8820ea5cce2bb`. This linkage identifies that decision only; it is not Diagnostic v2 execution evidence, a launcher v1.4 design decision, a Smoke v5 approval, or a formal OE-12 success linkage.
 
 This decision authorizes the **one v2 diagnostic boundary only**; it does not execute it. The one-attempt v1 authorization at `70755e8571e8c2ccf8bdf182064993f1a91511e1` was consumed and cannot be reused. Before execution, the exact temporary v2 source/readiness, complete invocation, finite bounds, output location, and non-destructive cleanup must be published and independently checked. No v2 source package, run token, or process is created by this decision.
 
