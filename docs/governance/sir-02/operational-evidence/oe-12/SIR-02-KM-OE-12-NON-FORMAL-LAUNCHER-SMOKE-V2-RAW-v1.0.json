@@ -1,0 +1,95 @@
+﻿{
+    "label":  "Non-Formal Launcher Smoke Validation â€” Not OE-12 Operational Evidence",
+    "smokeVersion":  "v2",
+    "remediationCommit":  "e0d7d711f08063bc3e83159ec04d33edc5beff3e",
+    "authorizationDecision":  "ea9f1fbb36d51f6b3453304c026d219ed0c503c8",
+    "authorizationLinkage":  "c72d47f357b4a22801468706a1c685536d80f825",
+    "acceptedImplementation":  "826376cc84521a5d648462fdcc985cd2d412a24c",
+    "shell":  "Windows PowerShell 5.1",
+    "powershellVersion":  "5.1.26100.9444",
+    "nodeExecutable":  "C:\\Program Files\\nodejs\\node.exe",
+    "nodeVersion":  "v22.23.2",
+    "launcherArgumentVariableName":  "processArguments",
+    "automaticArgsReferenceCount":  0,
+    "launcherMechanism":  "ProcessStartInfo.FileName plus quoted Arguments; no ArgumentList; UseShellExecute=false; async stdout/stderr; taskkill /PID /T /F on timeout",
+    "network":  "COREPACK_ENABLE_NETWORK=0; npm_config_offline=true; synthetic probe contains no network call",
+    "startUtc":  "2026-09-27T11:19:20.9880979Z",
+    "endUtc":  "2026-09-27T11:19:21.4766496Z",
+    "elapsedMilliseconds":  489,
+    "prelaunch":  [
+
+                  ],
+    "expectedProcessArgv":  null,
+    "actualProcessArgv":  null,
+    "processArgvExactMatch":  null,
+    "cases":  [
+                  {
+                      "id":  "S1",
+                      "expected":  "Required Smoke v2 behavior",
+                      "actual":  "Not reached after earlier failure",
+                      "result":  "Not Reached"
+                  },
+                  {
+                      "id":  "S2",
+                      "expected":  "Required Smoke v2 behavior",
+                      "actual":  "Not reached after earlier failure",
+                      "result":  "Not Reached"
+                  },
+                  {
+                      "id":  "S3",
+                      "expected":  "Required Smoke v2 behavior",
+                      "actual":  "Not reached after earlier failure",
+                      "result":  "Not Reached"
+                  },
+                  {
+                      "id":  "S4",
+                      "expected":  "Required Smoke v2 behavior",
+                      "actual":  "Not reached after earlier failure",
+                      "result":  "Not Reached"
+                  },
+                  {
+                      "id":  "S5",
+                      "expected":  "Required Smoke v2 behavior",
+                      "actual":  "Not reached after earlier failure",
+                      "result":  "Not Reached"
+                  },
+                  {
+                      "id":  "S6",
+                      "expected":  "Required Smoke v2 behavior",
+                      "actual":  "Not reached after earlier failure",
+                      "result":  "Not Reached"
+                  },
+                  {
+                      "id":  "S7",
+                      "expected":  "Required Smoke v2 behavior",
+                      "actual":  "Not reached after earlier failure",
+                      "result":  "Not Reached"
+                  },
+                  {
+                      "id":  "S8",
+                      "expected":  "Required Smoke v2 behavior",
+                      "actual":  "Not reached after earlier failure",
+                      "result":  "Not Reached"
+                  },
+                  {
+                      "id":  "S9",
+                      "expected":  "Required Smoke v2 behavior",
+                      "actual":  "Not reached after earlier failure",
+                      "result":  "Not Reached"
+                  },
+                  {
+                      "id":  "S10",
+                      "expected":  "No formal Run ID, payload, manifest, sidecar, linkage or status effect; repository snapshot unchanged",
+                      "actual":  "snapshotMatch=True; head=c72d47f357b4a22801468706a1c685536d80f825; status=",
+                      "result":  "PASS"
+                  }
+              ],
+    "raw":  {
+
+            },
+    "fatalError":  "Cannot bind argument to parameter \u0027processArguments\u0027 because it is an empty string.",
+    "overall":  "FAIL",
+    "formalRunIdGenerated":  false,
+    "formalRetry0003Executed":  false,
+    "oe12StatusChanged":  false
+}
