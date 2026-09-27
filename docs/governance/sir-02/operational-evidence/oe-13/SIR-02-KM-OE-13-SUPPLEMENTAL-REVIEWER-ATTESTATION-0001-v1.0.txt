@@ -1,0 +1,23 @@
+Reviewer Attestation — OE-13 Supplemental Clarification Evidence Review
+I, SODBILEG Erkhembayar — Administrator, explicitly confirm that I personally and independently reviewed the OE-13 supplemental clarification capture:
+SIR02-KM-OE-13-SUPPLEMENTAL-V1_0-20260927T012529Z-0001
+I confirm that:
+- I did not author the supplemental clarification evidence artifact.
+- I did not modify, regenerate, overwrite, or replace the supplemental clarification evidence artifact before or during this review.
+- I did not author, modify, regenerate, overwrite, or replace the retained raw-measurements artifact.
+- I did not author, modify, regenerate, overwrite, or replace the retained Vitest results.
+- I did not author, modify, regenerate, overwrite, or replace the retained run log or checksum manifest.
+- I did not author, modify, regenerate, or overwrite the accepted OE-13 supplemental instrumentation implementation.
+- I did not author, modify, regenerate, overwrite, or replace the original formal OE-13 evidence or its retained artifacts.
+- I personally and independently reviewed the supplemental capture against the approved OE-13 Supplemental Evidence Instrumentation Design v1.0, its authorization, accepted instrumentation review, open clarification findings, Operational Evidence Execution Plan, Acceptance Matrix, and applicable SIR-02 acceptance criteria.
+- I independently reviewed the retained raw registry and artifact-inventory hashes, affected-pair IDs and references, live-operation observer snapshots, blocked-probe coverage, tenant isolation, zero protected-field disclosure, cleanup/isolation results, artifact integrity, and preservation of the original formal-run lineage.
+- My final supplemental-evidence review decision will be recorded independently as Accepted, Needs Clarification, or Rejected.
+Reviewer: SODBILEG Erkhembayar — Administrator
+Supplemental capture: SIR02-KM-OE-13-SUPPLEMENTAL-V1_0-20260927T012529Z-0001
+Evidence commit: d7626372612d60c4959bbdf51a89c00a80b3b9b1
+Governance linkage: f6028e68b555cd9cb5d7dcf08ce1a13100767c2f
+Accepted instrumentation implementation: 23c150b494b8ec66b21e56776b32923f9607acfb
+Accepted instrumentation review: 1f22bf2ff5d02d9c9b8266c0874e99fca4a65d41
+Original formal OE-13 run: SIR02-KM-OE-13-V1_0-20260926T131738Z-0001
+Original formal evidence commit: a0bcdb4ef646b0322cca6e30ef1f8c3b282501c9
+Attestation date: 2026-09-27
