@@ -1,0 +1,30 @@
+{
+  "templateOnly": true,
+  "namespace": "sir02-km-evidence-v1",
+  "fixtureSchema": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+  "classification": "Synthetic",
+  "runToken": "SIR02-OE12-CIM-REPLACE",
+  "probePath": "C:\\synthetic\\replace\\probe.cjs",
+  "receiptPath": "C:\\synthetic\\replace\\creation-receipt.json",
+  "receiptSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "node": {
+    "pid": 0,
+    "parentPid": 0,
+    "imagePath": "C:\\synthetic\\replace\\node.exe",
+    "creationFileTimeUtc": 0,
+    "sessionId": 0,
+    "runToken": "SIR02-OE12-CIM-REPLACE",
+    "creationEvidenceRef": "REPLACE",
+    "assignmentEvidenceRef": "REPLACE"
+  },
+  "conhost": {
+    "pid": 0,
+    "parentPid": 0,
+    "imagePath": "C:\\synthetic\\replace\\conhost.exe",
+    "creationFileTimeUtc": 0,
+    "sessionId": 0,
+    "runToken": "SIR02-OE12-CIM-REPLACE",
+    "creationEvidenceRef": "REPLACE",
+    "assignmentEvidenceRef": "REPLACE"
+  }
+}
