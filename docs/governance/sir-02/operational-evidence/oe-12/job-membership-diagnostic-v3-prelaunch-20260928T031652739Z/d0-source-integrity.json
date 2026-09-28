@@ -1,0 +1,16 @@
+{
+  "classification": "Non-Formal Tooling Diagnostic — Not OE-12 Operational Evidence",
+  "result": "PASS",
+  "sourceCommit": "9f8480b6c8f44cba616ff2bf80094a8cb664de7a",
+  "bundleSha256": "82b047a85d3fec6cabd6e430c6225eee0ed46b0e7b92694f1703e3a4910249ab",
+  "extractedSource": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-d0-20260928T031541937Z\\extracted",
+  "receiptPath": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-d0-20260928T031541937Z\\d0-integrity-receipt.json",
+  "verifiedUtc": "2026-09-28T03:15:43.1303121Z",
+  "workingTreeClean": true,
+  "sourceFiles": [
+    "launcher.ps1",
+    "native-helper.cs",
+    "probe.cjs"
+  ],
+  "byteMatches": 3
+}

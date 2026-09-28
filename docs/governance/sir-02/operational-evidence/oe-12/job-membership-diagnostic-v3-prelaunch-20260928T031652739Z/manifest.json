@@ -1,0 +1,45 @@
+{
+  "schema": "SIR02-OE12-DIAGNOSTIC-V3-PRELAUNCH-MANIFEST v1.0",
+  "classification": "Non-Formal Tooling Diagnostic — Not OE-12 Operational Evidence",
+  "attemptIdentity": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V3-PRELAUNCH-20260928T031652739Z",
+  "result": "Needs Clarification",
+  "payloadCount": 7,
+  "payloads": [
+    {
+      "file": "attempt-runlog.json",
+      "sha256": "d5ccff4011d972d3dd4f8909438afec902aa76b4b1d812604bc003d1139e7447",
+      "bytes": 1262
+    },
+    {
+      "file": "attempt-stderr.txt",
+      "sha256": "8dcdb0b080347093c20016cc35099ac8417371a6a9edea077223b1dd667097f9",
+      "bytes": 413
+    },
+    {
+      "file": "attempt-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "d0-integrity-receipt.json",
+      "sha256": "062d35461cace49363346a885c427b347339d9daf89a46a6f18ef029eabc3cd3",
+      "bytes": 570
+    },
+    {
+      "file": "d0-source-integrity.json",
+      "sha256": "a73b4ab978b968fd7674c94f83444889f0d7c8121718990720b34e9fcbab2d82",
+      "bytes": 690
+    },
+    {
+      "file": "execution-policy-observation.txt",
+      "sha256": "5f03df7c81e51b131e028d6522c1a7099053423a9014737190f35f4f22890e1b",
+      "bytes": 666
+    },
+    {
+      "file": "validation.md",
+      "sha256": "ebe90a2218a0e1730fe3ccfcfae6edae655552171f878dcd7daec20d7423bd7b",
+      "bytes": 3952
+    }
+  ],
+  "antiSelfReference": "Manifest hashes payloads only; separate .sha256 sidecar authenticates this manifest"
+}

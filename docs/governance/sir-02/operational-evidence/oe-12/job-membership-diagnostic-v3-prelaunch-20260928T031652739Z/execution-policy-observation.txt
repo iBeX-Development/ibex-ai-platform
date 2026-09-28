@@ -1,0 +1,25 @@
+Read-only child command: powershell.exe -NoProfile -NonInteractive -Command 'Get-ExecutionPolicy -List | Format-Table -AutoSize; Get-ExecutionPolicy'
+Child exit code: 0
+Child output:
+
+        Scope ExecutionPolicy
+        ----- ---------------
+MachinePolicy       Undefined
+   UserPolicy       Undefined
+      Process       Undefined
+  CurrentUser       Undefined
+ LocalMachine       Undefined
+
+
+Restricted
+
+Parent-shell output:
+
+        Scope ExecutionPolicy
+        ----- ---------------
+MachinePolicy       Undefined
+   UserPolicy       Undefined
+      Process       Undefined
+  CurrentUser       Undefined
+ LocalMachine    RemoteSigned
+
