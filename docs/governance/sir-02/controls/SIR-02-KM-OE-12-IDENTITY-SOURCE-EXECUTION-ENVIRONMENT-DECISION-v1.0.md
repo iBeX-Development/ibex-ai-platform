@@ -1,4 +1,4 @@
-# SIR-02 KM OE-12 Identity Source / Execution Environment Owner Decision Proposal v1.0
+# SIR-02 KM OE-12 Identity Source / Execution Environment Owner Decision Record v1.0
 
 | Field | Value |
 | --- | --- |
@@ -7,9 +7,9 @@
 | Controlling forensic analysis | `b112e94e87ccfab9b5850890ab64ffe744144009` |
 | Owner | GANTUMUR Erdenedalai — Founder / Administrator |
 | Reviewer | SODBILEG Erkhembayar — Administrator |
-| Status | **Proposed / Owner Decision Required** |
-| Decision date | **Owner Input Required** |
-| Selected choice | **None** |
+| Status | **Neither — Additional Analysis Required** |
+| Decision date | **2026-09-28** |
+| Selected choice | **Neither — Additional Analysis Required** |
 
 ## Decision basis
 
@@ -17,7 +17,7 @@ The immutable Class C finding is **Mandatory Attribution Cannot Currently Be Est
 
 The companion assessment rates **Option A — Not Currently Feasible under the approved attribution contract** and **Option B — Needs Clarification**. These are feasibility findings, not an owner choice or implementation authorization.
 
-## Owner choices — select exactly one in a later decision
+## Owner choices and recorded outcome
 
 | Choice | Decision meaning | Required next gate if chosen |
 | --- | --- | --- |
@@ -25,7 +25,17 @@ The companion assessment rates **Option A — Not Currently Feasible under the a
 | **Option B — Approve CIM-Capable Execution Environment Path** | Authorize a separately bounded **environment/diagnosticability assessment** that retains the existing attribution gates. It does not authorize WMI/ACL/service/configuration changes, elevation, environment relocation, a new diagnostic, or formal retry. | Determine current-host CIM failure semantics or validate a separately approved host; prove `Win32_Process` parent, creation, and command-line properties for current synthetic identities; retain per-query messages/HRESULT/provider status where available; establish equivalent console/Job topology, source integrity, and synthetic isolation; then seek separate execution authorization. |
 | **Neither — Additional Analysis Required** | Keep both paths unselected and identify the additional read-only question or evidence the owner wants answered. | Return a scoped analysis request; preserve all blocked states. |
 
-No choice is preselected. The owner may record a choice, rationale, decision date, and any constraints only in a subsequent explicit decision. Reviewer acknowledgement is likewise pending. Choosing a **path** would not itself make Option A's mandatory criterion change or Option B's environment operational, and would not authorize a Diagnostic v4 run.
+The owner selected **Neither — Additional Analysis Required** on 2026-09-28. Option A and Option B implementation remain unapproved. This decision does **not** permanently reject Option B; it remains a candidate for a separately governed, read-only CIM execution-environment validation. Reviewer acknowledgement is not recorded. No Diagnostic v4 run is authorized.
+
+## Owner decision and rationale
+
+**Owner:** GANTUMUR Erdenedalai — Founder / Administrator. **Reviewer:** SODBILEG Erkhembayar — Administrator.
+
+> Neither — Additional Analysis Required.
+
+Option A is **Not Currently Feasible** under the existing approved attribution contract and would require at least an explicit acceptance-criterion/change-control decision before a no-CIM substitute could be used. Option B is **Needs Clarification**: the underlying CIM failure cause remains undetermined, and no current or separate host has been validated for the mandatory CIM identity queries or required Node/conhost evidence behavior. Neither implementation path is authorized at this time. This decision makes no change to the parent-PID, Node command-line token/probe-path, or CIM/native creation-time agreement requirements.
+
+The **only next permissible work** is to **prepare a separate read-only CIM Execution Environment Validation Plan** to determine whether Option B can become feasible without modifying existing OE-12 acceptance criteria. Preparing that future plan must not itself run Diagnostic v4, modify CIM/WMI configuration or Windows policy, elevate privileges, modify production/runtime code, or change OE-12 status. Any environment probe or implementation requires a later, separate owner decision.
 
 ## Change-control and safety boundary
 
@@ -33,13 +43,13 @@ No choice is preselected. The owner may record a choice, rationale, decision dat
 - **Option B:** the existing attribution criterion could remain intact in a proven CIM-capable environment. A bounded environment assessment and richer failure recording require separate approval. Local CIM/WMI repair, account permission changes, elevation, host relocation, and any source revision each require appropriate change control. No Production/runtime, dependency, migration, Git-setting, or baseline modification is authorized or presently indicated.
 - Both paths remain **synthetic, non-live, tenant-safe**, with no ingestion, RAG, embedding, indexing, vector storage, retrieval, deployment, credentials, secrets, customer data, or traffic. No broad process metadata or command-line values may be retained outside sanitized synthetic evidence without separate authorization.
 
-## Owner decision entry — pending
+## Owner decision entry
 
-| Field | Pending entry |
+| Field | Recorded entry |
 | --- | --- |
-| Choice | `Option A` / `Option B` / `Neither` — **Owner Input Required** |
-| Owner rationale and constraints | **Owner Input Required** |
-| Decision date | **Owner Input Required** |
+| Choice | **Neither — Additional Analysis Required** |
+| Owner rationale and constraints | Option A is `Not Currently Feasible`; Option B is `Needs Clarification`; no identity-source or environment implementation is authorized. Prepare only the separate read-only CIM Execution Environment Validation Plan. |
+| Decision date | **2026-09-28** |
 | Reviewer acknowledgement | **Not Recorded** |
 | Follow-on design/assessment authorization | **Not Authorized** |
 
@@ -47,4 +57,4 @@ No choice is preselected. The owner may record a choice, rationale, decision dat
 
 Diagnostic v2 remains `Needs Clarification`; Diagnostic v3 remains `FAIL — Lifecycle Attribution Not Supported`; Diagnostic v4 remains `Not Proposed`; launcher v1.4 remains `Blocked`; Smoke v5 and formal retry `0003` remain `Not Authorized`; OE-12 remains `Not Executed`. Operational evidence remains `11 Accepted / 4 Not Executed`. `SIR02-DEF-02` remains `Missing / Not Reviewed`; SIR-02 remains `Blocking`. OE-08, OE-14, and OE-15 remain unchanged.
 
-This proposal records no owner decision and authorizes no implementation, diagnostic, environment modification, elevation, launcher, smoke, or formal run.
+This record preserves the owner's `Neither` decision. It authorizes no Option A or Option B implementation, attribution-criterion change, diagnostic, environment probe or modification, elevation, launcher, smoke, or formal run. The OE-12 Execution Plan, Acceptance Matrix, accepted implementation, OE-08, OE-14, OE-15, and `SIR02-DEF-02` remain unchanged.
