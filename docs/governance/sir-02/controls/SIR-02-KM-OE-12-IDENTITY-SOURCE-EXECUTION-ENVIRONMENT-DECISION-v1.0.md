@@ -10,6 +10,7 @@
 | Status | **Neither — Additional Analysis Required** |
 | Decision date | **2026-09-28** |
 | Selected choice | **Neither — Additional Analysis Required** |
+| Immutable owner decision | `a022627d25edb9197d834431a759b616caaf9bf1` |
 
 ## Decision basis
 
@@ -36,6 +37,8 @@ The owner selected **Neither — Additional Analysis Required** on 2026-09-28. O
 Option A is **Not Currently Feasible** under the existing approved attribution contract and would require at least an explicit acceptance-criterion/change-control decision before a no-CIM substitute could be used. Option B is **Needs Clarification**: the underlying CIM failure cause remains undetermined, and no current or separate host has been validated for the mandatory CIM identity queries or required Node/conhost evidence behavior. Neither implementation path is authorized at this time. This decision makes no change to the parent-PID, Node command-line token/probe-path, or CIM/native creation-time agreement requirements.
 
 The **only next permissible work** is to **prepare a separate read-only CIM Execution Environment Validation Plan** to determine whether Option B can become feasible without modifying existing OE-12 acceptance criteria. Preparing that future plan must not itself run Diagnostic v4, modify CIM/WMI configuration or Windows policy, elevate privileges, modify production/runtime code, or change OE-12 status. Any environment probe or implementation requires a later, separate owner decision.
+
+The owner decision is preserved at commit `a022627d25edb9197d834431a759b616caaf9bf1`. This linkage references that decision only. It does not approve Option A or Option B, authorize environment validation or implementation, or alter any diagnostic or OE-12 status.
 
 ## Change-control and safety boundary
 
