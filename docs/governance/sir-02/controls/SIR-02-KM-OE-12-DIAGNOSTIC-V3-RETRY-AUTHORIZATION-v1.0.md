@@ -10,6 +10,7 @@
 | Reviewer | `SODBILEG Erkhembayar — Administrator` |
 | Decision date | `2026-09-28` |
 | Authorization status | **Authorized for One Diagnostic v3 Retry** |
+| Immutable authorization decision | `6ac9e21b41e1833386884e704c965f14d2cb37d0` |
 | Immutable remediation reference | `d47669911c95eb539bb14e45ffc20ed74a5db100` |
 | Authorized execution count | Exactly one new non-formal Diagnostic v3 attempt, only after fresh policy and source-integrity gates; **not executed by this decision** |
 | Authorized mechanism | One Windows PowerShell 5.1 process-local `-ExecutionPolicy Bypass` invocation only, as defined in `SIR-02-KM-OE-12-DIAGNOSTIC-V3-EXECUTION-POLICY-REMEDIATION-v1.0.md` |
@@ -24,6 +25,8 @@
 ## Owner decision
 
 > The OE-12 Diagnostic v3 retry is authorized for one non-formal lifecycle-observability attempt using the process-scoped PowerShell execution mechanism defined at commit d47669911c95eb539bb14e45ffc20ed74a5db100. This authorization permits only a one-process invocation of the already-approved immutable Diagnostic v3 source and does not authorize persistent PowerShell policy changes, launcher v1.4, Smoke v5, formal retry 0003, or OE-12 operational evidence execution.
+
+The owner decision is preserved at `6ac9e21b41e1833386884e704c965f14d2cb37d0`. This linkage references that decision only; it is not a Diagnostic v3 retry result, lifecycle evidence, launcher v1.4 approval, Smoke v5 approval, or formal OE-12 retry `0003` approval.
 
 This decision authorizes **one later attempt only**. It does not execute the retry or authorize any persistent policy change. The observed Class A result is limited to the inspected Windows PowerShell 5.1 environment. Before the attempt, the operator must repeat the read-only `Get-ExecutionPolicy -List` query there and retain all five scope values. Proceed only while `MachinePolicy` and `UserPolicy` remain unenforced and no newly observed host or enterprise control blocks process-scoped execution. Otherwise record `STOP — Host Policy Requires Separate Environment/Execution Approval`; do not invoke `-ExecutionPolicy Bypass` or attempt circumvention. No hidden/encoded-command workaround, interactive-shell copy, registry edit, `Set-ExecutionPolicy`, Group Policy edit, CurrentUser/LocalMachine policy change, or privilege elevation is authorized.
 
