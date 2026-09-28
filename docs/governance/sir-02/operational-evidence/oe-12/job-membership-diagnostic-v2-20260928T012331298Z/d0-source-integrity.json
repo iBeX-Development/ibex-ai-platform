@@ -1,0 +1,41 @@
+{
+  "classification": "Non-Formal Tooling Diagnostic — Not OE-12 Operational Evidence",
+  "gate": "V2-D0",
+  "startUtc": "2026-09-28T01:22:33.3687972Z",
+  "endUtc": "2026-09-28T01:22:34.0656406Z",
+  "sourceCommit": "ad675cf4de409fc9e675d4f3c595114d1d7f914a",
+  "bundlePath": "docs/governance/sir-02/controls/SIR-02-KM-OE-12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-EXACT-SOURCE-BUNDLE-v1.0.zip",
+  "bundleSha256": "9f4876b992cda7148ff7d0f62fd3194ed4923fd7263e93daebef8e92816b5a11",
+  "bundleVerified": true,
+  "committedSourceVerified": true,
+  "extractedSourceVerified": true,
+  "launcherSha256": "6276b8e40bfccd99ae4acf959c3732c985c1e0d6a65aee57fbc6ad5b92b0e1c2",
+  "nativeHelperSha256": "bc194a73c976d8e76005538da239954fe1e10d995a33225a73320ac3af449ce7",
+  "probeSha256": "2546442b748673902aefcb5c3ac66e862fdeb291ec1966f69e5856ae471d86dc",
+  "sourceChecks": [
+    {
+      "name": "launcher.ps1",
+      "committedBlob": "f5a5adf80dfdbadf92bd5839a0a9ce8e2608ea6e",
+      "retainedSha256": "6276b8e40bfccd99ae4acf959c3732c985c1e0d6a65aee57fbc6ad5b92b0e1c2",
+      "extractedSha256": "6276b8e40bfccd99ae4acf959c3732c985c1e0d6a65aee57fbc6ad5b92b0e1c2",
+      "byteMatch": true
+    },
+    {
+      "name": "native-helper.cs",
+      "committedBlob": "e7aa5b4964450160a71791171eaac54266f6d630",
+      "retainedSha256": "bc194a73c976d8e76005538da239954fe1e10d995a33225a73320ac3af449ce7",
+      "extractedSha256": "bc194a73c976d8e76005538da239954fe1e10d995a33225a73320ac3af449ce7",
+      "byteMatch": true
+    },
+    {
+      "name": "probe.cjs",
+      "committedBlob": "a86a76fd4b04e23f12b23e95d84b24e69e7034d4",
+      "retainedSha256": "2546442b748673902aefcb5c3ac66e862fdeb291ec1966f69e5856ae471d86dc",
+      "extractedSha256": "2546442b748673902aefcb5c3ac66e862fdeb291ec1966f69e5856ae471d86dc",
+      "byteMatch": true
+    }
+  ],
+  "gitClean": true,
+  "result": "PASS",
+  "errorCategory": null
+}

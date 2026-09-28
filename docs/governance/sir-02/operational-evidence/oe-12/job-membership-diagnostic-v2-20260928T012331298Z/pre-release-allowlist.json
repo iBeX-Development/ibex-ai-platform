@@ -1,0 +1,16 @@
+{
+  "token": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-20260928T012331298Z",
+  "gate": "PASS — Exact Node parent plus at most one conhost candidate",
+  "parentClass": "Allowlisted — Explicitly Assigned Synthetic Parent",
+  "conhostClass": "Candidate — OS-Managed Console Host for Current Synthetic Parent",
+  "firstPidSet": [
+    22240,
+    39056
+  ],
+  "confirmationPidSet": [
+    22240,
+    39056
+  ],
+  "unknownMemberCount": 0,
+  "source": "raw-result.json"
+}

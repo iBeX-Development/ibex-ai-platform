@@ -1,0 +1,17 @@
+{
+  "token": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-20260928T012331298Z",
+  "source": "raw-result.json",
+  "cleanup": {
+    "cooperativeSignalIssued": true,
+    "knownParentExited": true,
+    "exactOwnedHandleFallbackUsed": false,
+    "unidentifiedMemberTerminated": false,
+    "jobWideTerminationUsed": false,
+    "nativeHandleCleanupSucceeded": true,
+    "result": "CooperativeOrNaturalExitVerified",
+    "errorCategory": null
+  },
+  "watchdogTimedOut": false,
+  "watchdogTargetedLauncherKillUsed": false,
+  "prohibitedActionCount": 0
+}

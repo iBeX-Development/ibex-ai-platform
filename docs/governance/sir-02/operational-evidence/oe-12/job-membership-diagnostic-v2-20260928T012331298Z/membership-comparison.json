@@ -1,0 +1,21 @@
+{
+  "token": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-20260928T012331298Z",
+  "expected": [
+    22240,
+    39056
+  ],
+  "observed": [
+    22240,
+    39056
+  ],
+  "confirmation": [
+    22240,
+    39056
+  ],
+  "unexpectedBeyondConditionalCompanion": [],
+  "missing": [],
+  "preReleaseGate": "PASS — Exact Node parent plus at most one conhost candidate",
+  "fullFinalAttribution": false,
+  "reason": "Candidate conhost exit order unproven",
+  "source": "raw-result.json"
+}

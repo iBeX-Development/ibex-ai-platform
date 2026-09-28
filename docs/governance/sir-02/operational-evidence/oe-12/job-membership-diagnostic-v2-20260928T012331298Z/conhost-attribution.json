@@ -1,0 +1,60 @@
+{
+  "token": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-20260928T012331298Z",
+  "source": "raw-result.json",
+  "candidate": {
+    "pid": 39056,
+    "membershipClass": "Candidate — OS-Managed Console Host for Current Synthetic Parent",
+    "preReleaseClass": "Candidate — OS-Managed Console Host for Current Synthetic Parent",
+    "imagePath": "C:\\Windows\\System32\\conhost.exe",
+    "parentPid": 22240,
+    "nativeCreationFileTimeUtc": 134350322119464724,
+    "cimCreationUtc": "2026-09-28T01:23:31.946472Z",
+    "sessionId": 4,
+    "commandLine": "\\??\\C:\\Windows\\system32\\conhost.exe 0x4",
+    "tokenObserved": false,
+    "inJob": true,
+    "aliveBeforeRelease": true,
+    "explicitAssignment": false,
+    "inheritedMembership": "Not Determined",
+    "checks": {
+      "trustedImage": true,
+      "exactNodeParent": true,
+      "creationAfterNode": true,
+      "creationWithinFiveSeconds": true,
+      "cimTimeAgreement": true,
+      "sameSession": true,
+      "jobMembership": true,
+      "alive": true
+    },
+    "nativeErrors": {
+      "open": 0,
+      "image": 0,
+      "membership": 0,
+      "session": 0,
+      "state": 0
+    },
+    "cimErrorCategory": null,
+    "observedUtc": "2026-09-28T01:23:32.5025348Z",
+    "evidenceSources": [
+      "CreateProcessW owned handle",
+      "GetProcessTimes",
+      "QueryFullProcessImageNameW",
+      "IsProcessInJob",
+      "ProcessIdToSessionId",
+      "WaitForSingleObject",
+      "JobObjectBasicProcessIdList",
+      "local Win32_Process CIM",
+      "synthetic ready record"
+    ]
+  },
+  "trustedImagePath": "C:\\Windows\\system32\\conhost.exe",
+  "nativeCreationDeltaTicks": 239387,
+  "nativeCreationDeltaMilliseconds": 23.9387,
+  "parentPidMatches": true,
+  "sessionMatches": true,
+  "preReleaseChecksPassed": true,
+  "finalAllowlisted": false,
+  "conhostAliveImmediatelyAfterParent": false,
+  "conhostExitOrderProven": false,
+  "reason": "The retained conhost handle was already signaled at the immediate post-parent check; no later bounded exit was observed."
+}

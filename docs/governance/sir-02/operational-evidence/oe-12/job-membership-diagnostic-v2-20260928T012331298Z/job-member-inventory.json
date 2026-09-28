@@ -1,0 +1,105 @@
+{
+  "classification": "Non-Formal Tooling Diagnostic — Not OE-12 Operational Evidence",
+  "token": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-20260928T012331298Z",
+  "observedMemberPidSet": [
+    22240,
+    39056
+  ],
+  "members": [
+    {
+      "pid": 22240,
+      "membershipClass": "Allowlisted — Explicitly Assigned Synthetic Parent",
+      "preReleaseClass": "Allowlisted — Explicitly Assigned Synthetic Parent",
+      "imagePath": "C:\\Program Files\\nodejs\\node.exe",
+      "parentPid": 22532,
+      "nativeCreationFileTimeUtc": 134350322119225337,
+      "cimCreationUtc": "2026-09-28T01:23:31.922533Z",
+      "sessionId": 4,
+      "commandLine": "\"C:\\Program Files\\nodejs\\node.exe\" \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v2-d0-20260928T012233368Z-13ff7c43\\source\\probe.cjs\" \"SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-20260928T012331298Z\" \"C:\\Users\\gantu\\AppData\\Local\\Temp\\SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-20260928T012331298Z\\parent-ready.json\" \"C:\\Users\\gantu\\AppData\\Local\\Temp\\SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-20260928T012331298Z\\parent-release.flag\"",
+      "tokenObserved": true,
+      "inJob": true,
+      "aliveBeforeRelease": true,
+      "explicitAssignment": true,
+      "inheritedMembership": "Not Determined",
+      "checks": {
+        "explicitAssignment": true,
+        "image": true,
+        "creationBoundToOwnedHandle": true,
+        "cimTimeAgreement": true,
+        "parentPid": true,
+        "tokenAndProbePath": true,
+        "readyRecord": true,
+        "jobMembership": true,
+        "sessionAvailable": true,
+        "alive": true
+      },
+      "nativeErrors": {
+        "open": 0,
+        "image": 0,
+        "membership": 0,
+        "session": 0,
+        "state": 0
+      },
+      "cimErrorCategory": null,
+      "observedUtc": "2026-09-28T01:23:32.3935431Z",
+      "evidenceSources": [
+        "CreateProcessW owned handle",
+        "GetProcessTimes",
+        "QueryFullProcessImageNameW",
+        "IsProcessInJob",
+        "ProcessIdToSessionId",
+        "WaitForSingleObject",
+        "JobObjectBasicProcessIdList",
+        "local Win32_Process CIM",
+        "synthetic ready record"
+      ]
+    },
+    {
+      "pid": 39056,
+      "membershipClass": "Candidate — OS-Managed Console Host for Current Synthetic Parent",
+      "preReleaseClass": "Candidate — OS-Managed Console Host for Current Synthetic Parent",
+      "imagePath": "C:\\Windows\\System32\\conhost.exe",
+      "parentPid": 22240,
+      "nativeCreationFileTimeUtc": 134350322119464724,
+      "cimCreationUtc": "2026-09-28T01:23:31.946472Z",
+      "sessionId": 4,
+      "commandLine": "\\??\\C:\\Windows\\system32\\conhost.exe 0x4",
+      "tokenObserved": false,
+      "inJob": true,
+      "aliveBeforeRelease": true,
+      "explicitAssignment": false,
+      "inheritedMembership": "Not Determined",
+      "checks": {
+        "trustedImage": true,
+        "exactNodeParent": true,
+        "creationAfterNode": true,
+        "creationWithinFiveSeconds": true,
+        "cimTimeAgreement": true,
+        "sameSession": true,
+        "jobMembership": true,
+        "alive": true
+      },
+      "nativeErrors": {
+        "open": 0,
+        "image": 0,
+        "membership": 0,
+        "session": 0,
+        "state": 0
+      },
+      "cimErrorCategory": null,
+      "observedUtc": "2026-09-28T01:23:32.5025348Z",
+      "evidenceSources": [
+        "CreateProcessW owned handle",
+        "GetProcessTimes",
+        "QueryFullProcessImageNameW",
+        "IsProcessInJob",
+        "ProcessIdToSessionId",
+        "WaitForSingleObject",
+        "JobObjectBasicProcessIdList",
+        "local Win32_Process CIM",
+        "synthetic ready record"
+      ]
+    }
+  ],
+  "source": "raw-result.json"
+}

@@ -1,0 +1,22 @@
+{
+  "token": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-20260928T012331298Z",
+  "startUtc": "2026-09-28T01:23:31.2987135Z",
+  "endUtc": "2026-09-28T01:23:32.6985372Z",
+  "nodeCreationFileTimeUtc": 134350322119225337,
+  "conhostCreationFileTimeUtc": 134350322119464724,
+  "correlation": {
+    "parentReleaseUtc": "2026-09-28T01:23:32.5535361Z",
+    "parentExitUtc": "2026-09-28T01:23:32.5775381Z",
+    "originalParentNoLongerAlive": true,
+    "parentPidAbsent": true,
+    "parentPidAbsenceErrorCategory": null,
+    "candidatePid": 39056,
+    "candidateCreationFileTimeUtc": 134350322119464724,
+    "conhostObservationWindowMs": 5000,
+    "conhostAliveImmediatelyAfterParent": false,
+    "conhostExitedNaturally": null,
+    "conhostExitObservedUtc": null,
+    "result": "Needs Clarification — Candidate exit order or bounded exit unproven"
+  },
+  "source": "raw-result.json"
+}

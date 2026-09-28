@@ -1,0 +1,108 @@
+{
+  "schema": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-ATTEMPT-MANIFEST-v1.0",
+  "classification": "Non-Formal Tooling Diagnostic — Not OE-12 Operational Evidence",
+  "token": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-20260928T012331298Z",
+  "decision": "Needs Clarification",
+  "sourceCommit": "ad675cf4de409fc9e675d4f3c595114d1d7f914a",
+  "sourceBundleSha256": "9f4876b992cda7148ff7d0f62fd3194ed4923fd7263e93daebef8e92816b5a11",
+  "payloadCount": 16,
+  "payloads": [
+    {
+      "name": "conhost-attribution.json",
+      "bytes": 2082,
+      "sha256": "e78c6f8cbdf68f8ae06d12a794b8e9719abb4dd166fee780c5b19cc313b1dcff",
+      "gitBlob": "d6974b48e8507d232ee06b758c536740a573bcab"
+    },
+    {
+      "name": "cooperative-cleanup.json",
+      "bytes": 556,
+      "sha256": "bd4bc6ecae91eada5af5ab3ece71719fd1b3427ebdcf8a473caa87be2420aac1",
+      "gitBlob": "7004235830228e62bd1aa1ddf5e26376f45eb778"
+    },
+    {
+      "name": "d0-source-integrity.json",
+      "bytes": 1920,
+      "sha256": "569f86d99ffa755d636e97fff6f5cacdacd84445358f8f669ec1570747995104",
+      "gitBlob": "1daa31c62bf9687dd0daae24d4c2132aaafde1d3"
+    },
+    {
+      "name": "invocation.json",
+      "bytes": 1321,
+      "sha256": "2e6fa556c1ef9d9d44850235f16b4c53d8cb200c331d285ab25065c0f8d39e0f",
+      "gitBlob": "28ebba563e32aaf83abc7157863bb8d5b9203cbf"
+    },
+    {
+      "name": "job-member-inventory.json",
+      "bytes": 3849,
+      "sha256": "002972adbf48f9e6a9d4244575d8b836492e7e293917a23cd499cd52d88a3332",
+      "gitBlob": "0bd5707d31e2bda0f62474df2b505bc225beae7c"
+    },
+    {
+      "name": "lifecycle-correlation.json",
+      "bytes": 895,
+      "sha256": "441690bd66f882d6d4bb59a3066c96353fe2a1ccf95edcffbcff22c0ed13d3ff",
+      "gitBlob": "d0477146fd966e9073703146452a6f004aaa984c"
+    },
+    {
+      "name": "membership-comparison.json",
+      "bytes": 491,
+      "sha256": "024e11a4c19ba7bc7598563715e0509cf8bf79e153ae76e728bd9a8dd5f46b68",
+      "gitBlob": "2ff4dbe5fa0011d093f12aeb4a8f2aefb09c213e"
+    },
+    {
+      "name": "native-api-summary.json",
+      "bytes": 13665,
+      "sha256": "169ea9a0f04906835a53353b86ee65924d3d28f2cd671a7f4de3e637670eb8fe",
+      "gitBlob": "ccaf48248a743760030a096c1399568a7c350b1b"
+    },
+    {
+      "name": "node-identity.json",
+      "bytes": 2146,
+      "sha256": "d4a9c8c97a13cecfe3e412a7452ab9eb4143568960dc1ccaf3a0f30403912f6c",
+      "gitBlob": "0d4d84fc35ffc4a48679cf8681488bb34a17c3e8"
+    },
+    {
+      "name": "parent-ready.json",
+      "bytes": 154,
+      "sha256": "2adc24958e1b05a9939d7df76b566c5802ea7c57b9ffb9ee7c7e84a64212104a",
+      "gitBlob": "a26b4a0f0c130f29c3b262a20a37e07c77c49be7"
+    },
+    {
+      "name": "parent-release.flag",
+      "bytes": 59,
+      "sha256": "75b58a0b8306b1571ae5f1b284cf24db7017fbecc6df85368890f2ccccb98050",
+      "gitBlob": "42a0b6467c3c3c4d53b7bdcfe9443dd8bfb7f14c"
+    },
+    {
+      "name": "pre-release-allowlist.json",
+      "bytes": 482,
+      "sha256": "6a2655e67ded3a97755723bd807784eaf62e4e82a8dc176fddaf53abde2bebfe",
+      "gitBlob": "eaff437c82d10eb7a3e78ffb96ba89a3460b52ef"
+    },
+    {
+      "name": "raw-result.json",
+      "bytes": 34364,
+      "sha256": "c4fddd17b4e1ef7f859d3329450b92282e54b95455f8f820c4bf2aa3b81f60ae",
+      "gitBlob": "a9f26cdd54fc0381d77d2e21473a5abcddb987c7"
+    },
+    {
+      "name": "stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "name": "stdout.txt",
+      "bytes": 172,
+      "sha256": "65e1f0138843c5b6ee1fe647878aabfcb8da057c0f51ab32f5f18af7c18d00d4",
+      "gitBlob": "999ef3fee103e9a1a977defac8b9edd4ef7dd409"
+    },
+    {
+      "name": "validation.md",
+      "bytes": 4946,
+      "sha256": "c9ac0ee348564bf9e6f3d53ecd4776499b9287fbbfa895be564f6f9e0c16e046",
+      "gitBlob": "fc891aeb7eb303bc01b002f6d18fe1c3c30e4356"
+    }
+  ],
+  "selfHash": "Not included; separate manifest.sha256 sidecar authenticates this manifest"
+}
