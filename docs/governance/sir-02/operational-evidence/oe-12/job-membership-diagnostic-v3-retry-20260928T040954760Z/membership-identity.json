@@ -1,0 +1,124 @@
+{
+  "diagnosticToken": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V3-20260928T040954760Z",
+  "expectedTopology": [
+    "PowerShell launcher outside Job",
+    "in-process native helper outside Job",
+    "one synthetic Node parent in Job",
+    "optional one OS-managed conhost.exe in Job"
+  ],
+  "parentPid": 24588,
+  "expectedMemberPidSet": [
+    24588
+  ],
+  "observedMemberPidSet": [
+    24432,
+    24588
+  ],
+  "preReleaseConfirmationPidSet": [
+    24432,
+    24588
+  ],
+  "unexpectedMemberPidSet": [
+    24432
+  ],
+  "missingExpectedPidSet": [],
+  "trustedConhostImagePath": "C:\\Windows\\system32\\conhost.exe",
+  "members": [
+    {
+      "pid": 24432,
+      "membershipClass": "Unknown / Not Allowlisted",
+      "preReleaseClass": "Unknown / Not Allowlisted",
+      "imagePath": "C:\\Windows\\System32\\conhost.exe",
+      "parentPid": null,
+      "nativeCreationFileTimeUtc": 134350421952528397,
+      "cimCreationUtc": null,
+      "sessionId": 5,
+      "commandLine": null,
+      "tokenObserved": false,
+      "inJob": true,
+      "aliveBeforeRelease": true,
+      "explicitAssignment": false,
+      "inheritedMembership": "Not Determined",
+      "checks": {
+        "trustedImage": true,
+        "exactNodeParent": false,
+        "creationAfterNode": true,
+        "creationWithinFiveSeconds": true,
+        "cimTimeAgreement": false,
+        "sameSession": true,
+        "jobMembership": true,
+        "alive": true
+      },
+      "nativeErrors": {
+        "open": 0,
+        "image": 0,
+        "membership": 0,
+        "session": 0,
+        "state": 0
+      },
+      "cimErrorCategory": "CimException",
+      "observedUtc": "2026-09-28T04:09:55.5246312Z",
+      "evidenceSources": [
+        "CreateProcessW owned handle",
+        "GetProcessTimes",
+        "QueryFullProcessImageNameW",
+        "IsProcessInJob",
+        "ProcessIdToSessionId",
+        "WaitForSingleObject",
+        "JobObjectBasicProcessIdList",
+        "local Win32_Process CIM",
+        "synthetic ready record"
+      ]
+    },
+    {
+      "pid": 24588,
+      "membershipClass": "Unknown / Not Allowlisted",
+      "preReleaseClass": "Unknown / Not Allowlisted",
+      "imagePath": "C:\\Program Files\\nodejs\\node.exe",
+      "parentPid": null,
+      "nativeCreationFileTimeUtc": 134350421952308310,
+      "cimCreationUtc": null,
+      "sessionId": 5,
+      "commandLine": null,
+      "tokenObserved": false,
+      "inJob": true,
+      "aliveBeforeRelease": true,
+      "explicitAssignment": true,
+      "inheritedMembership": "Not Determined",
+      "checks": {
+        "explicitAssignment": true,
+        "image": true,
+        "creationBoundToOwnedHandle": true,
+        "cimTimeAgreement": false,
+        "parentPid": false,
+        "tokenAndProbePath": false,
+        "readyRecord": true,
+        "jobMembership": true,
+        "sessionAvailable": true,
+        "alive": true
+      },
+      "nativeErrors": {
+        "open": 0,
+        "image": 0,
+        "membership": 0,
+        "session": 0,
+        "state": 0
+      },
+      "cimErrorCategory": "CimException",
+      "observedUtc": "2026-09-28T04:09:55.5434143Z",
+      "evidenceSources": [
+        "CreateProcessW owned handle",
+        "GetProcessTimes",
+        "QueryFullProcessImageNameW",
+        "IsProcessInJob",
+        "ProcessIdToSessionId",
+        "WaitForSingleObject",
+        "JobObjectBasicProcessIdList",
+        "local Win32_Process CIM",
+        "synthetic ready record"
+      ]
+    }
+  ],
+  "preReleaseGate": "FAIL — Unknown or unsafe member",
+  "conclusion": "Membership attribution failed closed; no candidate conhost promoted"
+}

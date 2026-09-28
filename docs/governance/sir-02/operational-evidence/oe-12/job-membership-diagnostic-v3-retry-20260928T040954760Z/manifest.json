@@ -1,0 +1,95 @@
+{
+  "schema": "SIR02-OE12-DIAGNOSTIC-V3-RETRY-MANIFEST v1.0",
+  "classification": "Non-Formal Tooling Diagnostic — Not OE-12 Operational Evidence",
+  "diagnosticToken": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V3-20260928T040954760Z",
+  "result": "FAIL — Lifecycle Attribution Not Supported",
+  "payloadCount": 17,
+  "payloads": [
+    {
+      "file": "cleanup.json",
+      "sha256": "54eca3b8cf25b184be551bd0094d5ea7e8b2911c87f6b49d73473f1687eb1b10",
+      "bytes": 650
+    },
+    {
+      "file": "conhost-timing.json",
+      "sha256": "fbb06f429bd2cd2ac9d3f4dae460d898a4d022910eb9a115ac6a1d33c3199e5e",
+      "bytes": 434
+    },
+    {
+      "file": "diagnostic-raw.json",
+      "sha256": "a8ef3a01489c0c13733f72103cb48bcb559a5a57d0ea69765fd9fd2d4bed00c6",
+      "bytes": 35132
+    },
+    {
+      "file": "exit-chronology.json",
+      "sha256": "ebc26104632860ab2e88d97908af560559ce023f395d97d0f1c9656e82db550f",
+      "bytes": 1249
+    },
+    {
+      "file": "membership-identity.json",
+      "sha256": "db86655791d25cfa9b7e11d51093286f49de32cf5da9d74400f620f69af353d1",
+      "bytes": 3712
+    },
+    {
+      "file": "native-api-summary.json",
+      "sha256": "cdb73fc5c00551d2d48716e211016ffc5099e31b6b7dceaf2e5405cbf03788eb",
+      "bytes": 12809
+    },
+    {
+      "file": "node-timing.json",
+      "sha256": "428fb42ee067a4151b185cf0abc54a0eb8c5f40d36498509e54e40521f147cc5",
+      "bytes": 939
+    },
+    {
+      "file": "parent-ready.json",
+      "sha256": "1e591f4f28d6542d87d5567f5f31a90220ed3a8f739bbde1041f885b58befd20",
+      "bytes": 154
+    },
+    {
+      "file": "parent-release.flag",
+      "sha256": "89782898fe3cdbc41ac9173aea599fb214565054e915c02d4d883fec66ab7240",
+      "bytes": 59
+    },
+    {
+      "file": "r3-0-policy-raw.txt",
+      "sha256": "7547167ddc009be9b450f654a75411f23af6f0314586c3bb3432fe5afaf1f3c0",
+      "bytes": 273
+    },
+    {
+      "file": "r3-0-policy-result.json",
+      "sha256": "5da51295d5d801c358c96a121bddd1d363ef681b76b0968dd9503b58ad33e47c",
+      "bytes": 413
+    },
+    {
+      "file": "r3-1-integrity-receipt.json",
+      "sha256": "c1dc1a938e8ae0e1425339006fb3a460fb8494c20649f7de2b806639c0169e85",
+      "bytes": 823
+    },
+    {
+      "file": "r3-1-source-integrity.json",
+      "sha256": "c1dc1a938e8ae0e1425339006fb3a460fb8494c20649f7de2b806639c0169e85",
+      "bytes": 823
+    },
+    {
+      "file": "retry-runlog.json",
+      "sha256": "eeee0432c4823ca63924add0c3bef80b655a17e16e54c6f0d908bfa9846a1eb2",
+      "bytes": 1316
+    },
+    {
+      "file": "retry-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "retry-stdout.txt",
+      "sha256": "f144e707af90edc50183659a4e44955f92b5ad10cb793fcdad1c5014d3a46915",
+      "bytes": 195
+    },
+    {
+      "file": "validation.md",
+      "sha256": "8ad54f32e4430d898df8301b91ad159a0eb5cecf27fb5212896b1f397f9348ae",
+      "bytes": 6789
+    }
+  ],
+  "antiSelfReference": "Manifest hashes payloads only; separate .sha256 sidecar authenticates this manifest"
+}

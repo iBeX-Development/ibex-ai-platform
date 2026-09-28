@@ -1,0 +1,13 @@
+
+        Scope ExecutionPolicy
+        ----- ---------------
+MachinePolicy       Undefined
+   UserPolicy       Undefined
+      Process       Undefined
+  CurrentUser       Undefined
+ LocalMachine       Undefined
+
+
+
+Effective: Restricted
+PSVersion: 5.1.26100.9444

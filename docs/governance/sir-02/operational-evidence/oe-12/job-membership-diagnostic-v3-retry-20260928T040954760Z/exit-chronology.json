@@ -1,0 +1,27 @@
+{
+  "diagnosticToken": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V3-20260928T040954760Z",
+  "measuredFact": {
+    "parentReleaseStartUtc": "2026-09-28T04:09:55.5620672Z",
+    "parentReleaseUtc": "2026-09-28T04:09:55.5652409Z",
+    "nodeCreationFileTimeUtc": 134350421952308310,
+    "nodeCreationUtc": "2026-09-28T04:09:55.2308310Z",
+    "nodeExitFileTimeUtc": 134350421956218653,
+    "nodeExitUtc": "2026-09-28T04:09:55.6218653Z",
+    "nodeObservationUtc": "2026-09-28T04:09:55.6246542Z",
+    "conhostCreationFileTimeUtc": null,
+    "conhostCreationUtc": null,
+    "conhostExitFileTimeUtc": null,
+    "conhostExitUtc": null,
+    "conhostObservationUtc": null,
+    "exitOrdering": null,
+    "conhostMinusNodeExitTicks": null,
+    "signedExitDeltaMilliseconds": null,
+    "measurementResult": "Incomplete — Required exact-handle kernel exit chronology unavailable"
+  },
+  "criterionEvaluation": {
+    "criterion": "Conhost kernel exit must be after Node kernel exit, after cooperative release, and within the bounded lifecycle observation",
+    "satisfied": false,
+    "result": "Needs Clarification — Missing valid Node/conhost kernel exit chronology"
+  },
+  "overallResult": "FAIL — Lifecycle Attribution Not Supported"
+}

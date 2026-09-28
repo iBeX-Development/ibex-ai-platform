@@ -1,0 +1,13 @@
+{
+  "diagnosticToken": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V3-20260928T040954760Z",
+  "candidatePid": null,
+  "conhostAliveImmediatelyBeforeRelease": null,
+  "creationFileTimeUtc": null,
+  "creationUtc": null,
+  "exitFileTimeUtc": null,
+  "exitUtc": null,
+  "observationUtc": null,
+  "exactHandleObservation": null,
+  "observationWindowMs": 5000,
+  "conclusion": "Not measured; no conhost candidate passed attribution"
+}
