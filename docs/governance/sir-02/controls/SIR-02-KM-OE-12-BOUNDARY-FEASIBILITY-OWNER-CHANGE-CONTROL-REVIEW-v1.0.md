@@ -10,6 +10,7 @@
 | Reviewer | `SODBILEG Erkhembayar — Administrator` |
 | Owner decision | **Authorize Additional Scoped Feasibility Analysis** |
 | Decision date | **2026-09-29** |
+| Immutable owner decision | `bae964a3b80025b89ae879bb51621efc136afa20` |
 | Approved boundary model | **None** |
 | Implementation / execution authorization | **None** |
 | Alignment GAP | **OPEN** |
@@ -48,3 +49,5 @@ The reviewed options are:
 The selected option does **not** authorize receipt-producer implementation, a CIM isolation/helper implementation, source or criterion modification, Diagnostic v4, launcher v1.4, Smoke v5, formal retry `0003`, or any probe, process, or CIM execution. No boundary model may be approved on the present unresolved facts. A later proposal must stop for separate change control if it would weaken GAP-A or GAP-B, treat a read-only inference as runtime proof, or begin implementation/execution without exact authorization.
 
 The next permissible action is **Prepare separately scoped feasibility-analysis proposal**. The Alignment GAP stays **OPEN**, no boundary model is approved, and canonical OE/SIR statuses remain unchanged.
+
+The owner decision is preserved at commit `bae964a3b80025b89ae879bb51621efc136afa20`. This linkage identifies that decision only; it does not define or authorize the next analysis scope, approve a boundary model, permit implementation or execution, close the Alignment GAP, or change canonical OE/SIR status.
