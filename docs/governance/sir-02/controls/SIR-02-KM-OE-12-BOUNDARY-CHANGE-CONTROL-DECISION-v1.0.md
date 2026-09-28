@@ -12,6 +12,7 @@
 | Status | **Additional Feasibility Analysis Required** |
 | Decision date | **2026-09-29** |
 | Selected option | **Additional Feasibility Analysis Required** |
+| Immutable owner decision | `e31036b003a59c4e27b0a2e7239bcd32aef6ba80` |
 | Authorized files, commands, probes, or execution | **None** |
 
 ## Decision basis
@@ -30,6 +31,8 @@
 **Owner decision: `Additional Feasibility Analysis Required`.** GAP-A remains unresolved. GAP-B is not currently feasible under the existing non-destructive provider-quiescence requirement. No combined boundary model has been proven feasible, so detailed-design approval would be premature. The current OE-12 approach is not terminated, but implementation cannot proceed until a separately scoped feasibility analysis resolves or formally reframes the blocking boundary. No model is approved, and this decision does not select Option B or authorize Diagnostic v4, launcher v1.4, Smoke v5, or formal retry `0003`.
 
 The next permissible action is to prepare a separately scoped, read-only feasibility-analysis proposal for the independent receipt trust boundary and bounded CIM completion boundary. This decision does not itself authorize that analysis to execute a probe, implement a receipt producer or isolated worker/provider, or change a criterion.
+
+The owner decision is preserved at commit `e31036b003a59c4e27b0a2e7239bcd32aef6ba80`. This linkage identifies that decision only. It does not approve a boundary model, authorize implementation or execution, close the Alignment GAP, or change any canonical OE/SIR status.
 
 ## Change-control conditions
 
