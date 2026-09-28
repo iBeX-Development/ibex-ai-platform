@@ -15,7 +15,7 @@
 | Decision date | **2026-09-28** |
 | Authorized output boundary | Non-executed synthetic/read-only source files, deterministic synthetic inputs, necessary non-executed helpers, exact source bundle and SHA-256 values, executable branch/path map, and pre-execution readiness material; exact files must be enumerated and hashed in the prepared package before review |
 | Execution or probe permission | **None** |
-| Immutable decision commit | **Pending decision publication; to be linked in a subsequent commit to this file only** |
+| Immutable decision commit | `0ae21d0df924c69b5f541efb921f6b3c956151bf` |
 
 ## Owner decision and preparation boundary
 
@@ -51,3 +51,5 @@ Option A remains `Not Currently Feasible`; Option B remains `Needs Clarification
 | CIM environment-validation execution | **Not Authorized / Not Executed** |
 
 The next permissible action is preparation of the exact source package **without running it**, followed by mandatory independent source-level safety review. This decision does not select Option B, authorize Diagnostic v4, launcher v1.4, Smoke v5, formal retry `0003`, or change any canonical OE/SIR status. The overall Alignment GAP remains open until exact source is prepared, every applicable executable branch is mapped and reviewed, and that review returns `Accepted — Exact Source Safe for Authorization`.
+
+The immutable decision is recorded at `0ae21d0df924c69b5f541efb921f6b3c956151bf`. This linkage records its reference only and does not broaden preparation scope or grant execution permission.
