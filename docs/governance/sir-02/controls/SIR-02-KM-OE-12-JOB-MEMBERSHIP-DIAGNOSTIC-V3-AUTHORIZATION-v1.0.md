@@ -10,6 +10,7 @@
 | Reviewer | `SODBILEG Erkhembayar — Administrator` |
 | Decision date | `2026-09-28` |
 | Authorization status | **Authorized for One Non-Formal Job Membership Diagnostic v3** |
+| Authorization decision reference | `320698beba43d2aab9af30e74f2c983b93a67f55` |
 | Immutable proposal reference | `4e3936491e56b0bec58afc28b43b5c3e0278bec8` |
 | Authorized execution count | Exactly one non-formal v3 attempt, only after exact-source/readiness verification; **not executed by this decision** |
 | Exact execution command | To be specified in the published exact-source/readiness record; no execution before readiness passes |
@@ -23,6 +24,8 @@
 ## Owner decision
 
 > The OE-12 Job Membership Diagnostic v3 is authorized for one non-formal lifecycle-observability diagnostic only, based on the Class B — Exit Chronology Not Retained finding at commit 4e3936491e56b0bec58afc28b43b5c3e0278bec8. Its sole purpose is to retain exact kernel-recorded Node and attributed conhost exit times and determine their actual exit ordering during cooperative shutdown. This authorization does not authorize launcher v1.4, Smoke v5, or formal retry 0003 and does not constitute OE-12 operational evidence.
+
+The owner decision is preserved immutably at `320698beba43d2aab9af30e74f2c983b93a67f55`. This linkage identifies that decision only; it is not Diagnostic v3 source/readiness or execution evidence, a launcher v1.4 decision, a Smoke v5 approval, or a formal OE-12 success linkage.
 
 This decision authorizes the **one v3 diagnostic boundary only**; it does not create source or execute the diagnostic. The one authorized v2 attempt is consumed and its `Needs Clarification` record remains immutable. The only unresolved v2 finding is exact Node/conhost exit chronology. Pre-release membership and identity checks already passed; they may be reused as design requirements, not reclassified as a final PASS.
 
