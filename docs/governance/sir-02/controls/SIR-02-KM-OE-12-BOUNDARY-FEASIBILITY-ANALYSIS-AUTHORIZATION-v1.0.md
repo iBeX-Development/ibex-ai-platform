@@ -13,6 +13,7 @@
 | Analysis executor | Codex acting under the owner's direction; independent review remains assigned to the named reviewer |
 | Status | **Authorized for Read-Only Boundary Feasibility Analysis** |
 | Decision date | **2026-09-29** |
+| Immutable authorization decision | `18704c758a860aad5691cd37fddf21232a65a4e7` |
 | Authorized action | **One read-only analysis** of the exact existing references listed below; no executable source, process, or CIM query |
 | Boundary model approved | **None** |
 | Execution/implementation permission | **None** |
@@ -38,3 +39,5 @@ This record does **not** authorize a receipt producer or integrity anchor, an is
 If proving a fact would require runtime execution, new source/helper, a CIM/WMI query, synthetic process creation, environment or service modification, elevation/UAC, registry or Group Policy change, persistent execution-policy change, dependency installation, network access, production/live data, OE-12 criterion change, or production/runtime modification, the executor must **STOP for that fact**, label it `Requires Separately Authorized Execution` or `Unprovable Within Current Boundary` as applicable, and record the separate change-control need. Do not infer feasibility across that boundary. No workaround or destructive fallback is authorized.
 
 The owner decision remains `Additional Feasibility Analysis Required`; no combined model is established feasible. The Alignment GAP remains **OPEN** until this analysis is completed and separately reviewed. OE-12 remains `Not Executed` and all other canonical OE/SIR statuses remain unchanged. **No analysis was performed in this authorization step.** The next permissible action is the single authorized read-only analysis, followed by independent review of its retained result. No later source preparation or execution follows automatically.
+
+The authorization decision is preserved at commit `18704c758a860aad5691cd37fddf21232a65a4e7`. This linkage identifies that decision only; it does not expand the inspected sources, authorize execution, approve a boundary model, close the Alignment GAP, or change canonical OE/SIR status.
