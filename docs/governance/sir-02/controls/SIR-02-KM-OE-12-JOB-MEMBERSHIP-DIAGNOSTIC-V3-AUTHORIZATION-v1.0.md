@@ -1,6 +1,6 @@
-# SIR-02 KM OE-12 Job Membership Diagnostic v3 Authorization Proposal v1.0
+# SIR-02 KM OE-12 Job Membership Diagnostic v3 Authorization Record v1.0
 
-## Proposed decision record
+## Decision record
 
 | Field | Value |
 | --- | --- |
@@ -8,27 +8,33 @@
 | Classification | **Non-Formal Tooling Diagnostic — Not OE-12 Operational Evidence** |
 | Owner | `GANTUMUR Erdenedalai — Founder / Administrator` |
 | Reviewer | `SODBILEG Erkhembayar — Administrator` |
-| Decision date | **Owner Input Required** |
-| Authorization status | **Proposed / Not Authorized** |
-| Exact execution command | **Owner approval required after exact-source/readiness publication** |
+| Decision date | `2026-09-28` |
+| Authorization status | **Authorized for One Non-Formal Job Membership Diagnostic v3** |
+| Immutable proposal reference | `4e3936491e56b0bec58afc28b43b5c3e0278bec8` |
+| Authorized execution count | Exactly one non-formal v3 attempt, only after exact-source/readiness verification; **not executed by this decision** |
+| Exact execution command | To be specified in the published exact-source/readiness record; no execution before readiness passes |
 | Network permission | **Not proposed** |
 | Source finding | `SIR-02-KM-OE-12-DIAGNOSTIC-V2-LIFECYCLE-FORENSIC-ANALYSIS-v1.0.md`: **Class B — Exit Chronology Not Retained** |
 | V2 evidence | `8b2977e2e14e93185cb9cafece80d35371209dcb`; token `SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-20260928T012331298Z`; result `Needs Clarification` |
-| V3 execution | **Not Authorized / Not Executed** |
+| V3 execution | **Authorized / Not Yet Executed** |
 | Launcher v1.4 / Smoke v5 / formal OE-12 retry `0003` | **Blocked / Not Authorized** |
 | OE-12 status | **Not Executed** |
 
-This record proposes a future owner decision; it is **not** an approval to write or run v3 source. The one authorized v2 attempt is consumed and its `Needs Clarification` record remains immutable. The only unresolved v2 finding is exact Node/conhost exit chronology. Pre-release membership and identity checks already passed; they may be reused as design requirements, not reclassified as a final PASS.
+## Owner decision
+
+> The OE-12 Job Membership Diagnostic v3 is authorized for one non-formal lifecycle-observability diagnostic only, based on the Class B — Exit Chronology Not Retained finding at commit 4e3936491e56b0bec58afc28b43b5c3e0278bec8. Its sole purpose is to retain exact kernel-recorded Node and attributed conhost exit times and determine their actual exit ordering during cooperative shutdown. This authorization does not authorize launcher v1.4, Smoke v5, or formal retry 0003 and does not constitute OE-12 operational evidence.
+
+This decision authorizes the **one v3 diagnostic boundary only**; it does not create source or execute the diagnostic. The one authorized v2 attempt is consumed and its `Needs Clarification` record remains immutable. The only unresolved v2 finding is exact Node/conhost exit chronology. Pre-release membership and identity checks already passed; they may be reused as design requirements, not reclassified as a final PASS.
 
 ## Minimum proposed temporary source scope
 
-If the owner later authorizes preparation, create a **new versioned temporary source package** only under:
+The next, separate preparation step may create a **new versioned temporary source package** only under:
 
 - `docs/governance/sir-02/controls/oe-12-job-membership-diagnostic-v3-source-v1.0/launcher.ps1`
 - `docs/governance/sir-02/controls/oe-12-job-membership-diagnostic-v3-source-v1.0/native-helper.cs`
 - `docs/governance/sir-02/controls/oe-12-job-membership-diagnostic-v3-source-v1.0/probe.cjs`
 
-The v3 launcher and helper may copy the published v2 **identity, allowlist, source-integrity, and safe-cleanup concepts** read-only. The probe's only proposed change is the version-specific synthetic token pattern; it must not add descendants or live operations. A new exact-source ZIP, checksums, static validation, and pre-execution readiness record must be prepared and independently verified **before any separately authorized v3 attempt**. No v2 source, ZIP, readiness record, raw artifact, manifest, or decision may be overwritten or relabeled.
+The v3 launcher and helper may copy the published v2 **identity, allowlist, source-integrity, and safe-cleanup concepts** read-only. The probe's only proposed change is the version-specific synthetic token pattern; it must not add descendants or live operations. A new exact-source ZIP, checksums, static validation, and pre-execution readiness record must be prepared and independently verified **before the one authorized v3 attempt**. The readiness result must be exactly `Ready for Authorized Diagnostic v3 Execution` or `STOP — Source/Safety Gap`; the latter blocks execution. No v2 source, ZIP, readiness record, raw artifact, manifest, or decision may be overwritten or relabeled.
 
 No OE-12 fixture/integration test, accepted implementation `826376cc84521a5d648462fdcc985cd2d412a24c`, production/runtime source, dependency, migration, repository configuration, Git setting, `.gitattributes`, credential, secret, deployment, network, ingestion, RAG, embedding, index, vector store, retrieval, or traffic change is proposed. Any need outside this temporary diagnostic-tooling scope requires a new change-control decision **before coding**.
 
@@ -48,8 +54,8 @@ The existing approved lifecycle rule is **not** changed. If it requires conhost 
 
 ## Safety, evidence, and future gates
 
-Proposed decisions remain exactly `PASS — Exit Chronology Conclusively Established`, `FAIL — Lifecycle Attribution Not Supported`, or `Needs Clarification`. PASS also requires fresh source-integrity verification, one separately authorized attempt, complete member attribution, cooperative Node exit, no exact-parent fallback, successful handle cleanup, and zero prohibited actions. Retain raw native/API successes and sanitized errors, handle-bound creation/exit times, observation timestamps, membership snapshots, cleanup results, and a SHA-256 manifest. A targeted fallback may apply only to the reverified exact-owned Node parent under a separately approved source design and **always disqualifies PASS**.
+Authorized result labels are exactly `PASS — Exit Chronology Conclusively Established`, `FAIL — Lifecycle Attribution Not Supported`, or `Needs Clarification`. PASS also requires fresh source-integrity verification, the one authorized attempt, complete member attribution, cooperative Node exit, valid retained handles, nonsignaled pre-release states, both kernel exit times, exact exit ordering that satisfies the existing lifecycle criterion, no exact-parent fallback, successful handle cleanup, and zero prohibited actions. Retain raw native/API successes and sanitized errors, handle-bound creation/exit times, observation timestamps, membership snapshots, cleanup results, and a SHA-256 manifest. A targeted fallback may apply only to the reverified exact-owned Node parent under a separately approved source design and **always disqualifies PASS**.
 
-The proposal forbids `TerminateJobObject`, kill-on-close testing, conhost termination, unknown-member termination, and manual killing as PASS evidence. It authorizes **no diagnostic execution now**. A future v3 attempt needs (1) an explicit owner authorization for exact temporary source preparation, (2) published source bundle and readiness, (3) a fresh source-integrity check, and (4) a separate explicit one-attempt execution decision. A PASS, if achieved later, would support only a **separate review** of whether the conhost attribution finding is closed; it would not directly create launcher v1.4 or authorize Smoke v5, formal retry `0003`, or an OE-12 status change.
+This decision forbids `TerminateJobObject`, kill-on-close testing, conhost termination, unknown-member termination, and manual killing as PASS evidence. It authorizes **no diagnostic execution in this step**. Before the one authorized v3 attempt can begin, the exact temporary source and bundle must be published, static validation and pre-execution readiness must pass, and a fresh source-integrity check must match the published bytes. The complete invocation, finite bounds, output location, and non-destructive cleanup must be recorded. A PASS, if achieved later, would support only a **separate clarification review** of whether the outstanding v2 lifecycle finding is closed; it would not directly change v2 to PASS, create launcher v1.4, or authorize Smoke v5, formal retry `0003`, or an OE-12 status change.
 
 Diagnostic v2 remains `Needs Clarification`. Diagnostic v1, Smokes v1–v4, and formal attempts `0001`/`0002` remain unchanged. Launcher v1.4 remains blocked; Smoke v5 and formal retry `0003` remain **Not Authorized**. OE-12 remains **Not Executed**; operational evidence remains **11 Accepted / 0 Awaiting Independent Review / 4 Not Executed**. `SIR02-DEF-02` remains **Missing / Not Reviewed**; SIR-02 remains **Blocking**.
