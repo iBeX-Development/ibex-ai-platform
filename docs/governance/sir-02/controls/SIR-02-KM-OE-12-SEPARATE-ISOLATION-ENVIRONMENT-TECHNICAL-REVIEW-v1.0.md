@@ -1,0 +1,80 @@
+# SIR-02 / OE-12 — Separate Isolation-Environment Technical Review v1.0
+
+**Review date:** 2026-09-30 (Asia/Ulaanbaatar)
+
+**Review scope:** Static technical and governance review only; no environment or R&D execution
+**Conclusion (exactly one):** `Design STOP Valid — no sufficiently specified compliant mechanism`
+
+## 1. Exact evidence and authority
+
+| Record | Exact reference and review use |
+| --- | --- |
+| Design under review | `docs/governance/sir-02/controls/SIR-02-KM-OE-12-SEPARATE-ISOLATION-ENVIRONMENT-TECHNICAL-DESIGN-v1.0.md` at `38ea2a1620f910310611397da4e58de255af1aa6`; committed SHA-256 **`31f007bbf0ee36d293c0476b722c0e5c7d3a060cb541ce42db8192ae087e34f7`**, verified. The commit adds only this design. Status remains `Proposed / Technical Review Required / Feasibility Unproven / No Source or Execution Authorization`. |
+| Owner authority | `SIR-02-KM-OE-12-WORKER-HOST-RD-D2-ISOLATION-ENVIRONMENT-OWNER-DECISION-v1.0.md` at published `097e8d0820049478b1e9bd031f5259d7771ff667`, §§“Owner-selected direction”, “Design mandate and proof obligations”, “Authority and next gates”: Option B design only; no mechanism or feasibility approval. |
+| Prior D2 finding | `SIR-02-KM-OE-12-WORKER-HOST-RD-SELECTED-EXECUTION-BOUNDARY-TECHNICAL-REVIEW-v1.0.md` at published `5c2bb255e426ffc31ea9af58aa68439352dcd5f0`, §§2–4: `Design STOP Valid — New isolation-boundary design required`; no observed full membership or finite disposal. |
+| Retained source | `tests/rd/oe12-worker-host/{controller.mjs,supervisor.mjs,worker.ps1,identity.ps1,config.json,package-manifest.json,PATH-MAP.md}` at `abd9435d27916f13847493496551f6a2e8563f3d`. `RD/` below abbreviates `tests/rd/oe12-worker-host/`. Source and manifest are unchanged by the design commit. These are static observations, not runtime evidence. |
+| Governing boundary | Active `SIR-02-KM-OE-12-CRITERION-AMENDMENT-v1.1.md` §§“Proposed replacement”, “Proposed evidence and approval gates”, made effective by `SIR-02-KM-OE-12-BASELINE-ACTIVATION-OWNER-DECISION-v1.0.md` at `da524cb006253fb0b6a2df79651b830febc5acdd`; D2 owner-decision proposal at `cf5d0f365c113fd4be310fd46a16c78c4289bc3a` §“Owner decision criterion”. The scoped criterion is Authoritative Validation-Boundary Quiescence; bounded safe worker disposition remains separate and open. |
+
+The cited Microsoft documentation establishes only the stated platform behavior: [Stop-VM](https://learn.microsoft.com/en-us/powershell/module/hyper-v/stop-vm?view=windowsserver2025-ps) describes guest shutdown, `-Force` (up to five minutes before forcing shutdown) and abrupt `-TurnOff`; [Suspend-VM](https://learn.microsoft.com/en-us/powershell/module/hyper-v/suspend-vm?view=windowsserver2025-ps) pauses a VM. [Hyper-V-isolated Windows containers](https://learn.microsoft.com/en-us/virtualization/windowscontainers/manage-containers/hyperv-container) use a utility VM and do not expose the guest workload as an ordinary complete host process listing. The HCS references distinguish [pause](https://learn.microsoft.com/en-us/virtualization/api/hcs/reference/hcspausecomputesystem), [clean shutdown](https://learn.microsoft.com/en-us/virtualization/api/hcs/reference/hcsshutdowncomputesystem), [force termination](https://learn.microsoft.com/en-us/virtualization/api/hcs/reference/hcsterminatecomputesystem) and [wait for exit](https://learn.microsoft.com/en-us/virtualization/api/hcs/reference/hcswaitforcomputesystemexit). Operation initiation or a bounded wait is not a documented guarantee of complete member disposition within OE-12's five-second bound.
+
+## 2. Question 1 — design sufficiency
+
+**Finding: neither candidate specifies a credible exclusive, run-owned mechanism that passes the D2 gate.** The design compares real Windows boundary types, but its host authorities, admission channels and lifecycle operations remain conceptual. This insufficiency exists even before asking for runtime proof.
+
+| Design element | Dedicated Hyper-V VM (Candidate V) | Hyper-V-isolated container (Candidate C) | Required to exit Design STOP |
+| --- | --- | --- | --- |
+| Exclusive run owner and controller authority | “Outside-host authority” and a run-bound VM ID are proposed, but no exact principal, ACL, retained VM handle, bootstrap, revocation or controller-failure successor is selected. | “HCS/runtime owner” and compute-system ID are proposed, but no exact runtime/service principal, retained HCS handle or controller-failure successor is selected. | Name an independently governed owner, exact authority API, one-run admission rule, crash/replay behavior and evidence custody. VM/compute-system identity alone does not authenticate a process receipt. |
+| Admission and ownership chain | No trusted host-to-guest creator/receipt interface maps VM ID to every guest Controller, Supervisor, Worker, helper and actual conhost. Guest system/host-managed members are not classified. | No trusted host/edge inventory maps compute-system ID to every inner Node/PowerShell/helper and actual conhost; host utility-VM identity is not inner-process identity. | Independently witnessed creation/assignment, complete actual membership and full `PID + image + parent PID + creation time + run token + event` tuple, plus handle/session/Job evidence where applicable. Missing, inherited, late or unexpected member must STOP before ARM/provider influence and before any process-affecting action. Fresh revalidation cannot be supplied solely by the worker. |
+| Normal, timeout, exception and `finally` paths | Guest cooperation and `Stop-VM` are named, but no exact owner-to-guest/host state machine or fallback for failed guest shutdown, host command, audit or observer exists. VM, guest process, pipe, CIM session, observer and storage handle close order is not fixed. | HCS shutdown/pause/terminate are named, but no exact operation-handle/result/exit state machine, runtime failure path or handle/layer/session close order exists. | Map exact APIs, state transitions, one non-resetting clock, ownership check, failure evidence and cleanup owner for every path; preserve T1/P1/E1/M1 across the boundary. |
+| Real Worker/helper hang and finite disposition | Guest shutdown can wait on the hang; pause stops execution but leaves the VM and its members live; `-Force`/`-TurnOff` can affect every guest occupant. Neither a qualifying pause/isolation state nor final disposition is defined. | Clean shutdown can wait on the hang; HCS pause leaves a compute system live; HCS termination affects the whole system. Neither a qualifying pause/isolation state nor final disposition is defined. | Specify an independently observable, finite exit **or governed safe isolation plus final resource disposition**, including the timed-out identity helper and actual conhost. Show no unidentified/unrelated process is affected and no broader fallback is used. A five-second timer does not create this mechanism. |
+| Trust and runnable identity | No selected host verifier/key, protected attempt ledger, image/source transfer, independently authenticated P1 receipts, E1 failure sink or M1 manifest root. | The same gaps cross an additional runtime/utility-VM boundary; container image and local CIM semantics are unverified. | Re-review T1/P1/E1/M1: claim before first execution-relevant side effect; independent receipt/ARM; separate failure ledger; complete externally authenticated image, source, import, executable, config and environment identity with `100%` reviewed-to-runnable match. |
+| Environment prerequisites | Host edition/build, virtualization hardware/feature, image, management rights, accounts and guest CIM/Node compatibility are not verified or approved. | Host features, runtime/service, compatible image, management rights and guest CIM/Node compatibility are not verified or approved. | Separate owner/change-control decisions before creating keys, stores, accounts, VM/container, feature, image, runtime, dependency, ACL, privilege or configuration. |
+
+`RD/controller.mjs:15–39,50–102,123–140` and `RD/supervisor.mjs:12–35,63–168` show Controller/Supervisor identity helpers, Worker spawn, incomplete receipt membership, timeout/finally stream handling and unresolved live-child possibilities. `RD/identity.ps1:38–61` can stall during `Get-CimInstance Win32_Process`; `RD/worker.ps1:43–75` can reach its guarded CIM call and flush only its own output. The design does not add an exact cross-boundary admission or cleanup interface to those paths. It correctly leaves `Design STOP — no compliant boundary identified` in place.
+
+### Lifecycle terms and acceptance ambiguity
+
+| Term | Meaning for this review |
+| --- | --- |
+| Pause | Execution is suspended; the VM/compute system and members may remain live/resumable. Pause is neither process exit nor resource disposal. Whether it qualifies as temporary *safe isolation* requires an approved state and independent no-influence proof. |
+| Graceful shutdown | A request for cooperative guest/compute-system exit. A request or API success-start is not observed completion, and a hung member can block it. |
+| Force shutdown / termination | Stops or powers off the boundary without relying on guest cooperation. This is a process/environment-affecting action; it can affect all occupants, including an unknown member. It is not a permitted fallback while membership/ownership is unresolved. |
+| Process exit | Independently observed exit of a specifically identified process. It does not by itself prove every conhost/helper exited or all handles, sessions and layers are disposed. |
+| Boundary isolation | Independently evidenced prevention of further authoritative influence from the run. A closed result cutoff establishes the authoritative fence, but it does not by itself stop or dispose live guest processes. |
+| Disposal | Governed final resource state for all owned members, handles, sessions, operations, channels and environment resources, with finite observation and retained evidence. Stream close, `unref()`, timeout and later PID absence are nonproof. |
+
+**Non-destructive criterion:** the cited D2 proposal expressly prohibits destructive action against an **unknown/unverified member** and any effect on an **unidentified/unrelated process**; it does not textually state that every termination of a fully verified, exclusively run-owned member is forbidden. It also does **not** approve such termination. The phrase “bounded non-destructive Worker disposal” does not explicitly decide whether verified-member force termination, whole-VM power-off or HCS termination could ever qualify. **Owner Clarification Required** before any future design relies on one of those actions: specify whether termination of a proven exclusive run-owned boundary is allowed, what counts as a member (including system/conhost/host-managed processes), what evidence establishes exclusivity, and whether paused-but-live isolation plus later disposal can satisfy the five-second obligation. Until that decision, no force action is a compliant candidate. The present Design STOP holds independently because neither candidate specifies full admission/ownership or a finite lifecycle even under a permissive interpretation.
+
+## 3. Question 2 — operational proof boundary
+
+**Finding: no operational feasibility or disposal proof exists.** Static source and Microsoft API contracts identify possible mechanisms and failure risks; they do not show how this machine, an actual guest/container or a real hang behaves. The retained WH-03 and WH-09 paths stop before Worker creation, and WH-08 is synthetic; they cannot prove a hung Worker, unexpected actual member or failed disposal. The separately authorized evidence would need at least:
+
+| Claim not yet established | Required direct, negative-path evidence after separate change control and execution authorization |
+| --- | --- |
+| Complete run membership and independent provenance | Capture trusted creation/assignment events, exact VM/compute-system ID and actual Node, Worker, identity-helper, conhost (if present), system/host-managed members, full tuples and retained handles. Exercise unexpected/inherited/late member, PID reuse, stale tuple, direct helper/worker entry and forged receipt/ARM; show fail-closed before CIM influence. WH-07/08. |
+| Real Worker/helper hang and bounded behavior | Use separately reviewed runnable bytes in a deliberately authorized real WH-03 hang and timed-out helper path. Retain monotonic start/end/expiry for 8 s startup, 10 s provider observation, 2 s closure, 2 s grace, 500 ms freshness, 5 s disposal/isolation, 45 s total and unproven helper `≤5,000 ms`. Include controller/host failure, exception and `finally`; no clock restart. WH-02/03/09/10. |
+| Safe effect and observed disposition | Before and after any permitted action, independently prove the complete member set and no effect outside the exclusive boundary; observe actual process exits or separately approved qualifying isolation, then handle/session/operation/environment disposal. Prove pause, shutdown failure, operation-result failure and fallback do not silently become PASS. WH-03/08/09/10. |
+| Authoritative closure and evidence integrity | Show one immutable terminal state and Accepted Result Cutoff; reject late/stale/partial results with zero authoritative mutation; test primary-audit and independent E1 failure-ledger failures, including after terminal closure. WH-04/05/06/10. |
+| Runtime and byte identity | Independently verify host/guest runtime and CIM semantics, absolute executables, account/privilege, image/version/config, all source/import/manifest bytes and `100%` reviewed-to-runnable match immediately before any future attempt. Successful image launch or API availability alone is nonproof. WH-01 plus negative mismatch cases. |
+
+Direct R&D evidence remains unauthorized. None of these tests was run in this review; no attempt was consumed. The owner must first resolve the termination/qualifying-isolation criterion and any revised exact design must pass independent review, publication, owner approval, infrastructure/source change control and exact-source safety preflight before a separate one-attempt R&D authorization.
+
+## 4. Decision and preserved state
+
+**Conclusion: `Design STOP Valid — no sufficiently specified compliant mechanism`.** This conclusion follows from the **design content**: neither Candidate V nor C names a trusted complete admission chain or a finite, non-collateral mechanism for an actual unresponsive Worker and helper, with exact owner, API/state/handle paths. Missing runtime evidence is a **separate** blocker that would remain even after a complete design. The Microsoft lifecycle APIs and a boundary label do not supply those missing elements. No candidate is preferred, approved, or operationally feasible on this record.
+
+**Owner clarification still required:** precise permissibility of verified-member/whole-environment force termination and whether bounded paused-but-live isolation plus later final disposition can meet the active non-destructive disposal obligation. If the owner maintains a ban on all termination and no finite cooperative route can be designed, return D2 to the owner; do not weaken the criterion or substitute Option A. Any proposed new boundary, privilege, service, feature, account, image, dependency, key, store or configuration requires separate change control.
+
+| Governance item | Unchanged state |
+| --- | --- |
+| Technical Preflight | `REJECTED` |
+| R&D Execution | `NOT AUTHORIZED` |
+| Attempt | `NOT STARTED` |
+| GAP-A | `OPEN / mandatory` |
+| GAP-B operational closure | `NOT ESTABLISHED` |
+| Worker disposal | `OPEN proof obligation` |
+| Alignment GAP | `CLOSED` |
+| OE-12 | `Not Executed` |
+| SIR-02 | `Blocking` |
+
+`GAP Closure = Approved Applicable Design/Boundary AND Newly Authorized Direct Evidence`. This review supplies neither operational closure nor source/execution authorization. Next permissible governance step: owner clarification of the D2 acceptance boundary, then a separately commissioned exact isolation design if that clarification permits one.
