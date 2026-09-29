@@ -1,0 +1,32 @@
+{
+  "classification": "R&D ONLY / NOT AUTHORIZED FOR EXECUTION",
+  "candidate": "Dedicated non-interactive worker host",
+  "readiness": "STOP — safe finite-lifetime worker disposal and complete membership attribution unproven",
+  "mode": "authorized-worker-host-rd",
+  "environment": {
+    "platform": "win32",
+    "architecture": "x64",
+    "powershell": "Windows PowerShell 5.1",
+    "node": "existing Node.js runtime; exact version MUST VERIFY BEFORE EXECUTION",
+    "nodeExecutable": "MUST VERIFY BEFORE EXECUTION",
+    "powershellExecutable": "MUST VERIFY BEFORE EXECUTION",
+    "account": "ordinary user; exact identity MUST VERIFY BEFORE EXECUTION",
+    "network": "none",
+    "dependencies": "Node.js built-ins and Windows PowerShell 5.1 only",
+    "elevation": false,
+    "globalConfigurationChanges": false
+  },
+  "boundsMs": {
+    "workerStartup": 8000,
+    "providerObservation": 10000,
+    "authoritativeClosure": 2000,
+    "cooperativeCancellationGrace": 2000,
+    "ownershipFreshness": 500,
+    "disposalOrSafeIsolation": 5000,
+    "totalRun": 45000
+  },
+  "cases": ["WH-01", "WH-02", "WH-03", "WH-04", "WH-05", "WH-06", "WH-07", "WH-08", "WH-09", "WH-10"],
+  "syntheticTarget": "current synthetic worker process only; no tenant, Core iBeX, network or live target",
+  "safeDisposalCapability": "UNPROVEN — do not launch",
+  "completeMembershipCapability": "UNPROVEN — do not launch"
+}
