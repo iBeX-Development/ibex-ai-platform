@@ -7,6 +7,7 @@
 | Decision | **Approve OE-12 Criterion / Boundary Redesign for Detailed Design** |
 | Selected option | **Approve OE-12 Criterion / Boundary Redesign for Detailed Design** |
 | Decision date | **2026-09-29** |
+| Immutable owner decision | `126e689df2e14878f20fd343922b7db26dbf0163` |
 | Change-control review | `SIR-02-KM-OE-12-CRITERION-BOUNDARY-CHANGE-CONTROL-REVIEW-v1.0.md` at `496ab2303009b2bed6250c9e1a01155390eb7916` |
 | Accepted technical review | `ae01991c83c0277f6e37bbf7a265ca7c51049f32` |
 | Canonical scoped analysis | `bbe24d5d52f320439580cb34bda257c2ede96cea` |
@@ -43,3 +44,5 @@ This decision does not amend the current OE-12 criterion, acceptance matrix, exe
 No destructive fallback against an unknown process is permitted. The complete ownership tuple, fresh pre-action identity revalidation, exact reviewed source, runnable-byte integrity, reviewed executable paths, bounded cleanup/disposal, and separate execution authorization remain mandatory for any future execution proposal. The Alignment GAP remains **OPEN**.
 
 The next permissible action is **Prepare versioned OE-12 criterion/baseline amendment package and detailed-design proposal**. No implementation or execution is authorized by this decision.
+
+The owner decision is preserved at commit `126e689df2e14878f20fd343922b7db26dbf0163`. This linkage identifies the decision only; it does not amend the current criterion, close GAP-A or the Alignment GAP, or authorize implementation or execution.
