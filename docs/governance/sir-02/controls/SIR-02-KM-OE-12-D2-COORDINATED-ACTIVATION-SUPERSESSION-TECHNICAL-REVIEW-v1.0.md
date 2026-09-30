@@ -1,0 +1,51 @@
+# OE-12 D2 Coordinated Activation / Supersession — Technical Review v1.0
+
+**Review date:** 2026-09-30 (Asia/Ulaanbaatar)
+
+**Proposal:** `SIR-02-KM-OE-12-D2-COORDINATED-ACTIVATION-SUPERSESSION-PROPOSAL-v1.0.md` at `e33c3ccb8e8c8fdce20f56ecf15b2fc13755df5c`; committed SHA-256 `2d108bb039762a89eb7f6a2a661bc4ad9429cea8b2edab2b48ce9bcf9ecb93da` — **MATCH**.
+
+**Review decision:** `Revision Required`
+
+This is a technical governance review only. It neither effects the D2 amendment nor approves controlled termination, a mechanism, source/environment change or R&D execution.
+
+## 1. Exact input and scope verification
+
+The proposal commit adds only its named file. Its local bytes match the committed blob and the expected SHA-256. The frozen set at `fe1087f4537f9d3c06d5465529bd083fd1dbac39` has set ID `SIR02-KM-OE12-D2-SAFETY-2026-09-30-01`, six identical `Indivisible change set` lists, and six `Proposed / Not Approved / Not Effective` headers. The final six-file technical review `331c9a8dc9796fc338667337b8dd832fba3c45f6` decided `Suitable for Owner Decision — Not Effective`; it is not a personal reviewer attestation or effect decision. Each frozen document and its governing predecessor was read. Each local file matches its frozen committed blob and recorded SHA-256:
+
+| Frozen member | SHA-256 | Current governing predecessor / review clause | Result |
+| --- | --- | --- | --- |
+| `SIR-02-KM-OE-12-CRITERION-AMENDMENT-v1.3.md` | `2f2978abf4b2664ceb4e3fca18a00807922b8950bf30c5243567cda03adbd367` | Criterion Amendment v1.1 / C1 | PASS |
+| `SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-AMENDMENT-v1.3.md` | `93a92bf3bcb0c5f76979198fa211fc8408c962d49a272ed25017d3fbe62e7026` | Acceptance Matrix Amendment v1.1 / M1 | PASS |
+| `SIR-02-KM-OPERATIONAL-EVIDENCE-EXECUTION-PLAN-AMENDMENT-v1.3.md` | `107c5c7251b2efa60a6073881e5a8e08fc09daf0569f6c5ae9553fe9402ea855` | Execution Plan Amendment v1.1 / P3 and P5 | PASS |
+| `SIR-02-KM-OE-12-AUTHORITATIVE-VALIDATION-BOUNDARY-DETAILED-DESIGN-v1.2.md` | `fc5133a965e2e2362046b9cd8ab6fa1936a29c9b2138b25c5648ab5e8d012623` | Detailed Design v1.0 / D3 and D5 | PASS |
+| `SIR-02-KM-OE-12-WORKER-HOST-RD-PLAN-v1.3.md` | `54a2e4bccc687edc8b4064a72897fa13752fe9df07afd2a4dd34ea7c0522e1a3` | Worker-Host R&D Plan v1.0 / §1, RQ-4, §§6, 8–9 | PASS |
+| `SIR-02-KM-OE-12-BOUNDED-WORKER-ISOLATION-DISPOSAL-DESIGN-v1.3.md` | `7c49ee7c4b042e83fc6862560c041f9c374937a958face51b28f20bd28b23d4e` | Bounded Worker Design v1.0 / status, §§3–4 and historical B3 | PASS |
+
+The first four predecessors are scoped OE-12 overlays effected by `da524cb006253fb0b6a2df79651b830febc5acdd`. Worker-Host Plan v1.0 has owner approval for exact source/configuration preparation **only** at `f526f845539193ab03db0a7eccb25ca319b29866`. Bounded Worker Design v1.0 is an approved resolution direction at `6bcb62fbe03006164ffa289b636e03f337f28f97`, not a proven disposal mechanism. No whole-document predecessor supersession follows from either planning approval.
+
+## 2. Authoritative effect-method finding
+
+The active `SIR-02-KNOWLEDGE-MANAGEMENT-LIFECYCLE-CONTROL-BASELINE-v1.0.md` requires in **Acceptance criteria for formal baseline approval**, lines 249–258, owner **and reviewer** confirmation of the complete control scope, approval status/date and immutable reference. **Change control**, lines 262–270, requires a new version, rationale/change history, owner and reviewer approval, immutable reference and dependent-evidence reassessment for a control change. These clauses do not by themselves allow an unreviewed owner note to override a file's `Not Effective` metadata.
+
+There **is a conditional external-record effect path** in the governing OE-12 lineage. Each frozen member's `Indivisible change set` clause says all six require exact-byte review, publication, separate owner approval/effect and governance linkage, and that predecessors remain authoritative *until then*. Published owner direction v1.1 `ee7d2c34626b7129662b122360ec7952986c9713` §2(2)–(5) expressly allows either: (a) new versioned bytes if metadata must change, with new hashes/review/owner effect; or (b) unchanged frozen bytes with a separate governance record **only if independent review explicitly establishes that the record resolves every `Not Effective` statement without contradiction**. The earlier scoped activation decision `da524cb006253fb0b6a2df79651b830febc5acdd` §2 demonstrates the latter pattern for a different reviewed package: its publication supplied effect while prior immutable proposal headers remained historical. That precedent is not a blanket waiver of the v1.1 §2(3) check or the baseline owner/reviewer rule.
+
+**Answer:** A separately published owner effect decision can make these unchanged proposed bytes effective **only as the final event of a reviewed, versioned activation/supersession and governance-linkage procedure that explicitly resolves all six historical headers, binds exactly the six hashes, and has the required separate owner/reviewer confirmation**. The owner decision alone, without that packet and independent no-contradiction finding, cannot. No such complete packet or confirmation exists now. Thus the current authoritative state remains `Not Effective` for all six.
+
+## 3. Proposal defect and minimum versioned correction
+
+Proposal §3 labels a **new versioned six-file final set** as its proposed route, but also leaves an **unchanged-byte external linkage** route available. It allows either the same set ID or a linked new exact-set ID and does not give final status language or a single selected method by which each of the six `Not Effective` headers is resolved. Those alternatives produce different final bytes, hashes, owner-decision bindings and effect evidence. Proposal §4 states an atomic push procedure, but an atomic push cannot settle the prior ambiguity. The status/effect method is therefore **unresolved**; `Suitable for Owner/Reviewer Decision — Not Effective` is unavailable.
+
+Prepare a new versioned proposal selecting **one** of these routes and defining its exact contract:
+
+1. **Unchanged frozen-byte route:** Bind the six hashes in §1 and exact set ID; draft a versioned activation/supersession record plus governance linkage that states, for *each* member, that its `Proposed / Not Approved / Not Effective` header records its pre-effect state, names the effect event and post-effect scoped status, and identifies the one governing predecessor clause superseded. Independent technical review must explicitly find that this interpretation is consistent with each member's conditional effect text and does not leave two active conflicting versions. If any header or clause cannot be reconciled, STOP and use a separately reviewed versioned-byte route; do not infer an override from precedent alone.
+2. **New versioned-byte route:** Reserve six unused successor versions, one unambiguous final set ID and identical six-file member lists. Write explicit conditional status metadata in each final file; no file may claim current effect before approval. Freeze and hash the **final committed bytes after every metadata change**, review all six and the linkage together, and publish exactly those reviewed bytes. The owner direction at `ee7d2c…` binds the frozen historical hashes only; obtain a separate owner effect decision and reviewer confirmation that name the **new six hashes**, exact set ID and affected predecessor clauses. No old hash or technical review can be silently transferred. Any substantive safety-clause change needs its own renewed technical/owner direction review.
+
+For either route, the effect record must be a **single, scoped, exact-commit publication event** after the full six-member packet and reviewer confirmation are published, with an explicit owner effect decision. The owner confirmation can be contained in that final decision commit and becomes immutable at its verified publication; the reviewer confirmation must be distinct. Before publication, verify all six hashes, set membership, predecessor map, approval references, clean tree, exact remote tip and fast-forward ancestry. Remote movement, incomplete six-file commit, hash mismatch, missing approval or failed/uncertain push is `STOP — No Claimed Effect`; read back the remote before determining publication. No predecessor is superseded by draft or packet publication. After verified effect, check all six scoped transitions and unaffected controls in a separate consistency verification. Git ref publication is one branch-tip update; it is not permission for any member to take effect early.
+
+## 4. Formal confirmation and retained boundary
+
+Formal effect requires explicit **owner** and **reviewer** confirmation of the *same complete final six-file control scope*, exact paths/versions/hashes, affected predecessor clauses, conditions, decision/status/date and immutable references, under the Lifecycle-Control Baseline lines 249–270. Published owner decision v1.1 is only a direction for activation preparation; `331c9a8d…` and `d00d87eb…` are technical/provenance reviews, not a personal named-reviewer signoff. No reviewer identity, signature or channel-to-person binding is inferred here. If the applicable owner/reviewer identity standard is unresolved at the formal effect gate, record that limit and stop pending an approved governance determination; do not use Git author or the technical review as independent identity proof.
+
+The proposal correctly preserves historical v1.0 incomplete-provenance candidate `07c07ef7dc3430a43967d151b7e88e65e77080d1`, intermediate non-effective drafts, no partial activation, current strict worker-disposal rule, separate mechanism/source/environment/R&D approvals and the operational proof obligations. Those protections remain valid during revision. `Controlled termination = NOT APPROVED / NOT EFFECTIVE`; `Technical Preflight = REJECTED`; `R&D Execution = NOT AUTHORIZED`; `Attempt = NOT STARTED`; `GAP-A = OPEN / mandatory`; `GAP-B operational closure = NOT ESTABLISHED`; `worker disposal = OPEN proof obligation`; `OE-12 = Not Executed`; `SIR-02 = Blocking`.
+
+**Next gate:** revise the activation/supersession proposal to one exact status/effect method, then independently review the corrected bytes. This review creates no owner/reviewer decision and changes no active artifact.
