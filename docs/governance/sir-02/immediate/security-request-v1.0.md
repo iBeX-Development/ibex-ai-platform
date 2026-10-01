@@ -6,6 +6,8 @@ SIR-02-ийн RAG exclusion, capability restrictions болон SIR-09 ingestion
 
 ## Dispatch metadata
 
+> Historical 2026-09-25 dispatch snapshot. `Sent` and `Missing` below are statuses recorded when this request was created, not current evidence or review status. This request does not establish per-recipient delivery or acknowledgement; later submissions and reviews require their own records.
+
 - Primary owner: **GANTUMUR Erdenedalai — Founder / Administrator**
 - Reviewer: **SODBILEG Erkhembayar — Administrator**
 - Escalation owner: **GANTUMUR Erdenedalai — Founder / Administrator**

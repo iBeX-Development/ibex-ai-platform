@@ -1,5 +1,7 @@
 # SIR-02 Evidence Dispatch Tracker v1.0
 
+> Historical dispatch snapshot from 2026-09-25 (source commit `9702f13aff14975b0c30ea363ba1279efb4bdba4`). The request, evidence, and review statuses below describe the state recorded then, not the current SIR-02 evidence state. `Sent` is the recorded request status; these files do not establish per-recipient delivery or acknowledgement. Later submissions and reviews must be assessed from their own evidence and review records.
+
 ## Scope and controls
 
 - Submission channel: **Private GitHub repository / governance docs**
