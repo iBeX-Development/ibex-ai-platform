@@ -154,12 +154,11 @@ export class SharedAgentRuntime {
 
   async route(request: OrchestratorRequest, now: Date = new Date()): Promise<OrchestratorResult> {
     const inboundRequest: unknown = request;
-    const suppliedTraceId = validatedTraceId(readTraceId(inboundRequest));
-    const traceId =
-      suppliedTraceId ?? createBoundaryTraceId(this.dependencies.traceIdFactory ?? randomUUID);
+    const boundaryTraceId = createBoundaryTraceId(this.dependencies.traceIdFactory ?? randomUUID);
 
     return tracer.startActiveSpan('orchestrator.route', async (span) => {
-      let stage: OrchestratorAuditStage = 'boundary_context';
+      let stage: OrchestratorAuditStage = 'boundary_trace';
+      let traceId = boundaryTraceId;
       let trustedContext: OrchestratorRequest['context'] | undefined;
       let classification: Extract<IntentClassification, { status: 'classified' }> | undefined;
       let selectedAgent: AgentDefinition | undefined;
@@ -167,6 +166,12 @@ export class SharedAgentRuntime {
       span.setAttribute('ibex.orchestrator.trace_id', traceId);
 
       try {
+        const suppliedTraceId = validatedTraceId(readTraceId(inboundRequest));
+        if (suppliedTraceId) {
+          traceId = suppliedTraceId;
+          span.setAttribute('ibex.orchestrator.trace_id', traceId);
+        }
+        stage = 'boundary_context';
         if (
           !this.dependencies.featureControls.aiPlatform ||
           !this.dependencies.featureControls.agents

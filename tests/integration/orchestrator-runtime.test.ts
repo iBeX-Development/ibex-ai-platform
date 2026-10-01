@@ -162,6 +162,36 @@ describe('Gate P3 shared agent runtime', () => {
     }
   );
 
+  it('audits a failing trace accessor before any runtime port is invoked', async () => {
+    const auditEvents: AuditRecord[] = [];
+    const classify = vi.fn();
+    const runtime = createRuntime(auditEvents, { classifier: { classify } });
+    const request = runtimeRequest();
+    Object.defineProperty(request, 'trace_id', {
+      get: () => {
+        throw new Error('untrusted trace accessor');
+      }
+    });
+
+    await expect(runtime.route(request, runtimeValidationTime)).rejects.toMatchObject({
+      code: 'INTERNAL_ERROR',
+      traceId: 'runtime-generated-trace-1'
+    });
+
+    expect(classify).not.toHaveBeenCalled();
+    expect(auditEvents).toEqual([
+      expect.objectContaining({
+        event_type: 'orchestrator.routing.outcome',
+        context_status: 'unavailable',
+        outcome: 'error',
+        stage: 'boundary_trace',
+        trace_id: 'runtime-generated-trace-1',
+        error_code: 'INTERNAL_ERROR'
+      })
+    ]);
+    expect(JSON.stringify(auditEvents)).not.toContain('untrusted trace accessor');
+  });
+
   it('never routes an agent when required permissions are absent', async () => {
     const auditEvents: AuditRecord[] = [];
     const ragPlan = vi.fn(() => Promise.resolve({ required: false, scopes: [] }));
