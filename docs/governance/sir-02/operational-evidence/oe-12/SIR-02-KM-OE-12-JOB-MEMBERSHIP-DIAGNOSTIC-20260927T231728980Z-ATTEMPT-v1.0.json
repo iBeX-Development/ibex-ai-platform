@@ -1,0 +1,12 @@
+{
+  "classification": "Non-Formal Job Membership Diagnostic — Not OE-12 Operational Evidence",
+  "launcher": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-job-membership-source-20260927T231653057Z\\launcher.ps1",
+  "command": "powershell.exe -NoProfile -NonInteractive -File <verified extracted launcher.ps1>",
+  "startUtc": "2026-09-27T23:17:28.6693776Z",
+  "endUtc": "2026-09-27T23:17:29.9488834Z",
+  "elapsedMilliseconds": 1273,
+  "exitCode": 1,
+  "invocationError": null,
+  "stdoutPath": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-job-membership-source-20260927T231653057Z\\launcher-stdout.txt",
+  "stderrPath": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-job-membership-source-20260927T231653057Z\\launcher-stderr.txt"
+}

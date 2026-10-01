@@ -1,0 +1,362 @@
+$ErrorActionPreference = 'Stop'
+$env:COREPACK_ENABLE_NETWORK = '0'
+$env:npm_config_offline = 'true'
+$repo = 'C:\Users\gantu\OneDrive\Documents\GitHub\ibex-ai-platform'
+$tempDir = 'C:\Users\gantu\AppData\Local\Temp\sir02-oe12-smoke-v3-prep'
+$node = 'C:\Program Files\nodejs\node.exe'
+$probe = Join-Path $tempDir 'probe with spaces.cjs'
+$resultPath = Join-Path $tempDir 'smoke-v3-raw.json'
+$marker = Join-Path $tempDir 'SHELL_INTERPRETED_MARKER.txt'
+$lf = [string][char]10
+$script:scenarioVectors = @{}
+$caseResults = [ordered]@{}
+$raw = [ordered]@{}
+$t0History = New-Object System.Collections.ArrayList
+$startUtc = [DateTime]::UtcNow
+$captureId = 'SIR02-KM-OE-12-LAUNCHER-SMOKE-V3-' + $startUtc.ToString('yyyyMMddTHHmmssZ')
+$fatalError = $null
+$fatalPhase = $null
+$before = $null
+$after = $null
+$actualArgv = @()
+$expectedArgv = @()
+$argvMatch = $false
+$nodeVersion = 'v' + (Get-Item -LiteralPath $node).VersionInfo.FileVersion
+
+function Set-Case([string]$id,[string]$expected,[string]$actual,[string]$result) {
+  $caseResults[$id] = [ordered]@{id=$id; expected=$expected; actual=$actual; result=$result}
+}
+
+function Compare-StringArrays([string[]]$expected,[string[]]$actual) {
+  if ($null -eq $expected -or $null -eq $actual -or $expected.Length -ne $actual.Length) { return $false }
+  for ($i=0; $i -lt $expected.Length; $i++) {
+    if (-not [string]::Equals($expected[$i],$actual[$i],[System.StringComparison]::Ordinal)) { return $false }
+  }
+  return $true
+}
+
+function Quote-WindowsArgument([AllowEmptyString()][string]$value) {
+  if ($value.IndexOf([char]0) -ge 0) { throw 'NUL in process argument' }
+  $builder = New-Object System.Text.StringBuilder
+  $slash = [string][char]92
+  $quote = [string][char]34
+  [void]$builder.Append($quote)
+  $backslashes = 0
+  foreach ($ch in $value.ToCharArray()) {
+    if ($ch -eq [char]92) { $backslashes++; continue }
+    if ($ch -eq [char]34) {
+      [void]$builder.Append(($slash * (2 * $backslashes + 1)))
+      [void]$builder.Append($quote)
+      $backslashes = 0
+      continue
+    }
+    if ($backslashes -gt 0) {
+      [void]$builder.Append(($slash * $backslashes))
+      $backslashes = 0
+    }
+    [void]$builder.Append($ch)
+  }
+  if ($backslashes -gt 0) { [void]$builder.Append(($slash * (2 * $backslashes))) }
+  [void]$builder.Append($quote)
+  return $builder.ToString()
+}
+
+function Get-RepoSnapshot {
+  $oeDir = Join-Path $repo 'docs\governance\sir-02\operational-evidence\oe-12'
+  $artifactHashes = @(Get-ChildItem -LiteralPath $oeDir -File | Sort-Object Name | ForEach-Object {
+    [ordered]@{name=$_.Name; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash}
+  })
+  $guardRel = @(
+    'package.json','pnpm-lock.yaml',
+    'tests\testing\sir02-km-oe12-lifecycle-audit-fixture.ts',
+    'tests\integration\sir02-km-oe12-lifecycle-audit.test.ts',
+    'docs\governance\sir-02\controls\SIR-02-KM-OPERATIONAL-EVIDENCE-EXECUTION-PLAN-v1.0.md',
+    'docs\governance\sir-02\controls\SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md',
+    'docs\governance\sir-02\controls\SIR-02-KM-OE-12-FORMAL-EXECUTION-RETRY-0003-AUTHORIZATION-v1.0.md'
+  )
+  $guardHashes = @($guardRel | ForEach-Object {
+    $path = Join-Path $repo $_
+    [ordered]@{path=$_; sha256=(Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash}
+  })
+  return [ordered]@{
+    head=(& git -C $repo rev-parse HEAD).Trim()
+    status=((& git -C $repo status --porcelain | Out-String).Trim())
+    artifactHashes=$artifactHashes
+    guardHashes=$guardHashes
+  }
+}
+
+function Invoke-BoundedNode {
+  param(
+    [Parameter(Mandatory=$true)][string]$serializedArgumentVector,
+    [Parameter(Mandatory=$true)][int]$expectedArgumentCount,
+    [Parameter(Mandatory=$true)][int]$timeoutMs,
+    [Parameter(Mandatory=$true)][string]$stageName
+  )
+  $expected = $script:scenarioVectors[$stageName]
+  $t0 = [ordered]@{
+    stage=$stageName
+    utc=([DateTime]::UtcNow).ToString('o')
+    serializedJson=$serializedArgumentVector
+    expectedCount=$expectedArgumentCount
+    decodedCount=$null
+    decodedType=$null
+    expectedVector=@($expected)
+    decodedVector=@()
+    perIndex=@()
+    emptyPreserved=$null
+    duplicatesPreserved=$null
+    probePathPreserved=$false
+    result='FAIL'
+    failure=$null
+  }
+  [void]$t0History.Add($t0)
+  try {
+    if ([string]::IsNullOrWhiteSpace($serializedArgumentVector)) { throw 'T0 serialized JSON missing' }
+    if ($null -eq $expected -or $expected.Length -ne $expectedArgumentCount) { throw 'T0 expected-vector count mismatch' }
+    $parser = New-Object System.Web.Script.Serialization.JavaScriptSerializer
+    $decodedRaw = $parser.DeserializeObject($serializedArgumentVector)
+    if (-not ($decodedRaw -is [System.Array])) { throw 'T0 decoded root is not an array' }
+    $t0.decodedType = $decodedRaw.GetType().FullName
+    $t0.decodedCount = $decodedRaw.Length
+    if ($decodedRaw.Length -ne $expectedArgumentCount) { throw 'T0 decoded count mismatch' }
+    $processArguments = [System.Array]::CreateInstance([string], [int]$decodedRaw.Length)
+    $checks = New-Object System.Collections.ArrayList
+    for ($i=0; $i -lt $decodedRaw.Length; $i++) {
+      if ($null -eq $decodedRaw[$i] -or -not ($decodedRaw[$i] -is [string])) { throw "T0 null/non-string at index $i" }
+      $processArguments[$i] = [string]$decodedRaw[$i]
+      $match = [string]::Equals($processArguments[$i],$expected[$i],[System.StringComparison]::Ordinal)
+      [void]$checks.Add([ordered]@{index=$i; expected=$expected[$i]; decoded=$processArguments[$i]; match=$match})
+      if (-not $match) { throw "T0 index mismatch at $i" }
+    }
+    $t0.perIndex = @($checks)
+    $t0.decodedVector = @($processArguments)
+    $t0.probePathPreserved = $processArguments.Length -gt 0 -and [string]::Equals($processArguments[0],$probe,[System.StringComparison]::Ordinal) -and (Test-Path -LiteralPath $probe -PathType Leaf)
+    if (-not $t0.probePathPreserved) { throw 'T0 probe path missing or changed' }
+    if ($stageName -eq 'echo') {
+      $t0.emptyPreserved = $processArguments.Length -gt 4 -and $processArguments[4].Length -eq 0 -and $expected[4].Length -eq 0
+      $t0.duplicatesPreserved = $processArguments.Length -gt 6 -and $processArguments[5] -ceq 'repeat-value' -and $processArguments[6] -ceq 'repeat-value'
+      if (-not $t0.emptyPreserved -or -not $t0.duplicatesPreserved) { throw 'T0 empty or duplicate argument lost' }
+    } else {
+      $t0.emptyPreserved = 'Not Applicable'
+      $t0.duplicatesPreserved = 'Not Applicable'
+    }
+    $t0.result = 'PASS'
+  } catch {
+    $t0.failure = $_.Exception.Message
+    throw
+  }
+  if (-not (Test-Path -LiteralPath $node -PathType Leaf)) { throw "Pre-launch executable missing: $stageName" }
+  if (-not (Test-Path -LiteralPath $probe -PathType Leaf)) { throw "Pre-launch probe missing: $stageName" }
+  if ($processArguments.Length -eq 0) { throw "Pre-launch arguments empty: $stageName" }
+  $quoted = New-Object System.Collections.Generic.List[string]
+  for ($i=0; $i -lt $processArguments.Length; $i++) {
+    $quoted.Add((Quote-WindowsArgument -value $processArguments[$i]))
+  }
+  $constructedArguments = [string]::Join(' ', $quoted.ToArray())
+  if ([string]::IsNullOrWhiteSpace($constructedArguments)) { throw "Pre-launch Arguments empty: $stageName" }
+  if (-not $constructedArguments.StartsWith((Quote-WindowsArgument -value $probe),[System.StringComparison]::Ordinal)) { throw "Pre-launch probe absent: $stageName" }
+  $psi = New-Object System.Diagnostics.ProcessStartInfo
+  $psi.FileName = $node
+  $psi.Arguments = $constructedArguments
+  $psi.WorkingDirectory = $repo
+  $psi.UseShellExecute = $false
+  $psi.CreateNoWindow = $true
+  $psi.RedirectStandardOutput = $true
+  $psi.RedirectStandardError = $true
+  $psi.StandardOutputEncoding = [System.Text.UTF8Encoding]::new($false)
+  $psi.StandardErrorEncoding = [System.Text.UTF8Encoding]::new($false)
+  $process = New-Object System.Diagnostics.Process
+  $process.StartInfo = $psi
+  $stages = New-Object System.Collections.ArrayList
+  $stageStart = [DateTime]::UtcNow
+  [void]$stages.Add([ordered]@{name='Prepared'; utc=$stageStart.ToString('o')})
+  if (-not $process.Start()) { throw "Process.Start returned false: $stageName" }
+  [void]$stages.Add([ordered]@{name='Started'; utc=([DateTime]::UtcNow).ToString('o')})
+  $pidValue = $process.Id
+  $outTask = $process.StandardOutput.ReadToEndAsync()
+  $errTask = $process.StandardError.ReadToEndAsync()
+  $exited = $process.WaitForExit($timeoutMs)
+  $timedOut = -not $exited
+  $killExit = $null
+  $killOutput = $null
+  if ($timedOut) {
+    [void]$stages.Add([ordered]@{name='TimedOut'; utc=([DateTime]::UtcNow).ToString('o')})
+    $killOutput = (& "$env:SystemRoot\System32\taskkill.exe" /PID $pidValue /T /F 2>&1 | Out-String).Trim()
+    $killExit = $LASTEXITCODE
+    $exited = $process.WaitForExit(5000)
+    [void]$stages.Add([ordered]@{name='TerminationAttempted'; utc=([DateTime]::UtcNow).ToString('o')})
+  }
+  if (-not $exited) { throw "Child remained active after timeout cleanup: $stageName pid=$pidValue" }
+  $process.WaitForExit()
+  $stdout = $outTask.GetAwaiter().GetResult()
+  $stderr = $errTask.GetAwaiter().GetResult()
+  $stageEnd = [DateTime]::UtcNow
+  [void]$stages.Add([ordered]@{name='Completed'; utc=$stageEnd.ToString('o')})
+  $parentStillActive = $null -ne (Get-Process -Id $pidValue -ErrorAction SilentlyContinue)
+  $exitCode = $process.ExitCode
+  $outcome = if ($timedOut) {'TimedOut'} elseif ($exitCode -eq 0) {'Success'} else {'FailedExit'}
+  $record = [ordered]@{
+    stage=$stageName
+    fileName=$psi.FileName
+    serializedTransport=$serializedArgumentVector
+    decodedArgumentVector=@($processArguments)
+    quotedArgumentRepresentations=@($quoted.ToArray())
+    processStartInfoArguments=$psi.Arguments
+    expectedArgumentCount=$expectedArgumentCount
+    actualPrelaunchArgumentCount=$processArguments.Length
+    pid=$pidValue
+    timeoutMs=$timeoutMs
+    timedOut=$timedOut
+    killExitCode=$killExit
+    killOutput=$killOutput
+    parentStillActive=$parentStillActive
+    exitCode=$exitCode
+    outcome=$outcome
+    stdout=$stdout
+    stderr=$stderr
+    startUtc=$stageStart.ToString('o')
+    endUtc=$stageEnd.ToString('o')
+    elapsedMilliseconds=[math]::Round(($stageEnd-$stageStart).TotalMilliseconds)
+    stages=@($stages)
+  }
+  $process.Dispose()
+  return $record
+}
+
+try {
+  if ($PSVersionTable.PSVersion.Major -ne 5 -or $PSVersionTable.PSVersion.Minor -ne 1) { throw 'Windows PowerShell 5.1 required' }
+  if (Test-Path -LiteralPath $resultPath) { throw 'Smoke v3 result path already exists' }
+  if (Test-Path -LiteralPath $marker) { throw 'Shell marker already exists' }
+  Add-Type -AssemblyName System.Web.Extensions
+  $tokens = $null
+  $parseErrors = $null
+  $ast = [System.Management.Automation.Language.Parser]::ParseFile($PSCommandPath,[ref]$tokens,[ref]$parseErrors)
+  if (@($parseErrors).Count -ne 0) { throw 'Launcher parse errors found' }
+  $automaticArgsReferenceCount = @($ast.FindAll({
+    param($nodeAst)
+    $nodeAst -is [System.Management.Automation.Language.VariableExpressionAst] -and $nodeAst.VariablePath.UserPath -eq 'args'
+  },$true)).Count
+  if ($automaticArgsReferenceCount -ne 0) { throw 'Launcher references automatic argument variable' }
+  $before = Get-RepoSnapshot
+  if ($before.status -ne '') { throw 'Repository was not clean before smoke' }
+  $tempNamesBefore = @(Get-ChildItem -LiteralPath $tempDir -File | Sort-Object Name | Select-Object -ExpandProperty Name)
+  $shellData = '& echo SHELL_INTERPRETED > "' + $marker + '"'
+  [string[]]$payload = @('ordinary','text with spaces','','repeat-value','repeat-value','embedded "quote"','backslash\"quote','trailing\','C:\synthetic path\source v1.json',$shellData)
+  [string[]]$echoProcessArguments = @($probe,'echo') + $payload
+  $script:scenarioVectors['echo'] = $echoProcessArguments
+  $parser = New-Object System.Web.Script.Serialization.JavaScriptSerializer
+  $echoJson = $parser.Serialize($echoProcessArguments)
+  $raw.echo = Invoke-BoundedNode -serializedArgumentVector $echoJson -expectedArgumentCount $echoProcessArguments.Length -timeoutMs 5000 -stageName 'echo'
+  $echoLines = @($raw.echo.stdout.Split([char]10))
+  $jsonLine = @($echoLines | Where-Object { $_.StartsWith('ARGV_JSON=') } | Select-Object -First 1)
+  $observed = if ($jsonLine.Count -eq 1) { $parser.DeserializeObject($jsonLine[0].Substring(10)) } else { $null }
+  if ($null -ne $observed -and $observed -is [System.Array]) {
+    $actualArgv = [System.Array]::CreateInstance([string], [int]$observed.Length)
+    for ($i=0; $i -lt $observed.Length; $i++) {
+      if ($null -eq $observed[$i] -or -not ($observed[$i] -is [string])) { throw "Child argv null/non-string at $i" }
+      $actualArgv[$i] = [string]$observed[$i]
+    }
+  }
+  [string[]]$expectedArgv = @($node,$probe,'echo') + $payload
+  $argvMatch = Compare-StringArrays -expected $expectedArgv -actual $actualArgv
+  $stageNames = @($raw.echo.stages | ForEach-Object {$_.name}) -join ','
+  $s1Pass = $raw.echo.exitCode -eq 0 -and $raw.echo.outcome -eq 'Success' -and $stageNames -eq 'Prepared,Started,Completed' -and $actualArgv.Length -ge 2 -and [string]::Equals($actualArgv[1],$probe,[System.StringComparison]::Ordinal)
+  Set-Case 'S1' 'Probe executed, exit 0, deterministic stages' ("exit=$($raw.echo.exitCode); stages=$stageNames; receivedProbe=$($actualArgv[1])") $(if($s1Pass){'PASS'}else{'FAIL'})
+  Set-Case 'S2' 'Full process.argv exact element-wise match, including empty/duplicates/quote/backslash/path' ("match=$argvMatch; expected=$($expectedArgv.Length); actual=$($actualArgv.Length)") $(if($argvMatch){'PASS'}else{'FAIL'})
+  $s3Pass = $argvMatch -and $node.Contains(' ') -and $probe.Contains(' ') -and $actualArgv[1] -ceq $probe -and $actualArgv[11] -ceq $payload[8]
+  Set-Case 'S3' 'Space-containing executable, probe and path payload intact' ("probe=$($actualArgv[1]); path=$($actualArgv[11])") $(if($s3Pass){'PASS'}else{'FAIL'})
+  $s4Pass = $echoLines.Length -eq 3 -and $echoLines[0] -ceq 'SMOKE_V3_STDOUT_MARKER' -and $echoLines[1].StartsWith('ARGV_JSON=') -and $echoLines[2] -ceq '' -and $argvMatch
+  Set-Case 'S4' 'Exact stdout marker plus one structured argv line' ("marker=$($echoLines[0]); lineCount=$($echoLines.Length)") $(if($s4Pass){'PASS'}else{'FAIL'})
+  $s5Pass = $raw.echo.stderr -ceq ('SMOKE_V3_STDERR_MARKER' + $lf)
+  Set-Case 'S5' 'Exact separate stderr marker' ("stderr=$($raw.echo.stderr.Trim())") $(if($s5Pass){'PASS'}else{'FAIL'})
+  $tempNamesAfterEcho = @(Get-ChildItem -LiteralPath $tempDir -File | Sort-Object Name | Select-Object -ExpandProperty Name)
+  $tempNamesSame = Compare-StringArrays -expected $tempNamesBefore -actual $tempNamesAfterEcho
+  $markerExists = Test-Path -LiteralPath $marker
+  $s9Pass = $argvMatch -and $actualArgv[12] -ceq $shellData -and -not $markerExists -and $tempNamesSame
+  Set-Case 'S9' 'Shell-significant payload exact; no marker or unexpected file' ("payloadMatch=$($actualArgv[12] -ceq $shellData); markerExists=$markerExists; tempFilesUnchanged=$tempNamesSame") $(if($s9Pass){'PASS'}else{'FAIL'})
+  if (@($caseResults.Values | Where-Object {$_.result -ne 'PASS'}).Count -gt 0) { throw 'Echo-stage mandatory assertion failed; remaining child scenarios not started' }
+  [string[]]$nonzeroProcessArguments = @($probe,'nonzero')
+  $script:scenarioVectors['nonzero'] = $nonzeroProcessArguments
+  $nonzeroJson = $parser.Serialize($nonzeroProcessArguments)
+  $raw.nonzero = Invoke-BoundedNode -serializedArgumentVector $nonzeroJson -expectedArgumentCount $nonzeroProcessArguments.Length -timeoutMs 5000 -stageName 'nonzero'
+  $s6Pass = $raw.nonzero.exitCode -eq 23 -and $raw.nonzero.outcome -eq 'FailedExit' -and $raw.nonzero.stdout -ceq ('NONZERO_STDOUT_MARKER'+$lf) -and $raw.nonzero.stderr -ceq ('NONZERO_STDERR_MARKER'+$lf)
+  Set-Case 'S6' 'Exact nonzero exit 23 classified as failure; both streams retained' ("exit=$($raw.nonzero.exitCode); outcome=$($raw.nonzero.outcome)") $(if($s6Pass){'PASS'}else{'FAIL'})
+  if (-not $s6Pass) { throw 'Nonzero-stage mandatory assertion failed; timeout scenario not started' }
+  [string[]]$treeProcessArguments = @($probe,'tree')
+  $script:scenarioVectors['tree'] = $treeProcessArguments
+  $treeJson = $parser.Serialize($treeProcessArguments)
+  $raw.tree = Invoke-BoundedNode -serializedArgumentVector $treeJson -expectedArgumentCount $treeProcessArguments.Length -timeoutMs 1500 -stageName 'tree'
+  $childLine = @($raw.tree.stdout.Split([char]10) | Where-Object { $_.StartsWith('TREE_CHILD_PID=') } | Select-Object -First 1)
+  $childPid = if ($childLine.Count -eq 1) { [int]$childLine[0].Substring(15) } else { $null }
+  Start-Sleep -Milliseconds 300
+  $childStillActive = if ($childPid) { $null -ne (Get-Process -Id $childPid -ErrorAction SilentlyContinue) } else { $null }
+  $s7Pass = $raw.tree.timedOut -and $raw.tree.outcome -eq 'TimedOut' -and $raw.tree.killExitCode -eq 0 -and $raw.tree.elapsedMilliseconds -lt 10000 -and -not $raw.tree.parentStillActive
+  Set-Case 'S7' '1.5s timeout detected; bounded return and parent termination' ("timedOut=$($raw.tree.timedOut); killExit=$($raw.tree.killExitCode); elapsedMs=$($raw.tree.elapsedMilliseconds)") $(if($s7Pass){'PASS'}else{'FAIL'})
+  $s8Result = if ($childPid -and -not $raw.tree.parentStillActive -and -not $childStillActive) {'PASS'} else {'Needs Clarification'}
+  Set-Case 'S8' 'Synthetic parent/child tree terminated with no orphan' ("parentPid=$($raw.tree.pid); childPid=$childPid; parentActive=$($raw.tree.parentStillActive); childActive=$childStillActive") $s8Result
+} catch {
+  $fatalError = $_.Exception.Message
+  $fatalPhase = if (@($t0History | Where-Object {$_.result -eq 'FAIL'}).Count -gt 0) {'T0'} else {'Launcher or assertion'}
+}
+
+if (@($t0History | Where-Object {$_.result -eq 'FAIL'}).Count -eq 0) {
+  try {
+    $after = Get-RepoSnapshot
+    $snapshotMatch = (ConvertTo-Json -InputObject $before -Depth 8 -Compress) -ceq (ConvertTo-Json -InputObject $after -Depth 8 -Compress)
+    Set-Case 'S10' 'No formal Run ID, payload, manifest, sidecar, linkage or status effect; repository snapshot unchanged' ("snapshotMatch=$snapshotMatch; head=$($after.head); status=$($after.status)") $(if($snapshotMatch){'PASS'}else{'FAIL'})
+  } catch {
+    Set-Case 'S10' 'Repository snapshot unchanged' $_.Exception.Message 'FAIL'
+    if (-not $fatalError) { $fatalError = $_.Exception.Message }
+  }
+}
+
+foreach ($n in 1..10) {
+  $id = 'S' + $n
+  if (-not $caseResults.Contains($id)) { Set-Case $id 'Required Smoke v3 behavior' 'Not reached after earlier failure' 'Not Reached' }
+}
+$orderedCases = @(1..10 | ForEach-Object {$caseResults['S'+$_]})
+$failedCount = @($orderedCases | Where-Object {$_.result -eq 'FAIL'}).Count
+$uncertainCount = @($orderedCases | Where-Object {$_.result -eq 'Needs Clarification' -or $_.result -eq 'Not Reached'}).Count
+$t0Results = @($t0History | ForEach-Object {$_.result})
+$t0Overall = if ($t0Results.Count -eq 0) {'Not Reached'} elseif (@($t0Results | Where-Object {$_ -ne 'PASS'}).Count -gt 0) {'FAIL'} else {'PASS'}
+$overall = if ($t0Overall -eq 'FAIL' -or $failedCount -gt 0 -or $fatalError) {'FAIL'} elseif ($t0Overall -ne 'PASS' -or $uncertainCount -gt 0) {'Needs Clarification'} else {'PASS'}
+$endUtc = [DateTime]::UtcNow
+$record = [ordered]@{
+  label='Non-Formal Launcher Smoke Validation — Not OE-12 Operational Evidence'
+  smokeVersion='v3'
+  captureId=$captureId
+  remediationCommit='032b2244886e04b8704a265a09e33f067fb10ed8'
+  authorizationDecision='f955087dbad6a39a6e58bbb2ab16c637adcc23f9'
+  authorizationLinkage='2788c421e2e0eaebe59d220c1f9e3407c9253162'
+  acceptedImplementation='826376cc84521a5d648462fdcc985cd2d412a24c'
+  shell='Windows PowerShell 5.1'
+  powershellVersion=$PSVersionTable.PSVersion.ToString()
+  nodeExecutable=$node
+  nodeVersion=$nodeVersion
+  launcherMechanism='JSON scalar; indexed typed decode; deterministic Windows quoting; ProcessStartInfo.FileName plus Arguments; no ArgumentList; async stdout/stderr; taskkill /PID /T /F on timeout'
+  network='COREPACK_ENABLE_NETWORK=0; npm_config_offline=true; synthetic probe contains no network call'
+  startUtc=$startUtc.ToString('o')
+  endUtc=$endUtc.ToString('o')
+  elapsedMilliseconds=[math]::Round(($endUtc-$startUtc).TotalMilliseconds)
+  t0Result=$t0Overall
+  t0=@($t0History)
+  expectedProcessArgv=@($expectedArgv)
+  actualProcessArgv=@($actualArgv)
+  processArgvExactMatch=$argvMatch
+  cases=$orderedCases
+  raw=$raw
+  beforeSnapshot=$before
+  afterSnapshot=$after
+  fatalPhase=$fatalPhase
+  fatalError=$fatalError
+  overall=$overall
+  formalRunIdGenerated=$false
+  formalRetry0003Executed=$false
+  oe12StatusChanged=$false
+}
+$record | ConvertTo-Json -Depth 30 | Set-Content -LiteralPath $resultPath -Encoding UTF8
+Write-Output $resultPath
+Write-Output "SMOKE_V3_RESULT=$overall"
+Write-Output "CAPTURE_ID=$captureId"
+if ($fatalError) { Write-Output "FATAL=$fatalError" }

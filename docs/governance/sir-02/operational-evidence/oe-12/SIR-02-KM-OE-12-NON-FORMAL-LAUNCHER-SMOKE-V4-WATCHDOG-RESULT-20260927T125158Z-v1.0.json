@@ -1,0 +1,19 @@
+﻿{
+    "classification":  "Non-Formal Launcher Smoke Validation — Not OE-12 Operational Evidence",
+    "launcherPath":  "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\launcher-v4.ps1",
+    "command":  "powershell.exe -NoProfile -NonInteractive -EncodedCommand \u003cbase64 of retained launcher-loader source\u003e",
+    "commandArguments":  "-NoProfile -NonInteractive -EncodedCommand JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQA9ACcAUwB0AG8AcAAnADsAIAAkAHMAbwB1AHIAYwBlAD0AWwBJAE8ALgBGAGkAbABlAF0AOgA6AFIAZQBhAGQAQQBsAGwAVABlAHgAdAAoACQAZQBuAHYAOgBTAE0ATwBLAEUAXwBWADQAXwBMAEEAVQBOAEMASABFAFIAKQA7ACAAJgAgACgAWwBzAGMAcgBpAHAAdABiAGwAbwBjAGsAXQA6ADoAQwByAGUAYQB0AGUAKAAkAHMAbwB1AHIAYwBlACkAKQA=",
+    "executionPolicyChanged":  false,
+    "launcherPid":  24620,
+    "startedUtc":  "2026-09-27T12:51:56.6473184Z",
+    "endedUtc":  "2026-09-27T12:52:00.5614499Z",
+    "elapsedMilliseconds":  3914,
+    "outerWatchdogMs":  30000,
+    "watchdogTimedOut":  false,
+    "targetedLauncherKill":  null,
+    "launcherExited":  true,
+    "exitCode":  0,
+    "stdoutPath":  "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\watchdog-stdout.txt",
+    "stderrPath":  "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\watchdog-stderr.txt",
+    "rawResultPath":  "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-smoke-v4-prep\\smoke-v4-raw.json"
+}

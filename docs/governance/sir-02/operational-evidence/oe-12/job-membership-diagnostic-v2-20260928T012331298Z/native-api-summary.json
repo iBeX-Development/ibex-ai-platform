@@ -1,0 +1,472 @@
+{
+  "token": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V2-20260928T012331298Z",
+  "source": "raw-result.json",
+  "stepCount": 46,
+  "failedStepCount": 0,
+  "failedSteps": [],
+  "targetedOwnedParentFallbackCallCount": 0,
+  "prohibitedJobWideCallCount": 0,
+  "effectiveJobLimitFlags": 0,
+  "steps": [
+    {
+      "Api": "CreateJobObjectW",
+      "OperationClass": "Containment",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 0,
+      "Detail": "anonymous; non-inheritable handle"
+    },
+    {
+      "Api": "SetInformationJobObject",
+      "OperationClass": "Containment",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 0,
+      "Detail": "zero limits; no kill-on-close and no breakaway"
+    },
+    {
+      "Api": "QueryInformationJobObject(JobObjectExtendedLimitInformation)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 0,
+      "Detail": "effective limit read-back"
+    },
+    {
+      "Api": "VerifyNonDestructiveJobLimits",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 0,
+      "Detail": "flags=0"
+    },
+    {
+      "Api": "GetSystemDirectoryW",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 0,
+      "Detail": "canonical Windows system directory for conhost path comparison"
+    },
+    {
+      "Api": "CreateProcessW(CREATE_SUSPENDED)",
+      "OperationClass": "Process Creation",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "synthetic Node parent; no inherited handles"
+    },
+    {
+      "Api": "GetProcessTimes(parent)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "creationFileTimeUtc=134350322119225337"
+    },
+    {
+      "Api": "AssignProcessToJobObject",
+      "OperationClass": "Containment",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "only explicit assignment"
+    },
+    {
+      "Api": "IsProcessInJob(parent)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "pre-resume membership query"
+    },
+    {
+      "Api": "ResumeThread(parent)",
+      "OperationClass": "Containment",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "previousSuspendCount=1"
+    },
+    {
+      "Api": "CloseHandle(parent thread)",
+      "OperationClass": "Cleanup",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "owned thread handle"
+    },
+    {
+      "Api": "QueryInformationJobObject(JobObjectBasicProcessIdList)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 0,
+      "Detail": "capacity=8; returned=24"
+    },
+    {
+      "Api": "OpenProcess(member read-only)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "query and synchronize only"
+    },
+    {
+      "Api": "GetProcessTimes(member)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "creationFileTimeUtc=134350322119225337"
+    },
+    {
+      "Api": "QueryFullProcessImageNameW(member)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "read-only image query"
+    },
+    {
+      "Api": "IsProcessInJob(member)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "read-only membership query"
+    },
+    {
+      "Api": "ProcessIdToSessionId(member)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "sessionId=4"
+    },
+    {
+      "Api": "WaitForSingleObject(member pre-release)",
+      "OperationClass": "Read-Only State Wait",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "result=258; boundMs=0"
+    },
+    {
+      "Api": "CloseHandle(member query handle)",
+      "OperationClass": "Cleanup",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "read-only member handle"
+    },
+    {
+      "Api": "OpenProcess(member read-only)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "query and synchronize only"
+    },
+    {
+      "Api": "GetProcessTimes(member)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "creationFileTimeUtc=134350322119225337"
+    },
+    {
+      "Api": "QueryFullProcessImageNameW(member)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "read-only image query"
+    },
+    {
+      "Api": "IsProcessInJob(member)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "read-only membership query"
+    },
+    {
+      "Api": "ProcessIdToSessionId(member)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "sessionId=4"
+    },
+    {
+      "Api": "WaitForSingleObject(member pre-release)",
+      "OperationClass": "Read-Only State Wait",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "result=258; boundMs=0"
+    },
+    {
+      "Api": "CloseHandle(member query handle)",
+      "OperationClass": "Cleanup",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "read-only member handle"
+    },
+    {
+      "Api": "WaitForSingleObject(owned parent pre-release)",
+      "OperationClass": "Read-Only State Wait",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "result=258; boundMs=0"
+    },
+    {
+      "Api": "OpenProcess(member read-only)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "query and synchronize only"
+    },
+    {
+      "Api": "GetProcessTimes(member)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "creationFileTimeUtc=134350322119464724"
+    },
+    {
+      "Api": "QueryFullProcessImageNameW(member)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "read-only image query"
+    },
+    {
+      "Api": "IsProcessInJob(member)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "read-only membership query"
+    },
+    {
+      "Api": "ProcessIdToSessionId(member)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "sessionId=4"
+    },
+    {
+      "Api": "WaitForSingleObject(member pre-release)",
+      "OperationClass": "Read-Only State Wait",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "result=258; boundMs=0"
+    },
+    {
+      "Api": "CloseHandle(member query handle)",
+      "OperationClass": "Cleanup",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "read-only member handle"
+    },
+    {
+      "Api": "QueryInformationJobObject(JobObjectBasicProcessIdList)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 0,
+      "Detail": "capacity=8; returned=24"
+    },
+    {
+      "Api": "OpenProcess(candidate conhost retained handle)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "retain exact process object across parent release"
+    },
+    {
+      "Api": "GetProcessTimes(candidate conhost retained handle)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "creationFileTimeUtc=134350322119464724; matchesPreRelease=True"
+    },
+    {
+      "Api": "IsProcessInJob(candidate conhost retained handle)",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "inJob=True"
+    },
+    {
+      "Api": "WaitForSingleObject(candidate conhost pre-release)",
+      "OperationClass": "Read-Only State Wait",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "result=258; boundMs=0"
+    },
+    {
+      "Api": "WaitForSingleObject(owned parent)",
+      "OperationClass": "Read-Only State Wait",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "result=0; boundMs=12000"
+    },
+    {
+      "Api": "OriginalParentIdentityAndLiveness",
+      "OperationClass": "Read-Only Identity Query",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "sameCreation=True; waitResult=0"
+    },
+    {
+      "Api": "CloseHandle(original parent verification)",
+      "OperationClass": "Cleanup",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "read-only verification handle"
+    },
+    {
+      "Api": "WaitForSingleObject(retained conhost immediately post-parent)",
+      "OperationClass": "Read-Only State Wait",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "result=0; boundMs=0"
+    },
+    {
+      "Api": "CloseHandle(parent process)",
+      "OperationClass": "Cleanup",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 22240,
+      "Detail": "owned process handle"
+    },
+    {
+      "Api": "CloseHandle(retained conhost read-only)",
+      "OperationClass": "Cleanup",
+      "TargetHandle": null,
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 39056,
+      "Detail": "no conhost termination; retained identity handle only"
+    },
+    {
+      "Api": "CloseHandle(non-destructive Job)",
+      "OperationClass": "Cleanup",
+      "TargetHandle": "0xAA0",
+      "Success": true,
+      "ErrorCode": 0,
+      "SanitizedError": null,
+      "Pid": 0,
+      "Detail": "zero Job limit flags verified before child creation"
+    }
+  ]
+}

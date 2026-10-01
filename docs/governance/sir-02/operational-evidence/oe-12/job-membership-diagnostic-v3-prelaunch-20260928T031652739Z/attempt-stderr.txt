@@ -1,0 +1,5 @@
+File C:\Users\gantu\AppData\Local\Temp\sir02-oe12-v3-d0-20260928T031541937Z\extracted\launcher.ps1 cannot be loaded 
+because running scripts is disabled on this system. For more information, see about_Execution_Policies at 
+https:/go.microsoft.com/fwlink/?LinkID=135170.
+    + CategoryInfo          : SecurityError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : UnauthorizedAccess

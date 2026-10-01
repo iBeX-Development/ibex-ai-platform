@@ -1,0 +1,15 @@
+{
+  "gate": "R3-1",
+  "captureUtc": "2026-09-28T04:09:12.8500332Z",
+  "sourceCommit": "9f8480b6c8f44cba616ff2bf80094a8cb664de7a",
+  "repositoryHead": "f7c01673e0da287771dbb791924c2d2c38100500",
+  "bundleSha256": "82b047a85d3fec6cabd6e430c6225eee0ed46b0e7b92694f1703e3a4910249ab",
+  "launcherSha256": "e20a642996832750a1dfcb2d535d680ae3477142e456993318ae7be0448ac1a3",
+  "nativeHelperSha256": "befd43e31c0cd72c34bcaef95219632b22d7e1d1cbb0081eb5ee78a0d6272428",
+  "probeSha256": "5baa7badc3a6007630c1f2bfb05b2797ca6140e107767891a51d563913788ff1",
+  "bundleVerified": true,
+  "committedSourceVerified": true,
+  "extractedSourceVerified": true,
+  "verifiedLauncherPath": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-retry-gates-20260928T040910606Z\\extracted\\launcher.ps1",
+  "workingTreeClean": true
+}

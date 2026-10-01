@@ -1,0 +1,18 @@
+{
+  "diagnosticToken": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V3-20260928T040954760Z",
+  "safeCleanup": {
+    "cooperativeSignalIssued": true,
+    "knownParentExited": true,
+    "exactOwnedHandleFallbackUsed": false,
+    "unidentifiedMemberTerminated": false,
+    "jobWideTerminationUsed": false,
+    "nativeHandleCleanupSucceeded": true,
+    "result": "TargetedOwnedParentFallbackOrPidAbsenceUnverified — Cannot Pass",
+    "errorCategory": null
+  },
+  "originalParentNoLongerAlive": true,
+  "parentPidAbsent": false,
+  "parentPidAbsenceErrorCategory": "CimException",
+  "formalRunIdGenerated": false,
+  "oe12StatusChanged": false
+}

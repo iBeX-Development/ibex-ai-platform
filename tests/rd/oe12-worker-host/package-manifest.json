@@ -1,0 +1,15 @@
+{
+  "classification": "R&D ONLY / NOT AUTHORIZED FOR EXECUTION",
+  "schema": "oe12-worker-host-rd-source-manifest-v1",
+  "hashRule": "SHA-256 of exact Git-index/committed blob bytes; this JSON file is authenticated by its separate SHA-256, supplied to the future execution guard",
+  "files": [
+    { "path": "PATH-MAP.md", "sha256": "1dd4232fcb17e4f5443ca941334f1d5842070f960ef195bf4e0c64c36deab877" },
+    { "path": "config.json", "sha256": "501e2210a4373374d685c585a4aedb8d6fb78fc3c37634d0ff8b381458cbf246" },
+    { "path": "controller.mjs", "sha256": "3fdf55eec65585857e5157099ce60e0be2fe60318833f66c61b05ff780daf26a" },
+    { "path": "guard.mjs", "sha256": "77a41db2a76e8a0ef17721d3afbe42516b2068c485446002830f47a6428a8c88" },
+    { "path": "identity.ps1", "sha256": "94de540708eedf9c20f2e19d81c80d864912cb542a1943a3c2af6aff89af460c" },
+    { "path": "protocol.mjs", "sha256": "e487731d84a32003ba726326fae1f6e14d82696feababa69072bf691d84d4312" },
+    { "path": "supervisor.mjs", "sha256": "00395c3663dfae9d654430dd91bc449863d65e2574925d366ece3bec4f7129f1" },
+    { "path": "worker.ps1", "sha256": "8b370d1298498bf58b22047ec59c0f76d43d97c60d6422ed56ad488baba6ad81" }
+  ]
+}

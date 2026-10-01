@@ -1,0 +1,478 @@
+{
+  "document": "SIR-02 KM OE-02 Source Owner and Tenant Binding Evidence",
+  "version": "v1.0",
+  "status": "Execution Failed",
+  "evidence_run": {
+    "evidence_id": "SIR02-KM-OE-02",
+    "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+    "plan_version": "v1.0",
+    "plan_matrix_reference": "37212d5869709f85256618e6b03fffb0622a2049",
+    "gate_a_approval": "84a05702b744a6a710644299381e30e9a9a7aefb",
+    "fixture_schema_id": "SIR02-KM-EVIDENCE-FIXTURE",
+    "fixture_schema_version": "v1.0",
+    "test_namespace": "sir02-km-evidence-v1",
+    "test_namespace_version": "v1.0",
+    "executor": "GANTUMUR Erdenedalai — Founder / Administrator",
+    "reviewer": "SODBILEG Erkhembayar — Administrator",
+    "execution_timestamp": "2026-09-25T06:50:15Z",
+    "repository_commit": "679c8314ba8777a89c73fe4f0aecbdb49548ba56",
+    "test_data_classification": "Synthetic",
+    "approved_data_classes": [
+      "SYNTHETIC_SOURCE_METADATA",
+      "SYNTHETIC_IDENTITY_CONTEXT",
+      "DETERMINISTIC_INTEGRITY_DATA",
+      "DETERMINISTIC_LIFECYCLE_EVENTS",
+      "SANITIZED_TEST_AUDIT_DATA"
+    ],
+    "artifact_checksum_references": [
+      {
+        "algorithm": "SHA-256",
+        "artifact": "docs/governance/sir-02/operational-evidence/oe-02/SIR-02-KM-OE-02-EXECUTION-ATTEMPT-0001-FAILED-v1.0.json",
+        "checksum_reference": "docs/governance/sir-02/operational-evidence/oe-02/SIR-02-KM-OE-02-EXECUTION-ATTEMPT-0001-FAILED-v1.0.json.sha256"
+      }
+    ],
+    "result": "Error",
+    "acceptance_status": "Not Reviewed"
+  },
+  "accepted_oe01_basis": {
+    "source_artifact": "docs/governance/sir-02/operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json",
+    "source_artifact_sha256": "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+    "evidence_commit": "44a97a9b387235c67ae70cce24fb32cda0adfe70",
+    "review_commit": "a33c8220e595fafad317610e94d09d4f21ecc882",
+    "linkage_commit": "679c8314ba8777a89c73fe4f0aecbdb49548ba56",
+    "source_id": "sir02-km-source-a-001",
+    "registration_id": "sir02-km-registration-a-001",
+    "source_version": "v1.0"
+  },
+  "binding_manifest": {
+    "tenant_bindings": [
+      {
+        "tenant_id": "sir02-test-tenant-a",
+        "binding_authority_ref": "84a05702b744a6a710644299381e30e9a9a7aefb"
+      }
+    ],
+    "owner_bindings": [
+      {
+        "owner_id": "sir02-test-source-owner-a",
+        "owner_type": "synthetic-test-identity",
+        "ownership_authority_ref": "84a05702b744a6a710644299381e30e9a9a7aefb"
+      }
+    ],
+    "tenant_binding_count": 1,
+    "owner_binding_count": 1,
+    "binding_integrity": {
+      "source_id": "sir02-km-source-a-001",
+      "registration_id": "sir02-km-registration-a-001",
+      "source_version": "v1.0",
+      "tenant_id": "sir02-test-tenant-a",
+      "owner_id": "sir02-test-source-owner-a",
+      "correlation_status": "consistent"
+    }
+  },
+  "execution_observations": [
+    {
+      "case_id": "exact-tenant-owner-binding",
+      "request": {
+        "tenant_id": "sir02-test-tenant-a",
+        "owner_id": "sir02-test-source-owner-a",
+        "operation": "read"
+      },
+      "expected": "Allowed",
+      "actual": "Allowed",
+      "reason_code": "EXACT_BINDING_MATCH",
+      "public_error": null,
+      "disclosed_source_fields": 0,
+      "authorization_evaluations": 1,
+      "artifact_processing_calls": 1
+    },
+    {
+      "case_id": "tenant-b-read",
+      "request": {
+        "tenant_id": "sir02-test-tenant-b",
+        "owner_id": "sir02-test-source-owner-a",
+        "operation": "read"
+      },
+      "expected": "Denied",
+      "actual": "Denied",
+      "reason_code": "TENANT_BINDING_MISMATCH",
+      "public_error": "SOURCE_ACCESS_DENIED",
+      "disclosed_source_fields": 0,
+      "authorization_evaluations": 1,
+      "artifact_processing_calls": 0
+    },
+    {
+      "case_id": "tenant-b-reuse",
+      "request": {
+        "tenant_id": "sir02-test-tenant-b",
+        "owner_id": "sir02-test-source-owner-a",
+        "operation": "reuse"
+      },
+      "expected": "Denied",
+      "actual": "Denied",
+      "reason_code": "TENANT_BINDING_MISMATCH",
+      "public_error": "SOURCE_ACCESS_DENIED",
+      "disclosed_source_fields": 0,
+      "authorization_evaluations": 1,
+      "artifact_processing_calls": 0
+    },
+    {
+      "case_id": "tenant-b-relabel",
+      "request": {
+        "tenant_id": "sir02-test-tenant-b",
+        "owner_id": "sir02-test-source-owner-a",
+        "operation": "relabel"
+      },
+      "expected": "Denied",
+      "actual": "Denied",
+      "reason_code": "TENANT_BINDING_MISMATCH",
+      "public_error": "SOURCE_ACCESS_DENIED",
+      "disclosed_source_fields": 0,
+      "authorization_evaluations": 1,
+      "artifact_processing_calls": 0
+    },
+    {
+      "case_id": "tenant-b-claim",
+      "request": {
+        "tenant_id": "sir02-test-tenant-b",
+        "owner_id": "sir02-test-source-owner-b",
+        "operation": "claim"
+      },
+      "expected": "Denied",
+      "actual": "Denied",
+      "reason_code": "TENANT_BINDING_MISMATCH",
+      "public_error": "SOURCE_ACCESS_DENIED",
+      "disclosed_source_fields": 0,
+      "authorization_evaluations": 1,
+      "artifact_processing_calls": 0
+    },
+    {
+      "case_id": "replace-tenant-a-with-b",
+      "request": {
+        "tenant_id": "sir02-test-tenant-b",
+        "owner_id": "sir02-test-source-owner-a",
+        "operation": "replace-binding"
+      },
+      "expected": "Denied",
+      "actual": "Denied",
+      "reason_code": "TENANT_BINDING_MISMATCH",
+      "public_error": "SOURCE_ACCESS_DENIED",
+      "disclosed_source_fields": 0,
+      "authorization_evaluations": 1,
+      "artifact_processing_calls": 0
+    },
+    {
+      "case_id": "missing-tenant",
+      "request": {
+        "tenant_id": null,
+        "owner_id": "sir02-test-source-owner-a",
+        "operation": "read"
+      },
+      "expected": "Denied",
+      "actual": "Denied",
+      "reason_code": "MISSING_TENANT",
+      "public_error": "SOURCE_ACCESS_DENIED",
+      "disclosed_source_fields": 0,
+      "authorization_evaluations": 1,
+      "artifact_processing_calls": 0
+    },
+    {
+      "case_id": "missing-owner",
+      "request": {
+        "tenant_id": "sir02-test-tenant-a",
+        "owner_id": null,
+        "operation": "read"
+      },
+      "expected": "Denied",
+      "actual": "Denied",
+      "reason_code": "MISSING_OWNER",
+      "public_error": "SOURCE_ACCESS_DENIED",
+      "disclosed_source_fields": 0,
+      "authorization_evaluations": 1,
+      "artifact_processing_calls": 0
+    },
+    {
+      "case_id": "wildcard-tenant",
+      "request": {
+        "tenant_id": "*",
+        "owner_id": "sir02-test-source-owner-a",
+        "operation": "read"
+      },
+      "expected": "Denied",
+      "actual": "Denied",
+      "reason_code": "WILDCARD_TENANT",
+      "public_error": "SOURCE_ACCESS_DENIED",
+      "disclosed_source_fields": 0,
+      "authorization_evaluations": 1,
+      "artifact_processing_calls": 0
+    },
+    {
+      "case_id": "wildcard-owner",
+      "request": {
+        "tenant_id": "sir02-test-tenant-a",
+        "owner_id": "*",
+        "operation": "read"
+      },
+      "expected": "Denied",
+      "actual": "Denied",
+      "reason_code": "WILDCARD_OWNER",
+      "public_error": "SOURCE_ACCESS_DENIED",
+      "disclosed_source_fields": 0,
+      "authorization_evaluations": 1,
+      "artifact_processing_calls": 0
+    },
+    {
+      "case_id": "conflicting-tenant-owner",
+      "request": {
+        "tenant_id": "sir02-test-tenant-b",
+        "owner_id": "sir02-test-source-owner-b",
+        "operation": "read"
+      },
+      "expected": "Denied",
+      "actual": "Denied",
+      "reason_code": "TENANT_BINDING_MISMATCH",
+      "public_error": "SOURCE_ACCESS_DENIED",
+      "disclosed_source_fields": 0,
+      "authorization_evaluations": 1,
+      "artifact_processing_calls": 0
+    },
+    {
+      "case_id": "unauthorized-owner-substitution",
+      "request": {
+        "tenant_id": "sir02-test-tenant-a",
+        "owner_id": "sir02-test-source-owner-b",
+        "operation": "read"
+      },
+      "expected": "Denied",
+      "actual": "Denied",
+      "reason_code": "OWNER_BINDING_MISMATCH",
+      "public_error": "SOURCE_ACCESS_DENIED",
+      "disclosed_source_fields": 0,
+      "authorization_evaluations": 1,
+      "artifact_processing_calls": 0
+    }
+  ],
+  "adapter_call_proof": {
+    "adapter": "transient-deterministic-binding-evaluator-v1.0",
+    "repository_implementation_created": false,
+    "authorization_evaluations": 12,
+    "allowed_evaluations": 1,
+    "denied_evaluations": 11,
+    "artifact_processing_calls": null,
+    "negative_artifact_processing_calls": null
+  },
+  "normalized_audit_evidence": [
+    {
+      "event_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-event-01",
+      "event_type": "source_owner_tenant_binding_evaluated",
+      "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+      "request_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-request-01",
+      "correlation_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-correlation-01",
+      "trace_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-trace-01",
+      "bound_tenant_id": "sir02-test-tenant-a",
+      "bound_owner_id": "sir02-test-source-owner-a",
+      "outcome": "Allowed",
+      "reason_code": "EXACT_BINDING_MATCH",
+      "timestamp": "2026-09-25T06:50:15Z",
+      "raw_payload_logged": false,
+      "secrets_logged": false
+    },
+    {
+      "event_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-event-02",
+      "event_type": "source_owner_tenant_binding_evaluated",
+      "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+      "request_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-request-02",
+      "correlation_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-correlation-02",
+      "trace_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-trace-02",
+      "bound_tenant_id": "sir02-test-tenant-a",
+      "bound_owner_id": "sir02-test-source-owner-a",
+      "outcome": "Denied",
+      "reason_code": "TENANT_BINDING_MISMATCH",
+      "timestamp": "2026-09-25T06:50:15Z",
+      "raw_payload_logged": false,
+      "secrets_logged": false
+    },
+    {
+      "event_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-event-03",
+      "event_type": "source_owner_tenant_binding_evaluated",
+      "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+      "request_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-request-03",
+      "correlation_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-correlation-03",
+      "trace_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-trace-03",
+      "bound_tenant_id": "sir02-test-tenant-a",
+      "bound_owner_id": "sir02-test-source-owner-a",
+      "outcome": "Denied",
+      "reason_code": "TENANT_BINDING_MISMATCH",
+      "timestamp": "2026-09-25T06:50:15Z",
+      "raw_payload_logged": false,
+      "secrets_logged": false
+    },
+    {
+      "event_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-event-04",
+      "event_type": "source_owner_tenant_binding_evaluated",
+      "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+      "request_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-request-04",
+      "correlation_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-correlation-04",
+      "trace_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-trace-04",
+      "bound_tenant_id": "sir02-test-tenant-a",
+      "bound_owner_id": "sir02-test-source-owner-a",
+      "outcome": "Denied",
+      "reason_code": "TENANT_BINDING_MISMATCH",
+      "timestamp": "2026-09-25T06:50:15Z",
+      "raw_payload_logged": false,
+      "secrets_logged": false
+    },
+    {
+      "event_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-event-05",
+      "event_type": "source_owner_tenant_binding_evaluated",
+      "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+      "request_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-request-05",
+      "correlation_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-correlation-05",
+      "trace_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-trace-05",
+      "bound_tenant_id": "sir02-test-tenant-a",
+      "bound_owner_id": "sir02-test-source-owner-a",
+      "outcome": "Denied",
+      "reason_code": "TENANT_BINDING_MISMATCH",
+      "timestamp": "2026-09-25T06:50:15Z",
+      "raw_payload_logged": false,
+      "secrets_logged": false
+    },
+    {
+      "event_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-event-06",
+      "event_type": "source_owner_tenant_binding_evaluated",
+      "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+      "request_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-request-06",
+      "correlation_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-correlation-06",
+      "trace_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-trace-06",
+      "bound_tenant_id": "sir02-test-tenant-a",
+      "bound_owner_id": "sir02-test-source-owner-a",
+      "outcome": "Denied",
+      "reason_code": "TENANT_BINDING_MISMATCH",
+      "timestamp": "2026-09-25T06:50:15Z",
+      "raw_payload_logged": false,
+      "secrets_logged": false
+    },
+    {
+      "event_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-event-07",
+      "event_type": "source_owner_tenant_binding_evaluated",
+      "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+      "request_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-request-07",
+      "correlation_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-correlation-07",
+      "trace_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-trace-07",
+      "bound_tenant_id": "sir02-test-tenant-a",
+      "bound_owner_id": "sir02-test-source-owner-a",
+      "outcome": "Denied",
+      "reason_code": "MISSING_TENANT",
+      "timestamp": "2026-09-25T06:50:15Z",
+      "raw_payload_logged": false,
+      "secrets_logged": false
+    },
+    {
+      "event_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-event-08",
+      "event_type": "source_owner_tenant_binding_evaluated",
+      "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+      "request_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-request-08",
+      "correlation_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-correlation-08",
+      "trace_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-trace-08",
+      "bound_tenant_id": "sir02-test-tenant-a",
+      "bound_owner_id": "sir02-test-source-owner-a",
+      "outcome": "Denied",
+      "reason_code": "MISSING_OWNER",
+      "timestamp": "2026-09-25T06:50:15Z",
+      "raw_payload_logged": false,
+      "secrets_logged": false
+    },
+    {
+      "event_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-event-09",
+      "event_type": "source_owner_tenant_binding_evaluated",
+      "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+      "request_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-request-09",
+      "correlation_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-correlation-09",
+      "trace_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-trace-09",
+      "bound_tenant_id": "sir02-test-tenant-a",
+      "bound_owner_id": "sir02-test-source-owner-a",
+      "outcome": "Denied",
+      "reason_code": "WILDCARD_TENANT",
+      "timestamp": "2026-09-25T06:50:15Z",
+      "raw_payload_logged": false,
+      "secrets_logged": false
+    },
+    {
+      "event_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-event-10",
+      "event_type": "source_owner_tenant_binding_evaluated",
+      "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+      "request_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-request-10",
+      "correlation_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-correlation-10",
+      "trace_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-trace-10",
+      "bound_tenant_id": "sir02-test-tenant-a",
+      "bound_owner_id": "sir02-test-source-owner-a",
+      "outcome": "Denied",
+      "reason_code": "WILDCARD_OWNER",
+      "timestamp": "2026-09-25T06:50:15Z",
+      "raw_payload_logged": false,
+      "secrets_logged": false
+    },
+    {
+      "event_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-event-11",
+      "event_type": "source_owner_tenant_binding_evaluated",
+      "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+      "request_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-request-11",
+      "correlation_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-correlation-11",
+      "trace_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-trace-11",
+      "bound_tenant_id": "sir02-test-tenant-a",
+      "bound_owner_id": "sir02-test-source-owner-a",
+      "outcome": "Denied",
+      "reason_code": "TENANT_BINDING_MISMATCH",
+      "timestamp": "2026-09-25T06:50:15Z",
+      "raw_payload_logged": false,
+      "secrets_logged": false
+    },
+    {
+      "event_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-event-12",
+      "event_type": "source_owner_tenant_binding_evaluated",
+      "evidence_run_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001",
+      "request_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-request-12",
+      "correlation_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-correlation-12",
+      "trace_id": "SIR02-KM-OE-02-V1_0-20260925T065015Z-0001-trace-12",
+      "bound_tenant_id": "sir02-test-tenant-a",
+      "bound_owner_id": "sir02-test-source-owner-a",
+      "outcome": "Denied",
+      "reason_code": "OWNER_BINDING_MISMATCH",
+      "timestamp": "2026-09-25T06:50:15Z",
+      "raw_payload_logged": false,
+      "secrets_logged": false
+    }
+  ],
+  "validation_summary": {
+    "result": "Execution Harness Error",
+    "positive_cases": 1,
+    "positive_passed": 1,
+    "negative_cases": 11,
+    "negative_passed": 11,
+    "tenant_isolation": "Passed",
+    "owner_binding": "Passed",
+    "cross_tenant_metadata_disclosures": null,
+    "failed_case_ids": []
+  },
+  "cleanup_manifest": {
+    "namespace": "sir02-km-evidence-v1",
+    "ephemeral_binding_records_created": 1,
+    "ephemeral_binding_records_removed": 1,
+    "persistent_live_knowledge_artifacts_created": 0,
+    "ingestion_calls": 0,
+    "rag_calls": 0,
+    "embedding_calls": 0,
+    "indexing_calls": 0,
+    "vector_store_calls": 0,
+    "retrieval_calls": 0,
+    "deployment_changes": 0,
+    "traffic_changes": 0,
+    "result": "Passed"
+  },
+  "execution_failure": {
+    "stage": "final-aggregate-validation",
+    "reason": "PowerShell Measure-Object did not resolve OrderedDictionary observation properties, producing null aggregate values",
+    "acceptance_criteria_failed": false,
+    "scenario_results": "1/1 positive and 11/11 negative expectations matched before aggregate assertion",
+    "retry_requirement": "Preserve this attempt and execute a corrected deterministic aggregation under a new run ID"
+  }
+}

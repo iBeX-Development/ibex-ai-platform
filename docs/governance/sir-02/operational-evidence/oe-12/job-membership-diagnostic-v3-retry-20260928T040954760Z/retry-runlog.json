@@ -1,0 +1,17 @@
+{
+  "classification": "Non-Formal Tooling Diagnostic — Not OE-12 Operational Evidence",
+  "authorizationCommit": "6ac9e21b41e1833386884e704c965f14d2cb37d0",
+  "sourceCommit": "9f8480b6c8f44cba616ff2bf80094a8cb664de7a",
+  "command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-retry-gates-20260928T040910606Z\\extracted\\launcher.ps1\" -IntegrityReceiptPath \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-retry-gates-20260928T040910606Z\\r3-1-integrity-receipt.json\" -ExpectedBundleSha256 \"82b047a85d3fec6cabd6e430c6225eee0ed46b0e7b92694f1703e3a4910249ab\"",
+  "workingDirectory": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-retry-gates-20260928T040910606Z\\extracted",
+  "startUtc": "2026-09-28T04:09:54.3601936Z",
+  "endUtc": "2026-09-28T04:09:55.6906404Z",
+  "elapsedMs": 1330,
+  "watchdogMs": 90000,
+  "launcherPid": 16616,
+  "completed": true,
+  "externalTermination": false,
+  "exitCode": 1,
+  "stdoutPath": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-retry-gates-20260928T040910606Z\\retry-stdout.txt",
+  "stderrPath": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-retry-gates-20260928T040910606Z\\retry-stderr.txt"
+}

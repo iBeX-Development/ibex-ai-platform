@@ -1,0 +1,157 @@
+{
+  "document": "SIR-02 KM OE-12 Sanitized Sink Failure Evidence",
+  "runId": "SIR02-KM-OE-12-V1_0-20260927T090557Z-0001",
+  "N18": {
+    "sink": {
+      "attemptedEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-00"
+      ],
+      "committedEventIds": [],
+      "failedEvent": {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-00",
+        "tenantId": "sir02-test-tenant-a",
+        "sourceId": "sir02-km-source-a-001",
+        "eventType": "km.lifecycle.source_registration",
+        "stateBefore": "unregistered",
+        "stateAfter": "registered",
+        "decision": "recorded",
+        "requestId": "sir02-km-audit-sir02-test-tenant-a-request-0",
+        "correlationId": "sir02-km-audit-sir02-test-tenant-a-correlation-0",
+        "traceId": "sir02-km-audit-sir02-test-tenant-a-trace-0",
+        "immutableReference": {
+          "id": "SIR02-KM-OE-01",
+          "commit": "44a97a9b387235c67ae70cce24fb32cda0adfe70",
+          "path": "docs/governance/sir-02/operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json",
+          "sha256": "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b"
+        },
+        "timestamp": "2026-09-27T01:00:00.000Z"
+      },
+      "failedSink": "evidence_store",
+      "failedPhase": "persist",
+      "failureCode": "AUDIT_DELIVERY_FAILURE",
+      "outcome": "failed",
+      "writeOccurred": false,
+      "partialWrite": false,
+      "expectedItemCount": 14,
+      "attemptedWriteCount": 1,
+      "actualPersistedCount": 0,
+      "health": [
+        {
+          "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-00",
+          "timestamp": "2026-09-27T09:06:00.497Z",
+          "failedComponent": "evidence_store",
+          "reasonCode": "AUDIT_DELIVERY_FAILURE"
+        }
+      ],
+      "callerVisibleResult": {
+        "decision": "denied",
+        "reasonCode": "AUDIT_EVIDENCE_UNAVAILABLE",
+        "protectedFieldsDisclosed": 0
+      },
+      "protectedFieldsDisclosed": 0
+    },
+    "reconstruction": {
+      "decision": "Blocked / Fail Closed",
+      "reason": "AUDIT_DELIVERY_OR_VALIDATION_FAILURE",
+      "eventIds": [],
+      "typeCounts": {},
+      "transitionMap": [],
+      "dependencyMap": [],
+      "failedAuditOperation": {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-00",
+        "outcome": "failed",
+        "persistedItemCount": 0
+      },
+      "syntheticOe08OperationalCount": 0,
+      "downstreamCalls": 0,
+      "foreignProtectedFieldsDisclosed": 0
+    },
+    "pipelineHealth": "degraded",
+    "cleanup": "Passed"
+  },
+  "N19": {
+    "sink": {
+      "attemptedEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-00",
+        "sir02-km-oe12-sir02-test-tenant-a-event-01",
+        "sir02-km-oe12-sir02-test-tenant-a-event-02",
+        "sir02-km-oe12-sir02-test-tenant-a-event-03",
+        "sir02-km-oe12-sir02-test-tenant-a-event-04"
+      ],
+      "committedEventIds": [
+        "sir02-km-oe12-sir02-test-tenant-a-event-00",
+        "sir02-km-oe12-sir02-test-tenant-a-event-01",
+        "sir02-km-oe12-sir02-test-tenant-a-event-02",
+        "sir02-km-oe12-sir02-test-tenant-a-event-03",
+        "sir02-km-oe12-sir02-test-tenant-a-event-04"
+      ],
+      "failedEvent": {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-04",
+        "tenantId": "sir02-test-tenant-a",
+        "sourceId": "sir02-km-source-a-001",
+        "eventType": "km.lifecycle.version_lineage",
+        "stateBefore": "approved",
+        "stateAfter": "approved",
+        "decision": "recorded",
+        "requestId": "sir02-km-audit-sir02-test-tenant-a-request-4",
+        "correlationId": "sir02-km-audit-sir02-test-tenant-a-correlation-4",
+        "traceId": "sir02-km-audit-sir02-test-tenant-a-trace-4",
+        "immutableReference": {
+          "id": "SIR02-KM-OE-04",
+          "commit": "eefc0cd3dcb74761af91bd17cfe271e872d88264",
+          "path": "docs/governance/sir-02/operational-evidence/oe-04/SIR-02-KM-OE-04-SOURCE-VERSION-LINEAGE-v1.0.json",
+          "sha256": "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f"
+        },
+        "timestamp": "2026-09-27T01:00:04.000Z"
+      },
+      "failedSink": "audit_exporter",
+      "failedPhase": "export",
+      "failureCode": "AUDIT_DELIVERY_FAILURE",
+      "outcome": "partial",
+      "writeOccurred": true,
+      "partialWrite": true,
+      "expectedItemCount": 14,
+      "attemptedWriteCount": 5,
+      "actualPersistedCount": 5,
+      "health": [
+        {
+          "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-04",
+          "timestamp": "2026-09-27T09:06:00.498Z",
+          "failedComponent": "audit_exporter",
+          "reasonCode": "AUDIT_DELIVERY_FAILURE"
+        }
+      ],
+      "callerVisibleResult": {
+        "decision": "denied",
+        "reasonCode": "AUDIT_EVIDENCE_UNAVAILABLE",
+        "protectedFieldsDisclosed": 0
+      },
+      "protectedFieldsDisclosed": 0
+    },
+    "reconstruction": {
+      "decision": "Blocked / Fail Closed",
+      "reason": "AUDIT_DELIVERY_OR_VALIDATION_FAILURE",
+      "eventIds": [],
+      "typeCounts": {},
+      "transitionMap": [],
+      "dependencyMap": [],
+      "failedAuditOperation": {
+        "eventId": "sir02-km-oe12-sir02-test-tenant-a-event-04",
+        "outcome": "partial",
+        "persistedItemCount": 5
+      },
+      "syntheticOe08OperationalCount": 0,
+      "downstreamCalls": 0,
+      "foreignProtectedFieldsDisclosed": 0
+    },
+    "pipelineHealth": "degraded",
+    "cleanup": "Passed",
+    "retainedPrefixEventIds": [
+      "sir02-km-oe12-sir02-test-tenant-a-event-00",
+      "sir02-km-oe12-sir02-test-tenant-a-event-01",
+      "sir02-km-oe12-sir02-test-tenant-a-event-02",
+      "sir02-km-oe12-sir02-test-tenant-a-event-03",
+      "sir02-km-oe12-sir02-test-tenant-a-event-04"
+    ]
+  }
+}

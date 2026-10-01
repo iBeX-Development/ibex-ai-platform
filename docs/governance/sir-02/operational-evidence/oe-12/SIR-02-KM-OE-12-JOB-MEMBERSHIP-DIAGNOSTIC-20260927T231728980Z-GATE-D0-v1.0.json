@@ -1,0 +1,44 @@
+{
+  "gate": "D0",
+  "timestampUtc": "2026-09-27T23:16:53.0634382Z",
+  "sourceCommit": "f66ab4f3e3635ef06529506b27550247aa746d11",
+  "bundlePath": "C:\\Users\\gantu\\OneDrive\\Documents\\GitHub\\ibex-ai-platform\\docs\\governance\\sir-02\\controls\\SIR-02-KM-OE-12-JOB-MEMBERSHIP-DIAGNOSTIC-EXACT-SOURCE-BUNDLE-v1.0.zip",
+  "extractionDirectory": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-job-membership-source-20260927T231653057Z",
+  "checks": [
+    {
+      "name": "launcher.ps1",
+      "extractedSha256": "a7ef17603b9813da8123c3921915bf2a79c364513c45df208be106e06ed2bcc1",
+      "sourceSha256": "a7ef17603b9813da8123c3921915bf2a79c364513c45df208be106e06ed2bcc1",
+      "committedBlob": "a9a675017f07ae9e11c40a4dd60e4d1a83c4b235",
+      "extractedBlob": "a9a675017f07ae9e11c40a4dd60e4d1a83c4b235",
+      "sourceBlob": "a9a675017f07ae9e11c40a4dd60e4d1a83c4b235",
+      "byteMatch": true
+    },
+    {
+      "name": "native-helper.cs",
+      "extractedSha256": "debeb08b020025ccb54f14597378619caea2a060609bcf478dbf63048137f8e5",
+      "sourceSha256": "debeb08b020025ccb54f14597378619caea2a060609bcf478dbf63048137f8e5",
+      "committedBlob": "0516e9c614d6a29415083338b1f09ee415fc3cf6",
+      "extractedBlob": "0516e9c614d6a29415083338b1f09ee415fc3cf6",
+      "sourceBlob": "0516e9c614d6a29415083338b1f09ee415fc3cf6",
+      "byteMatch": true
+    },
+    {
+      "name": "probe.cjs",
+      "extractedSha256": "a10bcd3cdf67dad050104c53628a551041be42cb3218580836a270c452844175",
+      "sourceSha256": "a10bcd3cdf67dad050104c53628a551041be42cb3218580836a270c452844175",
+      "committedBlob": "30c44ae6d4e218fde7a23c9a623e938b0cb1d2a2",
+      "extractedBlob": "30c44ae6d4e218fde7a23c9a623e938b0cb1d2a2",
+      "sourceBlob": "30c44ae6d4e218fde7a23c9a623e938b0cb1d2a2",
+      "byteMatch": true
+    }
+  ],
+  "result": "PASS",
+  "error": null,
+  "bundleSha256": "36078a74ee4dc28ded28c955a498dee5b2d7d1a0d1032b3c0a85e5fbf4db6160",
+  "zipEntries": [
+    "launcher.ps1",
+    "native-helper.cs",
+    "probe.cjs"
+  ]
+}

@@ -1,0 +1,118 @@
+$ErrorActionPreference = 'Stop'
+$repo = (Get-Location).Path
+$expectedHead = '911c14138e66865dc76a133c9a47fd44627d6d14'
+$actualHead = (git rev-parse HEAD).Trim()
+if ($actualHead -ne $expectedHead) { throw "BASELINE_HEAD_MISMATCH:$actualHead" }
+$branch = (git branch --show-current).Trim()
+if ($branch -ne 'codex/sir-02-immediate-dispatch') { throw 'WRONG_BRANCH' }
+$remoteHead = (git rev-parse origin/codex/sir-02-immediate-dispatch).Trim()
+if ($remoteHead -ne $actualHead) { throw 'BRANCH_NOT_SYNCHRONIZED' }
+$autocrlf = (git config --get core.autocrlf).Trim()
+if ($autocrlf -ne 'true') { throw 'GIT_LINE_ENDING_SETTING_CHANGED' }
+$implementationDiff = @(git diff --name-only 826376cc84521a5d648462fdcc985cd2d412a24c HEAD -- tests/testing/sir02-km-oe12-lifecycle-audit-fixture.ts tests/integration/sir02-km-oe12-lifecycle-audit.test.ts package.json pnpm-lock.yaml .gitattributes)
+if ($implementationDiff.Count -ne 0) { throw 'IMPLEMENTATION_OR_DEPENDENCY_CHANGED' }
+if ((git status --porcelain).Length -ne 0) { throw 'WORKTREE_NOT_CLEAN' }
+$fixturePath = Join-Path $repo 'tests/testing/sir02-km-oe12-lifecycle-audit-fixture.ts'
+$testPath = Join-Path $repo 'tests/integration/sir02-km-oe12-lifecycle-audit.test.ts'
+$fixtureHashBefore = (Get-FileHash -Algorithm SHA256 -LiteralPath $fixturePath).Hash.ToLowerInvariant()
+$testHashBefore = (Get-FileHash -Algorithm SHA256 -LiteralPath $testPath).Hash.ToLowerInvariant()
+$started = [DateTimeOffset]::UtcNow
+$timestamp = $started.ToString('yyyyMMddTHHmmssZ')
+$runId = "SIR02-KM-OE-12-V1_0-$timestamp-0002"
+$outDir = Join-Path $env:TEMP "sir02-oe12-formal-$timestamp-0002"
+if (Test-Path -LiteralPath $outDir) { throw "RUN_DIRECTORY_ALREADY_EXISTS:$outDir" }
+New-Item -ItemType Directory -Path $outDir | Out-Null
+$env:COREPACK_ENABLE_NETWORK = '0'
+$env:npm_config_offline = 'true'
+$env:SIR02_OE12_OUTPUT_DIR = $outDir
+$env:SIR02_OE12_RUN_ID = $runId
+$node = (Get-Command node).Source
+$log = [ordered]@{
+  document = 'SIR-02 KM OE-12 Formal Run Log'
+  version = 'v1.0'
+  runId = $runId
+  executionRepositoryCommit = $actualHead
+  branch = $branch
+  synchronizedRemoteHead = $remoteHead
+  coreAutocrlf = $autocrlf
+  packageJsonSha256Before = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repo 'package.json')).Hash.ToLowerInvariant()
+  pnpmLockSha256Before = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repo 'pnpm-lock.yaml')).Hash.ToLowerInvariant()
+  executionHarnessSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $PSCommandPath).Hash.ToLowerInvariant()
+  captureHarnessSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $env:TEMP 'sir02-oe12-formal-capture.mts')).Hash.ToLowerInvariant()
+  implementationCommit = '826376cc84521a5d648462fdcc985cd2d412a24c'
+  startUtc = $started.ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ')
+  timeoutSecondsPerStage = 120
+  networkPolicy = 'No network; COREPACK_ENABLE_NETWORK=0; npm_config_offline=true'
+  fixtureHashBefore = $fixtureHashBefore
+  testHashBefore = $testHashBefore
+  outputDirectory = $outDir
+  stages = @()
+  outcome = 'Running'
+}
+function Invoke-BoundedNode([string]$name, [string[]]$arguments, [string]$stdoutPath, [string]$stderrPath) {
+  $psi = [System.Diagnostics.ProcessStartInfo]::new()
+  $psi.FileName = $node
+  $psi.WorkingDirectory = $repo
+  $psi.UseShellExecute = $false
+  $psi.CreateNoWindow = $true
+  $psi.RedirectStandardOutput = $true
+  $psi.RedirectStandardError = $true
+  foreach ($argument in $arguments) { [void]$psi.ArgumentList.Add($argument) }
+  $process = [System.Diagnostics.Process]::new()
+  $process.StartInfo = $psi
+  $stageStart = [DateTimeOffset]::UtcNow
+  [void]$process.Start()
+  $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+  $stderrTask = $process.StandardError.ReadToEndAsync()
+  $completed = $process.WaitForExit(120000)
+  if (-not $completed) { $process.Kill($true); $process.WaitForExit() }
+  $stdout = $stdoutTask.GetAwaiter().GetResult()
+  $stderr = $stderrTask.GetAwaiter().GetResult()
+  [System.IO.File]::WriteAllText($stdoutPath, $stdout)
+  [System.IO.File]::WriteAllText($stderrPath, $stderr)
+  $stageEnd = [DateTimeOffset]::UtcNow
+  return [ordered]@{
+    name = $name
+    command = "$node $($arguments -join ' ')"
+    startedUtc = $stageStart.ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ')
+    endedUtc = $stageEnd.ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ')
+    elapsedMilliseconds = [Math]::Round(($stageEnd - $stageStart).TotalMilliseconds)
+    timedOut = (-not $completed)
+    exitCode = $process.ExitCode
+    stdoutPath = $stdoutPath
+    stderrPath = $stderrPath
+  }
+}
+try {
+  $vitestArgs = @((Join-Path $repo 'node_modules/vitest/vitest.mjs'), 'run', 'tests/integration/sir02-km-oe12-lifecycle-audit.test.ts', '--reporter=json', "--outputFile=$(Join-Path $outDir 'vitest-results.json')")
+  $vitest = Invoke-BoundedNode 'vitest' $vitestArgs (Join-Path $outDir 'vitest-stdout.txt') (Join-Path $outDir 'vitest-stderr.txt')
+  $log.stages += $vitest
+  if ($vitest.timedOut -or $vitest.exitCode -ne 0 -or -not (Test-Path -LiteralPath (Join-Path $outDir 'vitest-results.json'))) { throw 'VITEST_STAGE_FAILED' }
+  $captureArgs = @((Join-Path $repo 'node_modules/tsx/dist/cli.mjs'), (Join-Path $env:TEMP 'sir02-oe12-formal-capture.mts'))
+  $capture = Invoke-BoundedNode 'fixture-capture' $captureArgs (Join-Path $outDir 'capture-stdout.txt') (Join-Path $outDir 'capture-stderr.txt')
+  $log.stages += $capture
+  if ($capture.timedOut -or $capture.exitCode -ne 0) { throw 'CAPTURE_STAGE_FAILED' }
+  $fixtureHashAfter = (Get-FileHash -Algorithm SHA256 -LiteralPath $fixturePath).Hash.ToLowerInvariant()
+  $testHashAfter = (Get-FileHash -Algorithm SHA256 -LiteralPath $testPath).Hash.ToLowerInvariant()
+  $log.fixtureHashAfter = $fixtureHashAfter
+  $log.testHashAfter = $testHashAfter
+  if ($fixtureHashAfter -ne $fixtureHashBefore -or $testHashAfter -ne $testHashBefore) { throw 'IMPLEMENTATION_HASH_CHANGED' }
+  $log.packageJsonSha256After = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repo 'package.json')).Hash.ToLowerInvariant()
+  $log.pnpmLockSha256After = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repo 'pnpm-lock.yaml')).Hash.ToLowerInvariant()
+  if ($log.packageJsonSha256After -ne $log.packageJsonSha256Before -or $log.pnpmLockSha256After -ne $log.pnpmLockSha256Before) { throw 'DEPENDENCY_HASH_CHANGED' }
+  if ((git status --porcelain).Length -ne 0) { throw 'WORKTREE_CHANGED_DURING_EXECUTION' }
+  $log.outcome = 'Passed'
+} catch {
+  $log.outcome = 'Failed'
+  $log.failureCode = $_.Exception.Message
+} finally {
+  $ended = [DateTimeOffset]::UtcNow
+  $log.endUtc = $ended.ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ')
+  $log.elapsedMilliseconds = [Math]::Round(($ended - $started).TotalMilliseconds)
+  $log | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath (Join-Path $outDir 'run-log.json') -Encoding utf8
+  Write-Output "RUN_ID=$runId"
+  Write-Output "OUT_DIR=$outDir"
+  Write-Output "OUTCOME=$($log.outcome)"
+  Write-Output "ELAPSED_MS=$($log.elapsedMilliseconds)"
+  if ($log.outcome -ne 'Passed') { exit 1 }
+}

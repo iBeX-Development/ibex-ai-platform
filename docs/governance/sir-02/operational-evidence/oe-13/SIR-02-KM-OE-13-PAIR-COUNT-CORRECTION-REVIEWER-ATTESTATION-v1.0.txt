@@ -1,0 +1,29 @@
+**Reviewer Attestation — OE-13 Supplemental Pair-Count Correction Review**
+
+I, **SODBILEG Erkhembayar — Administrator**, explicitly confirm that I personally and independently reviewed the OE-13 Supplemental Pair-Count Correction at commit:
+
+`075cb956430e3683ddc6207231c3696f281361e3`
+
+I confirm that:
+
+- I did not author the correction artifact under review.
+- I did not modify, regenerate, overwrite, or replace the correction artifact before or during this review.
+- I did not author, modify, regenerate, overwrite, or replace the raw supplemental measurements used to verify the correction.
+- I did not author, modify, regenerate, overwrite, or replace the original supplemental OE-13 evidence artifacts.
+- I did not author, modify, regenerate, overwrite, or replace the original formal OE-13 evidence or its retained artifacts.
+- I personally and independently reviewed the correction against the immutable supplemental raw evidence, the prior supplemental clarification review, the approved OE-13 evidence model, and applicable SIR-02 acceptance criteria.
+- I independently verified:
+  - `typed_pair_row_count = 103`
+  - `per_case_unique_pair_count_sum = 96`
+  - `cross_type_shared_pair_row_count = 7`
+  - `103 - 96 = 7`
+- I independently verified that the correction changes only the interpretation and terminology of the pair-count summary and does not alter any raw pair ID, left/right reference, conflict type, quarantine reference, hash, supplemental execution result, or original formal-run history.
+- My final correction-review decision will be recorded independently as `Accepted`, `Needs Clarification`, or `Rejected`.
+
+**Reviewer:** SODBILEG Erkhembayar — Administrator\
+**Correction commit:** `075cb956430e3683ddc6207231c3696f281361e3`\
+**Governance linkage:** `5759efa417235819f9348e366890e19a179ee255`\
+**Correction SHA-256:** `01acc6c4b67fff68dcba5d2dbcdade386c0b510fce8fb9ee57f09bd9a40ddb0b`\
+**Prior correction review:** `727aae4ea6b242de6978df7881d167cdd20d794c`\
+**Prior correction-review linkage:** `6821d94e76e3c269fc6d6227a2081e5b3b845d4c`\
+**Attestation date:** `2026-09-27`

@@ -1,0 +1,1222 @@
+{
+  "document": "SIR-02 KM OE-12 Raw Normalized Lifecycle Events",
+  "runId": "SIR02-KM-OE-12-V1_0-20260927T090557Z-0001",
+  "namespace": "sir02-km-evidence-v1",
+  "fixtureSchema": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+  "testDataClassification": "Synthetic",
+  "immutableInputs": [
+    {
+      "id": "SIR02-KM-OE-01",
+      "path": "docs/governance/sir-02/operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json",
+      "commit": "44a97a9b387235c67ae70cce24fb32cda0adfe70",
+      "sha256": "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+      "reviewCommit": "a33c8220e595fafad317610e94d09d4f21ecc882"
+    },
+    {
+      "id": "SIR02-KM-OE-02",
+      "path": "docs/governance/sir-02/operational-evidence/oe-02/SIR-02-KM-OE-02-SOURCE-OWNER-TENANT-BINDING-v1.0.json",
+      "commit": "9d4bc50d885e50b4fef8580918398f6764742b74",
+      "sha256": "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+      "reviewCommit": "3328353ea04298729b6e68ca46061393edce2148"
+    },
+    {
+      "id": "SIR02-KM-OE-03",
+      "path": "docs/governance/sir-02/operational-evidence/oe-03/SIR-02-KM-OE-03-SOURCE-APPROVAL-RECONSTRUCTION-0003-v1.0.json",
+      "commit": "74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a",
+      "sha256": "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+      "reviewCommit": "77ae9c99b2601ec58a50bd20c772326688268e5d"
+    },
+    {
+      "id": "SIR02-KM-OE-04",
+      "path": "docs/governance/sir-02/operational-evidence/oe-04/SIR-02-KM-OE-04-SOURCE-VERSION-LINEAGE-v1.0.json",
+      "commit": "eefc0cd3dcb74761af91bd17cfe271e872d88264",
+      "sha256": "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+      "reviewCommit": "f5ce491bfe3a98af66031a64b9b9620c3bc51420"
+    },
+    {
+      "id": "SIR02-KM-OE-05",
+      "path": "docs/governance/sir-02/operational-evidence/oe-05/SIR-02-KM-OE-05-PROVENANCE-TRACE-v1.0.json",
+      "commit": "a46a7018a54f2beb918ed9fe72403a6a769644df",
+      "sha256": "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+      "reviewCommit": "3e8d3e1bcf24ccbc52a244bb728964e5cbd340a2"
+    },
+    {
+      "id": "SIR02-KM-OE-06",
+      "path": "docs/governance/sir-02/operational-evidence/oe-06/SIR-02-KM-OE-06-SUPERSESSION-TEST-v1.0.json",
+      "commit": "f5cd7cc043c3bb99d9a745a1e546e2be30e7ddcc",
+      "sha256": "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+      "reviewCommit": "6c821280369760a4fc8cdf10b611282ca332dea4"
+    },
+    {
+      "id": "SIR02-KM-OE-07",
+      "path": "docs/governance/sir-02/operational-evidence/oe-07/SIR-02-KM-OE-07-STALE-CONTENT-QUARANTINE-TEST-v1.0.json",
+      "commit": "03791c7096adaa0ee5874110f7dae291858efd37",
+      "sha256": "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4",
+      "reviewCommit": "b7932b282833487b1a3eb2ccc6d7ca56015740a5"
+    },
+    {
+      "id": "SIR02-KM-OE-09",
+      "path": "docs/governance/sir-02/operational-evidence/oe-09/SIR-02-KM-OE-09-SOURCE-RECONCILIATION-FORMAL-EVIDENCE-0001-v1.0.json",
+      "commit": "de9cc392fc258156cbda9dad5d7197b46c8251f9",
+      "sha256": "f33f71447115e5c0835d112925d611eb848b9be24bc50c0de01c02dba3661b58",
+      "reviewCommit": "564d545c6ec0e0d52e43d758c0ba7ff8810df6aa"
+    },
+    {
+      "id": "SIR02-KM-OE-10",
+      "path": "docs/governance/sir-02/operational-evidence/oe-10/SIR-02-KM-OE-10-EXISTING-EVIDENCE-INDEX-REUSE-ASSESSMENT-v1.0.md",
+      "commit": "40653085601a651c9fc40f6f7911af2aecbadbac",
+      "sha256": "e79b722be7a08f9743b7c7e8664e6c52b301b372a4c6a3ea37bde64f82d287b3",
+      "reviewCommit": "02db21acd0faf8a90bcbf09f3a46657b0bd7eff8"
+    },
+    {
+      "id": "SIR02-KM-OE-11",
+      "path": "docs/governance/sir-02/operational-evidence/oe-11/SIR-02-KM-OE-11-MISSING-LIFECYCLE-EVIDENCE-FORMAL-EVIDENCE-0002-v1.0.json",
+      "commit": "363963e3f3aa87257d1fe276165d01150239b69d",
+      "sha256": "d6c520faae815bfa1e1ff84ecb8f288ae55a26a801eeb99ec6b7acc4da536d51",
+      "reviewCommit": "2bb7ebbcfe5d137b34f5cd19b2107ac68e24b1cc"
+    },
+    {
+      "id": "SIR02-KM-OE-13",
+      "path": "docs/governance/sir-02/operational-evidence/oe-13/SIR-02-KM-OE-13-DUPLICATE-CONFLICT-FORMAL-EVIDENCE-0001-v1.0.json",
+      "commit": "a0bcdb4ef646b0322cca6e30ef1f8c3b282501c9",
+      "sha256": "908843689d9ccb1b5139d2ab8939a12067d046fc2f04c857cda065ea41544bee",
+      "reviewCommit": "f415701fe52eb4b0c347b6b96d3e3d2008343e23"
+    },
+    {
+      "id": "SIR02-KM-OE-13-SUPPLEMENTAL",
+      "path": "docs/governance/sir-02/operational-evidence/oe-13/SIR-02-KM-OE-13-SUPPLEMENTAL-RAW-MEASUREMENTS-0001-v1.0.json",
+      "commit": "d7626372612d60c4959bbdf51a89c00a80b3b9b1",
+      "sha256": "31d1d636bf420d679f0ff21338affd89b82a3f04f67b21617fceb342ab319fac",
+      "reviewCommit": "133e88bd41398362aeca1bcf57d8d2cd4bbb3d94"
+    }
+  ],
+  "eventSetSha256": "c00e6f32d372286ac320376a396bec30c87996bbb1fd46a9c6b2c2e1c9e4d09e",
+  "events": [
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-00",
+      "event_type": "km.lifecycle.source_registration",
+      "category": "audit",
+      "timestamp": "2026-09-27T01:00:00.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-0",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-0",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-0",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-0",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "accepted",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.source_registration",
+        "timestamp": "2026-09-27T01:00:00.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-0",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-0",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-0",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-0",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-00",
+        "dependency_event_ids": [],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "recorded",
+        "outcome": "accepted",
+        "state_before": "unregistered",
+        "state_after": "registered",
+        "source_event_time": "2026-09-25T05:22:58.000Z",
+        "projection_time": "2026-09-27T01:00:00.000Z",
+        "test_emission_time": "2026-09-27T01:00:00.000Z",
+        "evidence_id": "SIR02-KM-OE-01",
+        "evidence_commit": "44a97a9b387235c67ae70cce24fb32cda0adfe70",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json",
+        "evidence_sha256": "d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "recorded",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "SOURCE_REGISTRATION",
+          "source_version": "v1.0"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-01",
+      "event_type": "km.lifecycle.tenant_owner_binding",
+      "category": "audit",
+      "timestamp": "2026-09-27T01:00:01.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-1",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-1",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-1",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-1",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "accepted",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.tenant_owner_binding",
+        "timestamp": "2026-09-27T01:00:01.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-1",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-1",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-1",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-1",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-01",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "recorded",
+        "outcome": "accepted",
+        "state_before": "registered",
+        "state_after": "registered",
+        "source_event_time": "2026-09-25T05:22:58.000Z",
+        "projection_time": "2026-09-27T01:00:01.000Z",
+        "test_emission_time": "2026-09-27T01:00:01.000Z",
+        "evidence_id": "SIR02-KM-OE-02",
+        "evidence_commit": "9d4bc50d885e50b4fef8580918398f6764742b74",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-02/SIR-02-KM-OE-02-SOURCE-OWNER-TENANT-BINDING-v1.0.json",
+        "evidence_sha256": "16c9758d8467d05ee7bb2f640eb9880e21374c94ec170b1a481e3b172e4abc71",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "recorded",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "TENANT_OWNER_BINDING",
+          "source_version": "v1.0"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-02",
+      "event_type": "km.lifecycle.source_approval",
+      "category": "audit",
+      "timestamp": "2026-09-27T01:00:02.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-2",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-2",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-2",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-2",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "accepted",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.source_approval",
+        "timestamp": "2026-09-27T01:00:02.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-2",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-2",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-2",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-2",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-02",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00",
+          "sir02-km-oe12-sir02-test-tenant-a-event-01"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "approved",
+        "outcome": "accepted",
+        "state_before": "registered",
+        "state_after": "approved",
+        "source_event_time": "2026-09-25T05:22:58Z",
+        "projection_time": "2026-09-27T01:00:02.000Z",
+        "test_emission_time": "2026-09-27T01:00:02.000Z",
+        "evidence_id": "SIR02-KM-OE-03",
+        "evidence_commit": "74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-03/SIR-02-KM-OE-03-SOURCE-APPROVAL-RECONSTRUCTION-0003-v1.0.json",
+        "evidence_sha256": "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "recorded",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "SOURCE_APPROVAL",
+          "source_version": "v1.0",
+          "reconstructed_prior_event": true,
+          "prior_attempt_0001": "pre_artifact_tooling_failure",
+          "prior_attempt_0002_evidence_commit": "fa51d26ab43abd53f354d544da7ab5bfca394276",
+          "chronology_clarification_review_commit": "79f2d74ab31335e2487fa4e6c7dce4158c9a7b1f",
+          "corrected_0003_evidence_commit": "74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-03",
+      "event_type": "km.lifecycle.source_rejection",
+      "category": "security",
+      "timestamp": "2026-09-27T01:00:03.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-3",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-3",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-3",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-3",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "rejected",
+      "error_code": "POLICY_DENIED",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.source_rejection",
+        "timestamp": "2026-09-27T01:00:03.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-3",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-3",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-3",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-3",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-03",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00",
+          "sir02-km-oe12-sir02-test-tenant-a-event-01"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "denied",
+        "outcome": "rejected",
+        "error_code": "POLICY_DENIED",
+        "state_before": "approved",
+        "state_after": "approved",
+        "source_event_time": "2026-09-25T07:59:08.000Z",
+        "projection_time": "2026-09-27T01:00:03.000Z",
+        "test_emission_time": "2026-09-27T01:00:03.000Z",
+        "evidence_id": "SIR02-KM-OE-03",
+        "evidence_commit": "74c8eff31a88ab7de1e693b7dad0ca8e8e91a51a",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-03/SIR-02-KM-OE-03-SOURCE-APPROVAL-RECONSTRUCTION-0003-v1.0.json",
+        "evidence_sha256": "5ac5536574a3bca7c3c13af007b7f26e4fe81c621dd5b0ef58d5cd0495edd345",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "denied",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "SOURCE_REJECTION",
+          "source_version": "v1.0",
+          "rejection_case_id": "missing-approval-decision",
+          "new_approval_events": 0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-04",
+      "event_type": "km.lifecycle.version_lineage",
+      "category": "audit",
+      "timestamp": "2026-09-27T01:00:04.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-4",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-4",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-4",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-4",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "accepted",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.version_lineage",
+        "timestamp": "2026-09-27T01:00:04.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-4",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-4",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-4",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-4",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-04",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00",
+          "sir02-km-oe12-sir02-test-tenant-a-event-01",
+          "sir02-km-oe12-sir02-test-tenant-a-event-02"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "recorded",
+        "outcome": "accepted",
+        "state_before": "approved",
+        "state_after": "approved",
+        "source_event_time": "2026-09-25T08:52:07.000Z",
+        "projection_time": "2026-09-27T01:00:04.000Z",
+        "test_emission_time": "2026-09-27T01:00:04.000Z",
+        "evidence_id": "SIR02-KM-OE-04",
+        "evidence_commit": "eefc0cd3dcb74761af91bd17cfe271e872d88264",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-04/SIR-02-KM-OE-04-SOURCE-VERSION-LINEAGE-v1.0.json",
+        "evidence_sha256": "f41a346e56da9bb5f6661d68eddece8201641ce2991a8e78eae65e2c5cac856f",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "recorded",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "VERSION_LINEAGE",
+          "source_version": "v1.0",
+          "successor_version": "v1.1",
+          "successor_approved": false
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-05",
+      "event_type": "km.lifecycle.provenance",
+      "category": "audit",
+      "timestamp": "2026-09-27T01:00:05.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-5",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-5",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-5",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-5",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "accepted",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.provenance",
+        "timestamp": "2026-09-27T01:00:05.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-5",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-5",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-5",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-5",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-05",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-04"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "recorded",
+        "outcome": "accepted",
+        "state_before": "approved",
+        "state_after": "approved",
+        "source_event_time": "2026-09-25T12:02:00.000Z",
+        "projection_time": "2026-09-27T01:00:05.000Z",
+        "test_emission_time": "2026-09-27T01:00:05.000Z",
+        "evidence_id": "SIR02-KM-OE-05",
+        "evidence_commit": "a46a7018a54f2beb918ed9fe72403a6a769644df",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-05/SIR-02-KM-OE-05-PROVENANCE-TRACE-v1.0.json",
+        "evidence_sha256": "8984b8afaa647c43be312dd65aa8c8ad4a195a74c7fffdd4f0d150850ad64045",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "recorded",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "PROVENANCE",
+          "source_version": "v1.0"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-06",
+      "event_type": "km.lifecycle.supersession",
+      "category": "audit",
+      "timestamp": "2026-09-27T01:00:06.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-6",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-6",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-6",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-6",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "accepted",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.supersession",
+        "timestamp": "2026-09-27T01:00:06.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-6",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-6",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-6",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-6",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-06",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-02",
+          "sir02-km-oe12-sir02-test-tenant-a-event-04",
+          "sir02-km-oe12-sir02-test-tenant-a-event-05"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "recorded",
+        "outcome": "accepted",
+        "state_before": "approved",
+        "state_after": "superseded",
+        "source_event_time": "2026-09-25T12:18:03.000Z",
+        "projection_time": "2026-09-27T01:00:06.000Z",
+        "test_emission_time": "2026-09-27T01:00:06.000Z",
+        "evidence_id": "SIR02-KM-OE-06",
+        "evidence_commit": "f5cd7cc043c3bb99d9a745a1e546e2be30e7ddcc",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-06/SIR-02-KM-OE-06-SUPERSESSION-TEST-v1.0.json",
+        "evidence_sha256": "1e6fd46db60e257c326a56156f2288c0a135ce499760fa6c95d36a6bfc343f43",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "recorded",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "SUPERSESSION",
+          "source_version": "v1.0"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-07",
+      "event_type": "km.lifecycle.stale_quarantine",
+      "category": "audit",
+      "timestamp": "2026-09-27T01:00:07.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-7",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-7",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-7",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-7",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "accepted",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.stale_quarantine",
+        "timestamp": "2026-09-27T01:00:07.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-7",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-7",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-7",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-7",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-07",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-06"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "recorded",
+        "outcome": "accepted",
+        "state_before": "superseded",
+        "state_after": "quarantined",
+        "source_event_time": "2026-09-25T12:32:37.000Z",
+        "projection_time": "2026-09-27T01:00:07.000Z",
+        "test_emission_time": "2026-09-27T01:00:07.000Z",
+        "evidence_id": "SIR02-KM-OE-07",
+        "evidence_commit": "03791c7096adaa0ee5874110f7dae291858efd37",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-07/SIR-02-KM-OE-07-STALE-CONTENT-QUARANTINE-TEST-v1.0.json",
+        "evidence_sha256": "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "recorded",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "STALE_QUARANTINE",
+          "source_version": "v1.0"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-08",
+      "event_type": "km.lifecycle.duplicate_conflict",
+      "category": "audit",
+      "timestamp": "2026-09-27T01:00:08.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-8",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-8",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-8",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-8",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "accepted",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.duplicate_conflict",
+        "timestamp": "2026-09-27T01:00:08.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-8",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-8",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-8",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-8",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-08",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00",
+          "sir02-km-oe12-sir02-test-tenant-a-event-04",
+          "sir02-km-oe12-sir02-test-tenant-a-event-07"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "no_op",
+        "outcome": "accepted",
+        "state_before": "quarantined",
+        "state_after": "quarantined",
+        "source_event_time": "2026-09-26T13:17:38.000Z",
+        "projection_time": "2026-09-27T01:00:08.000Z",
+        "test_emission_time": "2026-09-27T01:00:08.000Z",
+        "evidence_id": "SIR02-KM-OE-13-SUPPLEMENTAL",
+        "evidence_commit": "d7626372612d60c4959bbdf51a89c00a80b3b9b1",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-13/SIR-02-KM-OE-13-SUPPLEMENTAL-RAW-MEASUREMENTS-0001-v1.0.json",
+        "evidence_sha256": "31d1d636bf420d679f0ff21338affd89b82a3f04f67b21617fceb342ab319fac",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "recorded",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "DUPLICATE_CONFLICT",
+          "source_version": "v1.0",
+          "exact_repeat_scenario_id": "SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture > loads the accepted immutable baseline and suppresses repeated exact registration/version submissions",
+          "additional_authoritative_artifacts": 0,
+          "additional_downstream_artifacts": 0
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-09",
+      "event_type": "km.lifecycle.human_decision_hold",
+      "category": "audit",
+      "timestamp": "2026-09-27T01:00:09.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-9",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-9",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-9",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-9",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "accepted",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.human_decision_hold",
+        "timestamp": "2026-09-27T01:00:09.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-9",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-9",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-9",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-9",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-09",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-08"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "held",
+        "outcome": "accepted",
+        "state_before": "quarantined",
+        "state_after": "quarantined",
+        "source_event_time": "2026-09-26T13:17:38.000Z",
+        "projection_time": "2026-09-27T01:00:09.000Z",
+        "test_emission_time": "2026-09-27T01:00:09.000Z",
+        "evidence_id": "SIR02-KM-OE-13-SUPPLEMENTAL",
+        "evidence_commit": "d7626372612d60c4959bbdf51a89c00a80b3b9b1",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-13/SIR-02-KM-OE-13-SUPPLEMENTAL-RAW-MEASUREMENTS-0001-v1.0.json",
+        "evidence_sha256": "31d1d636bf420d679f0ff21338affd89b82a3f04f67b21617fceb342ab319fac",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "recorded",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "HUMAN_DECISION_HOLD",
+          "source_version": "v1.0",
+          "conflict_scenario_id": "SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture > 'duplicate source registration with di…' fails closed with typed quarantine and zero processing",
+          "conflict_type": "REGISTRATION_ID_CONFLICT",
+          "pair_id": "468c476fea2d696984a33956b766cd7d1e52ad5e7bf6b93e489ad429d0ebe113",
+          "left_reference_id": "record-sha256:a687f664208c9498a501c085f522fc65cba1d7dceee7a0ac3d0eb11b138df94d",
+          "right_reference_id": "record-sha256:f914b57634245908c40af1b867e4e464e782f208b94a099e4c85cd1a2a3ac5df",
+          "human_decision_hold_reference": "sir02-oe13-hold-f6a68842d3f9ad96"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-10",
+      "event_type": "km.lifecycle.fail_closed_denial",
+      "category": "security",
+      "timestamp": "2026-09-27T01:00:10.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-10",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-10",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-10",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-10",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "rejected",
+      "error_code": "POLICY_DENIED",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.fail_closed_denial",
+        "timestamp": "2026-09-27T01:00:10.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-10",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-10",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-10",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-10",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-10",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "denied",
+        "outcome": "rejected",
+        "error_code": "POLICY_DENIED",
+        "state_before": "quarantined",
+        "state_after": "quarantined",
+        "source_event_time": "2026-09-26T06:06:08.000Z",
+        "projection_time": "2026-09-27T01:00:10.000Z",
+        "test_emission_time": "2026-09-27T01:00:10.000Z",
+        "evidence_id": "SIR02-KM-OE-11",
+        "evidence_commit": "363963e3f3aa87257d1fe276165d01150239b69d",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-11/SIR-02-KM-OE-11-MISSING-LIFECYCLE-EVIDENCE-FORMAL-EVIDENCE-0002-v1.0.json",
+        "evidence_sha256": "d6c520faae815bfa1e1ff84ecb8f288ae55a26a801eeb99ec6b7acc4da536d51",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "denied",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "FAIL_CLOSED_DENIAL",
+          "source_version": "v1.0"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-11",
+      "event_type": "km.lifecycle.permission_tenant_denial",
+      "category": "security",
+      "timestamp": "2026-09-27T01:00:11.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-11",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-11",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-11",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-11",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "rejected",
+      "error_code": "POLICY_DENIED",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.permission_tenant_denial",
+        "timestamp": "2026-09-27T01:00:11.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-11",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-11",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-11",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-11",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-11",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-01"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "denied",
+        "outcome": "rejected",
+        "error_code": "POLICY_DENIED",
+        "state_before": "quarantined",
+        "state_after": "quarantined",
+        "source_event_time": "2026-09-27T00:00:00.000Z",
+        "projection_time": "2026-09-27T01:00:11.000Z",
+        "test_emission_time": "2026-09-27T01:00:11.000Z",
+        "evidence_id": "SIR02-KM-OE-10",
+        "evidence_commit": "40653085601a651c9fc40f6f7911af2aecbadbac",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-10/SIR-02-KM-OE-10-EXISTING-EVIDENCE-INDEX-REUSE-ASSESSMENT-v1.0.md",
+        "evidence_sha256": "e79b722be7a08f9743b7c7e8664e6c52b301b372a4c6a3ea37bde64f82d287b3",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "denied",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "PERMISSION_TENANT_DENIAL",
+          "source_version": "v1.0"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-12",
+      "event_type": "km.lifecycle.reconciliation",
+      "category": "audit",
+      "timestamp": "2026-09-27T01:00:12.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-12",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-12",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-12",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-12",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "accepted",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.reconciliation",
+        "timestamp": "2026-09-27T01:00:12.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-12",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-12",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-12",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-12",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-12",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-00",
+          "sir02-km-oe12-sir02-test-tenant-a-event-02",
+          "sir02-km-oe12-sir02-test-tenant-a-event-04",
+          "sir02-km-oe12-sir02-test-tenant-a-event-05"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "recorded",
+        "outcome": "accepted",
+        "state_before": "quarantined",
+        "state_after": "quarantined",
+        "source_event_time": "2026-09-26T02:06:27.000Z",
+        "projection_time": "2026-09-27T01:00:12.000Z",
+        "test_emission_time": "2026-09-27T01:00:12.000Z",
+        "evidence_id": "SIR02-KM-OE-09",
+        "evidence_commit": "de9cc392fc258156cbda9dad5d7197b46c8251f9",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-09/SIR-02-KM-OE-09-SOURCE-RECONCILIATION-FORMAL-EVIDENCE-0001-v1.0.json",
+        "evidence_sha256": "f33f71447115e5c0835d112925d611eb848b9be24bc50c0de01c02dba3661b58",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "recorded",
+        "synthetic_audit_only": false,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "RECONCILIATION",
+          "source_version": "v1.0"
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "event_version": "1.0",
+      "event_id": "sir02-km-oe12-sir02-test-tenant-a-event-13",
+      "event_type": "km.lifecycle.synthetic_withdrawal_retention",
+      "category": "audit",
+      "timestamp": "2026-09-27T01:00:13.000Z",
+      "service": "sir02-km-test-audit",
+      "environment": "test",
+      "request_id": "sir02-km-audit-sir02-test-tenant-a-request-13",
+      "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-13",
+      "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-13",
+      "context": {
+        "status": "trusted",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-13",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ]
+      },
+      "outcome": "accepted",
+      "evidence": {
+        "schema_version": "1.0",
+        "event_type": "km.lifecycle.synthetic_withdrawal_retention",
+        "timestamp": "2026-09-27T01:00:13.000Z",
+        "trace_id": "sir02-km-audit-sir02-test-tenant-a-trace-13",
+        "request_id": "sir02-km-audit-sir02-test-tenant-a-request-13",
+        "correlation_id": "sir02-km-audit-sir02-test-tenant-a-correlation-13",
+        "tenant_id": "sir02-test-tenant-a",
+        "user_id": "sir02-km-audit-executor",
+        "role": "administrator",
+        "session_id": "sir02-km-audit-sir02-test-tenant-a-session-13",
+        "permission_refs": [
+          "km:audit:test"
+        ],
+        "entitlement_refs": [
+          "km:evidence:test"
+        ],
+        "service": "sir02-km-test-audit",
+        "environment": "test",
+        "projection_kind": "OE12_SYNTHETIC_AUDIT_PROJECTION",
+        "namespace_id": "sir02-km-evidence-v1",
+        "fixture_schema_version": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+        "canonical_source_id": "sir02-km-source-a-001",
+        "source_registration_id": "sir02-km-registration-a-001",
+        "source_version": "v1.0",
+        "source_owner_id": "sir02-test-source-owner-a",
+        "projected_event_id": "sir02-km-oe12-sir02-test-tenant-a-event-13",
+        "dependency_event_ids": [
+          "sir02-km-oe12-sir02-test-tenant-a-event-07"
+        ],
+        "actor_id": "sir02-km-audit-executor",
+        "decision": "recorded",
+        "outcome": "accepted",
+        "state_before": "quarantined",
+        "state_after": "quarantined",
+        "source_event_time": "2026-09-27T00:00:00.000Z",
+        "projection_time": "2026-09-27T01:00:13.000Z",
+        "test_emission_time": "2026-09-27T01:00:13.000Z",
+        "evidence_id": "SIR02-KM-OE-07",
+        "evidence_commit": "03791c7096adaa0ee5874110f7dae291858efd37",
+        "evidence_path": "docs/governance/sir-02/operational-evidence/oe-07/SIR-02-KM-OE-07-STALE-CONTENT-QUARANTINE-TEST-v1.0.json",
+        "evidence_sha256": "c742d695e6ef7609255d39c3caa3ccdb3996115949a276405907484a3b65aef4",
+        "audit_sink_result": "submitted_for_persistence",
+        "caller_result": "recorded",
+        "synthetic_audit_only": true,
+        "operational_oe08_evidence": false,
+        "metadata": {
+          "reason_code": "SYNTHETIC_WITHDRAWAL_RETENTION",
+          "source_version": "v1.0",
+          "boundary_label": "Synthetic Audit-Only Transition — Not OE-08 Operational Evidence"
+        }
+      }
+    }
+  ]
+}

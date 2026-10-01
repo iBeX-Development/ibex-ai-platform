@@ -1,0 +1,2 @@
+DIAGNOSTIC_RESULT=FAIL - Lifecycle Attribution Not Supported
+DIAGNOSTIC_RECORD=C:\Users\gantu\AppData\Local\Temp\SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V3-20260928T040954760Z\diagnostic-raw.json

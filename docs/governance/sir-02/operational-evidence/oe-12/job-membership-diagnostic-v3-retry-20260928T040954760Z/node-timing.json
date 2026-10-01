@@ -1,0 +1,28 @@
+{
+  "diagnosticToken": "SIR02-OE12-JOB-MEMBERSHIP-DIAGNOSTIC-V3-20260928T040954760Z",
+  "parentPid": 24588,
+  "nodeAliveImmediatelyBeforeRelease": true,
+  "creationFileTimeUtc": 134350421952308310,
+  "creationUtc": "2026-09-28T04:09:55.2308310Z",
+  "exitFileTimeUtc": 134350421956218653,
+  "exitUtc": "2026-09-28T04:09:55.6218653Z",
+  "observationUtc": "2026-09-28T04:09:55.6246542Z",
+  "exactHandleObservation": {
+    "Pid": 24588,
+    "HandleRole": "owned-node-parent",
+    "WaitResult": 0,
+    "WaitSucceeded": true,
+    "Signaled": true,
+    "WaitError": 0,
+    "ObservationUtc": "2026-09-28T04:09:55.6246542Z",
+    "TimesQueryAttempted": true,
+    "TimesSucceeded": true,
+    "TimesError": 0,
+    "CreationFileTimeUtc": 134350421952308310,
+    "ExitFileTimeUtc": 134350421956218653,
+    "CreationMatchesExpected": true,
+    "ExitAfterCreation": true,
+    "SanitizedError": null
+  },
+  "waitBoundMs": 12000
+}

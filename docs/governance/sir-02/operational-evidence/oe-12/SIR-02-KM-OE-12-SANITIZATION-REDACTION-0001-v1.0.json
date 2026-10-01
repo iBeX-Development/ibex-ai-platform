@@ -1,0 +1,15 @@
+{
+  "document": "SIR-02 KM OE-12 Sanitization and Redaction",
+  "runId": "SIR02-KM-OE-12-V1_0-20260927T090557Z-0001",
+  "prohibitedFieldCase": {
+    "decision": "Blocked / Fail Closed",
+    "reason": "PROHIBITED_AUDIT_DATA",
+    "writeAttempts": 0,
+    "committed": 0,
+    "retainedRecordCount": 0,
+    "prohibitedValueRetained": false,
+    "protectedFieldsDisclosed": 0,
+    "cleanup": "Passed"
+  },
+  "positiveEventSetContainsProhibitedKey": false
+}

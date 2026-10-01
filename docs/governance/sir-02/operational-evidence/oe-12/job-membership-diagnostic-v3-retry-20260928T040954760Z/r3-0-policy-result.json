@@ -1,0 +1,14 @@
+{
+  "gate": "R3-0",
+  "captureUtc": "2026-09-28T04:09:12.4139390Z",
+  "machinePolicy": "Undefined",
+  "userPolicy": "Undefined",
+  "process": "Undefined",
+  "currentUser": "Undefined",
+  "localMachine": "Undefined",
+  "effective": "Restricted",
+  "psVersion": "5.1.26100.9444",
+  "classification": "Class A — Process-Scoped Execution Permitted",
+  "pass": true,
+  "noPersistentPolicyChange": true
+}

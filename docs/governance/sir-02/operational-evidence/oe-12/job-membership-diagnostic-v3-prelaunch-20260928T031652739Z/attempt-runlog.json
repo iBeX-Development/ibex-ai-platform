@@ -1,0 +1,18 @@
+{
+  "classification": "Non-Formal Tooling Diagnostic — Not OE-12 Operational Evidence",
+  "sourceCommit": "9f8480b6c8f44cba616ff2bf80094a8cb664de7a",
+  "readinessCommit": "2773025d84488f0b3d36732c643f96a7aa533296",
+  "d0Result": "PASS",
+  "command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -NonInteractive -File \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-d0-20260928T031541937Z\\extracted\\launcher.ps1\" -IntegrityReceiptPath \"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-d0-20260928T031541937Z\\d0-integrity-receipt.json\" -ExpectedBundleSha256 \"82b047a85d3fec6cabd6e430c6225eee0ed46b0e7b92694f1703e3a4910249ab\"",
+  "workingDirectory": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-d0-20260928T031541937Z\\extracted",
+  "startUtc": "2026-09-28T03:16:52.7396697Z",
+  "endUtc": "2026-09-28T03:16:53.1865010Z",
+  "elapsedMs": 443,
+  "watchdogMs": 90000,
+  "launcherStarted": true,
+  "launcherPid": 33972,
+  "timedOut": false,
+  "exitCode": 1,
+  "stdoutPath": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-d0-20260928T031541937Z\\attempt-stdout.txt",
+  "stderrPath": "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-v3-d0-20260928T031541937Z\\attempt-stderr.txt"
+}

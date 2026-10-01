@@ -1,0 +1,71 @@
+$ErrorActionPreference = 'Stop'
+$tempDir = 'C:\Users\gantu\AppData\Local\Temp\sir02-oe12-smoke-v4-prep'
+$launcher = Join-Path $tempDir 'launcher-v4.ps1'
+$stdoutPath = Join-Path $tempDir 'watchdog-stdout.txt'
+$stderrPath = Join-Path $tempDir 'watchdog-stderr.txt'
+$resultPath = Join-Path $tempDir 'watchdog-result.json'
+if (Test-Path -LiteralPath $resultPath) { throw 'Smoke v4 watchdog result already exists' }
+$command = '$ErrorActionPreference=''Stop''; $source=[IO.File]::ReadAllText($env:SMOKE_V4_LAUNCHER); & ([scriptblock]::Create($source))'
+$encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($command))
+$psi = New-Object System.Diagnostics.ProcessStartInfo
+$psi.FileName = 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'
+$psi.Arguments = '-NoProfile -NonInteractive -EncodedCommand ' + $encoded
+$psi.WorkingDirectory = 'C:\Users\gantu\OneDrive\Documents\GitHub\ibex-ai-platform'
+$psi.UseShellExecute = $false
+$psi.CreateNoWindow = $true
+$psi.RedirectStandardOutput = $true
+$psi.RedirectStandardError = $true
+$psi.StandardOutputEncoding = [System.Text.UTF8Encoding]::new($false)
+$psi.StandardErrorEncoding = [System.Text.UTF8Encoding]::new($false)
+$psi.EnvironmentVariables['SMOKE_V4_LAUNCHER'] = $launcher
+$psi.EnvironmentVariables['COREPACK_ENABLE_NETWORK'] = '0'
+$psi.EnvironmentVariables['npm_config_offline'] = 'true'
+$process = New-Object System.Diagnostics.Process
+$process.StartInfo = $psi
+$start = [DateTime]::UtcNow
+$watchdogMs = 30000
+$started = $process.Start()
+if (-not $started) { throw 'Windows PowerShell 5.1 launcher process did not start' }
+$pidValue = $process.Id
+$outTask = $process.StandardOutput.ReadToEndAsync()
+$errTask = $process.StandardError.ReadToEndAsync()
+$completed = $process.WaitForExit($watchdogMs)
+$watchdogTimedOut = -not $completed
+$killResult = $null
+if ($watchdogTimedOut) {
+  try { $process.Kill(); $killResult = 'Targeted launcher process kill invoked after outer watchdog timeout' }
+  catch { $killResult = 'Targeted launcher kill failed: ' + $_.Exception.Message }
+  $completed = $process.WaitForExit(5000)
+}
+$outCompleted = $outTask.Wait(5000)
+$errCompleted = $errTask.Wait(5000)
+$stdout = if ($outCompleted) { $outTask.GetAwaiter().GetResult() } else { 'STDOUT_TASK_TIMEOUT' }
+$stderr = if ($errCompleted) { $errTask.GetAwaiter().GetResult() } else { 'STDERR_TASK_TIMEOUT' }
+[IO.File]::WriteAllText($stdoutPath,$stdout,(New-Object System.Text.UTF8Encoding($false)))
+[IO.File]::WriteAllText($stderrPath,$stderr,(New-Object System.Text.UTF8Encoding($false)))
+$end = [DateTime]::UtcNow
+$record = [ordered]@{
+  classification = 'Non-Formal Launcher Smoke Validation — Not OE-12 Operational Evidence'
+  launcherPath = $launcher
+  command = 'powershell.exe -NoProfile -NonInteractive -EncodedCommand <base64 of retained launcher-loader source>'
+  commandArguments = $psi.Arguments
+  executionPolicyChanged = $false
+  launcherPid = $pidValue
+  startedUtc = $start.ToString('o')
+  endedUtc = $end.ToString('o')
+  elapsedMilliseconds = [math]::Round(($end-$start).TotalMilliseconds)
+  outerWatchdogMs = $watchdogMs
+  watchdogTimedOut = $watchdogTimedOut
+  targetedLauncherKill = $killResult
+  launcherExited = $completed
+  exitCode = if ($completed) { $process.ExitCode } else { $null }
+  stdoutPath = $stdoutPath
+  stderrPath = $stderrPath
+  rawResultPath = Join-Path $tempDir 'smoke-v4-raw.json'
+}
+$record | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $resultPath -Encoding UTF8
+$process.Dispose()
+Write-Output "WATCHDOG_RESULT=$resultPath"
+Write-Output "LAUNCHER_EXIT=$($record.exitCode)"
+Write-Output "WATCHDOG_TIMEOUT=$watchdogTimedOut"
+Write-Output "RAW_RESULT=$($record.rawResultPath)"

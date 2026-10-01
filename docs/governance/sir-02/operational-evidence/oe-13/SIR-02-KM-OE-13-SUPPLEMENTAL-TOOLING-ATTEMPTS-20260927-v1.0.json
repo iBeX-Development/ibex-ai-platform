@@ -1,0 +1,48 @@
+{
+  "document": "OE-13 Supplemental Clarification Tooling Attempts",
+  "version": "v1.0",
+  "classification": "Interrupted/tooling attempts only; no supplemental evidence captured",
+  "original_formal_run": "SIR02-KM-OE-13-V1_0-20260926T131738Z-0001",
+  "original_formal_evidence_commit": "a0bcdb4ef646b0322cca6e30ef1f8c3b282501c9",
+  "accepted_instrumentation_commit": "23c150b494b8ec66b21e56776b32923f9607acfb",
+  "accepted_implementation_review": "1f22bf2ff5d02d9c9b8266c0874e99fca4a65d41",
+  "repository_baseline_commit": "1f22bf2ff5d02d9c9b8266c0874e99fca4a65d41",
+  "attempts": [
+    {
+      "capture_id": "SIR02-KM-OE-13-SUPPLEMENTAL-V1_0-20260927T001746Z-0001",
+      "started_utc": "2026-09-27T00:17:46.4853329Z",
+      "ended_utc": "2026-09-27T00:19:46.7122008Z",
+      "elapsed_seconds": 120.227,
+      "timeout_seconds": 120,
+      "timed_out": true,
+      "exit_code": -1,
+      "command": "corepack pnpm exec vitest run tests/integration/sir02-km-oe13-duplicate-conflict.test.ts --reporter=json --outputFile=\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe13-supplemental-20260927T001746Z\\vitest-results.json\"",
+      "stdout_sha256": "24aaaa349c24ddfd2171229403513465e323a924a6583fb8b5830bf8d7d31ee8",
+      "stderr_sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "stdout": "Scope: all 17 workspace projects\nRecreating C:\\Users\\gantu\\OneDrive\\Documents\\GitHub\\ibex-ai-platform\\node_modules\n\r\n",
+      "stderr": "\r\n",
+      "vitest_report_created": false,
+      "raw_measurements_created": false,
+      "tests_started": false
+    },
+    {
+      "capture_id": "SIR02-KM-OE-13-SUPPLEMENTAL-V1_0-20260927T002109Z-0001",
+      "started_utc": "2026-09-27T00:21:09.2030571Z",
+      "ended_utc": "2026-09-27T00:21:09.2978861Z",
+      "elapsed_seconds": 0.095,
+      "timeout_seconds": 120,
+      "timed_out": false,
+      "exit_code": 1,
+      "command": "node.exe \"C:\\Users\\gantu\\OneDrive\\Documents\\GitHub\\ibex-ai-platform\\node_modules\\.pnpm\\vitest@4.1.11_@opentelemetr_d71e0a55b1c2cc4b9f9a48b968900e17\\node_modules\\vitest\\vitest.mjs\" run tests/integration/sir02-km-oe13-duplicate-conflict.test.ts --reporter=json --outputFile=\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe13-supplemental-20260927T002109Z\\vitest-results.json\"",
+      "stdout_sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "stderr_sha256": "7bcb8816cce3afa1ce6d234d60c617aec4081682fd54337d18f820e202b4bf43",
+      "stdout": "\r\n",
+      "stderr": "node:internal/modules/package_json_reader:314\r\n  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);\r\n        ^\r\n\r\nError [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitest/utils' imported from C:\\Users\\gantu\\OneDrive\\Documents\\GitHub\\ibex-ai-platform\\node_modules\\.pnpm\\vitest@4.1.11_@opentelemetr_d71e0a55b1c2cc4b9f9a48b968900e17\\node_modules\\vitest\\dist\\cli.js\r\n    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:314:9)\r\n    at packageResolve (node:internal/modules/esm/resolve:768:81)\r\n    at moduleResolve (node:internal/modules/esm/resolve:855:18)\r\n    at defaultResolve (node:internal/modules/esm/resolve:985:11)\r\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:747:20)\r\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:724:38)\r\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:320:38)\r\n    at ModuleJob._link (node:internal/modules/esm/module_job:182:49) {\r\n  code: 'ERR_MODULE_NOT_FOUND'\r\n}\r\n\r\nNode.js v22.23.2\r\n\r\n",
+      "vitest_report_created": false,
+      "raw_measurements_created": false,
+      "tests_started": false
+    }
+  ],
+  "disposition": "No Vitest scenario executed; no raw supplemental hashes, affected pairs, or live-operation snapshots captured; OE-13 remains Executed / Awaiting Independent Review.",
+  "blocker": "Installed node_modules dependency layout incomplete after the timed-out pnpm recreate; direct Vitest entrypoint cannot resolve @vitest/utils. Dependency repair requires separate authorization."
+}

@@ -1,0 +1,27 @@
+﻿{
+    "document":  "SIR-02 KM OE-12 Formal Run Log",
+    "version":  "v1.0",
+    "runId":  "SIR02-KM-OE-12-V1_0-20260927T104029Z-0002",
+    "executionRepositoryCommit":  "911c14138e66865dc76a133c9a47fd44627d6d14",
+    "branch":  "codex/sir-02-immediate-dispatch",
+    "synchronizedRemoteHead":  "911c14138e66865dc76a133c9a47fd44627d6d14",
+    "coreAutocrlf":  "true",
+    "packageJsonSha256Before":  "55f690c21e6402cc76d894e7db7ec6a93a7ed14fce25fb475d574a1144a5c5cf",
+    "pnpmLockSha256Before":  "9805474d25601be7b1333a0704a376d33f8f35633f7d8a9bd7a5e184e3e52255",
+    "executionHarnessSha256":  "e0132750f3f9f2b751916f689d195ac9d981f7a0277726d93e5939ca27597e46",
+    "captureHarnessSha256":  "89136a7ac566b6afb785ce1895767ebae40f13738c6af9b42f3586fb3baadbc4",
+    "implementationCommit":  "826376cc84521a5d648462fdcc985cd2d412a24c",
+    "startUtc":  "2026-09-27T10:40:29.7358706Z",
+    "timeoutSecondsPerStage":  120,
+    "networkPolicy":  "No network; COREPACK_ENABLE_NETWORK=0; npm_config_offline=true",
+    "fixtureHashBefore":  "3d3f597ad28be8a2a816eb4e5769fed20a674c60387a0fca230007c22b1ee3bb",
+    "testHashBefore":  "2e05526e803d4de582a4af13fe1ec9c51756a523dc18248b8b758117a3d3d600",
+    "outputDirectory":  "C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe12-formal-20260927T104029Z-0002",
+    "stages":  [
+
+               ],
+    "outcome":  "Failed",
+    "failureCode":  "You cannot call a method on a null-valued expression.",
+    "endUtc":  "2026-09-27T10:40:29.7751008Z",
+    "elapsedMilliseconds":  39
+}

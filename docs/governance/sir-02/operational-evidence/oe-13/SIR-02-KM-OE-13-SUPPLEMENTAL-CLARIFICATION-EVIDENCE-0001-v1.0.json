@@ -1,0 +1,152 @@
+{
+  "document": "Supplemental Clarification Evidence — does not replace formal OE-13 run SIR02-KM-OE-13-V1_0-20260926T131738Z-0001",
+  "version": "v1.0",
+  "evidenceId": "SIR02-KM-OE-13",
+  "captureId": "SIR02-KM-OE-13-SUPPLEMENTAL-V1_0-20260927T012529Z-0001",
+  "supplementalStatus": "Captured / Awaiting Independent Review",
+  "evidenceStatus": "Executed / Awaiting Independent Review",
+  "acceptanceStatus": "Not Reviewed",
+  "originalFormalRun": {
+    "runId": "SIR02-KM-OE-13-V1_0-20260926T131738Z-0001",
+    "evidenceCommit": "a0bcdb4ef646b0322cca6e30ef1f8c3b282501c9",
+    "linkageCommit": "49b3266a722ac9560f5f2a17ef56f54b7fb565b5",
+    "clarificationReviewCommit": "ca366ee8fd2814695051fa745c6f71236d9e1508",
+    "artifact": "SIR-02-KM-OE-13-DUPLICATE-CONFLICT-FORMAL-EVIDENCE-0001-v1.0.json",
+    "artifactSha256": "908843689d9ccb1b5139d2ab8939a12067d046fc2f04c857cda065ea41544bee",
+    "preservedUnchanged": true
+  },
+  "controllingReferences": {
+    "instrumentationDesign": "927ef22169cebf33cceec852eb4911364e9f4f44",
+    "instrumentationAuthorization": "70b636fd0f59df0b4bbf1d079463452255f050e6",
+    "instrumentationAuthorizationLinkage": "59c3e563adf43eba49a246b9b90e75621e0dd0ed",
+    "acceptedImplementation": "23c150b494b8ec66b21e56776b32923f9607acfb",
+    "reviewerAttestation": "9ee2c1818b4ba0abb6269baa5cebb8c1d9137a51",
+    "acceptedImplementationReview": "1f22bf2ff5d02d9c9b8266c0874e99fca4a65d41",
+    "offlineRepairAuthorization": "ca8ab9747eb556b12908af610e284175270bb441",
+    "offlineRepairLinkage": "7ad0c29f50cc271f99de199872e16e799b686e8b"
+  },
+  "execution": {
+    "executor": "GANTUMUR Erdenedalai — Founder / Administrator",
+    "independentReviewer": "SODBILEG Erkhembayar — Administrator",
+    "repositoryCommit": "7ad0c29f50cc271f99de199872e16e799b686e8b",
+    "startedUtc": "2026-09-27T01:25:29.0019185Z",
+    "endedUtc": "2026-09-27T01:25:30.8478356Z",
+    "measurementReportTimestampUtc": "2026-09-27T01:25:30.804Z",
+    "elapsedSeconds": 1.846,
+    "timeoutSeconds": 120,
+    "timedOut": false,
+    "exitCode": 0,
+    "command": "corepack pnpm exec vitest run tests/integration/sir02-km-oe13-duplicate-conflict.test.ts --reporter=json --outputFile=\"C:\\Users\\gantu\\AppData\\Local\\Temp\\sir02-oe13-supplemental-20260927T012529Z\\vitest-results.json\"",
+    "networkPolicy": "No network; COREPACK_ENABLE_NETWORK=0; npm_config_offline=true",
+    "testDataClassification": "Synthetic",
+    "namespace": "sir02-km-evidence-v1",
+    "fixtureSchema": "SIR02-KM-EVIDENCE-FIXTURE v1.0",
+    "measurementBoundary": "Bracketed synchronous OE-13 scenario invocation in isolated test worker"
+  },
+  "retainedArtifacts": {
+    "rawMeasurements": {
+      "path": "SIR-02-KM-OE-13-SUPPLEMENTAL-RAW-MEASUREMENTS-0001-v1.0.json",
+      "sha256": "31d1d636bf420d679f0ff21338affd89b82a3f04f67b21617fceb342ab319fac"
+    },
+    "vitestResults": {
+      "path": "SIR-02-KM-OE-13-SUPPLEMENTAL-VITEST-RESULTS-0001-v1.0.json",
+      "sha256": "29fd08a6cf46f2777dbf1b5d0ded81bbbc55c6db3e1101b9c3ebcdb7e07067b3"
+    },
+    "runLog": {
+      "path": "SIR-02-KM-OE-13-SUPPLEMENTAL-RUN-LOG-0001-v1.0.json",
+      "sha256": "73d2e1beb7d9e9a4930db4883109a0bf0da61115b58fb449b0577e7d8cce68c1"
+    }
+  },
+  "observedCoverage": {
+    "vitestTests": 47,
+    "vitestPassed": 47,
+    "scenarioCategories": 20,
+    "caseCaptures": 46,
+    "rawRegistryAndInventoryHashValues": 184,
+    "hashAlgorithm": "SHA-256",
+    "casesWithAffectedPairs": 38,
+    "sumOfPerCaseUniquePairCounts": 103,
+    "perCaseUniquePairCountSumsByType": {
+      "AMBIGUOUS_AUTHORITATIVE_STATE": 8,
+      "APPROVAL_CONFLICT": 3,
+      "ARTIFACT_REFERENCE_CONFLICT": 1,
+      "CHRONOLOGY_CONFLICT": 2,
+      "CONTENT_IDENTITY_CONFLICT": 13,
+      "CROSS_TENANT_INJECTION": 6,
+      "IMMUTABLE_COMMIT_CONFLICT": 32,
+      "LINEAGE_CONFLICT": 1,
+      "OWNER_CONFLICT": 2,
+      "PROVENANCE_CONFLICT": 1,
+      "QUARANTINE_DECISION_CONFLICT": 1,
+      "REGISTRATION_ID_CONFLICT": 5,
+      "SOURCE_VERSION_CONFLICT": 4,
+      "STALE_QUARANTINE_CONFLICT": 1,
+      "SUPERSESSION_CONFLICT": 1,
+      "TENANT_BINDING_CONFLICT": 17,
+      "WILDCARD_IDENTIFIER": 5
+    },
+    "explicitLiveCounterFieldsPerCase": 13,
+    "explicitLiveCounterValues": 598,
+    "allNormalLiveCountersZero": true,
+    "allDownstreamCallsZero": true,
+    "tenantBProtectedFieldsDisclosed": 0,
+    "categoryBlockedProbes": {
+      "liveIngestion": true,
+      "liveParsingChunking": true,
+      "liveEmbedding": true,
+      "liveIndexing": true,
+      "liveVectorStoreWritePopulation": true,
+      "liveRetrievalPreparation": true,
+      "liveProductionStorage": true,
+      "deploymentActions": true,
+      "configurationMutations": true,
+      "credentialOperations": true,
+      "secretOperations": true,
+      "trafficNetworkActions": true
+    },
+    "guardedEntryPointProbes": {
+      "fetch": true,
+      "http": true,
+      "net": true,
+      "filesystem-write": true,
+      "child-process": true,
+      "process-environment": true
+    },
+    "probeAssertionResults": [
+      {
+        "name": "SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture proves every live-operation counter using synthetic blocked probes",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture blocks guarded network, filesystem, process, and environment entry points",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture blocks unknown fixture processing and resets counters before the next scenario",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture measures all known categories inside the real scenario path and blocks side effects",
+        "status": "passed"
+      },
+      {
+        "name": "SIR02-KM-OE-13 authorized test-only duplicate/conflict fixture intercepts an unmapped prohibited operation inside the real scenario path",
+        "status": "passed"
+      }
+    ],
+    "unknownProhibitedActionsNormalCount": 0,
+    "allCleanupPassed": true,
+    "intentionalNegativeFixtureIdentity": {
+      "scenarioCategory": "C18",
+      "compositeIdentity": "*|sir02-km-source-a-001|v1.0",
+      "reason": "Wildcard tenant identifier is the deliberately rejected negative input, not an accepted tenant binding"
+    },
+    "rawPerCaseValuesLocation": "SIR-02-KM-OE-13-SUPPLEMENTAL-RAW-MEASUREMENTS-0001-v1.0.json"
+  },
+  "validation": {
+    "result": "Passed for controlled capture; independent evidence review still required",
+    "errors": [],
+    "note": "The generic accepted-identity check initially flagged the intentional C18 wildcard-tenant negative fixture. Validation confirmed this was the sole exception and retained it explicitly; no raw measurement or test result was changed."
+  },
+  "nextReviewerAction": "Independently verify the retained raw values, SHA-256 checksums, observer boundary and blocked probes, affected-pair traceability, original formal-run immutability, and reviewer independence; record one evidence-review decision. Do not accept OE-13 or close clarification automatically."
+}
