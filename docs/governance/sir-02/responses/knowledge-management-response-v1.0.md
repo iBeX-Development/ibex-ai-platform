@@ -1,6 +1,6 @@
 # SIR-02 Knowledge Management Immediate Evidence Response v1.0
 
-> Historical linkage snapshot through `5509f6cf6814b6206b832132b6d2a83aaba08fda`: the Plan/Matrix have a recorded conditional approval, but all 15 OE items remain `Not Executed`, OE-01 still requires Gate A prerequisites, and `SIR02-DEF-02` remains `Missing / Not Reviewed` pending the operational-evidence package and immutable reference. Earlier `Received / Not Reviewed` entries are submission-stage history. The inherited Data Governance citation `b767b2200386348db66c55782dc73d54a94d5bb9` is linkage-stage evidence; recorded acceptance is at `13c3a637bf5026486da9c105a6077ca1da51d4fc`. Named owner/reviewer actions are not independently authenticated personal attestations. Shadow remains `Proposed / Not Activated`.
+> Extraction note (historical snapshot through `a226a664ca4a294832b8f7e410ff1ea1e071d017`): Gate A's recorded conditional authorization covered isolated, synthetic, non-live `SIR02-KM-OE-01` only; all 15 OE items remain `Not Executed`, and `SIR02-DEF-02` remains `Missing / Not Reviewed`. Named decisions are not independently authenticated personal attestations; this archival publication grants no new execution permission. The inherited Data Governance citation `b767b220…` identifies the linkage-stage commit, while recorded acceptance is at `13c3a637…`.
 
 ## Submission metadata
 
@@ -36,6 +36,7 @@ Authoritative supporting references:
 - proposed Shadow RAG-disablement configuration: commit `52e437f053cdca25492410cecbd182ebc19a4afd`.
 - approved Knowledge Management Lifecycle-Control Baseline `v1.0`: `controls/SIR-02-KNOWLEDGE-MANAGEMENT-LIFECYCLE-CONTROL-BASELINE-v1.0.md`; baseline commit `48407614af13e8f8239a9e63454c013dc43e432b`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`.
 - approved Operational Evidence Execution Plan and Acceptance Matrix `v1.0`: artifact commit `37212d5869709f85256618e6b03fffb0622a2049`; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960`; all 15 items remain `Not Executed`.
+- approved Operational Evidence Gate A `v1.0`: artifact commit `437612dfe56fb4903f8132bef2971089bdb374aa`; approval commit `84a05702b744a6a710644299381e30e9a9a7aefb`; controlled execution of `SIR02-KM-OE-01` is authorized but not executed.
 
 These references remain supporting evidence. Knowledge Management owner decisions are now immutable at commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
 
@@ -59,6 +60,7 @@ These references remain supporting evidence. Knowledge Management owner decision
 - Immutable owner-decision reference: `decisions/SIR02-DEF-02-KNOWLEDGE-MANAGEMENT-DEPENDENCY-READINESS-DECISION-v1.0.md`; commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
 - Approved lifecycle-control reference satisfied: **Yes**.
 - Controlled evidence execution plan/matrix approved: **Yes; execution remains subject to all plan prerequisites and restrictions**.
+- Gate A approved: **Yes; controlled execution of `SIR02-KM-OE-01` is authorized under the approved synthetic-only, isolated non-live controls**.
 - Operational-evidence requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
 - Exact remaining blocker: the required operational-evidence package has not been produced, independently reviewed, approved, or linked through an immutable operational-evidence reference. Ingestion remains prohibited from reopening.
@@ -87,4 +89,4 @@ These references remain supporting evidence. Knowledge Management owner decision
 
 ## Reviewer next action
 
-Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. The lifecycle-control-reference portion of `SIR02-DEF-02` is satisfied, and its Plan/Matrix are approved for controlled evidence execution. `SIR02-KM-OE-01` is first, but requires Gate A approval of the synthetic test-data scope, fixture schema, isolated namespace, reviewer independence, and evidence-run metadata before execution. `SIR02-DEF-02` is not review-ready and must remain fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
+Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. The lifecycle-control-reference portion of `SIR02-DEF-02` is satisfied, and its Plan/Matrix and Gate A are approved for controlled evidence execution. `SIR02-KM-OE-01` may now execute under those exact controls; no additional prerequisite remains before that item. `SIR02-DEF-02` is not review-ready and must remain fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.

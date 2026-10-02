@@ -1,6 +1,6 @@
 # SIR-02 Knowledge Management Operational Evidence Acceptance Matrix
 
-> Historical Plan/Matrix snapshot through `5509f6cf6814b6206b832132b6d2a83aaba08fda`: the recorded approval is conditional and does not establish personal attestation or an executed result. Every one of the 15 OE rows remains `Not Executed`; Gate A prerequisites precede OE-01, and later gates remain closed until their required evidence exists. `SIR02-DEF-02` stays `Missing / Not Reviewed` because the operational-evidence package and immutable reference are absent. This extraction authorizes no OE execution, ingestion, or Shadow activation.
+> Extraction note (historical snapshot through `a226a664ca4a294832b8f7e410ff1ea1e071d017`): Gate A's recorded conditional authorization covered isolated, synthetic, non-live `SIR02-KM-OE-01` only. No OE item was executed; all 15 remain `Not Executed`, and `SIR02-DEF-02` remains `Missing / Not Reviewed`. Archival publication grants no new execution permission or independently authenticated personal approval.
 
 ## Document control
 
@@ -19,11 +19,15 @@
 | Execution plan               | `SIR-02-KM-OPERATIONAL-EVIDENCE-EXECUTION-PLAN-v1.0.md`     |
 | Approved baseline            | `48407614af13e8f8239a9e63454c013dc43e432b`                  |
 | Baseline approval            | `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`                  |
+| Gate A artifact reference    | `437612dfe56fb4903f8132bef2971089bdb374aa`                  |
+| Gate A approval reference    | `84a05702b744a6a710644299381e30e9a9a7aefb`                  |
 | Runtime authorization        | `None`                                                      |
 
 ## Formal governance approval
 
 The approval statement and conditions recorded in the approved Execution Plan apply equally to this Acceptance Matrix. They authorize only controlled evidence execution under the Matrix classifications and preserve all 15 evidence statuses as `Not Executed` until actual immutable execution evidence is independently reviewed.
+
+Gate A authorizes controlled execution of `SIR02-KM-OE-01` only. It does not change any matrix result or acceptance status, and `OE-08` and `OE-15` retain their separate non-live operational-environment prerequisites.
 
 ## Classification and acceptance matrix
 

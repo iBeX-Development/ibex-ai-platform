@@ -1,6 +1,6 @@
 # SIR-02 Knowledge Management Operational Evidence Execution Plan
 
-> Historical Plan/Matrix snapshot: created at `37212d5869709f85256618e6b03fffb0622a2049`, recorded conditional approval at `4d18b54180ebe0d34b147d769c5d906fc8c3b960`, and linked through `5509f6cf6814b6206b832132b6d2a83aaba08fda`. `Approved for Controlled Evidence Execution / Not Executed` is a recorded historical status, not independently authenticated personal approval or permission from this extraction to execute an OE case. All 15 OE items remain `Not Executed`; OE-01 requires Gate A approval of test-data scope, fixture schema, isolated namespace, reviewer independence, and evidence-run metadata before execution. `SIR02-DEF-02` remains `Missing / Not Reviewed`; no ingestion or Shadow activation follows.
+> Extraction note (historical snapshot through `a226a664ca4a294832b8f7e410ff1ea1e071d017`): Gate A's recorded conditional authorization covered isolated, synthetic, non-live `SIR02-KM-OE-01` only. No OE item was executed; all 15 remain `Not Executed`, and `SIR02-DEF-02` remains `Missing / Not Reviewed`. Archival publication grants no new execution permission or independently authenticated personal approval.
 
 ## Document control
 
@@ -20,6 +20,8 @@
 | Baseline reference           | `48407614af13e8f8239a9e63454c013dc43e432b`                                |
 | Governance approval          | `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`                                |
 | Governance linkage           | `9f9ab7b94f669581ef107aefddc2f10dff4b7516`                                |
+| Gate A artifact reference    | `437612dfe56fb4903f8132bef2971089bdb374aa`                                |
+| Gate A approval reference    | `84a05702b744a6a710644299381e30e9a9a7aefb`                                |
 | Environment                  | Isolated deterministic fixtures or separately approved non-live test only |
 | Live ingestion/RAG authority | `None`                                                                    |
 
@@ -42,6 +44,8 @@
 - Existing repository evidence may only be reused where the approved Acceptance Matrix explicitly permits it.
 - Any required code change must be test-only unless separately approved through the normal implementation/change process.
 - This approval does not authorize SIR-02 closure, ingestion reopening, Shadow activation, or production use.
+
+Gate A is approved for controlled execution of `SIR02-KM-OE-01` under the immutable Gate A approval reference above. All 15 evidence items remain `Not Executed`; this linkage records authorization only and is not an execution result.
 
 ## Purpose
 
