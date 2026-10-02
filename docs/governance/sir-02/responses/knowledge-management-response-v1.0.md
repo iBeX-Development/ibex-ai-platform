@@ -1,6 +1,6 @@
 # SIR-02 Knowledge Management Immediate Evidence Response v1.0
 
-> Historical Knowledge Management snapshot through `2d52c873650be3fd3ed592f6e130e8aa2e926659`: the `Received / Not Reviewed` entries describe the submission stage; the recorded final result is `SIR02-DEF-01` and `SIR02-DEF-03` `Ready for Review / Accepted`, while `SIR02-DEF-02` remains `Missing / Not Reviewed` under its lifecycle-control and operational-evidence hold. The source calls `b767b2200386348db66c55782dc73d54a94d5bb9` a Data Governance accepted review, but that commit linked the decisions at an earlier stage; the recorded accepted review is `13c3a637bf5026486da9c105a6077ca1da51d4fc`. Named owner/reviewer actions are historical record claims, not independently authenticated personal attestations. The Shadow JSON remains `Proposed / Not Activated`; this snapshot grants no ingestion or Shadow permission.
+> Historical linkage snapshot through `9f9ab7b94f669581ef107aefddc2f10dff4b7516`: the lifecycle-control baseline is recorded `Approved / Not Operationalized`; `SIR02-DEF-02` remains `Missing / Not Reviewed` because its operational-evidence package and immutable reference are absent. Earlier `Received / Not Reviewed` entries describe the submission stage; `SIR02-DEF-01` and `SIR02-DEF-03` remain recorded `Ready for Review / Accepted`. The inherited Data Governance citation `b767b2200386348db66c55782dc73d54a94d5bb9` is linkage-stage evidence; recorded acceptance is at `13c3a637bf5026486da9c105a6077ca1da51d4fc`. Named owner/reviewer actions are not independently authenticated personal attestations. Shadow remains `Proposed / Not Activated`.
 
 ## Submission metadata
 
@@ -34,6 +34,7 @@ Authoritative supporting references:
 - Data Governance ingestion-deferral acceptance and review/expiry acceptance: commits `0b110e4916ab58022d29ae88f4a69cb4e5dde773` and `b767b2200386348db66c55782dc73d54a94d5bb9`;
 - Product deferral owner and review/expiry evidence: commits `df112abde861a908fd5838ba10dad54e96053b65` and `4b7fcb77343f5009f5b521f6d580ab6088d3c9f4`;
 - proposed Shadow RAG-disablement configuration: commit `52e437f053cdca25492410cecbd182ebc19a4afd`.
+- approved Knowledge Management Lifecycle-Control Baseline `v1.0`: `controls/SIR-02-KNOWLEDGE-MANAGEMENT-LIFECYCLE-CONTROL-BASELINE-v1.0.md`; baseline commit `48407614af13e8f8239a9e63454c013dc43e432b`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`.
 
 These references remain supporting evidence. Knowledge Management owner decisions are now immutable at commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
 
@@ -55,9 +56,10 @@ These references remain supporting evidence. Knowledge Management owner decision
 - Existing supporting evidence: Product and RAG Architecture records assign the general SIR-09 deferral owner and establish the technical deferral, but they do not constitute Knowledge Management ownership or a knowledge-source lifecycle decision.
 - Knowledge Management-specific dependency and control decision found: **Yes**. The owner accepted responsibility and placed ingestion under an explicit dependency hold.
 - Immutable owner-decision reference: `decisions/SIR02-DEF-02-KNOWLEDGE-MANAGEMENT-DEPENDENCY-READINESS-DECISION-v1.0.md`; commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
-- Knowledge Management requirement satisfied: **No**.
+- Approved lifecycle-control reference satisfied: **Yes**.
+- Operational-evidence requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
-- Exact remaining blocker: approved lifecycle-control reference and operational-evidence reference do not yet exist. Ingestion remains prohibited from reopening until both are supplied and approved.
+- Exact remaining blocker: the required operational-evidence package has not been produced, independently reviewed, approved, or linked through an immutable operational-evidence reference. Ingestion remains prohibited from reopening.
 
 ### SIR02-DEF-03 — Knowledge Management review and expiry acceptance
 
@@ -79,8 +81,8 @@ These references remain supporting evidence. Knowledge Management owner decision
 - Moved from `Received` to `Ready for Review`: `SIR02-DEF-01`, `SIR02-DEF-03`
 - Evidence marked `Approved`: none
 - Existing 26 Immediate-stage `Ready for Review` assignments changed: none
-- Current SIR-02 status: **Blocking — `SIR02-DEF-02` remains missing because lifecycle-control and operational-evidence references are not supplied.**
+- Current SIR-02 status: **Blocking — `SIR02-DEF-02` remains missing because the required operational-evidence package and immutable operational-evidence reference are absent.**
 
 ## Reviewer next action
 
-Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. `SIR02-DEF-02` is not review-ready and must remain fail closed until approved lifecycle-control and operational-evidence references are supplied.
+Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. The lifecycle-control-reference portion of `SIR02-DEF-02` is satisfied by the approved baseline. `SIR02-DEF-02` is not review-ready and must remain fail closed until its operational-evidence package is produced, independently reviewed, approved, and immutably referenced.
