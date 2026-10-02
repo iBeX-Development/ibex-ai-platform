@@ -1,6 +1,6 @@
 # SIR-02 Knowledge Management Operational Evidence Execution Plan
 
-> Extraction note (historical snapshot through `a226a664ca4a294832b8f7e410ff1ea1e071d017`): Gate A's recorded conditional authorization covered isolated, synthetic, non-live `SIR02-KM-OE-01` only. No OE item was executed; all 15 remain `Not Executed`, and `SIR02-DEF-02` remains `Missing / Not Reviewed`. Archival publication grants no new execution permission or independently authenticated personal approval.
+> Extraction note (historical snapshot through `9b17ef719b2edfd3835654a163a573cdc3497f5b`): `SIR02-KM-OE-01` is recorded as `Executed / Awaiting Independent Review`, with acceptance `Not Reviewed`; the other 14 items remain `Not Executed`. The JSON reports validation, Tenant B denial, and cleanup, but this archival linkage does not independently verify the run or grant new execution authority. Its sidecar matches a CRLF checkout, while the committed LF JSON blob hashes differently; exact-byte integrity requires review.
 
 ## Document control
 
@@ -112,7 +112,8 @@ Each produced evidence package must contain:
 - **Checksum/reference:** SHA-256 per artifact and immutable evidence commit/store reference.
 - **Reviewer:** SODBILEG Erkhembayar — Administrator.
 - **Acceptance criterion:** Exact approved sample reconstructs source identity, version, ownership, tenant, provenance, checksum, status, and correlation without enabling ingestion.
-- **Status:** `Not Executed`
+- **Status:** `Executed / Awaiting Independent Review`
+- **Execution evidence:** `operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json`; SHA-256 `d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b`; immutable evidence commit `44a97a9b387235c67ae70cce24fb32cda0adfe70`.
 
 ### SIR02-KM-OE-02 — Source owner and tenant binding
 

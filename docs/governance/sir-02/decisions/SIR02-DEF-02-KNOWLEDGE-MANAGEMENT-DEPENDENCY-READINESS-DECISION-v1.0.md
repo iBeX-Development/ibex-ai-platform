@@ -1,6 +1,6 @@
 # SIR02-DEF-02 — Knowledge Management Dependency and Readiness Decision v1.0
 
-> Extraction note (historical snapshot through `a226a664ca4a294832b8f7e410ff1ea1e071d017`): Gate A's recorded conditional authorization covered isolated, synthetic, non-live `SIR02-KM-OE-01` only; all 15 OE items remain `Not Executed`, and `SIR02-DEF-02` remains `Missing / Not Reviewed`. Named decisions are not independently authenticated personal attestations; this archival publication grants no new execution permission. The inherited Data Governance citation `b767b220…` identifies the linkage-stage commit, while recorded acceptance is at `13c3a637…`.
+> Extraction note (historical snapshot through `9b17ef719b2edfd3835654a163a573cdc3497f5b`): OE-01 is recorded as `Executed / Awaiting Independent Review`, with acceptance `Not Reviewed`; the other 14 items remain `Not Executed`, and `SIR02-DEF-02` remains `Missing / Not Reviewed`. The JSON's validation, Tenant B denial, and cleanup are self-reported pending independent run evidence; its sidecar matches CRLF checkout bytes, not the committed LF blob. Named decisions are not independently authenticated personal attestations, and this archival publication grants no new execution authority. The inherited Data Governance citation `b767b220…` identifies the linkage stage; recorded acceptance is at `13c3a637…`.
 
 ## Decision record
 
@@ -97,12 +97,13 @@ Ingestion cannot reopen until these controls are formally approved and operation
 - Decision outcome: **Approved with dependency hold**
 - Owner decision statement: **Recorded above**
 - Approved lifecycle-control reference: **`controls/SIR-02-KNOWLEDGE-MANAGEMENT-LIFECYCLE-CONTROL-BASELINE-v1.0.md`; baseline commit `48407614af13e8f8239a9e63454c013dc43e432b`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`**
-- Approved evidence execution plan/matrix: **artifact commit `37212d5869709f85256618e6b03fffb0622a2049`; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960`; all 15 items `Not Executed`**
-- Approved Gate A: **artifact commit `437612dfe56fb4903f8132bef2971089bdb374aa`; approval commit `84a05702b744a6a710644299381e30e9a9a7aefb`; `SIR02-KM-OE-01` controlled execution authorized but not executed**
+- Approved evidence execution plan/matrix: **artifact commit `37212d5869709f85256618e6b03fffb0622a2049`; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960`**
+- Approved Gate A: **artifact commit `437612dfe56fb4903f8132bef2971089bdb374aa`; approval commit `84a05702b744a6a710644299381e30e9a9a7aefb`**
+- OE-01 execution evidence: **`operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json`; SHA-256 `d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b`; commit `44a97a9b387235c67ae70cce24fb32cda0adfe70`; `Executed / Awaiting Independent Review`**
 - Operational evidence reference: **Owner Input Required**
 - Controlled reopening criteria confirmation: **Confirmed**
 - Decision date: **2026-09-25**
 - Conditions: **Lifecycle controls must be approved and operationally evidenced before ingestion reopening.**
 - Immutable owner-decision reference: **`c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`**
 
-The owner decision, approved lifecycle-control reference, controlled operational-evidence execution plan, and Gate A prerequisites are complete. Controlled execution of `SIR02-KM-OE-01` is authorized under the approved Plan, Matrix, and Gate A conditions. Evidence status remains `Missing / Not Reviewed` because all 15 items are `Not Executed` and the required operational-evidence package and immutable operational-evidence reference do not yet exist. These approvals do not authorize ingestion reopening.
+The owner decision, approved lifecycle-control reference, controlled operational-evidence execution plan, and Gate A prerequisites are complete. `SIR02-KM-OE-01` has executed successfully and awaits independent review; the other 14 evidence items remain `Not Executed`. Evidence status remains `Missing / Not Reviewed` because the complete 15-item accepted operational-evidence package and immutable package reference do not yet exist. These records do not authorize ingestion reopening.
