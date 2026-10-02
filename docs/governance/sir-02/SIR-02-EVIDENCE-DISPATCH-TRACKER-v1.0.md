@@ -1,6 +1,6 @@
 # SIR-02 Evidence Dispatch Tracker v1.0
 
-> Historical snapshot through `e780b35008cb4ea84a474f2eeace3bc848eb9fd0`: Product and RAG Architecture each record `8/8 Ready for Review / Accepted`, while other Immediate owner-group assignments remain missing in this snapshot. `Sent` is a recorded request status, not per-recipient delivery or acknowledgement evidence. The recorded owner and reviewer statements, including requested “signed” approvals, are not independently authenticated by this document or Git metadata. SIR-02 remains Blocking; this extraction does not establish current Shadow readiness or configuration activation.
+> Historical snapshot through `b0a9ddb189c40218640a1ef934a0f8a9ea89ec40`: Product `8/8`, RAG Architecture `8/8`, and Security `4/4` are recorded as `Ready for Review / Accepted`; nine other Immediate assignments remain missing and SIR-02 remains Blocking. `Sent` is a recorded request status, not per-recipient delivery or acknowledgement evidence. Named decisions and requested personal “signed” approvals are not independently authenticated by this tracker or Git metadata. The Shadow JSON remains `Proposed / Not Activated`; this extraction grants no ingestion or Shadow permission.
 
 ## Scope and controls
 
@@ -15,9 +15,10 @@
 - Product response reference: **`responses/product-response-v1.0.md`**
 - Product remaining-input response reference: **`responses/product-remaining-inputs-v1.0.md`**
 - RAG Architecture response reference: **`responses/rag-architecture-response-v1.0.md`**
+- Security response reference: **`responses/security-response-v1.0.md`**
 - Proposed Shadow RAG-disablement configuration: **`configuration/SIR-02-SHADOW-RAG-DISABLEMENT-v1.0.json`** — `SIR02-SHADOW-RAG-DISABLEMENT` `v1.0`, not activated
 - Evidence collection register: **`SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md`**
-- Evidence status: **All eight Product and all eight RAG Architecture assignments Ready for Review; all remaining owner-group assignments remain Missing**
+- Evidence status: **All eight Product, all eight RAG Architecture, and all four Security assignments Ready for Review; all remaining owner-group assignments remain Missing**
 
 ## Immediate-stage assignments
 
@@ -39,10 +40,10 @@
 | SIR02-CFG-07 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Ready for Review | Accepted      |
 | SIR02-DEF-01 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Ready for Review | Accepted      |
 | SIR02-DEF-02 | RAG Architecture     | `immediate/rag-architecture-request-v1.0.md`                              | Sent           | Ready for Review | Accepted      |
-| SIR02-GOV-01 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
-| SIR02-GOV-04 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
-| SIR02-CFG-04 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
-| SIR02-DEF-01 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Missing          | Not Reviewed  |
+| SIR02-GOV-01 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Ready for Review | Accepted      |
+| SIR02-GOV-04 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Ready for Review | Accepted      |
+| SIR02-CFG-04 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Ready for Review | Accepted      |
+| SIR02-DEF-01 | Security             | `immediate/security-request-v1.0.md`                                      | Sent           | Ready for Review | Accepted      |
 | SIR02-GOV-01 | Data Governance      | `immediate/data-governance-request-v1.0.md`                               | Sent           | Missing          | Not Reviewed  |
 | SIR02-GOV-05 | Data Governance      | `immediate/data-governance-request-v1.0.md`                               | Sent           | Missing          | Not Reviewed  |
 | SIR02-DEF-01 | Data Governance      | `immediate/data-governance-request-v1.0.md`                               | Sent           | Missing          | Not Reviewed  |
@@ -62,19 +63,22 @@ The Product response is the owner submission for all eight Product assignments. 
 
 The RAG Architecture response supplies all eight assigned evidence items, and all eight have accepted review records at `Ready for Review`. No RAG Architecture evidence is `Approved` at the evidence-status level.
 
+The Security response supplies all four assignments, and all four have accepted review records at `Ready for Review`. No Security evidence is `Approved` at the evidence-status level.
+
 ## SIR-02 completion dashboard
 
 - Immediate-stage assignments: **29 total**
-- Ready for Review: **16**
+- Ready for Review: **20**
 - Received: **0**
-- Missing: **13**
-- Accepted review results: **16**
+- Missing: **9**
+- Accepted review results: **20**
 - Needs Clarification: **0**
 - Rejected: **0**
 - Approved evidence: **0**
 - Product assignments: **8 Ready for Review; 0 Received; 0 Missing**
 - Product governance review: **All eight Product evidence items accepted; none marked Approved**
 - RAG Architecture assignments: **8 Ready for Review; 0 Received; 0 Missing**
+- Security assignments: **4 Ready for Review; 0 Received; 0 Missing**
 - After Config Scope assignments: **32 Not Sent; untouched**
 - Final Sign-Off assignments: **11 Not Sent; untouched**
-- Current SIR-02 status: **Blocking — Product and RAG Architecture evidence are each 8/8 Ready for Review, but 13 assignments from Security, Data Governance, Platform Operations, and Knowledge Management remain missing.**
+- Current SIR-02 status: **Blocking — 9 assignments from Data Governance, Platform Operations, and Knowledge Management remain missing.**
