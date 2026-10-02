@@ -1,6 +1,6 @@
 # SIR-02 Evidence Collection Register v1.0
 
-> Historical Product and RAG Architecture snapshot through `e780b35008cb4ea84a474f2eeace3bc848eb9fd0`. The scope metadata's `RAG Architecture review status: Not Reviewed` describes the earlier response stage; the later RAG rows record `8/8 Ready for Review / Accepted`. The `SIR02-DEF-02` row's statement that the signed SIR-09 decision remained missing also predates the later decision record. Owner and reviewer actions, including requested “signed” approvals, are recorded claims; document text and Git metadata do not independently authenticate personal signatures or attestations. This register does not establish current SIR-02 completion, Shadow entry, configuration activation, or ingestion permission.
+> Historical Product, RAG Architecture, and Security snapshot through `b0a9ddb189c40218640a1ef934a0f8a9ea89ec40`. The Security rows' `4/4 Ready for Review / Accepted` are recorded review outcomes; nine other Immediate assignments remain missing. Earlier scope metadata and the `SIR02-DEF-02` RAG gap describe prior stages and are retained. Named owner/reviewer decisions and requested personal “signed” approvals are recorded claims, not independently authenticated attestations from document text or Git metadata. Static tenant/security references do not prove a deployed network posture. This register grants no Shadow, configuration, or ingestion activation and does not establish current SIR-02 completion.
 
 ## Scope
 
@@ -42,3 +42,14 @@ No evidence in this register is marked `Approved`.
 | `SIR02-DEF-02` | Explicit accountable SIR-09 deferral owner assignment                           | Product decision and review commits `df112abde861a908fd5838ba10dad54e96053b65`, `4b7fcb77343f5009f5b521f6d580ab6088d3c9f4`                | `1.0`   | `Ready for Review` | `Accepted`    | Signed SIR-09 decision remains separately missing under `SIR02-DEF-01` |
 
 RAG Architecture response: `responses/rag-architecture-response-v1.0.md`. All eight RAG Architecture items are `Ready for Review`; none is marked `Approved` at the evidence-status level.
+
+## Security Immediate-stage evidence
+
+| Evidence ID    | Acceptance criterion                                                                                       | Evidence reference                                                                                                                                          | Version | Evidence status    | Review result | Acceptance gap              |
+| -------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------ | ------------- | --------------------------- |
+| `SIR02-GOV-01` | Security-owned joint review preserving fail-closed tenant, authorization, audit, and network requirements  | `decisions/SIR02-GOV-01-SECURITY-JOINT-DECISION-REVIEW-v1.0.md`; owner-decision commit `10423e60524467e678cacafce0724c66ff3ac616`                           | `v1.0`  | `Ready for Review` | `Accepted`    | None for this evidence item |
+| `SIR02-GOV-04` | Explicit Security approval with owner, outcome, date, conditions, and immutable reference                  | `decisions/SIR02-GOV-04-SECURITY-APPROVAL-v1.0.md`; owner-decision commit `10423e60524467e678cacafce0724c66ff3ac616`                                        | `v1.0`  | `Ready for Review` | `Accepted`    | None for this evidence item |
+| `SIR02-CFG-04` | Exact wildcard-free capability exclusions with no bypass and fail-closed tenant/security enforcement       | Manifest `4779dce2e53e8fdc65ccf947084130b1b22ff2f8`; config `52e437f053cdca25492410cecbd182ebc19a4afd`; controls `d0b5a174ed6f5635349186caace0642687fe7c86` | `1.0.0` | `Ready for Review` | `Accepted`    | None for this evidence item |
+| `SIR02-DEF-01` | Security acceptance of full SIR-09 deferral preserving tenant/security controls and no automatic reopening | `decisions/SIR02-DEF-01-SECURITY-INGESTION-DEFERRAL-ACCEPTANCE-v1.0.md`; owner-decision commit `10423e60524467e678cacafce0724c66ff3ac616`                   | `v1.0`  | `Ready for Review` | `Accepted`    | None for this evidence item |
+
+Security response: `responses/security-response-v1.0.md`. All four Security items are `Ready for Review`; none is `Approved` at the evidence-status level.
