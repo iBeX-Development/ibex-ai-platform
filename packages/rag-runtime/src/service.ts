@@ -34,7 +34,6 @@ import {
   type RagExecutionOptions,
   type RagIngestionRequest,
   type RagIngestionResponse,
-  type RagRetrievalRequest,
   type RagRetrievalResponse,
   type RagSecurityFilter,
   type RankedChunkReference
@@ -176,31 +175,95 @@ function assertTenantBinding(document: KnowledgeDocument, context: TrustedReques
   }
 }
 
-function newController(
-  externalSignal: AbortSignal | undefined,
-  timeoutMs: number
-): {
-  readonly controller: AbortController;
-  readonly cleanup: () => void;
-} {
-  const controller = new AbortController();
-  const cancel = () => {
-    controller.abort();
+/** One fixed admission deadline; racing a wait does not stop the underlying port. */
+class RagOperation {
+  readonly controller = new AbortController();
+  private readonly timer: ReturnType<typeof setTimeout>;
+  private readonly deadline: number;
+  private observedTime: number;
+  private timedOut = false;
+  private readonly cancel = () => {
+    this.controller.abort();
   };
-  if (externalSignal?.aborted) controller.abort();
-  else externalSignal?.addEventListener('abort', cancel, { once: true });
-  const timer = setTimeout(cancel, timeoutMs);
-  return {
-    controller,
-    cleanup: () => {
-      clearTimeout(timer);
-      externalSignal?.removeEventListener('abort', cancel);
-    }
-  };
-}
 
-function assertNotAborted(signal: AbortSignal): void {
-  if (signal.aborted) throw new PlatformError('TIMEOUT_ERROR', 'RAG request was cancelled', 408);
+  constructor(
+    private readonly externalSignal: AbortSignal | undefined,
+    timeoutMs: number,
+    private readonly clock: () => number,
+    startedAt: number
+  ) {
+    this.observedTime = startedAt;
+    this.deadline = startedAt + timeoutMs;
+    if (externalSignal?.aborted) this.cancel();
+    else externalSignal?.addEventListener('abort', this.cancel, { once: true });
+    this.timer = setTimeout(() => {
+      this.expire();
+    }, timeoutMs);
+  }
+
+  private expire(): void {
+    if (!this.controller.signal.aborted) {
+      this.timedOut = true;
+      this.controller.abort();
+    }
+  }
+
+  private abortError(): PlatformError {
+    return new PlatformError(
+      'TIMEOUT_ERROR',
+      this.timedOut ? 'RAG request timed out' : 'RAG request was cancelled',
+      408
+    );
+  }
+
+  assertActive(): void {
+    const sampled = this.clock();
+    if (!Number.isFinite(sampled) || !Number.isFinite(this.deadline)) {
+      throw new PlatformError('SERVICE_UNAVAILABLE', 'RAG request clock is unavailable', 503);
+    }
+    this.observedTime = Math.max(this.observedTime, sampled);
+    if (this.observedTime >= this.deadline) this.expire();
+    if (this.controller.signal.aborted) throw this.abortError();
+  }
+
+  async run<T>(invoke: () => Promise<T>): Promise<T> {
+    this.assertActive();
+    const signal = this.controller.signal;
+    let onAbort!: () => void;
+    const pending = new Promise<T>((resolve, reject) => {
+      onAbort = () => {
+        reject(this.abortError());
+      };
+      signal.addEventListener('abort', onAbort, { once: true });
+      try {
+        this.assertActive();
+        // Invoke immediately after admission. Observe both late outcomes even
+        // when abort wins; no background continuation can admit another port.
+        Promise.resolve(invoke()).then(resolve, reject);
+      } catch (error) {
+        reject(
+          error instanceof Error
+            ? error
+            : new PlatformError('INTERNAL_ERROR', 'An internal error occurred', 500)
+        );
+      }
+    });
+    try {
+      const value = await pending;
+      this.assertActive();
+      return value;
+    } catch (error) {
+      this.assertActive();
+      throw error;
+    } finally {
+      signal.removeEventListener('abort', onAbort);
+    }
+  }
+
+  cleanup(): void {
+    clearTimeout(this.timer);
+    this.externalSignal?.removeEventListener('abort', this.cancel);
+  }
 }
 
 export class RagRuntimeService {
@@ -212,7 +275,8 @@ export class RagRuntimeService {
       !dependencies.environment.trim() ||
       !dependencies.policy.retrieval_version.trim() ||
       !Number.isInteger(dependencies.policy.timeout_ms) ||
-      dependencies.policy.timeout_ms <= 0
+      dependencies.policy.timeout_ms <= 0 ||
+      dependencies.policy.timeout_ms > 2_147_483_647
     ) {
       throw new PlatformError('CONFIGURATION_ERROR', 'RAG Runtime configuration is invalid', 500);
     }
@@ -230,12 +294,21 @@ export class RagRuntimeService {
 
     return tracer.startActiveSpan('rag_runtime.ingest', async (span) => {
       let stage: RagRuntimeAuditStage = 'boundary_context';
-      let context: TrustedRequestContext | undefined;
-      let request: RagIngestionRequest | undefined;
+      let auditContext: TrustedRequestContext | undefined;
+      let auditRequest: RagIngestionRequest | undefined;
       let chunkIds: readonly string[] | undefined;
       let embedding: EmbeddingEvidence | undefined;
+      const writeState: { dispatched: boolean; completed: boolean } = {
+        dispatched: false,
+        completed: false
+      };
       const startedAt = this.clock();
-      const operation = newController(options.signal, this.dependencies.policy.timeout_ms);
+      const operation = new RagOperation(
+        options.signal,
+        this.dependencies.policy.timeout_ms,
+        this.clock,
+        startedAt
+      );
       span.setAttribute('ibex.rag.trace_id', traceId);
 
       try {
@@ -248,7 +321,8 @@ export class RagRuntimeService {
         if (typeof inbound !== 'object' || inbound === null) {
           throw new PlatformError('VALIDATION_ERROR', 'RAG ingestion request is invalid', 400);
         }
-        context = createTrustedRequestContext(readField(inbound, 'context'));
+        const context = createTrustedRequestContext(readField(inbound, 'context'));
+        auditContext = context;
         span.setAttributes({
           'ibex.request_id': context.request_id,
           'ibex.correlation_id': context.correlation_id,
@@ -266,25 +340,28 @@ export class RagRuntimeService {
         if (!parsed.success) {
           throw new PlatformError('INVALID_INPUT', 'Knowledge document is invalid', 400);
         }
-        request = Object.freeze({ ...parsed.data, context });
-        assertNotAborted(operation.controller.signal);
+        const request = Object.freeze({ ...parsed.data, context });
+        auditRequest = request;
+        operation.assertActive();
 
         stage = 'authorization';
-        await enforceAuthorization(this.dependencies.authorization, context, {
-          capability: 'rag:ingest',
-          action: 'publish',
-          required_permissions: this.dependencies.policy.ingestion_permissions,
-          required_entitlements: this.dependencies.policy.ingestion_entitlements
-        });
+        await operation.run(() =>
+          enforceAuthorization(this.dependencies.authorization, context, {
+            capability: 'rag:ingest',
+            action: 'publish',
+            required_permissions: this.dependencies.policy.ingestion_permissions,
+            required_entitlements: this.dependencies.policy.ingestion_entitlements
+          })
+        );
 
         stage = 'governance';
         let governanceRaw: unknown;
         try {
-          governanceRaw = await this.dependencies.governance.authorizeIngestion(
-            context,
-            request.document.metadata
+          governanceRaw = await operation.run(() =>
+            this.dependencies.governance.authorizeIngestion(context, request.document.metadata)
           );
         } catch {
+          operation.assertActive();
           throw new PlatformError(
             'AUTHORIZATION_ERROR',
             'Knowledge governance could not be verified',
@@ -316,32 +393,36 @@ export class RagRuntimeService {
         }
 
         stage = 'audit';
-        await this.emitAudit({
-          traceId,
-          context,
-          operation: 'ingest',
-          outcome: 'started',
-          stage: 'embedding',
-          timestamp: now,
-          agentId: request.agent_id,
-          documentIds: [request.document.metadata.document_id],
-          documentVersions: [request.document.metadata.document_version]
-        });
+        await operation.run(() =>
+          this.emitAudit({
+            traceId,
+            context,
+            operation: 'ingest',
+            outcome: 'started',
+            stage: 'embedding',
+            timestamp: now,
+            agentId: request.agent_id,
+            documentIds: [request.document.metadata.document_id],
+            documentVersions: [request.document.metadata.document_version]
+          })
+        );
 
         stage = 'embedding';
         const chunks: KnowledgeChunk[] = [];
         for (const section of request.document.sections) {
-          assertNotAborted(operation.controller.signal);
+          operation.assertActive();
           let rawEmbedding: unknown;
           try {
-            rawEmbedding = await this.dependencies.embeddings.embed({
-              context,
-              purpose: 'document',
-              content: section.content,
-              signal: operation.controller.signal
-            });
+            rawEmbedding = await operation.run(() =>
+              this.dependencies.embeddings.embed({
+                context,
+                purpose: 'document',
+                content: section.content,
+                signal: operation.controller.signal
+              })
+            );
           } catch {
-            assertNotAborted(operation.controller.signal);
+            operation.assertActive();
             throw new PlatformError('DEPENDENCY_ERROR', 'Embedding dependency failed', 502);
           }
           const parsedEmbedding = embeddingEvidenceSchema.safeParse(rawEmbedding);
@@ -413,13 +494,21 @@ export class RagRuntimeService {
             )
           );
         }
-        chunkIds = Object.freeze(chunks.map(({ chunk_id }) => chunk_id));
+        const indexedChunkIds = Object.freeze(chunks.map(({ chunk_id }) => chunk_id));
+        chunkIds = indexedChunkIds;
 
         stage = 'indexing';
         try {
-          await this.dependencies.store.upsert(Object.freeze(chunks), operation.controller.signal);
+          await operation.run(() => {
+            writeState.dispatched = true;
+            return this.dependencies.store.upsert(
+              Object.freeze(chunks),
+              operation.controller.signal
+            );
+          });
+          writeState.completed = true;
         } catch {
-          assertNotAborted(operation.controller.signal);
+          operation.assertActive();
           throw new PlatformError('DEPENDENCY_ERROR', 'Knowledge store update failed', 502);
         }
 
@@ -435,41 +524,56 @@ export class RagRuntimeService {
           chunk_ids: chunkIds
         });
         stage = 'audit';
-        await this.emitAudit({
-          traceId,
-          context,
-          operation: 'ingest',
-          outcome: 'succeeded',
-          stage,
-          timestamp: now,
-          agentId: request.agent_id,
-          documentIds: [request.document.metadata.document_id],
-          documentVersions: [request.document.metadata.document_version],
-          chunkIds,
-          ...(embedding
-            ? {
-                embeddingModel: embedding.model_id,
-                embeddingModelVersion: embedding.model_version
-              }
-            : {}),
-          latencyMs: this.clock() - startedAt
-        });
+        await operation.run(() =>
+          this.emitAudit({
+            traceId,
+            context,
+            operation: 'ingest',
+            outcome: 'succeeded',
+            stage,
+            timestamp: now,
+            agentId: request.agent_id,
+            documentIds: [request.document.metadata.document_id],
+            documentVersions: [request.document.metadata.document_version],
+            chunkIds: indexedChunkIds,
+            ...(embedding
+              ? {
+                  embeddingModel: embedding.model_id,
+                  embeddingModelVersion: embedding.model_version
+                }
+              : {}),
+            latencyMs: this.clock() - startedAt
+          })
+        );
         span.setStatus({ code: SpanStatusCode.OK });
+        operation.assertActive();
         return Object.freeze(response);
       } catch (error) {
-        const safeError = correlated(error, traceId, context?.request_id);
+        const failure = correlated(error, traceId, auditContext?.request_id);
+        const safeError = writeState.dispatched
+          ? correlated(
+              new PlatformError(
+                failure.code,
+                `${failure.publicMessage}; knowledge store update ${writeState.completed ? 'completed' : 'outcome is unconfirmed'}`,
+                failure.statusCode,
+                { write_status: writeState.completed ? 'completed' : 'unconfirmed' }
+              ),
+              traceId,
+              auditContext?.request_id
+            )
+          : failure;
         this.recordFailure(span, safeError);
         await this.safeFailureAudit({
           traceId,
           operation: 'ingest',
           stage,
           timestamp: now,
-          ...(context ? { context } : {}),
-          ...(request ? { agentId: request.agent_id } : {}),
-          ...(request
+          ...(auditContext ? { context: auditContext } : {}),
+          ...(auditRequest ? { agentId: auditRequest.agent_id } : {}),
+          ...(auditRequest
             ? {
-                documentIds: [request.document.metadata.document_id],
-                documentVersions: [request.document.metadata.document_version]
+                documentIds: [auditRequest.document.metadata.document_id],
+                documentVersions: [auditRequest.document.metadata.document_version]
               }
             : {}),
           ...(chunkIds ? { chunkIds } : {}),
@@ -496,14 +600,18 @@ export class RagRuntimeService {
 
     return tracer.startActiveSpan('rag_runtime.retrieve', async (span) => {
       let stage: RagRuntimeAuditStage = 'boundary_context';
-      let context: TrustedRequestContext | undefined;
-      let request: RagRetrievalRequest | undefined;
-      let approvedScope: ApprovedRagRetrievalScope | undefined;
-      let queryHash: string | undefined;
-      let embedding: EmbeddingEvidence | undefined;
+      let auditContext: TrustedRequestContext | undefined;
+      let auditScope: ApprovedRagRetrievalScope | undefined;
+      let auditQueryHash: string | undefined;
+      let auditEmbedding: EmbeddingEvidence | undefined;
       let selectedChunks: readonly KnowledgeChunk[] = [];
       const startedAt = this.clock();
-      const operation = newController(options.signal, this.dependencies.policy.timeout_ms);
+      const operation = new RagOperation(
+        options.signal,
+        this.dependencies.policy.timeout_ms,
+        this.clock,
+        startedAt
+      );
       span.setAttribute('ibex.rag.trace_id', traceId);
 
       try {
@@ -516,7 +624,8 @@ export class RagRuntimeService {
         if (typeof inbound !== 'object' || inbound === null) {
           throw new PlatformError('VALIDATION_ERROR', 'RAG retrieval request is invalid', 400);
         }
-        context = createTrustedRequestContext(readField(inbound, 'context'));
+        const context = createTrustedRequestContext(readField(inbound, 'context'));
+        auditContext = context;
         span.setAttributes({
           'ibex.request_id': context.request_id,
           'ibex.correlation_id': context.correlation_id,
@@ -534,26 +643,29 @@ export class RagRuntimeService {
         if (!parsed.success) {
           throw new PlatformError('INVALID_INPUT', 'RAG retrieval request is invalid', 400);
         }
-        request = Object.freeze({ ...parsed.data, context });
-        queryHash = sha256Evidence(request.query);
-        assertNotAborted(operation.controller.signal);
+        const request = Object.freeze({ ...parsed.data, context });
+        const queryHash = sha256Evidence(request.query);
+        auditQueryHash = queryHash;
+        operation.assertActive();
 
         stage = 'authorization';
-        await enforceAuthorization(this.dependencies.authorization, context, {
-          capability: 'rag:retrieve',
-          action: 'read',
-          required_permissions: this.dependencies.policy.retrieval_permissions,
-          required_entitlements: this.dependencies.policy.retrieval_entitlements
-        });
+        await operation.run(() =>
+          enforceAuthorization(this.dependencies.authorization, context, {
+            capability: 'rag:retrieve',
+            action: 'read',
+            required_permissions: this.dependencies.policy.retrieval_permissions,
+            required_entitlements: this.dependencies.policy.retrieval_entitlements
+          })
+        );
 
         stage = 'scope_resolution';
         let rawScopeDecision: unknown;
         try {
-          rawScopeDecision = await this.dependencies.retrievalScope.resolve(
-            context,
-            request.routing_decision_id
+          rawScopeDecision = await operation.run(() =>
+            this.dependencies.retrievalScope.resolve(context, request.routing_decision_id)
           );
         } catch {
+          operation.assertActive();
           throw new PlatformError(
             'AUTHORIZATION_ERROR',
             'RAG retrieval scope could not be verified',
@@ -585,10 +697,11 @@ export class RagRuntimeService {
             403
           );
         }
-        approvedScope = Object.freeze({
+        const approvedScope = Object.freeze({
           ...parsedScope,
           knowledge_scopes: Object.freeze([...parsedScope.knowledge_scopes])
         });
+        auditScope = approvedScope;
 
         const filter: RagSecurityFilter = Object.freeze(
           ragSecurityFilterSchema.parse({
@@ -607,26 +720,30 @@ export class RagRuntimeService {
         );
 
         stage = 'audit';
-        await this.emitAudit({
-          traceId,
-          context,
-          operation: 'retrieve',
-          outcome: 'started',
-          stage: 'security_filter',
-          timestamp: now,
-          agentId: approvedScope.agent_id,
-          domain: approvedScope.domain,
-          knowledgeScopes: approvedScope.knowledge_scopes,
-          queryHash,
-          retrievalVersion: this.dependencies.policy.retrieval_version
-        });
+        await operation.run(() =>
+          this.emitAudit({
+            traceId,
+            context,
+            operation: 'retrieve',
+            outcome: 'started',
+            stage: 'security_filter',
+            timestamp: now,
+            agentId: approvedScope.agent_id,
+            domain: approvedScope.domain,
+            knowledgeScopes: approvedScope.knowledge_scopes,
+            queryHash,
+            retrievalVersion: this.dependencies.policy.retrieval_version
+          })
+        );
 
         stage = 'security_filter';
         let rawCandidates: unknown;
         try {
-          rawCandidates = await this.dependencies.store.filter(filter, operation.controller.signal);
+          rawCandidates = await operation.run(() =>
+            this.dependencies.store.filter(filter, operation.controller.signal)
+          );
         } catch {
-          assertNotAborted(operation.controller.signal);
+          operation.assertActive();
           throw new PlatformError('DEPENDENCY_ERROR', 'Knowledge store query failed', 502);
         }
         const parsedCandidates = chunkListSchema.safeParse(rawCandidates);
@@ -661,48 +778,56 @@ export class RagRuntimeService {
           throw new PlatformError('INVALID_RESPONSE', 'Knowledge store response is invalid', 502);
         }
         if (candidateMap.size === 0) {
-          return await this.finishEmptyRetrieval({
+          const response = await this.finishEmptyRetrieval({
             traceId,
             context,
             approvedScope,
             queryHash,
             now,
             startedAt,
-            span
+            span,
+            operation
           });
+          operation.assertActive();
+          return response;
         }
 
         stage = 'embedding';
         let rawEmbedding: unknown;
         try {
-          rawEmbedding = await this.dependencies.embeddings.embed({
-            context,
-            purpose: 'query',
-            content: request.query,
-            signal: operation.controller.signal
-          });
+          rawEmbedding = await operation.run(() =>
+            this.dependencies.embeddings.embed({
+              context,
+              purpose: 'query',
+              content: request.query,
+              signal: operation.controller.signal
+            })
+          );
         } catch {
-          assertNotAborted(operation.controller.signal);
+          operation.assertActive();
           throw new PlatformError('DEPENDENCY_ERROR', 'Embedding dependency failed', 502);
         }
         const parsedEmbedding = embeddingEvidenceSchema.safeParse(rawEmbedding);
         if (!parsedEmbedding.success) {
           throw new PlatformError('INVALID_RESPONSE', 'Embedding response is invalid', 502);
         }
-        embedding = parsedEmbedding.data;
+        const embedding = parsedEmbedding.data;
+        auditEmbedding = embedding;
 
         stage = 'semantic_search';
         let rawRanked: unknown;
         try {
-          rawRanked = await this.dependencies.ranker.rank({
-            query: request.query,
-            query_embedding: embedding,
-            candidates: Object.freeze([...candidateMap.values()]),
-            top_k: request.top_k,
-            signal: operation.controller.signal
-          });
+          rawRanked = await operation.run(() =>
+            this.dependencies.ranker.rank({
+              query: request.query,
+              query_embedding: embedding,
+              candidates: Object.freeze([...candidateMap.values()]),
+              top_k: request.top_k,
+              signal: operation.controller.signal
+            })
+          );
         } catch {
-          assertNotAborted(operation.controller.signal);
+          operation.assertActive();
           throw new PlatformError('DEPENDENCY_ERROR', 'RAG ranking dependency failed', 502);
         }
 
@@ -731,69 +856,72 @@ export class RagRuntimeService {
 
         const response = this.createRetrievalResponse(context, traceId, ranked.data, candidateMap);
         stage = 'audit';
-        await this.emitAudit({
-          traceId,
-          context,
-          operation: 'retrieve',
-          outcome: 'succeeded',
-          stage,
-          timestamp: now,
-          agentId: approvedScope.agent_id,
-          domain: approvedScope.domain,
-          knowledgeScopes: approvedScope.knowledge_scopes,
-          queryHash,
-          documentIds: selectedChunks.map(({ document_id }) => document_id),
-          documentVersions: selectedChunks.map(({ document_version }) => document_version),
-          chunkIds: selectedChunks.map(({ chunk_id }) => chunk_id),
-          retrievalScores: ranked.data,
-          retrievalResults: ranked.data.map((ranking) => {
-            const chunk = candidateMap.get(ranking.chunk_id);
-            if (!chunk) {
-              throw new PlatformError('INVALID_RESPONSE', 'RAG ranking response is invalid', 502);
-            }
-            return {
-              document_id: chunk.document_id,
-              document_version: chunk.document_version,
-              chunk_id: chunk.chunk_id,
-              citation_evidence_hash: chunk.citation_evidence_hash,
-              source_location: chunk.source_location,
-              score: ranking.score,
-              semantic_score: ranking.semantic_score,
-              keyword_score: ranking.keyword_score
-            };
-          }),
-          embeddingModel: embedding.model_id,
-          embeddingModelVersion: embedding.model_version,
-          retrievalVersion: this.dependencies.policy.retrieval_version,
-          resultCount: response.results.length,
-          latencyMs: this.clock() - startedAt
-        });
+        await operation.run(() =>
+          this.emitAudit({
+            traceId,
+            context,
+            operation: 'retrieve',
+            outcome: 'succeeded',
+            stage,
+            timestamp: now,
+            agentId: approvedScope.agent_id,
+            domain: approvedScope.domain,
+            knowledgeScopes: approvedScope.knowledge_scopes,
+            queryHash,
+            documentIds: selectedChunks.map(({ document_id }) => document_id),
+            documentVersions: selectedChunks.map(({ document_version }) => document_version),
+            chunkIds: selectedChunks.map(({ chunk_id }) => chunk_id),
+            retrievalScores: ranked.data,
+            retrievalResults: ranked.data.map((ranking) => {
+              const chunk = candidateMap.get(ranking.chunk_id);
+              if (!chunk) {
+                throw new PlatformError('INVALID_RESPONSE', 'RAG ranking response is invalid', 502);
+              }
+              return {
+                document_id: chunk.document_id,
+                document_version: chunk.document_version,
+                chunk_id: chunk.chunk_id,
+                citation_evidence_hash: chunk.citation_evidence_hash,
+                source_location: chunk.source_location,
+                score: ranking.score,
+                semantic_score: ranking.semantic_score,
+                keyword_score: ranking.keyword_score
+              };
+            }),
+            embeddingModel: embedding.model_id,
+            embeddingModelVersion: embedding.model_version,
+            retrievalVersion: this.dependencies.policy.retrieval_version,
+            resultCount: response.results.length,
+            latencyMs: this.clock() - startedAt
+          })
+        );
         span.setStatus({ code: SpanStatusCode.OK });
+        operation.assertActive();
         return Object.freeze(response);
       } catch (error) {
-        const safeError = correlated(error, traceId, context?.request_id);
+        const safeError = correlated(error, traceId, auditContext?.request_id);
         this.recordFailure(span, safeError);
         await this.safeFailureAudit({
           traceId,
           operation: 'retrieve',
           stage,
           timestamp: now,
-          ...(context ? { context } : {}),
-          ...(approvedScope
+          ...(auditContext ? { context: auditContext } : {}),
+          ...(auditScope
             ? {
-                agentId: approvedScope.agent_id,
-                domain: approvedScope.domain,
-                knowledgeScopes: approvedScope.knowledge_scopes
+                agentId: auditScope.agent_id,
+                domain: auditScope.domain,
+                knowledgeScopes: auditScope.knowledge_scopes
               }
             : {}),
-          ...(queryHash ? { queryHash } : {}),
+          ...(auditQueryHash ? { queryHash: auditQueryHash } : {}),
           documentIds: selectedChunks.map(({ document_id }) => document_id),
           documentVersions: selectedChunks.map(({ document_version }) => document_version),
           chunkIds: selectedChunks.map(({ chunk_id }) => chunk_id),
-          ...(embedding
+          ...(auditEmbedding
             ? {
-                embeddingModel: embedding.model_id,
-                embeddingModelVersion: embedding.model_version
+                embeddingModel: auditEmbedding.model_id,
+                embeddingModelVersion: auditEmbedding.model_version
               }
             : {}),
           retrievalVersion: this.dependencies.policy.retrieval_version,
@@ -817,6 +945,7 @@ export class RagRuntimeService {
     readonly now: Date;
     readonly startedAt: number;
     readonly span: Span;
+    readonly operation: RagOperation;
   }): Promise<RagRetrievalResponse> {
     const response = ragRetrievalResponseSchema.parse({
       contract_version: '1.0',
@@ -827,27 +956,30 @@ export class RagRuntimeService {
       retrieval_version: this.dependencies.policy.retrieval_version,
       results: []
     });
-    await this.emitAudit({
-      traceId: input.traceId,
-      context: input.context,
-      operation: 'retrieve',
-      outcome: 'succeeded',
-      stage: 'audit',
-      timestamp: input.now,
-      agentId: input.approvedScope.agent_id,
-      domain: input.approvedScope.domain,
-      knowledgeScopes: input.approvedScope.knowledge_scopes,
-      queryHash: input.queryHash,
-      documentIds: [],
-      documentVersions: [],
-      chunkIds: [],
-      retrievalScores: [],
-      retrievalResults: [],
-      retrievalVersion: this.dependencies.policy.retrieval_version,
-      resultCount: 0,
-      latencyMs: this.clock() - input.startedAt
-    });
+    await input.operation.run(() =>
+      this.emitAudit({
+        traceId: input.traceId,
+        context: input.context,
+        operation: 'retrieve',
+        outcome: 'succeeded',
+        stage: 'audit',
+        timestamp: input.now,
+        agentId: input.approvedScope.agent_id,
+        domain: input.approvedScope.domain,
+        knowledgeScopes: input.approvedScope.knowledge_scopes,
+        queryHash: input.queryHash,
+        documentIds: [],
+        documentVersions: [],
+        chunkIds: [],
+        retrievalScores: [],
+        retrievalResults: [],
+        retrievalVersion: this.dependencies.policy.retrieval_version,
+        resultCount: 0,
+        latencyMs: this.clock() - input.startedAt
+      })
+    );
     input.span.setStatus({ code: SpanStatusCode.OK });
+    input.operation.assertActive();
     return Object.freeze(response);
   }
 
@@ -901,16 +1033,32 @@ export class RagRuntimeService {
     span.setStatus({ code: SpanStatusCode.ERROR });
   }
 
-  private safeFailureAudit(
+  private async safeFailureAudit(
     input: Omit<Parameters<RagRuntimeService['emitAudit']>[0], 'outcome'> & {
       readonly statusCode: number;
     }
   ): Promise<void> {
     const { statusCode, ...auditInput } = input;
-    return this.emitAudit({
-      ...auditInput,
-      outcome: statusCode >= 500 ? 'error' : 'rejected'
-    }).catch(() => undefined);
+    // Failure reporting is best effort within a separate budget of at most
+    // min(request timeout, 1 second). It cannot reopen the request deadline.
+    const auditOperation = new RagOperation(
+      undefined,
+      Math.min(this.dependencies.policy.timeout_ms, 1_000),
+      this.clock,
+      this.clock()
+    );
+    try {
+      await auditOperation.run(() =>
+        this.emitAudit({
+          ...auditInput,
+          outcome: statusCode >= 500 ? 'error' : 'rejected'
+        })
+      );
+    } catch {
+      // Missing/late audit delivery is not proof of persistence or remote exit.
+    } finally {
+      auditOperation.cleanup();
+    }
   }
 
   private emitAudit(input: {
