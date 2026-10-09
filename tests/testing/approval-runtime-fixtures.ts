@@ -195,6 +195,7 @@ export function createApprovalHarness(
     allowDeterministic?: boolean;
     ownershipTenant?: string | null;
     featureControls?: FeatureControls;
+    clock?: () => Date;
   } = {}
 ) {
   const store = new InMemoryApprovalRecordStore();
@@ -209,14 +210,17 @@ export function createApprovalHarness(
   const exported: CanonicalAuditEvent[] = [];
   const metrics: AuditMetric[][] = [];
   const security: SecurityObservation[] = [];
-  const auditControl = { fail: false };
+  const auditControl: {
+    fail: boolean;
+    beforeExport?: (event: CanonicalAuditEvent) => Promise<void>;
+  } = { fail: false };
   const pipeline = new AuditTelemetryPipeline({
     evidenceStore: auditStore,
     auditExporter: {
-      export: (event) => {
-        if (auditControl.fail) return Promise.reject(new Error('Synthetic audit failure'));
+      export: async (event) => {
+        await auditControl.beforeExport?.(event);
+        if (auditControl.fail) throw new Error('Synthetic audit failure');
         exported.push(event);
-        return Promise.resolve();
       }
     },
     securityExporter: {
@@ -257,7 +261,8 @@ export function createApprovalHarness(
       environment: options.environment ?? 'test',
       allowDeterministicTestAdapters: options.allowDeterministic ?? true,
       idFactory: () => `p9-id-${(++id).toString()}`,
-      boundaryIdentityFactory: () => approvalBoundaryIdentity
+      boundaryIdentityFactory: () => approvalBoundaryIdentity,
+      clock: options.clock ?? (() => new Date(approvalValidationTime))
     }
   );
   return {

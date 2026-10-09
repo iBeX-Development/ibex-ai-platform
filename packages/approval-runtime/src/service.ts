@@ -65,6 +65,8 @@ export interface ApprovalRuntimeOptions {
   readonly allowDeterministicTestAdapters?: boolean;
   readonly idFactory?: () => string;
   readonly boundaryIdentityFactory?: () => BoundaryIdentity;
+  /** Trusted server clock, sampled again at execution admission (injectable for tests). */
+  readonly clock?: () => Date;
 }
 
 export interface ApprovalRuntimeDependencies {
@@ -165,6 +167,12 @@ function auditApprovalState(
   if (recordValue.status === 'pending') return 'required_not_executed';
   if (recordValue.status === 'execution_failed') return undefined;
   return recordValue.status;
+}
+
+class ApprovalExpiredError extends PlatformError {
+  constructor() {
+    super('CONFLICT', 'Approval has expired', 409);
+  }
 }
 
 export class ApprovalRuntime {
@@ -452,7 +460,10 @@ export class ApprovalRuntime {
     });
   }
 
-  async execute(rawRequest: unknown, now = new Date()): Promise<ApprovalExecutionResponse> {
+  async execute(
+    rawRequest: unknown,
+    now = this.options.clock?.() ?? new Date()
+  ): Promise<ApprovalExecutionResponse> {
     return this.withSpan('execute', async (span, boundary) => {
       const established = await this.establishBoundary(
         rawRequest,
@@ -470,6 +481,8 @@ export class ApprovalRuntime {
       span.setAttributes(this.trustedSpanAttributes(established.context, established.traceId));
       let stage: ApprovalRuntimeAuditStage = 'execution_revalidation';
       let approval: ApprovalRecord | undefined;
+      let dispatchStarted = false;
+      let executionClaimed = false;
       try {
         if (
           !this.dependencies.featureControls.aiPlatform ||
@@ -518,9 +531,8 @@ export class ApprovalRuntime {
         if (approval.status !== 'approved' || approval.decision !== 'approve') {
           throw new PlatformError('PERMISSION_DENIED', 'Approved execution is unavailable', 403);
         }
-        if (new Date(approval.expires_at).getTime() <= now.getTime()) {
-          throw new PlatformError('CONFLICT', 'Approval has expired', 409);
-        }
+        now = this.executionTime(now);
+        this.assertUnexpired(approval, now);
         stage = 'authoritative_revalidation';
         const authoritativeDecision = await this.readAuthoritativeDecision(
           approval,
@@ -553,6 +565,8 @@ export class ApprovalRuntime {
         if (approvalEvidenceHash(authoritativeDecision) !== approval.decision_evidence_hash) {
           throw new PlatformError('POLICY_DENIED', 'Approval evidence is invalid', 403);
         }
+        now = this.executionTime(now);
+        this.assertUnexpired(approval, now);
         await this.emitAudit({
           operation: 'execute',
           outcome: 'approved',
@@ -563,6 +577,8 @@ export class ApprovalRuntime {
           approval,
           executionStatus: 'not_started'
         });
+        now = this.executionTime(now);
+        this.assertUnexpired(approval, now);
         stage = 'target_state';
         this.assertTargetStateResolverAllowed();
         const targetState = targetStateEvidenceSchema.parse(
@@ -587,10 +603,16 @@ export class ApprovalRuntime {
           action_id: approval.action_id,
           proposed_change_hash: approval.proposed_change_hash
         });
+        now = this.executionTime(now);
+        this.assertUnexpired(approval, now);
         const executing = await this.transition(approval, {
           status: 'executing',
           idempotency_key: idempotencyKey
         });
+        approval = executing;
+        executionClaimed = true;
+        now = this.executionTime(now);
+        this.assertUnexpired(executing, now);
         await this.emitAudit({
           operation: 'execute',
           outcome: 'executing',
@@ -601,9 +623,13 @@ export class ApprovalRuntime {
           approval: executing,
           executionStatus: 'in_progress'
         });
+        // No await between this fresh admission check and invoking the adapter.
+        now = this.executionTime(now);
+        this.assertUnexpired(executing, now);
         stage = 'execution';
         let receipt;
         try {
+          dispatchStarted = true;
           receipt = actionExecutionReceiptSchema.parse(
             await adapter.execute({
               context: established.context,
@@ -648,9 +674,30 @@ export class ApprovalRuntime {
         });
         return this.executionResponse(executed, established.context, established.traceId, false);
       } catch (error) {
+        let failure = error;
+        if (
+          !dispatchStarted &&
+          approval &&
+          ((executionClaimed && approval.status === 'executing') ||
+            (approval.status === 'approved' && error instanceof ApprovalExpiredError))
+        ) {
+          try {
+            // Keep the original authority evidence; this records local non-dispatch.
+            // Never reopen an execution claim or overwrite a concurrent revision.
+            approval = await this.transition(approval, {
+              status: error instanceof ApprovalExpiredError ? 'expired' : 'execution_failed'
+            });
+          } catch (stateError) {
+            failure = stateError;
+          }
+        }
         if (error instanceof AuditDeliveryError) throw error;
-        if (approval?.status === 'execution_failed' && errorCode(error) === 'DEPENDENCY_ERROR') {
-          throw safeError(error, established.traceId, established.context.request_id);
+        if (
+          dispatchStarted &&
+          approval?.status === 'execution_failed' &&
+          errorCode(failure) === 'DEPENDENCY_ERROR'
+        ) {
+          throw safeError(failure, established.traceId, established.context.request_id);
         }
         await this.emitAudit({
           operation: 'execute',
@@ -660,9 +707,9 @@ export class ApprovalRuntime {
           traceId: established.traceId,
           now,
           ...(approval ? { approval } : {}),
-          errorCode: errorCode(error)
+          errorCode: errorCode(failure)
         });
-        throw safeError(error, established.traceId, established.context.request_id);
+        throw safeError(failure, established.traceId, established.context.request_id);
       }
     });
   }
@@ -993,6 +1040,21 @@ export class ApprovalRuntime {
       throw new PlatformError('CONFLICT', 'Approval state changed concurrently', 409);
     }
     return next;
+  }
+
+  private executionTime(previous: Date): Date {
+    const sampled = (this.options.clock?.() ?? new Date()).getTime();
+    if (!Number.isFinite(sampled) || !Number.isFinite(previous.getTime())) {
+      throw new PlatformError('SERVICE_UNAVAILABLE', 'Approval execution time is unavailable', 503);
+    }
+    // An older explicit operation time or a backwards clock cannot extend validity.
+    return new Date(Math.max(previous.getTime(), sampled));
+  }
+
+  private assertUnexpired(approval: ApprovalRecord, now: Date): void {
+    if (new Date(approval.expires_at).getTime() <= now.getTime()) {
+      throw new ApprovalExpiredError();
+    }
   }
 
   private decisionResponse(
