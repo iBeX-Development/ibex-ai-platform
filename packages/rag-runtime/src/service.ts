@@ -545,8 +545,8 @@ export class RagRuntimeService {
             latencyMs: this.clock() - startedAt
           })
         );
-        span.setStatus({ code: SpanStatusCode.OK });
         operation.assertActive();
+        span.setStatus({ code: SpanStatusCode.OK });
         return Object.freeze(response);
       } catch (error) {
         const failure = correlated(error, traceId, auditContext?.request_id);
@@ -785,10 +785,10 @@ export class RagRuntimeService {
             queryHash,
             now,
             startedAt,
-            span,
             operation
           });
           operation.assertActive();
+          span.setStatus({ code: SpanStatusCode.OK });
           return response;
         }
 
@@ -895,8 +895,8 @@ export class RagRuntimeService {
             latencyMs: this.clock() - startedAt
           })
         );
-        span.setStatus({ code: SpanStatusCode.OK });
         operation.assertActive();
+        span.setStatus({ code: SpanStatusCode.OK });
         return Object.freeze(response);
       } catch (error) {
         const safeError = correlated(error, traceId, auditContext?.request_id);
@@ -944,7 +944,6 @@ export class RagRuntimeService {
     readonly queryHash: string;
     readonly now: Date;
     readonly startedAt: number;
-    readonly span: Span;
     readonly operation: RagOperation;
   }): Promise<RagRetrievalResponse> {
     const response = ragRetrievalResponseSchema.parse({
@@ -978,7 +977,6 @@ export class RagRuntimeService {
         latencyMs: this.clock() - input.startedAt
       })
     );
-    input.span.setStatus({ code: SpanStatusCode.OK });
     input.operation.assertActive();
     return Object.freeze(response);
   }

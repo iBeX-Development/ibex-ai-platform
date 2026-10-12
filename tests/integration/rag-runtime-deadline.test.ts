@@ -1,6 +1,8 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { SpanStatusCode, type Span, type SpanStatus } from '@opentelemetry/api';
 import type { AuditRecord } from '../../packages/audit/src/index.js';
 import { toErrorEnvelope } from '../../packages/errors/src/index.js';
+import { tracer } from '../../packages/observability/src/index.js';
 import type { KnowledgeChunk } from '../../packages/rag-runtime/src/index.js';
 import {
   approvedGovernance,
@@ -54,12 +56,53 @@ function deferred() {
   return { promise, resolve, reject };
 }
 
+function recordingSpan() {
+  const state: { status: SpanStatus; statusCalls: SpanStatusCode[]; endCount: number } = {
+    status: { code: SpanStatusCode.UNSET },
+    statusCalls: [],
+    endCount: 0
+  };
+  const span: Span = {
+    spanContext: () => ({ traceId: '1'.repeat(32), spanId: '2'.repeat(16), traceFlags: 1 }),
+    setAttribute: () => span,
+    setAttributes: () => span,
+    addEvent: () => span,
+    addLink: () => span,
+    addLinks: () => span,
+    updateName: () => span,
+    isRecording: () => state.endCount === 0,
+    recordException: () => undefined,
+    setStatus: (status) => {
+      state.statusCalls.push(status.code);
+      // OpenTelemetry precedence is OK > ERROR > UNSET, not enum numeric order.
+      // A later ERROR cannot repair a prematurely committed OK.
+      if (
+        state.endCount === 0 &&
+        state.status.code !== SpanStatusCode.OK &&
+        status.code !== SpanStatusCode.UNSET
+      ) {
+        state.status = { ...status };
+      }
+      return span;
+    },
+    end: () => {
+      state.endCount += 1;
+    }
+  };
+  vi.spyOn(tracer, 'startActiveSpan').mockImplementation((...args) => {
+    const callback = args.at(-1) as (activeSpan: Span) => unknown;
+    return callback(span);
+  });
+  return state;
+}
+
 function harness(
   mode: Mode,
   blocked?: Step,
   jumpClock = false,
   failureAuditHangs = false,
-  requestTimeoutMs = timeoutMs
+  requestTimeoutMs = timeoutMs,
+  timing: { clock?: () => number; onSuccessAuditAcknowledged?: () => void } = {}
 ) {
   const release = deferred();
   const entered = deferred();
@@ -81,7 +124,7 @@ function harness(
     return Promise.resolve(value);
   };
   const runtime = createRagRuntime(audits, {
-    clock: Date.now,
+    clock: timing.clock ?? Date.now,
     policy: {
       ingestion_permissions: ['rag:publish'],
       ingestion_entitlements: ['rag-runtime'],
@@ -124,6 +167,7 @@ function harness(
               : 'failure_audit';
         await invoke(step, undefined);
         audits.push(event);
+        if (step === 'success_audit') timing.onSuccessAuditAcknowledged?.();
       }
     }
   });
@@ -179,6 +223,66 @@ describe('RAG request deadline and late-result admission', () => {
     vi.restoreAllMocks();
     vi.useRealTimers();
   });
+
+  it.each(['ingest', 'retrieve', 'empty'] as const)(
+    'records ERROR when %s expires after the final audit acknowledgement at response admission',
+    async (mode) => {
+      const span = recordingSpan();
+      let acknowledged = false;
+      let postAuditReads = 0;
+      // The first clock read admits the acknowledged audit result. Empty retrieval
+      // also checks inside its helper; expire only when control returns to its caller.
+      const admissionRead = mode === 'empty' ? 3 : 2;
+      const h = harness(mode, undefined, false, false, timeoutMs, {
+        onSuccessAuditAcknowledged: () => {
+          acknowledged = true;
+        },
+        clock: () => {
+          if (acknowledged) postAuditReads += 1;
+          return ragValidationTime.getTime() + (postAuditReads >= admissionRead ? timeoutMs : 0);
+        }
+      });
+      const { observed, finished } = h.start();
+      await finished;
+      assertFailure(observed, mode);
+      expect(acknowledged).toBe(true);
+      expect(h.audits.map((event) => ('outcome' in event ? event.outcome : undefined))).toEqual([
+        'started',
+        'succeeded',
+        'rejected'
+      ]);
+      expect(h.audits.at(-1)).toMatchObject({
+        request_id: 'request-rag-1',
+        correlation_id: 'correlation-rag-1',
+        error_code: 'TIMEOUT_ERROR'
+      });
+      expect(span.status.code).toBe(SpanStatusCode.ERROR);
+      expect(span.statusCalls).toEqual([SpanStatusCode.ERROR]);
+      expect(span.endCount).toBe(1);
+      expect(h.calls).toEqual([...sequences[mode], 'failure_audit']);
+      await vi.advanceTimersByTimeAsync(0);
+      assertFailure(observed, mode);
+      expect(h.calls).toEqual([...sequences[mode], 'failure_audit']);
+      expect(span.endCount).toBe(1);
+      expect(vi.getTimerCount()).toBe(0);
+    }
+  );
+
+  it.each(['ingest', 'retrieve', 'empty'] as const)(
+    'commits terminal OK exactly once after successful %s admission',
+    async (mode) => {
+      const span = recordingSpan();
+      const h = harness(mode);
+      const { observed, finished } = h.start();
+      await finished;
+      expect(observed.state).toBe('success');
+      expect(span.status.code).toBe(SpanStatusCode.OK);
+      expect(span.statusCalls).toEqual([SpanStatusCode.OK]);
+      expect(span.endCount).toBe(1);
+      expect(h.calls).toEqual(sequences[mode]);
+      expect(vi.getTimerCount()).toBe(0);
+    }
+  );
 
   it.each(cases)(
     'bounds a never-settling $mode/$step wait and rejects its late result',
