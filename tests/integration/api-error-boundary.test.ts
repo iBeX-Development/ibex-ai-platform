@@ -432,7 +432,8 @@ describe('API HTTP error boundaries through original modules', () => {
           client.end('{}');
         }
       );
-      if (mode === 'partial response') await expect(outcome).rejects.toThrow();
+      if (mode === 'partial response')
+        await expect(outcome).rejects.toThrow(/socket hang up|Test response closed|aborted/);
       else {
         const result = await outcome;
         expect(result.status).toBe(mode === 'malformed target' ? 400 : 500);
