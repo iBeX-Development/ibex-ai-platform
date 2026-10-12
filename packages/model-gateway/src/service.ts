@@ -62,6 +62,8 @@ export interface ModelGatewayDependencies {
   readonly environment: string;
   readonly traceIdFactory?: () => string;
   readonly clock?: () => number;
+  /** Elapsed milliseconds, independent of the wall clock used for policy validity. */
+  readonly monotonicClock?: () => number;
   readonly accounting?: ModelAccountingPolicyInput | undefined;
 }
 
@@ -212,6 +214,7 @@ function freezeResponse(response: ModelGatewayResponse): ModelGatewayResponse {
 export class ModelGatewayService {
   private readonly adapters: ReadonlyMap<string, ModelProviderAdapter>;
   private readonly clock: () => number;
+  private readonly monotonicClock: () => number;
   private readonly policy: ModelGatewayPolicy;
 
   constructor(private readonly dependencies: ModelGatewayDependencies) {
@@ -241,6 +244,7 @@ export class ModelGatewayService {
       )
     });
     this.clock = dependencies.clock ?? Date.now;
+    this.monotonicClock = dependencies.monotonicClock ?? (() => performance.now());
   }
 
   async invoke(
@@ -556,7 +560,28 @@ export class ModelGatewayService {
     externalSignal?: AbortSignal
   ): Promise<T> {
     assertActive(externalSignal);
-    assertAccountingActive(policy, this.clock());
+    const startedAt = this.monotonicClock();
+    const checkedAt = this.clock();
+    assertAccountingActive(policy, checkedAt);
+    const deadline =
+      startedAt +
+      Math.min(
+        policy.operation_timeout_ms,
+        policy.valid_until_ms - checkedAt,
+        policy.period.ends_at_ms - checkedAt
+      );
+    if (!Number.isFinite(startedAt) || !Number.isFinite(deadline) || deadline <= startedAt)
+      throw accountingError();
+    const guard = () => {
+      assertActive(externalSignal);
+      assertAccountingActive(policy, this.clock());
+      const elapsedNow = this.monotonicClock();
+      // Clock access cannot override caller cancellation, including on rejection.
+      assertActive(externalSignal);
+      if (!Number.isFinite(elapsedNow) || elapsedNow < startedAt || elapsedNow >= deadline)
+        throw accountingError();
+      return elapsedNow;
+    };
     const controller = new AbortController();
     const cancel = () => {
       controller.abort();
@@ -564,28 +589,20 @@ export class ModelGatewayService {
     externalSignal?.addEventListener('abort', cancel, { once: true });
     let timer: ReturnType<typeof setTimeout> | undefined;
     try {
-      const checkedAt = this.clock();
-      assertAccountingActive(policy, checkedAt);
-      const remaining = Math.min(
-        policy.operation_timeout_ms,
-        policy.valid_until_ms - checkedAt,
-        policy.period.ends_at_ms - checkedAt
-      );
+      const remaining = deadline - guard();
       timer = setTimeout(cancel, Math.max(1, remaining));
       const result = await awaitActive(
         () => {
-          assertActive(externalSignal);
-          assertAccountingActive(policy, this.clock());
+          guard();
           return invoke();
         },
         controller.signal,
         accountingError
       );
-      assertActive(externalSignal);
-      assertAccountingActive(policy, this.clock());
+      guard();
       return result;
     } catch (error) {
-      assertActive(externalSignal);
+      guard();
       throw error;
     } finally {
       clearTimeout(timer);

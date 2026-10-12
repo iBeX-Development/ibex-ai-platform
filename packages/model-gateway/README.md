@@ -58,6 +58,12 @@ request-wide at-most-once processing across separate client requests.
 
 Counting, reserve and settle waits have the supplied finite operation budget, bounded further by
 policy/period expiry; cancellation and freshness are checked after each wait and at actual dispatch.
+Each operation captures a fixed absolute deadline from the injected `monotonicClock` (default
+`performance.now()`), separate from the wall clock for policy/period validity. Entry and both
+fulfillment/rejection are checked against that deadline even if the timeout callback has not run.
+Synchronous work cannot be preempted, but an expired outcome is rejected once control returns,
+before the next port call, metrics or success. Cancellation retains priority; late settlement
+still reports uncertainty even if its backend commit succeeded. No hold is released.
 Late outcomes are observed without continuation. Month rollover closes admission under the old
 policy; a new authoritative period must be supplied, and prior holds are never silently cleared.
 Completion across expiry is conservatively withheld pending independent reconciliation. Such

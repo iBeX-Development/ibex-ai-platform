@@ -100,6 +100,210 @@ describe('Model accounting admission regressions', () => {
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
+
+  it.each(
+    (['count', 'reserve', 'settle'] as const).flatMap((phase) =>
+      (['fulfill', 'reject', 'synchronous-fulfill', 'synchronous-throw'] as const).map(
+        (outcome) => ({ phase, outcome })
+      )
+    )
+  )(
+    'rejects $phase elapsed-budget $outcome before timer delivery (deadline regression)',
+    async ({ phase, outcome }) => {
+      let monotonic = 1_000;
+      const clock = vi.spyOn(performance, 'now').mockImplementation(() => monotonic);
+      const controller = new AbortController();
+      // Wall-clock policy and period stay valid. No fake timer is advanced or delivered.
+      const ledger = new SyntheticAccountingPort();
+      const expire = <T>(produce: () => Promise<T>, operation: string): Promise<T> => {
+        if (phase !== operation) return produce();
+        if (outcome.startsWith('synchronous')) {
+          // Model time spent blocking within invocation without actually busy-waiting.
+          monotonic += syntheticBudgetPolicy.operation_timeout_ms;
+          if (outcome === 'synchronous-throw')
+            throw new Error('private synchronous accounting failure');
+          return produce();
+        }
+        return produce().then((value) => {
+          monotonic += syntheticBudgetPolicy.operation_timeout_ms;
+          if (outcome === 'reject') throw new Error('private late acknowledgement rejection');
+          return value;
+        });
+      };
+      const port: ModelAccountingPort = {
+        reserve: (command) => expire(() => ledger.reserve(command), 'reserve'),
+        settle: (command) => expire(() => ledger.settle(command), 'settle')
+      };
+      const invoke = vi.fn(() => Promise.resolve(result));
+      const fallback = vi.fn(() => Promise.resolve(result));
+      const metrics = vi.fn(() => Promise.resolve());
+      const h = fixture(syntheticBudgetPolicy, port, {
+        registry: new ModelRegistry(
+          [primaryProvider, fallbackProvider],
+          [primaryModel, fallbackModel]
+        ),
+        metrics: { emit: metrics },
+        adapters: [
+          {
+            adapter_id: 'adapter-primary',
+            invoke,
+            tokenBounds: {
+              version: 'synthetic-bound',
+              enforces_input_bound: true,
+              enforces_output_limit: true,
+              countInputTokens: () => expire(() => Promise.resolve(32), 'count')
+            }
+          },
+          { adapter_id: 'adapter-fallback', invoke: fallback }
+        ]
+      });
+      checkFailure(
+        (await observe(h.gateway.invoke(modelGatewayRequest(), { signal: controller.signal })))
+          .error,
+        'DEPENDENCY_ERROR'
+      );
+      // Rejections already fail closed; verify the deadline is checked on that path too.
+      expect(
+        clock.mock.results.some(
+          (read) => read.type === 'return' && typeof read.value === 'number' && read.value >= 1_100
+        )
+      ).toBe(true);
+      expect(getEventListeners(controller.signal, 'abort')).toHaveLength(0);
+      expect(invoke).toHaveBeenCalledTimes(phase === 'settle' ? 1 : 0);
+      expect(fallback).not.toHaveBeenCalled();
+      expect(metrics).not.toHaveBeenCalled();
+      expect(h.audits).not.toEqual(
+        expect.arrayContaining([expect.objectContaining({ outcome: 'succeeded' })])
+      );
+      expect(h.audits.at(-1)).toMatchObject({
+        stage: 'accounting',
+        error_code: 'DEPENDENCY_ERROR',
+        trace_id: 'model-trace-1',
+        request_id: 'request-model-1'
+      });
+      if (phase === 'count' || (phase === 'reserve' && outcome === 'synchronous-throw'))
+        expect(ledger.rows.size).toBe(0);
+      else {
+        expect(ledger.rows.size).toBe(1);
+        expect(h.audits.at(-1)).toMatchObject({ accounting: { state: 'unresolved' } });
+        // A late settlement may have committed; its caller must still report uncertainty.
+        expect([...ledger.rows.values()][0]?.receipt.state).toBe(
+          phase === 'settle' && outcome !== 'synchronous-throw' ? 'settled' : 'unresolved'
+        );
+      }
+    }
+  );
+
+  it.each(
+    (['count', 'reserve', 'settle'] as const).flatMap((phase) =>
+      (['fulfill', 'reject'] as const).map((outcome) => ({ phase, outcome }))
+    )
+  )('keeps cancellation priority over $phase expired $outcome', async ({ phase, outcome }) => {
+    let monotonic = 1_000;
+    const controller = new AbortController();
+    const ledger = new SyntheticAccountingPort();
+    const complete = async <T>(produce: () => Promise<T>, operation: string): Promise<T> => {
+      const value = await produce();
+      if (phase === operation) {
+        monotonic += syntheticBudgetPolicy.operation_timeout_ms;
+        controller.abort();
+        if (outcome === 'reject') throw new Error('private cancelled accounting rejection');
+      }
+      return value;
+    };
+    const port: ModelAccountingPort = {
+      reserve: (command) => complete(() => ledger.reserve(command), 'reserve'),
+      settle: (command) => complete(() => ledger.settle(command), 'settle')
+    };
+    const invoke = vi.fn(() => Promise.resolve(result));
+    const metrics = vi.fn(() => Promise.resolve());
+    const h = fixture(syntheticBudgetPolicy, port, {
+      monotonicClock: () => monotonic,
+      metrics: { emit: metrics },
+      adapters: [
+        {
+          adapter_id: 'adapter-primary',
+          invoke,
+          tokenBounds: {
+            version: 'synthetic-bound',
+            enforces_input_bound: true,
+            enforces_output_limit: true,
+            countInputTokens: () => complete(() => Promise.resolve(32), 'count')
+          }
+        }
+      ]
+    });
+    checkFailure(
+      (await observe(h.gateway.invoke(modelGatewayRequest(), { signal: controller.signal }))).error,
+      'TIMEOUT_ERROR'
+    );
+    expect(invoke).toHaveBeenCalledTimes(phase === 'settle' ? 1 : 0);
+    expect(metrics).not.toHaveBeenCalled();
+    expect(getEventListeners(controller.signal, 'abort')).toHaveLength(0);
+  });
+
+  it('denies invocation when the captured operation deadline expires before entry', async () => {
+    const monotonicClock = vi.fn().mockReturnValueOnce(1_000).mockReturnValue(1_100);
+    const count = vi.fn(() => Promise.resolve(32));
+    const controller = new AbortController();
+    const h = fixture(syntheticBudgetPolicy, undefined, {
+      monotonicClock,
+      adapters: [
+        {
+          adapter_id: 'adapter-primary',
+          invoke: () => Promise.resolve(result),
+          tokenBounds: {
+            version: 'synthetic-bound',
+            enforces_input_bound: true,
+            enforces_output_limit: true,
+            countInputTokens: count
+          }
+        }
+      ]
+    });
+    const reserve = vi.spyOn(h.ledger, 'reserve');
+    checkFailure(
+      (await observe(h.gateway.invoke(modelGatewayRequest(), { signal: controller.signal }))).error,
+      'DEPENDENCY_ERROR'
+    );
+    expect(count).not.toHaveBeenCalled();
+    expect(reserve).not.toHaveBeenCalled();
+    expect(getEventListeners(controller.signal, 'abort')).toHaveLength(0);
+  });
+
+  it('gives each accounting operation its own fixed budget and admits just-in-time outcomes', async () => {
+    let monotonic = 1_000;
+    const ledger = new SyntheticAccountingPort();
+    const complete = async <T>(pending: Promise<T>): Promise<T> => {
+      const value = await pending;
+      monotonic += syntheticBudgetPolicy.operation_timeout_ms - 1;
+      return value;
+    };
+    const port: ModelAccountingPort = {
+      reserve: (c) => complete(ledger.reserve(c)),
+      settle: (c) => complete(ledger.settle(c))
+    };
+    const invoke = vi.fn(() => Promise.resolve(result));
+    const h = fixture(syntheticBudgetPolicy, port, {
+      monotonicClock: () => monotonic,
+      adapters: [
+        {
+          adapter_id: 'adapter-primary',
+          invoke,
+          tokenBounds: {
+            version: 'synthetic-bound',
+            enforces_input_bound: true,
+            enforces_output_limit: true,
+            countInputTokens: () => complete(Promise.resolve(32))
+          }
+        }
+      ]
+    });
+    expect((await h.gateway.invoke(modelGatewayRequest())).usage.total_tokens).toBe(15);
+    expect(invoke).toHaveBeenCalledOnce();
+    expect(monotonic).toBe(1_297);
+    expect([...ledger.rows.values()][0]?.receipt.state).toBe('settled');
+  });
   it('denies a missing accounting boundary before provider dispatch', async () => {
     const invoke = vi.fn(() =>
       Promise.resolve({
