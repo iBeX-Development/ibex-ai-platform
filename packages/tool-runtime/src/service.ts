@@ -176,6 +176,26 @@ function shouldRetry(
   );
 }
 
+// Server-owned reporting budget; independent of caller cancellation and attempt policy.
+const failureReportingBudgetMs = 1_000;
+
+async function awaitFailureReport(emit: () => Promise<void>): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error('Failure audit reporting timed out'));
+        }, failureReportingBudgetMs);
+      }),
+      // Observe late rejection/fulfillment even when the reporting budget expires.
+      Promise.resolve().then(emit)
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function waitBackoff(milliseconds: number, signal?: AbortSignal): Promise<void> {
   assertActive(signal);
   if (milliseconds === 0) return;
@@ -327,7 +347,10 @@ export class ToolRuntimeService {
           );
           permissionDecision = 'allowed';
         } catch (error) {
-          permissionDecision = 'denied';
+          // Cancellation or an unverifiable authority response is not a denial decision.
+          if (error instanceof PlatformError && error.code === 'PERMISSION_DENIED') {
+            permissionDecision = 'denied';
+          }
           throw error;
         }
         const activePermissionDecision = permissionDecision;
@@ -488,6 +511,7 @@ export class ToolRuntimeService {
           observed_at: result.observed_at,
           attempts: currentAttempt
         });
+        stage = 'audit';
         await awaitActive(
           () =>
             this.emitAudit({
@@ -520,22 +544,20 @@ export class ToolRuntimeService {
         span.recordException(new Error('Tool runtime request failed'));
         span.setStatus({ code: SpanStatusCode.ERROR });
         try {
-          await awaitActive(
-            () =>
-              this.emitAudit({
-                traceId,
-                ...(context ? { context } : {}),
-                ...(request ? { request } : {}),
-                ...(registration ? { registration } : {}),
-                outcome: safeError.statusCode >= 500 ? 'error' : 'rejected',
-                stage,
-                timestamp: now,
-                ...(permissionDecision ? { permissionDecision } : {}),
-                ...(attempt !== undefined ? { attempt } : {}),
-                latencyMs: this.clock() - startedAt,
-                errorCode: safeError.code
-              }),
-            options.signal
+          await awaitFailureReport(() =>
+            this.emitAudit({
+              traceId,
+              ...(context ? { context } : {}),
+              ...(request ? { request } : {}),
+              ...(registration ? { registration } : {}),
+              outcome: safeError.statusCode >= 500 ? 'error' : 'rejected',
+              stage,
+              timestamp: now,
+              ...(permissionDecision ? { permissionDecision } : {}),
+              ...(attempt !== undefined ? { attempt } : {}),
+              latencyMs: this.clock() - startedAt,
+              errorCode: safeError.code
+            })
           );
         } catch {
           span.addEvent('tool_runtime.audit.emission_failed');

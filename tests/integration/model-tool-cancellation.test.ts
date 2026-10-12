@@ -7,6 +7,7 @@ import { tracer } from '../../packages/observability/src/index.js';
 import { ToolAdapterError, ToolRegistry } from '../../packages/tool-runtime/src/index.js';
 import {
   createModelGateway,
+  modelContext,
   fallbackModel,
   fallbackProvider,
   modelGatewayRequest,
@@ -20,6 +21,7 @@ import {
   readToolMetadata,
   readToolRegistration,
   toolRequest,
+  toolContext,
   toolValidationTime
 } from '../testing/tool-runtime-fixtures.js';
 
@@ -48,15 +50,19 @@ function deferred() {
 }
 
 function recordSpan() {
-  const state: { status: SpanStatus; endCount: number } = {
+  const state: { status: SpanStatus; endCount: number; events: string[] } = {
     status: { code: SpanStatusCode.UNSET },
-    endCount: 0
+    endCount: 0,
+    events: []
   };
   const span: Span = {
     spanContext: () => ({ traceId: '1'.repeat(32), spanId: '2'.repeat(16), traceFlags: 1 }),
     setAttribute: () => span,
     setAttributes: () => span,
-    addEvent: () => span,
+    addEvent: (name) => {
+      state.events.push(name);
+      return span;
+    },
     addLink: () => span,
     addLinks: () => span,
     updateName: () => span,
@@ -91,14 +97,18 @@ function harness(
     retries?: number;
     afterErrorAudit?: () => void;
     beforeTerminal?: () => void;
+    failureAudit?: 'hang' | 'reject' | 'late_fulfill' | 'late_reject';
+    authorization?: 'deny' | 'reject';
   } = {}
 ) {
   const controller = new AbortController();
   observedSignals.add(controller.signal);
   const release = deferred();
   const entered = deferred();
+  const reportingRelease = deferred();
   const calls: string[] = [];
   const audits: AuditRecord[] = [];
+  const attemptedAudits: AuditRecord[] = [];
   const adapterSignals: AbortSignal[] = [];
   const span = recordSpan();
   let primaryCalls = 0;
@@ -141,6 +151,7 @@ function harness(
   };
   const audit = {
     emit: async (event: AuditRecord) => {
+      attemptedAudits.push(event);
       const outcome = 'outcome' in event ? event.outcome : undefined;
       const name =
         outcome === 'started'
@@ -151,6 +162,10 @@ function harness(
               ? 'error_audit'
               : 'failure_audit';
       await step(name, undefined);
+      if ('error_code' in event && event.error_code === 'TIMEOUT_ERROR') {
+        if (options.failureAudit === 'reject') throw new Error('private audit sink failure');
+        if (options.failureAudit) await reportingRelease.promise;
+      }
       audits.push(event);
       if (name === 'error_audit') options.afterErrorAudit?.();
       if (name === 'final_audit') options.beforeTerminal?.();
@@ -219,8 +234,17 @@ function harness(
             proposalToolRegistration
           ]),
           authorization: {
-            authorize: () =>
-              step('preparation', { allowed: true, decision_id: 'synthetic-authority' })
+            authorize: () => {
+              if (options.authorization === 'reject') {
+                return Promise.reject(new Error('private authority failure'));
+              }
+              return step(
+                'preparation',
+                options.authorization === 'deny'
+                  ? { allowed: false as const, reason: 'private denial reason' }
+                  : { allowed: true as const, decision_id: 'synthetic-authority' }
+              );
+            }
           },
           ownership: { resolveTenantId: () => step('ownership', 'tenant-a') },
           adapters: [
@@ -243,14 +267,16 @@ function harness(
   const start = () => {
     if (!tool && !model) throw new Error('Synthetic runtime missing');
     const promise = model
-      ? model.invoke(modelGatewayRequest(), { signal: controller.signal })
+      ? model.invoke(modelGatewayRequest({ input: { message: 'private-model-input' } }), {
+          signal: controller.signal
+        })
       : tool?.execute(
           toolRequest(
             mode === 'proposal'
               ? {
                   tool_id: proposalToolMetadata.tool_id,
                   tool_version: proposalToolMetadata.version,
-                  input: { asset_id: 'asset-1', summary: 'Synthetic proposal' }
+                  input: { asset_id: 'asset-1', summary: 'private-proposal-payload' }
                 }
               : {}
           ),
@@ -274,7 +300,88 @@ function harness(
     );
     return { observed, finished };
   };
-  return { start, controller, release, entered, calls, audits, adapterSignals, span };
+  return {
+    start,
+    controller,
+    release,
+    entered,
+    calls,
+    audits,
+    attemptedAudits,
+    reportingRelease,
+    adapterSignals,
+    span
+  };
+}
+
+function assertCancellationAudit(audits: readonly AuditRecord[], mode: Mode) {
+  const records = audits.filter(
+    (event) => 'error_code' in event && event.error_code === 'TIMEOUT_ERROR'
+  );
+  expect(records).toHaveLength(1);
+  const record = records[0];
+  if (!record) throw new Error('Cancellation record missing');
+  expect(Number.isFinite(Date.parse(record.timestamp))).toBe(true);
+  const context = mode === 'model' ? modelContext : toolContext;
+  expect(records[0]).toMatchObject({
+    schema_version: '1.0',
+    event_type:
+      mode === 'model' ? 'model_gateway.invocation.outcome' : 'tool_runtime.execution.outcome',
+    context_status: 'trusted',
+    service: mode === 'model' ? 'model-gateway-test' : 'tool-runtime-test',
+    environment: 'test',
+    request_id: context.request_id,
+    correlation_id: context.correlation_id,
+    trace_id: mode === 'model' ? 'model-trace-1' : 'tool-trace-1',
+    tenant_id: context.tenant_id,
+    user_id: context.user_id,
+    role: context.role,
+    session_id: context.session_id,
+    permission_refs: context.permissions,
+    entitlement_refs: context.entitlements,
+    outcome: 'rejected',
+    error_code: 'TIMEOUT_ERROR'
+  });
+  const keys = new Set([
+    'schema_version',
+    'event_type',
+    'timestamp',
+    'trace_id',
+    'service',
+    'environment',
+    'outcome',
+    'stage',
+    'context_status',
+    'request_id',
+    'correlation_id',
+    'tenant_id',
+    'user_id',
+    'role',
+    'session_id',
+    'permission_refs',
+    'entitlement_refs',
+    'agent_id',
+    'prompt_version',
+    'policy_version',
+    'capability',
+    'confidentiality_class',
+    'provider_id',
+    'model_id',
+    'model_version',
+    'attempt',
+    'fallback_used',
+    'latency_ms',
+    'error_code',
+    'tool_id',
+    'tool_version',
+    'action_class',
+    'requested_operation',
+    'permission_decision',
+    'approval_policy',
+    'approval_state'
+  ]);
+  expect(Object.keys(records[0] ?? {}).filter((key) => !keys.has(key))).toEqual([]);
+  expect(JSON.stringify(records[0])).not.toMatch(/private|credential|safe synthetic result|Pump A/);
 }
 
 function assertCancelled(observed: { state: string; error?: unknown }, mode: Mode) {
@@ -331,6 +438,22 @@ describe('Model/Tool cancellation admission and adapter ordering', () => {
       h.controller.abort();
       await vi.advanceTimersByTimeAsync(0);
       assertCancelled(observed, mode);
+      assertCancellationAudit(h.audits, mode);
+      if (mode !== 'model') {
+        expect(h.audits.at(-1)).toMatchObject({
+          stage:
+            step === 'preparation'
+              ? 'authorization'
+              : step === 'ownership'
+                ? 'tenant_ownership'
+                : step === 'error_audit'
+                  ? 'execution'
+                  : 'audit'
+        });
+        if (step === 'preparation')
+          expect(h.audits.at(-1)).not.toHaveProperty('permission_decision');
+        else expect(h.audits.at(-1)).toHaveProperty('permission_decision', 'allowed');
+      }
       expect(h.span.status.code).toBe(SpanStatusCode.ERROR);
       expect(h.span.endCount).toBe(1);
       if (late === 'reject') h.release.reject(new Error('private late preparation failure'));
@@ -358,6 +481,7 @@ describe('Model/Tool cancellation admission and adapter ordering', () => {
       const { observed, finished } = h.start();
       await finished;
       assertCancelled(observed, mode);
+      assertCancellationAudit(h.audits, mode);
       expect(h.span.status.code).toBe(SpanStatusCode.ERROR);
       expect(h.span.endCount).toBe(1);
       expect(vi.getTimerCount()).toBe(0);
@@ -372,6 +496,8 @@ describe('Model/Tool cancellation admission and adapter ordering', () => {
       const { observed, finished } = h.start();
       await finished;
       assertCancelled(observed, mode);
+      assertCancellationAudit(h.audits, mode);
+      if (mode !== 'model') expect(h.audits.at(-1)).not.toHaveProperty('permission_decision');
       expect(h.calls.filter((name) => name !== 'failure_audit')).toEqual([]);
       expect(h.span.status.code).toBe(SpanStatusCode.ERROR);
       expect(h.span.endCount).toBe(1);
@@ -390,6 +516,7 @@ describe('Model/Tool cancellation admission and adapter ordering', () => {
       const { observed, finished } = h.start();
       await vi.advanceTimersByTimeAsync(0);
       assertCancelled(observed, mode);
+      assertCancellationAudit(h.audits, mode);
       expect(h.calls.filter((name) => name === 'adapter')).toHaveLength(1);
       expect(h.calls).not.toContain('fallback');
       expect(h.calls).not.toContain('metrics');
@@ -415,6 +542,7 @@ describe('Model/Tool cancellation admission and adapter ordering', () => {
     h.controller.abort();
     await vi.advanceTimersByTimeAsync(0);
     assertCancelled(observed, mode);
+    assertCancellationAudit(h.audits, mode);
     if (late === 'reject') h.release.reject(new Error('private late failure'));
     else h.release.resolve();
     await vi.advanceTimersByTimeAsync(0);
@@ -427,6 +555,90 @@ describe('Model/Tool cancellation admission and adapter ordering', () => {
     expect(h.span.endCount).toBe(1);
     expect(vi.getTimerCount()).toBe(0);
   });
+
+  it.each(
+    (['model', 'tool', 'proposal'] as const).flatMap((mode) =>
+      (['hang', 'reject', 'late_fulfill', 'late_reject'] as const).map((audit) => ({ mode, audit }))
+    )
+  )('bounds $mode cancellation reporting with $audit sink outcomes', async ({ mode, audit }) => {
+    const point =
+      audit === 'hang'
+        ? 'already'
+        : audit === 'reject'
+          ? 'preparation'
+          : audit === 'late_fulfill' && mode !== 'proposal'
+            ? 'adapter'
+            : 'telemetry';
+    const h = harness(mode, {
+      failureAudit: audit,
+      firstPending: point === 'adapter',
+      ...(point === 'preparation'
+        ? { block: 'preparation' as const }
+        : point === 'telemetry'
+          ? { block: mode === 'model' ? ('metrics' as const) : ('final_audit' as const) }
+          : {})
+    });
+    if (point === 'already') h.controller.abort();
+    const { observed, finished } = h.start();
+    if (point !== 'already') await h.entered.promise;
+    const dispatched = [...h.calls];
+    h.controller.abort();
+    await vi.advanceTimersByTimeAsync(0);
+    assertCancellationAudit(h.attemptedAudits, mode);
+    expect(h.calls).toEqual([...dispatched, 'failure_audit']);
+    if (audit !== 'reject') {
+      expect(observed.state).toBe('pending');
+      // A server-owned 1,000 ms budget, independent of the cancelled signal
+      // and of the synthetic 100 ms adapter timeout.
+      await vi.advanceTimersByTimeAsync(999);
+      expect(observed.state).toBe('pending');
+      await vi.advanceTimersByTimeAsync(1);
+    }
+    await finished;
+    assertCancelled(observed, mode);
+    expect(h.span.status.code).toBe(SpanStatusCode.ERROR);
+    expect(h.span.endCount).toBe(1);
+    expect(h.span.events).toContain(
+      mode === 'model'
+        ? 'model_gateway.audit.emission_failed'
+        : 'tool_runtime.audit.emission_failed'
+    );
+    const calls = [...h.calls];
+    if (audit === 'late_reject') h.reportingRelease.reject(new Error('private late audit failure'));
+    else if (audit === 'late_fulfill') h.reportingRelease.resolve();
+    h.release.resolve();
+    await vi.advanceTimersByTimeAsync(0);
+    assertCancelled(observed, mode);
+    expect(h.calls).toEqual(calls);
+    expect(h.span.status.code).toBe(SpanStatusCode.ERROR);
+    expect(h.span.endCount).toBe(1);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each(
+    (['tool', 'proposal'] as const).flatMap((mode) =>
+      (['deny', 'reject'] as const).map((authorization) => ({ mode, authorization }))
+    )
+  )(
+    'keeps $mode authorization $authorization reporting truthful',
+    async ({ mode, authorization }) => {
+      const h = harness(mode, { authorization });
+      const { observed, finished } = h.start();
+      await finished;
+      expect(observed.state).toBe('failure');
+      const record = h.audits.at(-1);
+      expect(record).toMatchObject({
+        stage: 'authorization',
+        error_code: authorization === 'deny' ? 'PERMISSION_DENIED' : 'AUTHORIZATION_ERROR'
+      });
+      if (authorization === 'deny') expect(record).toHaveProperty('permission_decision', 'denied');
+      else expect(record).not.toHaveProperty('permission_decision');
+      expect(h.calls).not.toContain('adapter');
+      expect(h.calls).not.toContain('final_audit');
+      expect(h.span.status.code).toBe(SpanStatusCode.ERROR);
+      expect(h.span.endCount).toBe(1);
+    }
+  );
 
   it.each([0, 25])(
     'cannot retry after cancellation at error-audit acknowledgement (backoff %i)',

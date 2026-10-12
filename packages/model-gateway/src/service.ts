@@ -155,6 +155,26 @@ function retryable(error: PlatformError): boolean {
   return ['PROVIDER_TIMEOUT', 'RATE_LIMITED', 'MODEL_UNAVAILABLE'].includes(error.code);
 }
 
+// Server-owned reporting budget; independent of caller cancellation and attempt policy.
+const failureReportingBudgetMs = 1_000;
+
+async function awaitFailureReport(emit: () => Promise<void>): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error('Failure audit reporting timed out'));
+        }, failureReportingBudgetMs);
+      }),
+      // Observe late rejection/fulfillment even when the reporting budget expires.
+      Promise.resolve().then(emit)
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function freezeResponse(response: ModelGatewayResponse): ModelGatewayResponse {
   return Object.freeze({
     ...response,
@@ -401,21 +421,19 @@ export class ModelGatewayService {
         span.recordException(new Error('Model Gateway invocation failed'));
         span.setStatus({ code: SpanStatusCode.ERROR });
         try {
-          await awaitActive(
-            () =>
-              this.emitAudit({
-                traceId,
-                ...(context ? { context } : {}),
-                ...(request ? { request } : {}),
-                ...(selected ? { candidate: selected } : {}),
-                outcome: correlated.statusCode >= 500 ? 'error' : 'rejected',
-                stage,
-                timestamp: now,
-                ...(attempt !== undefined ? { attempt } : {}),
-                fallbackUsed,
-                errorCode: correlated.code
-              }),
-            options.signal
+          await awaitFailureReport(() =>
+            this.emitAudit({
+              traceId,
+              ...(context ? { context } : {}),
+              ...(request ? { request } : {}),
+              ...(selected ? { candidate: selected } : {}),
+              outcome: correlated.statusCode >= 500 ? 'error' : 'rejected',
+              stage,
+              timestamp: now,
+              ...(attempt !== undefined ? { attempt } : {}),
+              fallbackUsed,
+              errorCode: correlated.code
+            })
           );
         } catch {
           span.addEvent('model_gateway.audit.emission_failed');
