@@ -1,5 +1,13 @@
 export interface ModelUsageMetric {
   readonly event_type: 'model_gateway.usage';
+  readonly accounting?: Readonly<{
+    attempt_id: string;
+    policy_version: string;
+    pricing_version: string;
+    period_id: string;
+    cost_unit: string;
+    units_per_cost: number;
+  }>;
   readonly timestamp: string;
   readonly request_id: string;
   readonly correlation_id: string;

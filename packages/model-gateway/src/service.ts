@@ -33,6 +33,22 @@ import {
 } from './contracts.js';
 import type { ModelMetricsSink, ModelUsageMetric } from './metrics.js';
 import type { ModelCandidate, ModelRegistry } from './registry.js';
+import {
+  accountingError,
+  accountingHash,
+  assertAccountingActive,
+  snapshotAccountingReceipt,
+  budgetDenied,
+  freezeAccounting,
+  parseBudgetPolicy,
+  quoteCost,
+  type AccountingReservationCommand,
+  type AccountingSettlementCommand,
+  type AccountingReceipt,
+  type ModelAccountingPolicyInput,
+  type ModelAccountingPort,
+  type ModelBudgetPolicy
+} from './accounting.js';
 
 export interface ModelGatewayDependencies {
   readonly featureControls: FeatureControls;
@@ -46,6 +62,9 @@ export interface ModelGatewayDependencies {
   readonly environment: string;
   readonly traceIdFactory?: () => string;
   readonly clock?: () => number;
+  /** Elapsed milliseconds, independent of the wall clock used for policy validity. */
+  readonly monotonicClock?: () => number;
+  readonly accounting?: ModelAccountingPolicyInput | undefined;
 }
 
 const maximumTraceIdLength = 256;
@@ -82,7 +101,10 @@ function safeTraceId(factory: () => string): string {
   }
 }
 
-function estimatedInputTokens(input: unknown, maximumInputBytes: number): number {
+function snapshotInput(
+  input: unknown,
+  maximumInputBytes: number
+): { input: unknown; estimate: number } {
   let serialized: string;
   try {
     serialized = JSON.stringify({ input });
@@ -93,7 +115,9 @@ function estimatedInputTokens(input: unknown, maximumInputBytes: number): number
   if (bytes > maximumInputBytes) {
     throw new PlatformError('CONTEXT_TOO_LARGE', 'Model context limit exceeded', 413);
   }
-  return Math.max(1, Math.ceil(bytes / 4));
+  const snapshot = JSON.parse(serialized) as { input: unknown };
+  // This estimate is routing-only. Adapter certification is separately mandatory.
+  return { input: freezeAccounting(snapshot.input), estimate: Math.max(1, Math.ceil(bytes / 4)) };
 }
 
 function normalizedProviderError(error: unknown): PlatformError {
@@ -117,6 +141,10 @@ function cancellationError(): PlatformError {
 
 function assertActive(signal?: AbortSignal, abortError: () => Error = cancellationError): void {
   if (signal?.aborted) throw abortError();
+}
+
+function certified(value: unknown): boolean {
+  return value === true;
 }
 
 /** Observe both late outcomes; cancelling a wait does not terminate its dependency. */
@@ -186,6 +214,7 @@ function freezeResponse(response: ModelGatewayResponse): ModelGatewayResponse {
 export class ModelGatewayService {
   private readonly adapters: ReadonlyMap<string, ModelProviderAdapter>;
   private readonly clock: () => number;
+  private readonly monotonicClock: () => number;
   private readonly policy: ModelGatewayPolicy;
 
   constructor(private readonly dependencies: ModelGatewayDependencies) {
@@ -215,6 +244,7 @@ export class ModelGatewayService {
       )
     });
     this.clock = dependencies.clock ?? Date.now;
+    this.monotonicClock = dependencies.monotonicClock ?? (() => performance.now());
   }
 
   async invoke(
@@ -232,6 +262,8 @@ export class ModelGatewayService {
       let selected: ModelCandidate | undefined;
       let attempt: number | undefined;
       let fallbackUsed = false;
+      const invocationId = randomUUID();
+      let accounting: AccountingReceipt | undefined;
       span.setAttribute('ibex.model_gateway.trace_id', traceId);
 
       try {
@@ -262,10 +294,12 @@ export class ModelGatewayService {
         if (!parsed.success) {
           throw new PlatformError('VALIDATION_ERROR', 'Model request is invalid', 400);
         }
-        request = Object.freeze({ ...parsed.data, context });
+        // Snapshot once: token certification and dispatch see identical immutable input.
+        const snapshot = snapshotInput(parsed.data.input, this.policy.maximum_input_bytes);
+        request = Object.freeze({ ...parsed.data, input: snapshot.input, context });
         assertActive(options.signal);
         const activeRequest = request;
-        const inputTokens = estimatedInputTokens(request.input, this.policy.maximum_input_bytes);
+        const inputTokens = snapshot.estimate;
 
         stage = 'policy';
         const approvedCapabilities = Object.hasOwn(this.policy.agent_capabilities, request.agent_id)
@@ -286,6 +320,12 @@ export class ModelGatewayService {
         if (candidates.length === 0) {
           throw new PlatformError('MODEL_NOT_ALLOWED', 'Model policy denied the request', 403);
         }
+        stage = 'accounting';
+        const budget = parseBudgetPolicy(this.dependencies.accounting?.policy);
+        const ledger = this.dependencies.accounting?.port;
+        if (!ledger || typeof ledger.reserve !== 'function' || typeof ledger.settle !== 'function')
+          throw accountingError();
+        assertAccountingActive(budget, this.clock());
 
         let lastError: PlatformError | undefined;
         for (let candidateIndex = 0; candidateIndex < candidates.length; candidateIndex += 1) {
@@ -313,31 +353,89 @@ export class ModelGatewayService {
             assertActive(options.signal);
             const currentAttempt = retryIndex + 1;
             attempt = currentAttempt;
-            stage = 'provider_invocation';
+            stage = 'accounting';
             const startedAt = this.clock();
             try {
+              accounting = undefined;
+              const reservation = await this.reserveAttempt(
+                adapter,
+                candidate,
+                request,
+                budget,
+                invocationId,
+                ledger,
+                (command) => {
+                  // Correlate a possible hold even when its acknowledgement is lost.
+                  accounting = {
+                    command_hash: command.command_hash,
+                    attempt_id: command.attempt.attempt_id,
+                    policy_version: command.policy.version,
+                    period_id: command.policy.period.id,
+                    state: 'unresolved',
+                    warnings: []
+                  };
+                },
+                options.signal
+              );
+              accounting = reservation.receipt;
+              stage = 'provider_invocation';
               const providerResult = await this.invokeAdapter(
                 adapter,
                 candidate,
                 request,
                 options.signal,
-                liveAccess
+                liveAccess,
+                reservation.command
               );
               assertActive(options.signal);
               stage = 'response_validation';
               const result = providerResultSchema.safeParse(providerResult);
               if (!result.success) throw new ProviderAdapterError('invalid_response');
+              if (
+                result.data.input_tokens > reservation.command.attempt.input_tokens ||
+                result.data.output_tokens > reservation.command.attempt.output_tokens
+              )
+                throw new ProviderAdapterError('invalid_response');
+              stage = 'accounting';
+              const cost = quoteCost(
+                budget,
+                reservation.command.attempt,
+                result.data.input_tokens,
+                result.data.output_tokens
+              );
+              const settlementBody = {
+                reservation: reservation.command,
+                usage: {
+                  input_tokens: result.data.input_tokens,
+                  output_tokens: result.data.output_tokens,
+                  cost_units: cost
+                }
+              };
+              const settlement: AccountingSettlementCommand = freezeAccounting({
+                ...settlementBody,
+                command_hash: accountingHash(settlementBody)
+              });
+              const settled = await this.accountingWait(
+                () => ledger.settle(settlement),
+                budget,
+                options.signal
+              );
+              accounting = snapshotAccountingReceipt(settled, settlement, 'settled');
               const latencyMs = Math.max(0, Math.round(this.clock() - startedAt));
               const response = this.response(
                 request,
                 candidate,
                 result.data,
                 latencyMs,
-                fallbackUsed
+                fallbackUsed,
+                cost / budget.units_per_cost
               );
               stage = 'metrics';
               await awaitActive(
-                () => this.dependencies.metrics.emit(this.metric(activeRequest, response, now)),
+                () =>
+                  this.dependencies.metrics.emit(
+                    this.metric(activeRequest, response, now, budget, reservation.command)
+                  ),
                 options.signal
               );
               await awaitActive(
@@ -352,7 +450,8 @@ export class ModelGatewayService {
                     timestamp: now,
                     attempt: currentAttempt,
                     fallbackUsed,
-                    response
+                    response,
+                    ...(accounting ? { accounting } : {})
                   }),
                 options.signal
               );
@@ -369,6 +468,11 @@ export class ModelGatewayService {
               assertActive(options.signal);
               if (stage === 'metrics') {
                 throw new PlatformError('GATEWAY_ERROR', 'Model Gateway telemetry failed', 500);
+              }
+              if (stage === 'accounting') {
+                if (error instanceof PlatformError && error.code === 'BUDGET_EXCEEDED')
+                  throw budgetDenied();
+                throw accountingError();
               }
               if (error instanceof PlatformError) throw error;
               const providerError = normalizedProviderError(error);
@@ -387,11 +491,14 @@ export class ModelGatewayService {
                     attempt: currentAttempt,
                     fallbackUsed,
                     latencyMs,
-                    errorCode: providerError.code
+                    errorCode: providerError.code,
+                    ...(accounting ? { accounting } : {})
                   }),
                 options.signal
               );
               assertActive(options.signal);
+              // Timeout leaves an uncertain dispatched liability; never replay it automatically.
+              if (providerError.code === 'PROVIDER_TIMEOUT') throw providerError;
               if (!retryable(lastError) || retryIndex >= this.policy.max_retries) {
                 break;
               }
@@ -432,7 +539,8 @@ export class ModelGatewayService {
               timestamp: now,
               ...(attempt !== undefined ? { attempt } : {}),
               fallbackUsed,
-              errorCode: correlated.code
+              errorCode: correlated.code,
+              ...(accounting ? { accounting } : {})
             })
           );
         } catch {
@@ -443,6 +551,137 @@ export class ModelGatewayService {
         span.end();
       }
     });
+  }
+
+  /** Finite server policy budget; late acknowledgements are observed, never continued. */
+  private async accountingWait<T>(
+    invoke: () => Promise<T>,
+    policy: ModelBudgetPolicy,
+    externalSignal?: AbortSignal
+  ): Promise<T> {
+    assertActive(externalSignal);
+    const startedAt = this.monotonicClock();
+    const checkedAt = this.clock();
+    assertAccountingActive(policy, checkedAt);
+    const deadline =
+      startedAt +
+      Math.min(
+        policy.operation_timeout_ms,
+        policy.valid_until_ms - checkedAt,
+        policy.period.ends_at_ms - checkedAt
+      );
+    if (!Number.isFinite(startedAt) || !Number.isFinite(deadline) || deadline <= startedAt)
+      throw accountingError();
+    const guard = () => {
+      assertActive(externalSignal);
+      assertAccountingActive(policy, this.clock());
+      const elapsedNow = this.monotonicClock();
+      // Clock access cannot override caller cancellation, including on rejection.
+      assertActive(externalSignal);
+      if (!Number.isFinite(elapsedNow) || elapsedNow < startedAt || elapsedNow >= deadline)
+        throw accountingError();
+      return elapsedNow;
+    };
+    const controller = new AbortController();
+    const cancel = () => {
+      controller.abort();
+    };
+    externalSignal?.addEventListener('abort', cancel, { once: true });
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const remaining = deadline - guard();
+      timer = setTimeout(cancel, Math.max(1, remaining));
+      const result = await awaitActive(
+        () => {
+          guard();
+          return invoke();
+        },
+        controller.signal,
+        accountingError
+      );
+      guard();
+      return result;
+    } catch (error) {
+      guard();
+      throw error;
+    } finally {
+      clearTimeout(timer);
+      externalSignal?.removeEventListener('abort', cancel);
+    }
+  }
+
+  private async reserveAttempt(
+    adapter: ModelProviderAdapter,
+    candidate: ModelCandidate,
+    request: ModelGatewayRequest,
+    policy: ModelBudgetPolicy,
+    invocationId: string,
+    ledger: ModelAccountingPort,
+    onCommand: (command: AccountingReservationCommand) => void,
+    signal?: AbortSignal
+  ): Promise<{ command: AccountingReservationCommand; receipt: AccountingReceipt }> {
+    const bounds = adapter.tokenBounds;
+    if (
+      typeof bounds?.version !== 'string' ||
+      !bounds.version.trim() ||
+      !certified(bounds.enforces_output_limit) ||
+      !certified(bounds.enforces_input_bound) ||
+      typeof bounds.countInputTokens !== 'function'
+    )
+      throw accountingError();
+    const countRequest = freezeAccounting({
+      request_id: request.context.request_id,
+      capability: request.capability,
+      model: candidate.model,
+      input: request.input,
+      requires_structured_output: request.requires_structured_output,
+      requires_tool_use: request.requires_tool_use,
+      ...(request.output_schema_id ? { output_schema_id: request.output_schema_id } : {}),
+      max_output_tokens: policy.request.output_tokens
+    });
+    const input = await this.accountingWait(
+      () => bounds.countInputTokens(countRequest),
+      policy,
+      signal
+    );
+    if (!Number.isSafeInteger(input) || input < 0) throw accountingError();
+    const identity = {
+      provider_id: candidate.provider.provider_id,
+      model_id: candidate.model.model_id,
+      model_version: candidate.model.model_version
+    };
+    const cost = quoteCost(policy, identity, input, countRequest.max_output_tokens);
+    if (
+      input > policy.request.input_tokens ||
+      input + countRequest.max_output_tokens > policy.request.tokens ||
+      input + countRequest.max_output_tokens > candidate.model.context_limit ||
+      cost > policy.request.cost_units
+    )
+      throw budgetDenied();
+    const body = {
+      policy,
+      attempt: {
+        ...identity,
+        invocation_id: invocationId,
+        attempt_id: randomUUID(),
+        request_id: request.context.request_id,
+        correlation_id: request.context.correlation_id,
+        trace_id: request.trace_id,
+        tenant_id: request.context.tenant_id,
+        agent_id: request.agent_id,
+        environment: this.dependencies.environment,
+        bounds_version: bounds.version,
+        input_digest: accountingHash(countRequest),
+        input_tokens: input,
+        output_tokens: countRequest.max_output_tokens,
+        cost_units: cost
+      }
+    };
+    const command = freezeAccounting({ ...body, command_hash: accountingHash(body) });
+    onCommand(command);
+    const rawReceipt = await this.accountingWait(() => ledger.reserve(command), policy, signal);
+    const receipt = snapshotAccountingReceipt(rawReceipt, command, 'unresolved');
+    return { command, receipt };
   }
 
   private async liveAccess(provider: ProviderDefinition): Promise<LiveProviderAccess | undefined> {
@@ -464,7 +703,8 @@ export class ModelGatewayService {
     candidate: ModelCandidate,
     request: ModelGatewayRequest,
     externalSignal: AbortSignal | undefined,
-    liveAccess: LiveProviderAccess | undefined
+    liveAccess: LiveProviderAccess | undefined,
+    reservation: AccountingReservationCommand
   ): Promise<ProviderResult> {
     assertActive(externalSignal);
     const controller = new AbortController();
@@ -484,12 +724,16 @@ export class ModelGatewayService {
       requires_structured_output: request.requires_structured_output,
       requires_tool_use: request.requires_tool_use,
       ...(request.output_schema_id ? { output_schema_id: request.output_schema_id } : {}),
-      signal: controller.signal
+      signal: controller.signal,
+      accounting_attempt_id: reservation.attempt.attempt_id,
+      input_token_bound: reservation.attempt.input_tokens,
+      max_output_tokens: reservation.attempt.output_tokens
     });
     try {
       const result = await awaitActive(
         () => {
           assertActive(externalSignal);
+          assertAccountingActive(reservation.policy, this.clock());
           return adapter.invoke(invocation, liveAccess);
         },
         controller.signal,
@@ -511,12 +755,9 @@ export class ModelGatewayService {
     candidate: ModelCandidate,
     result: ProviderResult,
     latencyMs: number,
-    fallbackUsed: boolean
+    fallbackUsed: boolean,
+    estimatedCost: number
   ): ModelGatewayResponse {
-    const estimatedCost =
-      (result.input_tokens * candidate.model.input_cost_per_1k +
-        result.output_tokens * candidate.model.output_cost_per_1k) /
-      1000;
     return freezeResponse(
       modelGatewayResponseSchema.parse({
         request_id: request.context.request_id,
@@ -546,10 +787,20 @@ export class ModelGatewayService {
   private metric(
     request: ModelGatewayRequest,
     response: ModelGatewayResponse,
-    timestamp: Date
+    timestamp: Date,
+    budget: ModelBudgetPolicy,
+    reservation: AccountingReservationCommand
   ): ModelUsageMetric {
     return Object.freeze({
       event_type: 'model_gateway.usage',
+      accounting: Object.freeze({
+        attempt_id: reservation.attempt.attempt_id,
+        policy_version: budget.version,
+        pricing_version: budget.pricing_version,
+        period_id: budget.period.id,
+        cost_unit: budget.cost_unit,
+        units_per_cost: budget.units_per_cost
+      }),
       timestamp: timestamp.toISOString(),
       request_id: request.context.request_id,
       correlation_id: request.context.correlation_id,
@@ -582,6 +833,7 @@ export class ModelGatewayService {
     readonly response?: ModelGatewayResponse;
     readonly latencyMs?: number;
     readonly errorCode?: string;
+    readonly accounting?: AccountingReceipt;
   }): Promise<void> {
     return this.dependencies.audit.emit(
       createModelGatewayAuditEvent({
@@ -620,7 +872,8 @@ export class ModelGatewayService {
           : input.latencyMs !== undefined
             ? { latencyMs: input.latencyMs }
             : {}),
-        ...(input.errorCode ? { errorCode: input.errorCode } : {})
+        ...(input.errorCode ? { errorCode: input.errorCode } : {}),
+        ...(input.accounting ? { accounting: input.accounting } : {})
       })
     );
   }
