@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { loadConfig, type AppConfig } from '../../../packages/configuration/src/index.js';
 import { createLogger } from '../../../packages/observability/src/index.js';
 import type { createGatewayHttpHandler } from './gateway.js';
+import { closeResponse, sendHttpError, sendJson } from './http-response.js';
 
 type GatewayHttpHandler = ReturnType<typeof createGatewayHttpHandler>;
 
@@ -24,16 +25,20 @@ export function startApi(
     response: Parameters<GatewayHttpHandler>[1]
   ) => {
     if (request.method === 'GET' && request.url === '/health') {
-      response.writeHead(200, { 'content-type': 'application/json' });
-      response.end(JSON.stringify(runtimeHealth(config)));
+      sendJson(response, 200, runtimeHealth(config));
       return;
     }
     if (gatewayHandler && (await gatewayHandler(request, response))) return;
-    response.writeHead(404, { 'content-type': 'application/json' });
-    response.end(JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Route not found' } }));
+    sendJson(response, 404, { error: { code: 'NOT_FOUND', message: 'Route not found' } });
   };
   const server = createServer((request, response) => {
-    void handleRequest(request, response);
+    // Transport failures can arrive after end() returns; never attempt another body.
+    response.on('error', () => {
+      closeResponse(response);
+    });
+    void handleRequest(request, response).catch((error: unknown) => {
+      sendHttpError(response, error, true);
+    });
   });
   server.listen(config.runtime.port, config.runtime.host, () => {
     logger.info({ event_type: 'service.started' }, 'AI runtime foundation started');
