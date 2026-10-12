@@ -123,6 +123,46 @@ function correlated(error: unknown, traceId: string, requestId?: string): Platfo
   );
 }
 
+function cancellationError(): PlatformError {
+  return new PlatformError('TIMEOUT_ERROR', 'Tool request was cancelled', 408);
+}
+
+function assertActive(signal?: AbortSignal, abortError: () => Error = cancellationError): void {
+  if (signal?.aborted) throw abortError();
+}
+
+/** Observe both late outcomes; cancelling a wait does not terminate its dependency. */
+async function awaitActive<T>(
+  invoke: () => Promise<T>,
+  signal?: AbortSignal,
+  abortError: () => Error = cancellationError
+): Promise<T> {
+  assertActive(signal, abortError);
+  let onAbort!: () => void;
+  const pending = new Promise<T>((resolve, reject) => {
+    onAbort = () => {
+      reject(abortError());
+    };
+    signal?.addEventListener('abort', onAbort, { once: true });
+    try {
+      assertActive(signal, abortError);
+      Promise.resolve(invoke()).then(resolve, reject);
+    } catch (error) {
+      reject(error instanceof Error ? error : new Error('Dependency operation failed'));
+    }
+  });
+  try {
+    const result = await pending;
+    assertActive(signal, abortError);
+    return result;
+  } catch (error) {
+    assertActive(signal, abortError);
+    throw error;
+  } finally {
+    signal?.removeEventListener('abort', onAbort);
+  }
+}
+
 function shouldRetry(
   error: PlatformError,
   registration: ToolRegistration,
@@ -137,18 +177,20 @@ function shouldRetry(
 }
 
 async function waitBackoff(milliseconds: number, signal?: AbortSignal): Promise<void> {
+  assertActive(signal);
   if (milliseconds === 0) return;
-  await new Promise<void>((resolve, reject) => {
-    const timer = setTimeout(resolve, milliseconds);
-    signal?.addEventListener(
-      'abort',
-      () => {
-        clearTimeout(timer);
-        reject(new PlatformError('TIMEOUT_ERROR', 'Tool request was cancelled', 408));
-      },
-      { once: true }
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await awaitActive(
+      () =>
+        new Promise<void>((resolve) => {
+          timer = setTimeout(resolve, milliseconds);
+        }),
+      signal
     );
-  });
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export class ToolRuntimeService {
@@ -233,9 +275,7 @@ export class ToolRuntimeService {
           input: parsedRequest.data.input
         });
         request = trustedRequest;
-        if (options.signal?.aborted) {
-          throw new PlatformError('TIMEOUT_ERROR', 'Tool request was cancelled', 408);
-        }
+        assertActive(options.signal);
 
         stage = 'registry';
         registration = this.dependencies.registry.resolve(
@@ -275,17 +315,22 @@ export class ToolRuntimeService {
 
         stage = 'authorization';
         try {
-          await enforceAuthorization(this.dependencies.authorization, context, {
-            capability: `tool:${metadata.tool_id}`,
-            action: metadata.read_write_class === 'read' ? 'read' : 'propose',
-            required_permissions: metadata.required_permissions,
-            required_entitlements: metadata.required_entitlements
-          });
+          await awaitActive(
+            () =>
+              enforceAuthorization(this.dependencies.authorization, trustedRequest.context, {
+                capability: `tool:${metadata.tool_id}`,
+                action: metadata.read_write_class === 'read' ? 'read' : 'propose',
+                required_permissions: metadata.required_permissions,
+                required_entitlements: metadata.required_entitlements
+              }),
+            options.signal
+          );
           permissionDecision = 'allowed';
         } catch (error) {
           permissionDecision = 'denied';
           throw error;
         }
+        const activePermissionDecision = permissionDecision;
 
         stage = 'tenant_ownership';
         if (metadata.ownership_validation === 'resource') {
@@ -302,22 +347,35 @@ export class ToolRuntimeService {
               403
             );
           }
-          await enforceResourceOwnership(this.dependencies.ownership, context, resource);
+          await awaitActive(
+            () =>
+              enforceResourceOwnership(
+                this.dependencies.ownership,
+                trustedRequest.context,
+                resource
+              ),
+            options.signal
+          );
         }
 
         stage = 'audit';
-        await this.emitAudit({
-          traceId,
-          context,
-          request: trustedRequest,
-          registration: selectedRegistration,
-          outcome: 'started',
-          stage: 'execution',
-          timestamp: now,
-          permissionDecision
-        });
+        await awaitActive(
+          () =>
+            this.emitAudit({
+              traceId,
+              context: trustedRequest.context,
+              request: trustedRequest,
+              registration: selectedRegistration,
+              outcome: 'started',
+              stage: 'execution',
+              timestamp: now,
+              permissionDecision: activePermissionDecision
+            }),
+          options.signal
+        );
 
         if (metadata.read_write_class === 'proposal') {
+          assertActive(options.signal);
           const response = toolExecutionResponseSchema.parse({
             contract_version: '1.0',
             status: 'proposed',
@@ -330,17 +388,22 @@ export class ToolRuntimeService {
             approval_required: true,
             approval_policy: metadata.approval_policy
           });
-          await this.emitAudit({
-            traceId,
-            context,
-            request: trustedRequest,
-            registration: selectedRegistration,
-            outcome: 'proposed',
-            stage: 'audit',
-            timestamp: now,
-            permissionDecision,
-            latencyMs: this.clock() - startedAt
-          });
+          await awaitActive(
+            () =>
+              this.emitAudit({
+                traceId,
+                context: trustedRequest.context,
+                request: trustedRequest,
+                registration: selectedRegistration,
+                outcome: 'proposed',
+                stage: 'audit',
+                timestamp: now,
+                permissionDecision: activePermissionDecision,
+                latencyMs: this.clock() - startedAt
+              }),
+            options.signal
+          );
+          assertActive(options.signal);
           span.setStatus({ code: SpanStatusCode.OK });
           return Object.freeze(response);
         }
@@ -353,6 +416,7 @@ export class ToolRuntimeService {
         let result: ToolAdapterResult | undefined;
         let currentAttempt = 0;
         while (!result) {
+          assertActive(options.signal);
           currentAttempt += 1;
           attempt = currentAttempt;
           stage = 'execution';
@@ -364,6 +428,7 @@ export class ToolRuntimeService {
               parsedInput.data,
               options.signal
             );
+            assertActive(options.signal);
             stage = 'response_schema';
             const envelope = toolAdapterResultSchema.safeParse(raw);
             if (!envelope.success) {
@@ -383,23 +448,30 @@ export class ToolRuntimeService {
             }
             result = Object.freeze({ ...envelope.data, output: output.data });
           } catch (error) {
+            assertActive(options.signal);
             const normalized =
               error instanceof PlatformError ? error : normalizedAdapterError(error);
-            await this.emitAudit({
-              traceId,
-              context,
-              request: trustedRequest,
-              registration: selectedRegistration,
-              outcome: 'error',
-              stage,
-              timestamp: now,
-              permissionDecision,
-              attempt: currentAttempt,
-              latencyMs: this.clock() - startedAt,
-              errorCode: normalized.code
-            });
+            await awaitActive(
+              () =>
+                this.emitAudit({
+                  traceId,
+                  context: trustedRequest.context,
+                  request: trustedRequest,
+                  registration: selectedRegistration,
+                  outcome: 'error',
+                  stage,
+                  timestamp: now,
+                  permissionDecision: activePermissionDecision,
+                  attempt: currentAttempt,
+                  latencyMs: this.clock() - startedAt,
+                  errorCode: normalized.code
+                }),
+              options.signal
+            );
+            assertActive(options.signal);
             if (!shouldRetry(normalized, selectedRegistration, currentAttempt)) throw normalized;
             await waitBackoff(metadata.retry_policy.backoff_ms, options.signal);
+            assertActive(options.signal);
           }
         }
 
@@ -416,22 +488,31 @@ export class ToolRuntimeService {
           observed_at: result.observed_at,
           attempts: currentAttempt
         });
-        await this.emitAudit({
-          traceId,
-          context,
-          request: trustedRequest,
-          registration: selectedRegistration,
-          outcome: 'succeeded',
-          stage: 'audit',
-          timestamp: now,
-          permissionDecision,
-          attempt: currentAttempt,
-          latencyMs: this.clock() - startedAt
-        });
+        await awaitActive(
+          () =>
+            this.emitAudit({
+              traceId,
+              context: trustedRequest.context,
+              request: trustedRequest,
+              registration: selectedRegistration,
+              outcome: 'succeeded',
+              stage: 'audit',
+              timestamp: now,
+              permissionDecision: activePermissionDecision,
+              attempt: currentAttempt,
+              latencyMs: this.clock() - startedAt
+            }),
+          options.signal
+        );
+        assertActive(options.signal);
         span.setStatus({ code: SpanStatusCode.OK });
         return Object.freeze(response);
       } catch (error) {
-        const safeError = correlated(error, traceId, context?.request_id);
+        const safeError = correlated(
+          options.signal?.aborted ? cancellationError() : error,
+          traceId,
+          context?.request_id
+        );
         span.setAttributes({
           'ibex.tool.outcome': safeError.statusCode >= 500 ? 'error' : 'rejected',
           'ibex.tool.error_code': safeError.code
@@ -439,19 +520,23 @@ export class ToolRuntimeService {
         span.recordException(new Error('Tool runtime request failed'));
         span.setStatus({ code: SpanStatusCode.ERROR });
         try {
-          await this.emitAudit({
-            traceId,
-            ...(context ? { context } : {}),
-            ...(request ? { request } : {}),
-            ...(registration ? { registration } : {}),
-            outcome: safeError.statusCode >= 500 ? 'error' : 'rejected',
-            stage,
-            timestamp: now,
-            ...(permissionDecision ? { permissionDecision } : {}),
-            ...(attempt !== undefined ? { attempt } : {}),
-            latencyMs: this.clock() - startedAt,
-            errorCode: safeError.code
-          });
+          await awaitActive(
+            () =>
+              this.emitAudit({
+                traceId,
+                ...(context ? { context } : {}),
+                ...(request ? { request } : {}),
+                ...(registration ? { registration } : {}),
+                outcome: safeError.statusCode >= 500 ? 'error' : 'rejected',
+                stage,
+                timestamp: now,
+                ...(permissionDecision ? { permissionDecision } : {}),
+                ...(attempt !== undefined ? { attempt } : {}),
+                latencyMs: this.clock() - startedAt,
+                errorCode: safeError.code
+              }),
+            options.signal
+          );
         } catch {
           span.addEvent('tool_runtime.audit.emission_failed');
         }
@@ -469,29 +554,37 @@ export class ToolRuntimeService {
     input: unknown,
     externalSignal?: AbortSignal
   ): Promise<ToolAdapterResult> {
+    assertActive(externalSignal);
     const controller = new AbortController();
     const cancel = () => {
       controller.abort();
     };
-    externalSignal?.addEventListener('abort', cancel, { once: true });
+    if (externalSignal?.aborted) cancel();
+    else externalSignal?.addEventListener('abort', cancel, { once: true });
     const timer = setTimeout(() => {
       controller.abort();
     }, registration.metadata.timeout_policy.timeout_ms);
     try {
-      return await Promise.race([
-        adapter.invoke(
-          Object.freeze({ context, tool: registration.metadata, input, signal: controller.signal })
-        ),
-        new Promise<never>((_resolve, reject) => {
-          controller.signal.addEventListener(
-            'abort',
-            () => {
-              reject(new ToolAdapterError('timeout'));
-            },
-            { once: true }
+      const result = await awaitActive(
+        () => {
+          assertActive(externalSignal);
+          return adapter.invoke(
+            Object.freeze({
+              context,
+              tool: registration.metadata,
+              input,
+              signal: controller.signal
+            })
           );
-        })
-      ]);
+        },
+        controller.signal,
+        () => new ToolAdapterError('timeout')
+      );
+      assertActive(externalSignal);
+      return result;
+    } catch (error) {
+      assertActive(externalSignal);
+      throw error;
     } finally {
       clearTimeout(timer);
       externalSignal?.removeEventListener('abort', cancel);
