@@ -111,8 +111,68 @@ function normalizedProviderError(error: unknown): PlatformError {
   return new PlatformError(code, message, status);
 }
 
+function cancellationError(): PlatformError {
+  return new PlatformError('TIMEOUT_ERROR', 'Model request was cancelled', 408);
+}
+
+function assertActive(signal?: AbortSignal, abortError: () => Error = cancellationError): void {
+  if (signal?.aborted) throw abortError();
+}
+
+/** Observe both late outcomes; cancelling a wait does not terminate its dependency. */
+async function awaitActive<T>(
+  invoke: () => Promise<T>,
+  signal?: AbortSignal,
+  abortError: () => Error = cancellationError
+): Promise<T> {
+  assertActive(signal, abortError);
+  let onAbort!: () => void;
+  const pending = new Promise<T>((resolve, reject) => {
+    onAbort = () => {
+      reject(abortError());
+    };
+    signal?.addEventListener('abort', onAbort, { once: true });
+    try {
+      assertActive(signal, abortError);
+      Promise.resolve(invoke()).then(resolve, reject);
+    } catch (error) {
+      reject(error instanceof Error ? error : new Error('Dependency operation failed'));
+    }
+  });
+  try {
+    const result = await pending;
+    assertActive(signal, abortError);
+    return result;
+  } catch (error) {
+    assertActive(signal, abortError);
+    throw error;
+  } finally {
+    signal?.removeEventListener('abort', onAbort);
+  }
+}
+
 function retryable(error: PlatformError): boolean {
   return ['PROVIDER_TIMEOUT', 'RATE_LIMITED', 'MODEL_UNAVAILABLE'].includes(error.code);
+}
+
+// Server-owned reporting budget; independent of caller cancellation and attempt policy.
+const failureReportingBudgetMs = 1_000;
+
+async function awaitFailureReport(emit: () => Promise<void>): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error('Failure audit reporting timed out'));
+        }, failureReportingBudgetMs);
+      }),
+      // Observe late rejection/fulfillment even when the reporting budget expires.
+      Promise.resolve().then(emit)
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function freezeResponse(response: ModelGatewayResponse): ModelGatewayResponse {
@@ -203,9 +263,8 @@ export class ModelGatewayService {
           throw new PlatformError('VALIDATION_ERROR', 'Model request is invalid', 400);
         }
         request = Object.freeze({ ...parsed.data, context });
-        if (options.signal?.aborted) {
-          throw new PlatformError('TIMEOUT_ERROR', 'Model request was cancelled', 408);
-        }
+        assertActive(options.signal);
+        const activeRequest = request;
         const inputTokens = estimatedInputTokens(request.input, this.policy.maximum_input_bytes);
 
         stage = 'policy';
@@ -230,6 +289,7 @@ export class ModelGatewayService {
 
         let lastError: PlatformError | undefined;
         for (let candidateIndex = 0; candidateIndex < candidates.length; candidateIndex += 1) {
+          assertActive(options.signal);
           const candidate = candidates[candidateIndex];
           if (!candidate) continue;
           if (
@@ -243,10 +303,16 @@ export class ModelGatewayService {
           if (!adapter) {
             throw new PlatformError('CONFIGURATION_ERROR', 'Model adapter is unavailable', 500);
           }
-          const liveAccess = await this.liveAccess(candidate.provider);
+          const liveAccess = await awaitActive(
+            () => this.liveAccess(candidate.provider),
+            options.signal
+          );
+          assertActive(options.signal);
 
           for (let retryIndex = 0; retryIndex <= this.policy.max_retries; retryIndex += 1) {
-            attempt = retryIndex + 1;
+            assertActive(options.signal);
+            const currentAttempt = retryIndex + 1;
+            attempt = currentAttempt;
             stage = 'provider_invocation';
             const startedAt = this.clock();
             try {
@@ -257,6 +323,7 @@ export class ModelGatewayService {
                 options.signal,
                 liveAccess
               );
+              assertActive(options.signal);
               stage = 'response_validation';
               const result = providerResultSchema.safeParse(providerResult);
               if (!result.success) throw new ProviderAdapterError('invalid_response');
@@ -269,50 +336,62 @@ export class ModelGatewayService {
                 fallbackUsed
               );
               stage = 'metrics';
-              await this.dependencies.metrics.emit(this.metric(request, response, now));
-              await this.emitAudit({
-                traceId,
-                context,
-                request,
-                candidate,
-                outcome: 'succeeded',
-                stage,
-                timestamp: now,
-                attempt,
-                fallbackUsed,
-                response
-              });
+              await awaitActive(
+                () => this.dependencies.metrics.emit(this.metric(activeRequest, response, now)),
+                options.signal
+              );
+              await awaitActive(
+                () =>
+                  this.emitAudit({
+                    traceId,
+                    context: activeRequest.context,
+                    request: activeRequest,
+                    candidate,
+                    outcome: 'succeeded',
+                    stage,
+                    timestamp: now,
+                    attempt: currentAttempt,
+                    fallbackUsed,
+                    response
+                  }),
+                options.signal
+              );
               span.setAttributes({
                 'ibex.model_gateway.provider_id': response.provider_id,
                 'ibex.model_gateway.model_id': response.model_id,
                 'ibex.model_gateway.fallback_used': response.fallback_used,
                 'ibex.model_gateway.latency_ms': response.latency_ms
               });
+              assertActive(options.signal);
               span.setStatus({ code: SpanStatusCode.OK });
               return response;
             } catch (error) {
+              assertActive(options.signal);
               if (stage === 'metrics') {
                 throw new PlatformError('GATEWAY_ERROR', 'Model Gateway telemetry failed', 500);
               }
               if (error instanceof PlatformError) throw error;
-              lastError = normalizedProviderError(error);
+              const providerError = normalizedProviderError(error);
+              lastError = providerError;
               const latencyMs = Math.max(0, Math.round(this.clock() - startedAt));
-              await this.emitAudit({
-                traceId,
-                context,
-                request,
-                candidate,
-                outcome: 'error',
-                stage,
-                timestamp: now,
-                attempt,
-                fallbackUsed,
-                latencyMs,
-                errorCode: lastError.code
-              });
-              if (options.signal?.aborted) {
-                throw new PlatformError('TIMEOUT_ERROR', 'Model request was cancelled', 408);
-              }
+              await awaitActive(
+                () =>
+                  this.emitAudit({
+                    traceId,
+                    context: activeRequest.context,
+                    request: activeRequest,
+                    candidate,
+                    outcome: 'error',
+                    stage,
+                    timestamp: now,
+                    attempt: currentAttempt,
+                    fallbackUsed,
+                    latencyMs,
+                    errorCode: providerError.code
+                  }),
+                options.signal
+              );
+              assertActive(options.signal);
               if (!retryable(lastError) || retryIndex >= this.policy.max_retries) {
                 break;
               }
@@ -321,8 +400,9 @@ export class ModelGatewayService {
         }
         throw lastError ?? new PlatformError('MODEL_UNAVAILABLE', 'Model is unavailable', 503);
       } catch (error) {
-        const source =
-          error instanceof PlatformError
+        const source = options.signal?.aborted
+          ? cancellationError()
+          : error instanceof PlatformError
             ? error
             : new PlatformError('GATEWAY_ERROR', 'Model Gateway request failed', 500);
         const correlated = new PlatformError(
@@ -341,18 +421,20 @@ export class ModelGatewayService {
         span.recordException(new Error('Model Gateway invocation failed'));
         span.setStatus({ code: SpanStatusCode.ERROR });
         try {
-          await this.emitAudit({
-            traceId,
-            ...(context ? { context } : {}),
-            ...(request ? { request } : {}),
-            ...(selected ? { candidate: selected } : {}),
-            outcome: correlated.statusCode >= 500 ? 'error' : 'rejected',
-            stage,
-            timestamp: now,
-            ...(attempt !== undefined ? { attempt } : {}),
-            fallbackUsed,
-            errorCode: correlated.code
-          });
+          await awaitFailureReport(() =>
+            this.emitAudit({
+              traceId,
+              ...(context ? { context } : {}),
+              ...(request ? { request } : {}),
+              ...(selected ? { candidate: selected } : {}),
+              outcome: correlated.statusCode >= 500 ? 'error' : 'rejected',
+              stage,
+              timestamp: now,
+              ...(attempt !== undefined ? { attempt } : {}),
+              fallbackUsed,
+              errorCode: correlated.code
+            })
+          );
         } catch {
           span.addEvent('model_gateway.audit.emission_failed');
         }
@@ -384,11 +466,13 @@ export class ModelGatewayService {
     externalSignal: AbortSignal | undefined,
     liveAccess: LiveProviderAccess | undefined
   ): Promise<ProviderResult> {
+    assertActive(externalSignal);
     const controller = new AbortController();
     const cancel = () => {
       controller.abort();
     };
-    externalSignal?.addEventListener('abort', cancel, { once: true });
+    if (externalSignal?.aborted) cancel();
+    else externalSignal?.addEventListener('abort', cancel, { once: true });
     const timer = setTimeout(() => {
       controller.abort();
     }, this.policy.timeout_ms);
@@ -403,18 +487,19 @@ export class ModelGatewayService {
       signal: controller.signal
     });
     try {
-      return await Promise.race([
-        adapter.invoke(invocation, liveAccess),
-        new Promise<never>((_resolve, reject) => {
-          controller.signal.addEventListener(
-            'abort',
-            () => {
-              reject(new ProviderAdapterError('timeout'));
-            },
-            { once: true }
-          );
-        })
-      ]);
+      const result = await awaitActive(
+        () => {
+          assertActive(externalSignal);
+          return adapter.invoke(invocation, liveAccess);
+        },
+        controller.signal,
+        () => new ProviderAdapterError('timeout')
+      );
+      assertActive(externalSignal);
+      return result;
+    } catch (error) {
+      assertActive(externalSignal);
+      throw error;
     } finally {
       clearTimeout(timer);
       externalSignal?.removeEventListener('abort', cancel);
