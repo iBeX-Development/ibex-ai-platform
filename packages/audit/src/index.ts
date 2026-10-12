@@ -136,13 +136,24 @@ export type ModelGatewayAuditStage =
   | 'boundary_trace'
   | 'request_validation'
   | 'policy'
+  | 'accounting'
   | 'provider_invocation'
   | 'response_validation'
   | 'metrics';
 
+export interface ModelAccountingAuditEvidence {
+  readonly command_hash: string;
+  readonly attempt_id: string;
+  readonly policy_version: string;
+  readonly period_id: string;
+  readonly state: 'unresolved' | 'settled';
+  readonly warnings: readonly string[];
+}
+
 interface ModelGatewayAuditEventBase {
   readonly schema_version: '1.0';
   readonly event_type: 'model_gateway.invocation.outcome';
+  readonly accounting?: ModelAccountingAuditEvidence;
   readonly timestamp: string;
   readonly trace_id: string;
   readonly service: string;
@@ -594,6 +605,7 @@ export function createOrchestratorAuditEvent(input: {
 }
 
 export function createModelGatewayAuditEvent(input: {
+  readonly accounting?: ModelAccountingAuditEvidence;
   readonly traceId: string;
   readonly service: string;
   readonly environment: string;
@@ -620,6 +632,18 @@ export function createModelGatewayAuditEvent(input: {
   const base = {
     schema_version: '1.0',
     event_type: 'model_gateway.invocation.outcome',
+    ...(input.accounting
+      ? {
+          accounting: Object.freeze({
+            command_hash: input.accounting.command_hash,
+            attempt_id: input.accounting.attempt_id,
+            policy_version: input.accounting.policy_version,
+            period_id: input.accounting.period_id,
+            state: input.accounting.state,
+            warnings: Object.freeze([...input.accounting.warnings])
+          })
+        }
+      : {}),
     timestamp: input.timestamp.toISOString(),
     trace_id: input.traceId,
     service: input.service,

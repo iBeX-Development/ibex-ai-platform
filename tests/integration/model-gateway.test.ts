@@ -260,7 +260,7 @@ describe('Gate P4 Model Gateway', () => {
     expect(invoke).not.toHaveBeenCalled();
   });
 
-  it('applies bounded retry and normalizes provider timeout errors', async () => {
+  it('normalizes provider timeout without replaying an uncertain accounting liability', async () => {
     const invoke = vi.fn(() => Promise.reject(new ProviderAdapterError('timeout')));
     const gateway = createModelGateway([], [], {
       registry: new ModelRegistry([primaryProvider], [primaryModel]),
@@ -280,7 +280,7 @@ describe('Gate P4 Model Gateway', () => {
       code: 'PROVIDER_TIMEOUT',
       publicMessage: 'Model provider timed out'
     });
-    expect(invoke).toHaveBeenCalledTimes(2);
+    expect(invoke).toHaveBeenCalledOnce();
   });
 
   it('enforces the configured provider invocation timeout', async () => {

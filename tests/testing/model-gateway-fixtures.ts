@@ -10,6 +10,11 @@ import {
 } from '../../packages/model-gateway/src/index.js';
 import { createTrustedRequestContext } from '../../packages/security/src/index.js';
 import { enabledTestFeatureControls } from '../../packages/testing/src/index.js';
+import {
+  SyntheticAccountingPort,
+  syntheticBudgetPolicy,
+  syntheticBoundedAdapter
+} from './model-accounting-fixtures.js';
 
 export const modelGatewayValidationTime = new Date('2026-09-23T06:00:00.000Z');
 
@@ -144,7 +149,11 @@ export function createModelGateway(
     environment: 'test',
     traceIdFactory: () => 'generated-model-trace-1',
     clock: () => 100,
+    accounting: { policy: syntheticBudgetPolicy, port: new SyntheticAccountingPort() },
     ...overrides
   };
-  return new ModelGatewayService(dependencies);
+  return new ModelGatewayService({
+    ...dependencies,
+    adapters: dependencies.adapters.map(syntheticBoundedAdapter)
+  });
 }

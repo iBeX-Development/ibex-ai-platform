@@ -378,9 +378,20 @@ function assertCancellationAudit(audits: readonly AuditRecord[], mode: Mode) {
     'requested_operation',
     'permission_decision',
     'approval_policy',
-    'approval_state'
+    'approval_state',
+    'accounting'
   ]);
   expect(Object.keys(records[0] ?? {}).filter((key) => !keys.has(key))).toEqual([]);
+  if ('accounting' in record) {
+    expect(Object.keys(record.accounting).sort()).toEqual([
+      'attempt_id',
+      'command_hash',
+      'period_id',
+      'policy_version',
+      'state',
+      'warnings'
+    ]);
+  }
   expect(JSON.stringify(records[0])).not.toMatch(/private|credential|safe synthetic result|Pump A/);
 }
 
@@ -734,18 +745,25 @@ describe('Model/Tool cancellation admission and adapter ordering', () => {
   });
 
   it.each(['model', 'tool'] as const)(
-    'preserves genuine %s attempt timeout recovery',
+    'preserves %s timeout policy while Model retains uncertain accounting liability',
     async (mode) => {
       const h = harness(mode, { firstPending: true });
       const { observed, finished } = h.start();
       await h.entered.promise;
       await vi.advanceTimersByTimeAsync(100);
       await finished;
-      expect(observed.state).toBe('success');
+      expect(observed.state).toBe(mode === 'model' ? 'failure' : 'success');
+      if (mode === 'model') {
+        expect(toErrorEnvelope(observed.error)).toMatchObject({
+          error: { code: 'PROVIDER_TIMEOUT' }
+        });
+        expect(h.calls).not.toContain('fallback');
+        expect(h.calls.filter((name) => name === 'adapter')).toHaveLength(1);
+      }
       expect(h.adapterSignals[0]?.aborted).toBe(true);
       h.release.reject(new Error('private late timed-out rejection'));
       await vi.advanceTimersByTimeAsync(0);
-      expect(observed.state).toBe('success');
+      expect(observed.state).toBe(mode === 'model' ? 'failure' : 'success');
       expect(vi.getTimerCount()).toBe(0);
     }
   );
