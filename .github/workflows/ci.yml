@@ -14,7 +14,7 @@ jobs:
         with: { version: 11.19.0 }
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22
+          node-version: 22.23.3
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Formatting
@@ -41,3 +41,111 @@ jobs:
         run: pnpm scan:evaluation-leakage
       - name: Phase 11 scope scan
         run: pnpm scan:phase11-scope
+  container-foundation:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build pinned linux/amd64 image (no publication)
+        timeout-minutes: 11
+        run: |
+          set -euo pipefail
+          docker --version
+          docker buildx version
+          timeout --kill-after=15s 600s docker build --platform linux/amd64 --pull --no-cache \
+            --progress=plain --iidfile "$RUNNER_TEMP/ibex-foundation.iid" \
+            -f deployment/Dockerfile .
+          timeout 10s docker image inspect "$(cat "$RUNNER_TEMP/ibex-foundation.iid")" \
+            --format 'image={{.Id}} platform={{.Os}}/{{.Architecture}} user={{.Config.User}}'
+      - name: Synthetic offline foundation health smoke
+        timeout-minutes: 2
+        run: |
+          set -euo pipefail
+          image="$(cat "$RUNNER_TEMP/ibex-foundation.iid")"
+          cat > "$RUNNER_TEMP/ibex-foundation.env" <<'ENV'
+          IBEX_CONFIG_VERSION=1
+          IBEX_ENVIRONMENT=development
+          IBEX_SERVICE_NAME=ci-foundation
+          IBEX_HOST=127.0.0.1
+          IBEX_PORT=3000
+          IBEX_LOG_LEVEL=error
+          IBEX_SECRET_SOURCE=environment
+          IBEX_MAX_RETRIES=0
+          IBEX_AI_PLATFORM_ENABLED=false
+          IBEX_FEATURE_AGENTS_ENABLED=false
+          IBEX_GENERAL_AGENT_ENABLED=false
+          IBEX_MAINTENANCE_AGENT_ENABLED=false
+          IBEX_ASSET_AGENT_ENABLED=false
+          IBEX_WAREHOUSE_AGENT_ENABLED=false
+          IBEX_FEATURE_RAG_ENABLED=false
+          IBEX_FEATURE_TOOLS_ENABLED=false
+          IBEX_ACTION_TOOLS_ENABLED=false
+          IBEX_FEATURE_MODEL_GATEWAY_ENABLED=false
+          IBEX_MODEL_FALLBACK_ENABLED=false
+          ENV
+          timeout 15s docker create --platform linux/amd64 --pull=never \
+            --cidfile "$RUNNER_TEMP/ibex-foundation.cid" \
+            --label "ibex.ci.run=$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+            --network none --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --pids-limit 64 --memory 256m --cpus 1 --init \
+            --env-file "$RUNNER_TEMP/ibex-foundation.env" "$image"
+          cid="$(cat "$RUNNER_TEMP/ibex-foundation.cid")"
+          test "$(timeout 10s docker inspect --format '{{.HostConfig.NetworkMode}}' "$cid")" = none
+          test "$(timeout 10s docker inspect --format '{{json .HostConfig.PortBindings}}' "$cid")" = '{}'
+          test "$(timeout 10s docker inspect --format '{{.Config.User}}' "$cid")" = node
+          timeout 15s docker start "$cid"
+          timeout --kill-after=5s 30s docker exec -i "$cid" node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { setTimeout as delay } from 'node:timers/promises';
+          import { loadConfig } from './dist/packages/configuration/src/index.js';
+          assert.equal(process.versions.node, '22.23.3');
+          assert.equal(process.platform, 'linux');
+          assert.equal(process.arch, 'x64');
+          assert.equal(process.getuid(), 1000);
+          assert.equal(process.getgid(), 1000);
+          const config = loadConfig(process.env);
+          assert.equal(config.environment, 'development');
+          assert.ok(Object.values(config.features).every((enabled) => enabled === false));
+          assert.ok(!Object.keys(process.env).some((key) => /IBEX_.*(?:_ENDPOINT|_BASE_URL)$/.test(key)));
+          const deadline = performance.now() + 15_000;
+          let health;
+          while (performance.now() < deadline) {
+            try {
+              const response = await fetch('http://127.0.0.1:3000/health', {
+                signal: AbortSignal.timeout(Math.max(1, Math.min(1_000, Math.ceil(deadline - performance.now()))))
+              });
+              assert.equal(response.status, 200);
+              health = await response.json();
+              break;
+            } catch (error) {
+              if (performance.now() >= deadline) throw error;
+              await delay(100);
+            }
+          }
+          assert.deepEqual(health, { status: 'disabled', service: 'ci-foundation', ai_platform_enabled: false });
+          console.log(JSON.stringify({ node: process.versions.node, platform: process.platform, arch: process.arch,
+            uid: process.getuid(), gid: process.getgid(), features: config.features, health }));
+          JS
+      - name: Clean up only this job's container and image
+        if: always()
+        timeout-minutes: 2
+        run: |
+          set -euo pipefail
+          cleanup_status=0
+          if [ -f "$RUNNER_TEMP/ibex-foundation.cid" ]; then
+            cid="$(cat "$RUNNER_TEMP/ibex-foundation.cid")"
+            [[ "$cid" =~ ^[0-9a-f]{64}$ ]]
+            test "$(timeout 10s docker inspect --format '{{index .Config.Labels "ibex.ci.run"}}' "$cid")" = "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+            test "$(timeout 10s docker inspect --format '{{.Image}}' "$cid")" = "$(cat "$RUNNER_TEMP/ibex-foundation.iid")"
+            timeout 5s docker logs --tail 20 "$cid" || cleanup_status=1
+            timeout 10s docker stop --time 5 "$cid" || cleanup_status=1
+            test "$(timeout 5s docker inspect --format '{{.State.Running}}' "$cid")" = false
+            timeout 10s docker rm "$cid" || cleanup_status=1
+          fi
+          if [ -f "$RUNNER_TEMP/ibex-foundation.iid" ]; then
+            image="$(cat "$RUNNER_TEMP/ibex-foundation.iid")"
+            [[ "$image" =~ ^sha256:[0-9a-f]{64}$ ]]
+            timeout 10s docker image rm "$image" || cleanup_status=1
+          fi
+          exit "$cleanup_status"
