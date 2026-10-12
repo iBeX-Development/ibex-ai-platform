@@ -1,6 +1,7 @@
 import type { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'node:http';
 import { PlatformError, toErrorEnvelope } from '../../../packages/errors/src/index.js';
 import type { AiGatewayService, GatewayEndpoint } from '../../../packages/gateway/src/index.js';
+import { sendHttpError, sendJson } from './http-response.js';
 
 const routes = new Map<string, GatewayEndpoint>([
   ['/chat', 'chat'],
@@ -41,27 +42,27 @@ async function readJsonBody(request: IncomingMessage, maximumPayloadBytes: numbe
   }
 }
 
-function sendJson(response: ServerResponse, statusCode: number, value: unknown): void {
-  response.writeHead(statusCode, { 'content-type': 'application/json' });
-  response.end(JSON.stringify(value));
-}
-
 export function createGatewayHttpHandler(service: AiGatewayService, maximumPayloadBytes: number) {
   return async (request: IncomingMessage, response: ServerResponse): Promise<boolean> => {
-    const pathname = new URL(request.url ?? '/', 'http://gateway.invalid').pathname;
-    const endpoint = routes.get(pathname);
-    if (!endpoint) return false;
-
-    if (request.method !== 'POST') {
-      sendJson(
-        response,
-        405,
-        toErrorEnvelope(new PlatformError('VALIDATION_ERROR', 'Method not allowed', 405))
-      );
-      return true;
-    }
-
     try {
+      let pathname: string;
+      try {
+        pathname = new URL(request.url ?? '/', 'http://gateway.invalid').pathname;
+      } catch {
+        throw new PlatformError('VALIDATION_ERROR', 'Request target is invalid', 400);
+      }
+      const endpoint = routes.get(pathname);
+      if (!endpoint) return false;
+
+      if (request.method !== 'POST') {
+        sendJson(
+          response,
+          405,
+          toErrorEnvelope(new PlatformError('VALIDATION_ERROR', 'Method not allowed', 405))
+        );
+        return true;
+      }
+
       const body = await readJsonBody(request, maximumPayloadBytes);
       const result = await service.execute({
         endpoint,
@@ -71,8 +72,7 @@ export function createGatewayHttpHandler(service: AiGatewayService, maximumPaylo
       });
       sendJson(response, result.status === 'rejected' ? 403 : 200, result);
     } catch (error) {
-      const statusCode = error instanceof PlatformError ? error.statusCode : 500;
-      sendJson(response, statusCode, toErrorEnvelope(error));
+      sendHttpError(response, error);
     }
     return true;
   };
