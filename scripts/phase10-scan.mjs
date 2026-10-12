@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { lstatSync, readFileSync } from 'node:fs';
+import { basename, extname, resolve } from 'node:path';
 
 const gate = process.argv[2];
 const supported = new Set([
@@ -14,14 +15,56 @@ if (!gate || !supported.has(gate)) {
   process.exit(2);
 }
 
-const tracked = execFileSync('git', ['ls-files', '-co', '--exclude-standard', '-z'], {
-  encoding: 'utf8'
-})
-  .split('\0')
-  .filter(Boolean);
+const runtimeRoots = ['apps/', 'agents/', 'packages/', 'infrastructure/', 'deployment/'];
+const providerNeutralRoots = ['agents/', 'packages/pilot-agents/', 'packages/runtime/'];
+const roots =
+  gate === 'secret' ? [] : gate === 'provider-coupling' ? providerNeutralRoots : runtimeRoots;
+const report = {
+  gate,
+  scope: gate === 'secret' ? 'repository source/configuration text' : roots,
+  discovery: 'Git tracked and untracked non-ignored files; deduplicated, repository-relative',
+  exclusions: [
+    'docs/baseline/ (existing approved-baseline policy)',
+    'unsupported formats',
+    ...(gate === 'secret' ? [] : ['paths outside gate roots']),
+    'Git-ignored untracked paths are not discovered or individually enumerated'
+  ],
+  selected: [],
+  inspected: [],
+  excluded: [],
+  errors: []
+};
+let repositoryRoot;
+let tracked;
+try {
+  repositoryRoot = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe']
+  }).trim();
+  tracked = [
+    ...new Set(
+      execFileSync('git', ['ls-files', '-co', '--exclude-standard', '-z'], {
+        cwd: repositoryRoot,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe']
+      })
+        .split('\0')
+        .filter(Boolean)
+    )
+  ].sort();
+} catch {
+  report.errors.push({ path: '.', reason: 'Git discovery failed' });
+  console.log(`[phase10:${gate}] COVERAGE ${JSON.stringify(report)}`);
+  console.error(`[phase10:${gate}] ERROR: discovery failed; no PASS`);
+  process.exit(2);
+}
 const textExtensions = new Set([
   '.ts',
+  '.tsx',
+  '.mts',
+  '.cts',
   '.js',
+  '.jsx',
   '.mjs',
   '.cjs',
   '.json',
@@ -29,23 +72,82 @@ const textExtensions = new Set([
   '.yaml',
   '.md',
   '.env',
-  '.example'
+  '.example',
+  '.sh',
+  '.bash',
+  '.zsh',
+  '.ps1',
+  '.psm1',
+  '.psd1',
+  '.cmd',
+  '.bat',
+  '.py',
+  '.sql',
+  '.toml',
+  '.ini',
+  '.conf',
+  '.config',
+  '.xml',
+  '.properties',
+  '.tf',
+  '.tfvars',
+  '.hcl',
+  '.dockerfile',
+  '.txt'
 ]);
-const extension = (path) => {
-  const dot = path.lastIndexOf('.');
-  return dot < 0 ? '' : path.slice(dot);
-};
-const readable = tracked.filter(
-  (path) => textExtensions.has(extension(path)) && !path.startsWith('docs/baseline/')
-);
-const runtime = readable.filter((path) =>
-  ['apps/', 'agents/', 'packages/', 'infrastructure/'].some((prefix) => path.startsWith(prefix))
-);
+function supportedFormat(path) {
+  const name = basename(path).toLowerCase();
+  return (
+    textExtensions.has(extname(name)) ||
+    /^dockerfile(?:\..+)?$/.test(name) ||
+    /^\.env(?:\..+)?$/.test(name) ||
+    ['.gitignore', '.dockerignore', '.prettierignore', '.npmrc', '.yarnrc'].includes(name)
+  );
+}
+report.formats = [...textExtensions].sort();
+report.namedFormats = [
+  'Dockerfile[.*]',
+  '.env[.*]',
+  '.gitignore',
+  '.dockerignore',
+  '.prettierignore',
+  '.npmrc',
+  '.yarnrc'
+];
+for (const path of tracked) {
+  const reason = path.startsWith('docs/baseline/')
+    ? 'approved baseline excluded by existing policy'
+    : !supportedFormat(path)
+      ? 'unsupported format'
+      : roots.length && !roots.some((root) => path.startsWith(root))
+        ? 'outside gate roots'
+        : undefined;
+  if (reason) report.excluded.push({ path, reason });
+  else report.selected.push(path);
+}
 const findings = [];
+
+// Static literal syntax only: ESM imports/re-exports, CommonJS require and import().
+// This intentionally remains a conservative text scan, not a JavaScript resolver.
+function dependencyPattern(packages) {
+  return new RegExp(
+    `(?:\\bfrom\\s*|\\bimport\\s*|\\b(?:require|import)\\s*\\(\\s*)['"](?:${packages})['"]`,
+    'gi'
+  );
+}
 
 function scan(paths, rules) {
   for (const path of paths) {
-    const content = readFileSync(path, 'utf8');
+    let content;
+    try {
+      const absolute = resolve(repositoryRoot, path);
+      if (!lstatSync(absolute).isFile())
+        throw Object.assign(new Error(), { code: 'NOT_REGULAR_FILE' });
+      content = new TextDecoder('utf-8', { fatal: true }).decode(readFileSync(absolute));
+    } catch (error) {
+      report.errors.push({ path, reason: error.code ?? 'READ_ERROR' });
+      continue;
+    }
     for (const rule of rules) {
       const matches = content.matchAll(
         new RegExp(
@@ -58,11 +160,12 @@ function scan(paths, rules) {
         findings.push(`${path}:${line}: ${rule.message}`);
       }
     }
+    report.inspected.push(path);
   }
 }
 
 if (gate === 'secret') {
-  scan(readable, [
+  scan(report.selected, [
     {
       pattern: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g,
       message: 'private key material'
@@ -74,10 +177,9 @@ if (gate === 'secret') {
 }
 
 if (gate === 'direct-core-db') {
-  scan(runtime, [
+  scan(report.selected, [
     {
-      pattern:
-        /from\s+['"](?:pg|mysql2?|mssql|mongodb|@prisma\/client|typeorm|sequelize|knex)['"]/gi,
+      pattern: dependencyPattern('pg|mysql2?|mssql|mongodb|@prisma/client|typeorm|sequelize|knex'),
       message: 'database client dependency'
     },
     {
@@ -92,15 +194,9 @@ if (gate === 'direct-core-db') {
 }
 
 if (gate === 'provider-coupling') {
-  const providerNeutralRoots = runtime.filter(
-    (path) =>
-      path.startsWith('agents/') ||
-      path.startsWith('packages/pilot-agents/') ||
-      path.startsWith('packages/runtime/')
-  );
-  scan(providerNeutralRoots, [
+  scan(report.selected, [
     {
-      pattern: /from\s+['"](?:openai|@anthropic-ai\/sdk|@google\/generative-ai|cohere-ai)['"]/gi,
+      pattern: dependencyPattern('openai|@anthropic-ai/sdk|@google/generative-ai|cohere-ai'),
       message: 'provider SDK dependency outside Model Gateway'
     },
     {
@@ -111,7 +207,7 @@ if (gate === 'provider-coupling') {
 }
 
 if (gate === 'evaluation-leakage') {
-  scan(runtime, [
+  scan(report.selected, [
     { pattern: /tests[\\/]evaluation/gi, message: 'runtime import of evaluation tree' },
     {
       pattern:
@@ -122,7 +218,7 @@ if (gate === 'evaluation-leakage') {
 }
 
 if (gate === 'phase11-scope') {
-  scan(runtime, [
+  scan(report.selected, [
     { pattern: /\bshadow[_ -]?mode\b/gi, message: 'Shadow Mode capability' },
     { pattern: /\bcontrolled[_ -]?pilot\b/gi, message: 'Controlled Pilot capability' },
     {
@@ -132,11 +228,20 @@ if (gate === 'phase11-scope') {
   ]);
 }
 
+console.log(`[phase10:${gate}] COVERAGE ${JSON.stringify(report)}`);
+if (report.errors.length > 0) {
+  console.error(
+    `[phase10:${gate}] ERROR (${report.selected.length} selected, ${report.inspected.length} inspected)`
+  );
+  for (const error of report.errors) console.error(`${error.path}: ${error.reason}`);
+  for (const finding of findings) console.error(finding);
+  process.exit(2);
+}
 if (findings.length > 0) {
   console.error(`[phase10:${gate}] FAIL`);
   for (const finding of findings) console.error(finding);
   process.exit(1);
 }
 console.log(
-  `[phase10:${gate}] PASS (${gate === 'provider-coupling' ? 'provider-neutral boundaries' : `${readable.length} repository text files inspected`})`
+  `[phase10:${gate}] PASS (${report.selected.length} selected, ${report.inspected.length} inspected, ${report.excluded.length} excluded discovered files)`
 );
