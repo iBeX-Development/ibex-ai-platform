@@ -18,6 +18,28 @@ is retained inside the immutable envelope so normalization does not remove manda
 - Evidence is written to the append-only store port before exporters run. Exporter failures create
   critical health evidence, mark the pipeline degraded, and fail closed to the caller.
 
+## Bounded failure reporting
+
+After normalization or primary store/exporter failure, secondary health persistence and independent
+export attempts share one server-owned **1,000 ms best-effort ceiling**. They start independently
+within that budget so a stalled store cannot starve a healthy exporter. A single timer bounds
+never-settling waits; an absolute monotonic deadline (injectable `monotonicClock`, default
+`performance.now()`) is checked before each invocation and after fulfillment/rejection, even when
+timer delivery is delayed. Expired synchronous outcomes stop further reporting once control returns.
+No caller cancellation signal controls this reporting budget and it installs no abort listeners.
+
+The original normalization error or sanitized, correlated `AuditDeliveryError` remains the caller
+failure. Secondary rejection, synchronous throw, clock failure or timeout cannot replace it or
+produce success. The pipeline stays degraded. Late outcomes are observed without retries, additional
+reporting or caller continuation, and the reporting timer is cleared on every outcome. A failed
+primary store is not retried through health persistence.
+
+This ceiling applies only to secondary failure reporting; ordinary primary persistence/export
+waits are unchanged. Synchronous blocking cannot be preempted, and timeout neither terminates a
+dependency nor proves rollback, delivery or durable evidence retention. A timed-out exporter may
+still finish later. F07 remains open for independently durable failure storage, custody and
+deployment proof; healthy test adapters do not establish those properties.
+
 ## Production integration boundary
 
 `AuditEvidenceStore`, `AuditExporter`, `SecurityEventExporter`, `AuditMetricsExporter`, and

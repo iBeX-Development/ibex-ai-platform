@@ -128,6 +128,8 @@ export interface AuditTelemetryPipelineDependencies {
   readonly environment: string;
   readonly eventIdFactory?: () => string;
   readonly parentEventId?: (event: AuditRecord) => string | undefined;
+  /** Server-owned elapsed clock for secondary failure reporting, not event timestamps. */
+  readonly monotonicClock?: () => number;
 }
 
 export interface MetricLabelPolicy {
@@ -611,13 +613,21 @@ export class AuditTelemetryPipeline implements AuditEventSink {
         throw new PlatformError('VALIDATION_ERROR', 'Audit environment binding is invalid', 500);
       }
     } catch (error) {
-      await this.reportNormalizationFailure(source, error);
+      try {
+        await this.reportNormalizationFailure(source, error);
+      } catch {
+        // Secondary reporting must never replace the original normalization failure.
+      }
       throw error;
     }
     try {
       await this.dependencies.evidenceStore.persistAudit(event);
     } catch {
-      await this.reportFailure(event, 'evidence_store', false);
+      try {
+        await this.reportFailure(event, 'evidence_store', false);
+      } catch {
+        // Preserve the sanitized, correlated primary delivery failure.
+      }
       throw new AuditDeliveryError(event.trace_id, event.request_id);
     }
     await this.deliver(event, 'audit_exporter', () =>
@@ -637,12 +647,23 @@ export class AuditTelemetryPipeline implements AuditEventSink {
   }
 
   private async reportNormalizationFailure(source: AuditRecord, error: unknown): Promise<void> {
-    const unsafe = record(source);
+    const field = (key: string, fallback: string): string => {
+      try {
+        return optionalString(record(source)[key]) ?? fallback;
+      } catch {
+        return fallback;
+      }
+    };
     const timestamp = new Date().toISOString();
-    const traceId = optionalString(unsafe.trace_id) ?? 'unavailable';
-    const service = optionalString(unsafe.service) ?? 'unknown';
-    const environment = optionalString(unsafe.environment) ?? this.dependencies.environment;
-    const eventId = (this.dependencies.eventIdFactory ?? randomUUID)();
+    const traceId = field('trace_id', 'unavailable');
+    const service = field('service', 'unknown');
+    const environment = field('environment', this.dependencies.environment);
+    let eventId: string | undefined;
+    try {
+      eventId = optionalString((this.dependencies.eventIdFactory ?? randomUUID)());
+    } catch {
+      // A failed ID factory cannot hide the original error or prevent degraded health.
+    }
     const reasonCode =
       error instanceof PlatformError &&
       error.publicMessage === 'Audit evidence contains prohibited data'
@@ -652,7 +673,7 @@ export class AuditTelemetryPipeline implements AuditEventSink {
       event_type: 'audit.pipeline.validation_failure',
       timestamp,
       severity: 'critical',
-      event_id: eventId,
+      ...(eventId ? { event_id: eventId } : {}),
       trace_id: traceId,
       service,
       environment,
@@ -660,7 +681,7 @@ export class AuditTelemetryPipeline implements AuditEventSink {
       reason_code: reasonCode
     });
     const security: SecurityObservation = Object.freeze({
-      event_id: eventId,
+      event_id: eventId ?? 'unavailable',
       timestamp,
       event_type: 'audit.pipeline.rejected',
       severity: 'critical',
@@ -670,14 +691,10 @@ export class AuditTelemetryPipeline implements AuditEventSink {
       reason_code: reasonCode
     });
     this.markDegraded(health);
-    try {
-      await this.dependencies.evidenceStore.persistHealth(health);
-    } catch {
-      // Continue to independent exporters and preserve fail-closed caller behavior.
-    }
-    await Promise.allSettled([
-      this.dependencies.securityExporter.export(security),
-      this.dependencies.healthExporter.export(health)
+    await this.reportBestEffort([
+      () => this.dependencies.evidenceStore.persistHealth(health),
+      () => this.dependencies.securityExporter.export(security),
+      () => this.dependencies.healthExporter.export(health)
     ]);
   }
 
@@ -689,7 +706,11 @@ export class AuditTelemetryPipeline implements AuditEventSink {
     try {
       await operation();
     } catch {
-      await this.reportFailure(event, component, true);
+      try {
+        await this.reportFailure(event, component, true);
+      } catch {
+        // Preserve the sanitized, correlated primary delivery failure.
+      }
       throw new AuditDeliveryError(event.trace_id, event.request_id);
     }
   }
@@ -711,17 +732,72 @@ export class AuditTelemetryPipeline implements AuditEventSink {
       reason_code: 'AUDIT_DELIVERY_FAILURE'
     });
     this.markDegraded(evidence);
-    if (persist) {
-      try {
-        await this.dependencies.evidenceStore.persistHealth(evidence);
-      } catch {
-        // The independent health exporter remains the final observable fail-safe path.
-      }
-    }
+    await this.reportBestEffort([
+      ...(persist ? [() => this.dependencies.evidenceStore.persistHealth(evidence)] : []),
+      () => this.dependencies.healthExporter.export(evidence)
+    ]);
+  }
+
+  private async reportBestEffort(operations: readonly (() => Promise<void>)[]): Promise<void> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
     try {
-      await this.dependencies.healthExporter.export(evidence);
+      const clock = this.dependencies.monotonicClock ?? (() => performance.now());
+      const startedAt = clock();
+      const deadline = startedAt + 1_000;
+      if (!Number.isFinite(startedAt) || !Number.isFinite(deadline)) return;
+      await new Promise<void>((resolve) => {
+        let closed = false;
+        let pending = operations.length;
+        const finish = () => {
+          if (closed) return;
+          closed = true;
+          clearTimeout(timer);
+          resolve();
+        };
+        const active = () => {
+          if (closed) return false;
+          try {
+            const now = clock();
+            return Number.isFinite(now) && now >= startedAt && now < deadline;
+          } catch {
+            return false;
+          }
+        };
+        const observed = () => {
+          // These handlers consume both late outcomes without restarting reporting.
+          if (closed) return;
+          pending -= 1;
+          if (!active() || pending === 0) finish();
+        };
+        const remaining = deadline - clock();
+        if (!Number.isFinite(remaining) || remaining > 1_000 || !active() || remaining <= 0) {
+          finish();
+          return;
+        }
+        timer = setTimeout(finish, Math.max(1, remaining));
+        // Independent attempts share one ceiling; a hung store cannot starve healthy exporters.
+        for (const operation of operations) {
+          if (!active()) {
+            finish();
+            break;
+          }
+          try {
+            void Promise.resolve(operation()).then(observed, observed);
+          } catch {
+            observed();
+          }
+          // Synchronous blocking cannot be preempted; reject continuation when control returns.
+          if (!active()) {
+            finish();
+            break;
+          }
+        }
+        if (pending === 0) finish();
+      });
     } catch {
-      // The caller still receives AuditDeliveryError; failure is never reported as success.
+      // Reporting setup/clock failure is also best effort, never a new caller failure.
+    } finally {
+      clearTimeout(timer);
     }
   }
 

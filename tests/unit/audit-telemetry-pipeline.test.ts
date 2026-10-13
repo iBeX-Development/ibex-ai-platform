@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   AuditTelemetryPipeline,
   InMemoryAuditEvidenceStore,
@@ -10,6 +10,7 @@ import {
   type AuditTelemetryPipelineDependencies
 } from '../../packages/audit/src/index.js';
 import { createTrustedRequestContext } from '../../packages/security/src/index.js';
+import { PlatformError } from '../../packages/errors/src/index.js';
 
 const now = new Date('2026-09-24T00:00:00.000Z');
 const context = createTrustedRequestContext({
@@ -53,6 +54,384 @@ function dependencies(
     ...overrides
   };
 }
+
+describe('Bounded secondary audit failure reporting', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    try {
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+      vi.restoreAllMocks();
+    }
+  });
+
+  function failing(
+    failure:
+      | 'normalization'
+      | 'evidence_store'
+      | 'audit_exporter'
+      | 'security_exporter'
+      | 'metrics_exporter',
+    overrides: Partial<AuditTelemetryPipelineDependencies> = {}
+  ) {
+    const original = new PlatformError(
+      'VALIDATION_ERROR',
+      'Audit validation failed',
+      500,
+      undefined,
+      'trace-a',
+      'request-a'
+    );
+    const deps = dependencies(overrides);
+    // Use an actual normalization-entry failure with an exact error object to check preservation.
+    const configured =
+      failure === 'normalization'
+        ? {
+            ...deps,
+            parentEventId: () => {
+              throw original;
+            }
+          }
+        : deps;
+    if (failure === 'evidence_store')
+      vi.spyOn(deps.evidenceStore, 'persistAudit').mockRejectedValue(
+        new Error('private store error')
+      );
+    else if (failure !== 'normalization') {
+      const exporter =
+        failure === 'audit_exporter'
+          ? deps.auditExporter
+          : failure === 'security_exporter'
+            ? deps.securityExporter
+            : deps.metricsExporter;
+      vi.spyOn(exporter, 'export').mockImplementation(() =>
+        Promise.reject(new Error('private exporter error'))
+      );
+    }
+    const pipeline = new AuditTelemetryPipeline(configured);
+    let outcome: unknown;
+    const observed = pipeline.emit(gatewayEvent('rejected')).then(
+      () => {
+        outcome = 'unexpected success';
+      },
+      (error: unknown) => {
+        outcome = error;
+      }
+    );
+    const check = () => {
+      if (failure === 'normalization') expect(outcome).toBe(original);
+      expect(outcome).toMatchObject({
+        code: failure === 'normalization' ? 'VALIDATION_ERROR' : 'DEPENDENCY_ERROR',
+        traceId: 'trace-a',
+        trustedRequestId: 'request-a'
+      });
+      expect(String(outcome)).not.toMatch(/private|secret/);
+      expect(pipeline.healthStatus()).toMatchObject({
+        status: 'degraded',
+        last_failure: { failed_component: failure }
+      });
+    };
+    return { deps, pipeline, observed, check };
+  }
+
+  it.each(['normalization', 'evidence_store', 'audit_exporter'] as const)(
+    'settles the original %s failure despite never-settling secondary reporting',
+    async (failure) => {
+      vi.useFakeTimers();
+      let release!: () => void;
+      const stalled = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      const deps = dependencies({
+        evidenceStore: {
+          persistAudit: () =>
+            failure === 'evidence_store'
+              ? Promise.reject(new Error('private primary store failure'))
+              : Promise.resolve(),
+          persistHealth: () => stalled
+        },
+        auditExporter: {
+          export: () =>
+            failure === 'audit_exporter'
+              ? Promise.reject(new Error('private primary exporter failure'))
+              : Promise.resolve()
+        },
+        healthExporter: { export: () => stalled },
+        securityExporter: { export: () => stalled }
+      });
+      const pipeline = new AuditTelemetryPipeline(deps);
+      const source =
+        failure === 'normalization'
+          ? ({
+              ...gatewayEvent(),
+              raw_prompt: 'private prohibited prompt'
+            } as unknown as AuditRecord)
+          : gatewayEvent();
+      let outcome: unknown;
+      const observed = pipeline.emit(source).then(
+        () => {
+          outcome = 'unexpected success';
+        },
+        (error: unknown) => {
+          outcome = error;
+        }
+      );
+      await vi.advanceTimersByTimeAsync(1_000);
+      try {
+        expect(outcome).toMatchObject({
+          code: failure === 'normalization' ? 'VALIDATION_ERROR' : 'DEPENDENCY_ERROR',
+          ...(failure === 'normalization'
+            ? {}
+            : { traceId: 'trace-a', trustedRequestId: 'request-a' })
+        });
+        expect(pipeline.healthStatus()).toMatchObject({ status: 'degraded' });
+      } finally {
+        release();
+        await observed;
+      }
+    }
+  );
+
+  it.each(['security_exporter', 'metrics_exporter'] as const)(
+    'bounds reporting after a primary %s failure',
+    async (failure) => {
+      const h = failing(failure, { healthExporter: { export: () => new Promise(() => {}) } });
+      await vi.advanceTimersByTimeAsync(1_000);
+      await h.observed;
+      h.check();
+    }
+  );
+
+  it.each(['securityExporter', 'healthExporter'] as const)(
+    'bounds normalization reporting when only %s hangs',
+    async (exporter) => {
+      const h = failing('normalization', { [exporter]: { export: () => new Promise(() => {}) } });
+      await vi.advanceTimersByTimeAsync(1_000);
+      await h.observed;
+      h.check();
+    }
+  );
+
+  it.each(['normalization', 'evidence_store', 'audit_exporter'] as const)(
+    'gives healthy secondary paths the %s record despite a stalled peer',
+    async (failure) => {
+      const health = vi.fn(() => Promise.resolve());
+      const security = vi.fn(() => Promise.resolve());
+      const h = failing(failure, {
+        evidenceStore: {
+          persistAudit: () => Promise.resolve(),
+          persistHealth: () => new Promise(() => {})
+        },
+        healthExporter: { export: health },
+        securityExporter: { export: security }
+      });
+      await vi.advanceTimersByTimeAsync(0);
+      expect(health).toHaveBeenCalledOnce();
+      expect(health).toHaveBeenCalledWith(
+        expect.objectContaining({ trace_id: 'trace-a', failed_component: failure })
+      );
+      if (failure === 'normalization') expect(security).toHaveBeenCalledOnce();
+      expect(JSON.stringify(health.mock.calls)).not.toMatch(/private|secret/);
+      await vi.advanceTimersByTimeAsync(1_000);
+      await h.observed;
+      h.check();
+    }
+  );
+
+  it.each(
+    (['normalization', 'evidence_store', 'audit_exporter'] as const).flatMap((failure) =>
+      (['reject', 'throw'] as const).map((outcome) => ({ failure, outcome }))
+    )
+  )('preserves $failure when secondary paths $outcome', async ({ failure, outcome }) => {
+    const fail = vi.fn((): Promise<void> => {
+      if (outcome === 'throw') throw new Error('private secondary secret');
+      return Promise.reject(new Error('private secondary secret'));
+    });
+    const h = failing(failure, {
+      evidenceStore: { persistAudit: () => Promise.resolve(), persistHealth: fail },
+      healthExporter: { export: fail },
+      securityExporter: { export: fail }
+    });
+    await h.observed;
+    h.check();
+    expect(fail).toHaveBeenCalledTimes(
+      failure === 'normalization' ? 3 : failure === 'evidence_store' ? 1 : 2
+    );
+    expect(h.deps.metricsExporter.export).not.toHaveBeenCalled();
+  });
+
+  it.each(
+    (['normalization', 'evidence_store', 'audit_exporter'] as const).flatMap((failure) =>
+      (['fulfill', 'reject'] as const).map((outcome) => ({ failure, outcome }))
+    )
+  )(
+    'observes late $outcome after $failure without retry or continuation',
+    async ({ failure, outcome }) => {
+      let resolve!: () => void;
+      let reject!: (error: Error) => void;
+      const late = new Promise<void>((done, fail) => {
+        resolve = done;
+        reject = fail;
+      });
+      const secondary = vi.fn(() => late);
+      const h = failing(failure, {
+        evidenceStore: { persistAudit: () => Promise.resolve(), persistHealth: secondary },
+        healthExporter: { export: secondary },
+        securityExporter: { export: secondary }
+      });
+      await vi.advanceTimersByTimeAsync(1_000);
+      await h.observed;
+      h.check();
+      const status = h.pipeline.healthStatus();
+      const calls = secondary.mock.calls.length;
+      if (outcome === 'reject') reject(new Error('private late secondary secret'));
+      else resolve();
+      await vi.advanceTimersByTimeAsync(0);
+      h.check();
+      expect(h.pipeline.healthStatus()).toBe(status);
+      expect(secondary).toHaveBeenCalledTimes(calls);
+      expect(h.deps.metricsExporter.export).not.toHaveBeenCalled();
+      // Vitest also fails the run if the late rejection is unhandled.
+    }
+  );
+
+  it.each(
+    (['normalization', 'audit_exporter'] as const).flatMap((failure) =>
+      (['fulfill', 'reject', 'synchronous-fulfill', 'synchronous-throw'] as const).map(
+        (outcome) => ({ failure, outcome })
+      )
+    )
+  )(
+    'checks the absolute deadline for $failure $outcome without timer delivery',
+    async ({ failure, outcome }) => {
+      let monotonic = 100;
+      const clock = vi.fn(() => monotonic);
+      const expire = vi.fn(() => {
+        if (outcome.startsWith('synchronous')) {
+          monotonic += 1_000;
+          if (outcome === 'synchronous-throw') throw new Error('private blocked failure');
+          return Promise.resolve();
+        }
+        return Promise.resolve().then(() => {
+          monotonic += 1_000;
+          if (outcome === 'reject') throw new Error('private late failure');
+        });
+      });
+      const health = vi.fn(() => new Promise<void>(() => {}));
+      const security = vi.fn(() => new Promise<void>(() => {}));
+      const h = failing(failure, {
+        monotonicClock: clock,
+        evidenceStore: { persistAudit: () => Promise.resolve(), persistHealth: expire },
+        healthExporter: { export: health },
+        securityExporter: { export: security }
+      });
+      // No timer is advanced: fulfillment/rejection must independently close expired reporting.
+      await h.observed;
+      h.check();
+      expect(
+        clock.mock.results.some((read) => read.type === 'return' && read.value === 1_100)
+      ).toBe(true);
+      expect(expire).toHaveBeenCalledOnce();
+      if (outcome.startsWith('synchronous')) {
+        expect(health).not.toHaveBeenCalled();
+        expect(security).not.toHaveBeenCalled();
+      }
+      expect(h.deps.metricsExporter.export).not.toHaveBeenCalled();
+    }
+  );
+
+  it('uses one reporting ceiling shared across independent secondary attempts', async () => {
+    const health = vi.fn(() => new Promise<void>(() => {}));
+    const security = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          setTimeout(resolve, 800);
+        })
+    );
+    const h = failing('normalization', {
+      evidenceStore: {
+        persistAudit: () => Promise.resolve(),
+        persistHealth: () =>
+          new Promise((resolve) => {
+            setTimeout(resolve, 600);
+          })
+      },
+      securityExporter: { export: security },
+      healthExporter: { export: health }
+    });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(health).toHaveBeenCalledOnce();
+    expect(security).toHaveBeenCalledOnce();
+    await vi.advanceTimersByTimeAsync(999);
+    expect(vi.getTimerCount()).toBe(1);
+    await vi.advanceTimersByTimeAsync(1);
+    await h.observed;
+    h.check();
+  });
+
+  it('skips every secondary invocation when its absolute budget expires before entry', async () => {
+    const clock = vi.fn().mockReturnValueOnce(100).mockReturnValue(1_100);
+    const secondary = vi.fn(() => Promise.resolve());
+    const h = failing('normalization', {
+      monotonicClock: clock,
+      evidenceStore: { persistAudit: () => Promise.resolve(), persistHealth: secondary },
+      healthExporter: { export: secondary },
+      securityExporter: { export: secondary }
+    });
+    await h.observed;
+    h.check();
+    expect(secondary).not.toHaveBeenCalled();
+  });
+
+  it('does not replace the original failure when the reporting clock throws', async () => {
+    const h = failing('audit_exporter', {
+      monotonicClock: () => {
+        throw new Error('private clock failure');
+      }
+    });
+    await h.observed;
+    h.check();
+    expect(h.deps.healthExporter.export).not.toHaveBeenCalled();
+  });
+
+  it('preserves the exact normalization-entry error if the reporting ID factory also fails', async () => {
+    const original = new PlatformError('VALIDATION_ERROR', 'Audit identifier unavailable', 500);
+    const deps = dependencies({
+      eventIdFactory: () => {
+        throw original;
+      }
+    });
+    const pipeline = new AuditTelemetryPipeline(deps);
+    await expect(pipeline.emit(gatewayEvent())).rejects.toBe(original);
+    expect(pipeline.healthStatus().status).toBe('degraded');
+    expect(deps.healthExporter.export).toHaveBeenCalledWith(
+      expect.objectContaining({ trace_id: 'trace-a' })
+    );
+  });
+
+  it.each(['normalization', 'evidence_store', 'audit_exporter'] as const)(
+    'finishes healthy secondary reporting promptly for %s',
+    async (failure) => {
+      const h = failing(failure);
+      await h.observed;
+      h.check();
+      expect(h.deps.healthExporter.export).toHaveBeenCalledOnce();
+    }
+  );
+
+  it('keeps ordinary successful delivery healthy without reporting timers', async () => {
+    const deps = dependencies();
+    const pipeline = new AuditTelemetryPipeline(deps);
+    await pipeline.emit(gatewayEvent());
+    expect(pipeline.healthStatus()).toEqual({ status: 'healthy' });
+    expect(deps.auditExporter.export).toHaveBeenCalledOnce();
+    expect(deps.metricsExporter.export).toHaveBeenCalledOnce();
+    expect(deps.healthExporter.export).not.toHaveBeenCalled();
+  });
+});
 
 describe('Phase 7 canonical audit pipeline', () => {
   it('normalizes mandatory trusted and correlation evidence without weakening the source event', () => {
