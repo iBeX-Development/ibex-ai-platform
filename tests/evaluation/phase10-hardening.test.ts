@@ -10,6 +10,7 @@ import {
 } from '../../packages/testing/src/index.js';
 import {
   createPilotHarness,
+  pilotContext,
   pilotRequest,
   pilotValidationTime
 } from '../testing/pilot-agent-fixtures.js';
@@ -348,6 +349,7 @@ describe('Phase 10 hardening gate', () => {
         profile: warehouse,
         controls: featureControls({ ...enabledTestFeatureControls, tools: false }),
         request: pilotRequest(warehouse, {
+          context: pilotContext({ permissions: ['inventory.stock'] }),
           intent: 'INVENTORY_QUERY',
           requested_tool_capabilities: ['inventory.stock']
         })
@@ -356,15 +358,27 @@ describe('Phase 10 hardening gate', () => {
         profile: warehouse,
         controls: featureControls({ ...enabledTestFeatureControls, actionTools: false }),
         request: pilotRequest(warehouse, {
+          context: pilotContext({ permissions: ['inventory.prepare_issue'] }),
           intent: 'ISSUE_DRAFT_ACTION',
           requested_tool_capabilities: ['inventory.prepare_issue']
         })
       }
     ];
     for (const item of cases) {
-      const { runtime } = createPilotHarness(item.profile, { featureControls: item.controls });
+      const { runtime, audits } = createPilotHarness(item.profile, {
+        featureControls: item.controls
+      });
       await expect(runtime.execute(item.request, pilotValidationTime)).rejects.toMatchObject({
         code: 'PERMISSION_DENIED'
+      });
+      expect(audits).toHaveLength(1);
+      expect(audits[0]).toMatchObject({
+        outcome: 'rejected',
+        stage: 'authorization',
+        error_code: 'PERMISSION_DENIED',
+        request_id: item.request.context.request_id,
+        correlation_id: item.request.context.correlation_id,
+        trace_id: item.request.trace_id
       });
     }
   });

@@ -31,6 +31,26 @@ import {
 
 const ABSTENTION = 'Insufficient approved evidence is available for this request.';
 
+// Server-owned reporting budget; independent of caller cancellation and attempt policy.
+const failureReportingBudgetMs = 1_000;
+
+async function awaitFailureReport(emit: () => Promise<void>): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error('Failure audit reporting timed out'));
+        }, failureReportingBudgetMs);
+      }),
+      // Observe late rejection/fulfillment even when the reporting budget expires.
+      Promise.resolve().then(emit)
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export interface PilotAgentRuntimeOptions {
   readonly featureControls: FeatureControls;
   readonly service: string;
@@ -345,14 +365,28 @@ export class PilotAgentRuntime {
       );
       throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
     }
-    if (request.requested_rag_scopes.length > 0 && !this.options.featureControls.rag) {
-      throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
-    }
-    if (request.requested_tool_capabilities.length > 0 && !this.options.featureControls.tools) {
-      throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
-    }
-    if (policy.proposal_only && !this.options.featureControls.actionTools) {
-      throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
+    if (
+      (request.requested_rag_scopes.length > 0 && !this.options.featureControls.rag) ||
+      (request.requested_tool_capabilities.length > 0 && !this.options.featureControls.tools) ||
+      (policy.proposal_only && !this.options.featureControls.actionTools)
+    ) {
+      const denial = new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
+      try {
+        await awaitFailureReport(() =>
+          this.emitAudit(
+            context,
+            request.trace_id,
+            'rejected',
+            'authorization',
+            denial.code,
+            policy.intent,
+            now
+          )
+        );
+      } catch {
+        span.addEvent('pilot-agent.audit.emission_failed');
+      }
+      throw denial;
     }
 
     if (policy.tool_capability_classes.length > 0) {
