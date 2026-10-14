@@ -1,0 +1,241 @@
+{
+  "document": "SIR-02 KM OE-01 Approved Source Registration Evidence",
+  "version": "v1.0",
+  "status": "Executed / Awaiting Independent Review",
+  "evidence_run": {
+    "evidence_id": "SIR02-KM-OE-01",
+    "evidence_run_id": "SIR02-KM-OE-01-V1_0-20260925T052258Z-0001",
+    "plan_version": "v1.0",
+    "plan_matrix_reference": "37212d5869709f85256618e6b03fffb0622a2049",
+    "controlled_execution_approval": "4d18b54180ebe0d34b147d769c5d906fc8c3b960",
+    "gate_a_approval": "84a05702b744a6a710644299381e30e9a9a7aefb",
+    "fixture_schema_id": "SIR02-KM-EVIDENCE-FIXTURE",
+    "fixture_schema_version": "v1.0",
+    "test_namespace": "sir02-km-evidence-v1",
+    "test_namespace_version": "v1.0",
+    "executor": "GANTUMUR Erdenedalai — Founder / Administrator",
+    "reviewer": "SODBILEG Erkhembayar — Administrator",
+    "execution_timestamp": "2026-09-25T05:22:58Z",
+    "repository_commit": "a226a664ca4a294832b8f7e410ff1ea1e071d017",
+    "test_data_classification": [
+      "SYNTHETIC_SOURCE_METADATA",
+      "SYNTHETIC_IDENTITY_CONTEXT",
+      "DETERMINISTIC_INTEGRITY_DATA",
+      "DETERMINISTIC_LIFECYCLE_EVENTS",
+      "SANITIZED_TEST_AUDIT_DATA"
+    ],
+    "artifact_checksum_references": [
+      {
+        "algorithm": "SHA-256",
+        "artifact": "docs/governance/sir-02/operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json",
+        "checksum_reference": "docs/governance/sir-02/operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json.sha256"
+      }
+    ],
+    "result": "Passed",
+    "acceptance_status": "Not Reviewed"
+  },
+  "source_registration": {
+    "source_id": "sir02-km-source-a-001",
+    "registration_id": "sir02-km-registration-a-001",
+    "source_type": "synthetic-governance-document",
+    "title": "Synthetic SIR-02 Knowledge Source A",
+    "classification": "SYNTHETIC_TEST_ONLY",
+    "registration_status": "approved",
+    "registered_at": "2026-09-25T05:22:58Z",
+    "registration_authority_ref": "84a05702b744a6a710644299381e30e9a9a7aefb",
+    "tenant_binding": {
+      "tenant_scope": "single-synthetic-tenant",
+      "synthetic_tenant_id": "sir02-test-tenant-a",
+      "access_scope": [
+        "sir02-km-evidence-v1:source-registration"
+      ],
+      "binding_authority_ref": "84a05702b744a6a710644299381e30e9a9a7aefb"
+    },
+    "source_owner": {
+      "source_owner_id": "sir02-test-source-owner-a",
+      "source_owner_type": "synthetic-test-identity",
+      "ownership_status": "bound",
+      "ownership_authority_ref": "84a05702b744a6a710644299381e30e9a9a7aefb"
+    },
+    "approval": {
+      "approval_status": "approved",
+      "approver_id": "sir02-test-approver-a",
+      "approver_role": "synthetic-knowledge-source-approver",
+      "approval_authority_ref": "84a05702b744a6a710644299381e30e9a9a7aefb",
+      "decision_at": "2026-09-25T05:22:58Z",
+      "conditions": [
+        "test-only",
+        "no-ingestion",
+        "no-rag",
+        "single-synthetic-tenant"
+      ]
+    },
+    "source_version": {
+      "source_version": "v1.0",
+      "content_checksum": "436ea9892588b6527774dbd9ff1e174f6306bf8894afe2f8c91314fc6e7a916f",
+      "effective_at": "2026-09-25T05:22:58Z",
+      "expiry_at": null,
+      "change_reason": "Initial synthetic registration for SIR02-KM-OE-01"
+    },
+    "provenance": {
+      "predecessor_version": null,
+      "authoritative_origin_ref": "synthetic://sir02-km-evidence-v1/source-a",
+      "source_origin_type": "generated-synthetic-test-source",
+      "custody_events": [
+        {
+          "event": "generated",
+          "actor": "GANTUMUR Erdenedalai — Founder / Administrator",
+          "timestamp": "2026-09-25T05:22:58Z",
+          "namespace": "sir02-km-evidence-v1"
+        }
+      ],
+      "provenance_hash": "a165e525d136353c9c1b1daa20ac89dcb410ea2699686f19bc70d37f38a53c3f"
+    },
+    "lifecycle": {
+      "lifecycle_status": "registered-approved-test-only",
+      "supersession_status": "not-superseded",
+      "replacement_source_id": null,
+      "replacement_version": null,
+      "superseded_at": null,
+      "supersession_authority_ref": null,
+      "freshness_status": "current-for-test-run",
+      "stale_reason": null,
+      "quarantine_status": "not-quarantined",
+      "quarantined_at": null,
+      "quarantine_authority_ref": null
+    },
+    "retention_deletion": {
+      "retention_policy_ref": "gate-a:ephemeral-test-only-cleanup-after-run",
+      "retention_class": "EVIDENCE_ARTIFACT_ONLY",
+      "legal_hold_status": "none",
+      "withdrawal_status": "not-withdrawn",
+      "deletion_status": "ephemeral-fixture-cleaned",
+      "deletion_authority_ref": "SIR02-KM-OE-01-V1_0-20260925T052258Z-0001",
+      "reconciliation_status": "zero-live-or-derived-artifacts"
+    },
+    "audit_identity": {
+      "evidence_id": "SIR02-KM-OE-01",
+      "evidence_run_id": "SIR02-KM-OE-01-V1_0-20260925T052258Z-0001",
+      "request_id": "req-SIR02-KM-OE-01-V1_0-20260925T052258Z-0001",
+      "correlation_id": "corr-SIR02-KM-OE-01-V1_0-20260925T052258Z-0001",
+      "trace_id": "trace-SIR02-KM-OE-01-V1_0-20260925T052258Z-0001",
+      "actor_id": "GANTUMUR Erdenedalai — Founder / Administrator",
+      "event_type": "knowledge_source_registration_validated",
+      "event_timestamp": "2026-09-25T05:22:58Z",
+      "outcome": "passed-awaiting-independent-review",
+      "artifact_checksum_ref": "docs/governance/sir-02/operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json.sha256"
+    }
+  },
+  "validation": {
+    "validator": "deterministic-inline-governance-validator-v1.0",
+    "result": "Passed",
+    "mandatory_fields_checked": "All Gate A v1.0 mandatory paths",
+    "checks": [
+      {
+        "id": "mandatory-fields-present",
+        "result": "Passed"
+      },
+      {
+        "id": "explicit-tenant-binding",
+        "result": "Passed",
+        "tenant": "sir02-test-tenant-a"
+      },
+      {
+        "id": "no-cross-tenant-reference",
+        "result": "Passed",
+        "prohibited_tenant": "sir02-test-tenant-b"
+      },
+      {
+        "id": "explicit-owner-binding",
+        "result": "Passed"
+      },
+      {
+        "id": "explicit-source-version",
+        "result": "Passed",
+        "version": "v1.0"
+      },
+      {
+        "id": "explicit-provenance",
+        "result": "Passed",
+        "provenance_hash": "a165e525d136353c9c1b1daa20ac89dcb410ea2699686f19bc70d37f38a53c3f"
+      },
+      {
+        "id": "explicit-approval-state",
+        "result": "Passed",
+        "state": "approved"
+      },
+      {
+        "id": "no-wildcards",
+        "result": "Passed"
+      },
+      {
+        "id": "later-oe-02-through-oe-05-compatibility",
+        "result": "Passed"
+      },
+      {
+        "id": "no-live-or-derived-artifact-created",
+        "result": "Passed"
+      }
+    ],
+    "negative_cases": [
+      {
+        "id": "missing-source-id",
+        "mutation": "source_id omitted",
+        "expected": "Denied",
+        "actual": "Denied",
+        "downstream_calls": 0
+      },
+      {
+        "id": "tenant-b-access",
+        "requesting_tenant": "sir02-test-tenant-b",
+        "record_tenant": "sir02-test-tenant-a",
+        "expected": "Denied",
+        "actual": "Denied",
+        "disclosed_fields": 0
+      },
+      {
+        "id": "wildcard-tenant",
+        "mutation": "synthetic_tenant_id=*",
+        "expected": "Denied",
+        "actual": "Denied",
+        "downstream_calls": 0
+      }
+    ]
+  },
+  "sanitized_audit_event": {
+    "event_type": "sir02_km_operational_evidence_execution",
+    "evidence_id": "SIR02-KM-OE-01",
+    "evidence_run_id": "SIR02-KM-OE-01-V1_0-20260925T052258Z-0001",
+    "namespace": "sir02-km-evidence-v1",
+    "tenant_id": "sir02-test-tenant-a",
+    "request_id": "req-SIR02-KM-OE-01-V1_0-20260925T052258Z-0001",
+    "correlation_id": "corr-SIR02-KM-OE-01-V1_0-20260925T052258Z-0001",
+    "trace_id": "trace-SIR02-KM-OE-01-V1_0-20260925T052258Z-0001",
+    "source_id": "sir02-km-source-a-001",
+    "source_version": "v1.0",
+    "outcome": "passed-awaiting-independent-review",
+    "timestamp": "2026-09-25T05:22:58Z",
+    "raw_content_logged": false,
+    "secrets_logged": false
+  },
+  "negative_access_result": {
+    "tenant_a_registration_visible": true,
+    "tenant_b_registration_visible": false,
+    "tenant_b_access_outcome": "Denied",
+    "cross_tenant_fields_disclosed": 0
+  },
+  "cleanup_manifest": {
+    "namespace": "sir02-km-evidence-v1",
+    "ephemeral_fixture_records_created": 1,
+    "ephemeral_fixture_records_removed": 1,
+    "persistent_live_knowledge_artifacts_created": 0,
+    "ingestion_calls": 0,
+    "rag_calls": 0,
+    "embedding_calls": 0,
+    "indexing_calls": 0,
+    "vector_store_calls": 0,
+    "retrieval_calls": 0,
+    "traffic_changes": 0,
+    "result": "Passed"
+  }
+}

@@ -1,6 +1,6 @@
 # SIR-02 Knowledge Management Immediate Evidence Response v1.0
 
-> Extraction note (historical snapshot through `a226a664ca4a294832b8f7e410ff1ea1e071d017`): Gate A's recorded conditional authorization covered isolated, synthetic, non-live `SIR02-KM-OE-01` only; all 15 OE items remain `Not Executed`, and `SIR02-DEF-02` remains `Missing / Not Reviewed`. Named decisions are not independently authenticated personal attestations; this archival publication grants no new execution permission. The inherited Data Governance citation `b767b220…` identifies the linkage-stage commit, while recorded acceptance is at `13c3a637…`.
+> Extraction note (historical snapshot through `9b17ef719b2edfd3835654a163a573cdc3497f5b`): OE-01 is recorded as `Executed / Awaiting Independent Review`, with acceptance `Not Reviewed`; the other 14 items remain `Not Executed`, and `SIR02-DEF-02` remains `Missing / Not Reviewed`. The JSON's validation, Tenant B denial, and cleanup are self-reported pending independent run evidence; its sidecar matches CRLF checkout bytes, not the committed LF blob. Named decisions are not independently authenticated personal attestations, and this archival publication grants no new execution authority. The inherited Data Governance citation `b767b220…` identifies the linkage stage; recorded acceptance is at `13c3a637…`.
 
 ## Submission metadata
 
@@ -35,8 +35,9 @@ Authoritative supporting references:
 - Product deferral owner and review/expiry evidence: commits `df112abde861a908fd5838ba10dad54e96053b65` and `4b7fcb77343f5009f5b521f6d580ab6088d3c9f4`;
 - proposed Shadow RAG-disablement configuration: commit `52e437f053cdca25492410cecbd182ebc19a4afd`.
 - approved Knowledge Management Lifecycle-Control Baseline `v1.0`: `controls/SIR-02-KNOWLEDGE-MANAGEMENT-LIFECYCLE-CONTROL-BASELINE-v1.0.md`; baseline commit `48407614af13e8f8239a9e63454c013dc43e432b`; approval commit `c48a40d58c9235621ace82ad0c6440f69b8f2ad5`.
-- approved Operational Evidence Execution Plan and Acceptance Matrix `v1.0`: artifact commit `37212d5869709f85256618e6b03fffb0622a2049`; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960`; all 15 items remain `Not Executed`.
-- approved Operational Evidence Gate A `v1.0`: artifact commit `437612dfe56fb4903f8132bef2971089bdb374aa`; approval commit `84a05702b744a6a710644299381e30e9a9a7aefb`; controlled execution of `SIR02-KM-OE-01` is authorized but not executed.
+- approved Operational Evidence Execution Plan and Acceptance Matrix `v1.0`: artifact commit `37212d5869709f85256618e6b03fffb0622a2049`; approval commit `4d18b54180ebe0d34b147d769c5d906fc8c3b960`.
+- approved Operational Evidence Gate A `v1.0`: artifact commit `437612dfe56fb4903f8132bef2971089bdb374aa`; approval commit `84a05702b744a6a710644299381e30e9a9a7aefb`.
+- OE-01 execution evidence: `operational-evidence/oe-01/SIR-02-KM-OE-01-APPROVED-SOURCE-REGISTRATION-v1.0.json`; SHA-256 `d60717e22cbcabd58363fafcb177aca8e2e33592464af958540e2a87a2eea38b`; commit `44a97a9b387235c67ae70cce24fb32cda0adfe70`; status `Executed / Awaiting Independent Review`.
 
 These references remain supporting evidence. Knowledge Management owner decisions are now immutable at commit `c49a7eb54a870bfb8a0bfa9150ce0e2abd222122`.
 
@@ -61,9 +62,10 @@ These references remain supporting evidence. Knowledge Management owner decision
 - Approved lifecycle-control reference satisfied: **Yes**.
 - Controlled evidence execution plan/matrix approved: **Yes; execution remains subject to all plan prerequisites and restrictions**.
 - Gate A approved: **Yes; controlled execution of `SIR02-KM-OE-01` is authorized under the approved synthetic-only, isolated non-live controls**.
+- OE-01 execution: **Passed; `Executed / Awaiting Independent Review`; acceptance status `Not Reviewed`**.
 - Operational-evidence requirement satisfied: **No**.
 - Evidence status: `Missing / Not Reviewed`.
-- Exact remaining blocker: the required operational-evidence package has not been produced, independently reviewed, approved, or linked through an immutable operational-evidence reference. Ingestion remains prohibited from reopening.
+- Exact remaining blocker: OE-01 awaits independent review, the other 14 items remain `Not Executed`, and the complete accepted operational-evidence package does not exist. Ingestion remains prohibited from reopening.
 
 ### SIR02-DEF-03 — Knowledge Management review and expiry acceptance
 
@@ -89,4 +91,4 @@ These references remain supporting evidence. Knowledge Management owner decision
 
 ## Reviewer next action
 
-Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. The lifecycle-control-reference portion of `SIR02-DEF-02` is satisfied, and its Plan/Matrix and Gate A are approved for controlled evidence execution. `SIR02-KM-OE-01` may now execute under those exact controls; no additional prerequisite remains before that item. `SIR02-DEF-02` is not review-ready and must remain fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
+Reviews for `SIR02-DEF-01` and `SIR02-DEF-03` are complete and accepted. OE-01 execution passed under the approved Plan/Matrix and Gate A controls and now requires SODBILEG Erkhembayar to independently verify the immutable artifact, checksum, validation, audit evidence, Tenant B denial, and cleanup manifest, then record exactly one result: `Accepted`, `Needs Clarification`, or `Rejected`. `SIR02-DEF-02` remains fail closed until all 15 items are executed, independently reviewed, accepted, and immutably referenced.
