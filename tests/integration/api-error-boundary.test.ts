@@ -1,11 +1,12 @@
 import { EventEmitter } from 'node:events';
+import { createServer } from 'node:http';
 import type { IncomingMessage, RequestListener, ServerResponse } from 'node:http';
 import type * as Http from 'node:http';
 import { Readable } from 'node:stream';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createGatewayHttpHandler } from '../../apps/api/src/gateway.js';
 import { startApi } from '../../apps/api/src/index.js';
-import { PlatformError } from '../../packages/errors/src/index.js';
+import { ConfigurationError, PlatformError } from '../../packages/errors/src/index.js';
 import type { AiGatewayService } from '../../packages/gateway/src/index.js';
 import { validTestEnvironment } from '../../packages/testing/src/index.js';
 
@@ -239,9 +240,10 @@ describe('API HTTP error boundaries through original modules', () => {
   async function dispatch(
     handler: ReturnType<typeof createGatewayHttpHandler> | undefined,
     probe: ResponseProbe,
-    url = '/chat'
+    url = '/chat',
+    env: NodeJS.ProcessEnv = validTestEnvironment
   ) {
-    const server = startApi(validTestEnvironment, handler);
+    const server = startApi(env, handler);
     const listener = server.listeners('request')[0] as RequestListener;
     try {
       listener(request(url, url === '/health' ? 'GET' : 'POST'), probe.response);
@@ -251,6 +253,77 @@ describe('API HTTP error boundaries through original modules', () => {
       server.removeAllListeners();
     }
   }
+
+  it.each([undefined, null, false, true, 0, 1, privateDetail, {}, { call: () => true }])(
+    'rejects enabled startup with non-callable handler %j before creating a server',
+    (handler) => {
+      expect(() =>
+        startApi(
+          { ...validTestEnvironment, IBEX_AI_PLATFORM_ENABLED: 'true' },
+          handler as unknown as ReturnType<typeof createGatewayHttpHandler>
+        )
+      ).toThrow(new ConfigurationError('Enabled AI platform requires a Gateway handler'));
+      // No Server is constructed, so listen/socket binding cannot occur.
+      expect(createServer).not.toHaveBeenCalled();
+    }
+  );
+
+  it.each(['/chat', '/agents', '/query', '/tools', '/approvals', '/feedback'])(
+    'preserves enabled startup and injected Gateway route %s',
+    async (url) => {
+      const fixture = gateway();
+      const probe = new ResponseProbe();
+      await dispatch(fixture.handler, probe, url, {
+        ...validTestEnvironment,
+        IBEX_AI_PLATFORM_ENABLED: 'true'
+      });
+      expect(probe.statusCode).toBe(200);
+      expect(JSON.parse(probe.bodies[0] ?? '')).toEqual({
+        status: 'success',
+        response: { ok: true }
+      });
+      expect(fixture.execute).toHaveBeenCalledTimes(1);
+      expect(fixture.execute).toHaveBeenCalledWith(
+        expect.objectContaining({ endpoint: url.slice(1) })
+      );
+      const server = vi.mocked(createServer).mock.results[0]?.value as Http.Server;
+      expect(vi.mocked(server).listen.mock.calls).toContainEqual([
+        3001,
+        '127.0.0.1',
+        expect.any(Function)
+      ]);
+    }
+  );
+
+  it('preserves enabled health with a callable handler without dispatching to it', async () => {
+    const handler = vi.fn().mockResolvedValue(false);
+    const probe = new ResponseProbe();
+    await dispatch(handler, probe, '/health', {
+      ...validTestEnvironment,
+      IBEX_AI_PLATFORM_ENABLED: 'true'
+    });
+    expect(probe.statusCode).toBe(200);
+    expect(JSON.parse(probe.bodies[0] ?? '')).toEqual({
+      status: 'ok',
+      service: 'test-service',
+      ai_platform_enabled: true
+    });
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('preserves disabled foundation startup and health without a Gateway handler', async () => {
+    const probe = new ResponseProbe();
+    await dispatch(undefined, probe, '/health', {
+      ...validTestEnvironment,
+      IBEX_AI_PLATFORM_ENABLED: 'false'
+    });
+    expect(probe.statusCode).toBe(200);
+    expect(JSON.parse(probe.bodies[0] ?? '')).toEqual({
+      status: 'disabled',
+      service: 'test-service',
+      ai_platform_enabled: false
+    });
+  });
 
   it.each(['sync', 'async'])('contains unexpected %s dispatcher failure', async (mode) => {
     const handler = vi.fn(() => {
