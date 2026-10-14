@@ -76,7 +76,7 @@ describe('engineering and release composition', () => {
     });
   });
 
-  it.each(['critical', 'quality', 'missing observation', 'missing audit'] as const)(
+  it.each(['critical', 'quality', 'missing observation', 'missing audit', 'wrong agent'] as const)(
     '%s runtime regression fails engineering and release',
     (failure) => {
       const changed = structuredClone(observations);
@@ -92,6 +92,7 @@ describe('engineering and release composition', () => {
                   metric_scores: { ...item.metric_scores, agent_routing_accuracy: 0 }
                 };
               if (i !== 0) return item;
+              if (failure === 'wrong agent') return { ...item, agent_id: 'unrelated-agent' };
               if (failure === 'missing audit')
                 return { ...item, audit_correlation: { ...item.audit_correlation, events: [] } };
               return {

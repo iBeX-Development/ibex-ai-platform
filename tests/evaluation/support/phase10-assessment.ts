@@ -4,7 +4,11 @@ import { resolve } from 'node:path';
 import prettier from 'prettier';
 import { phase10GoldenDataset } from '../datasets/pilot-agents/v1.0.0.js';
 import { readFindingsRegistry, type RegistryAssessment } from './findings-registry.js';
-import { evaluatePhase10Gate, type EvaluationObservation } from './release-gate.js';
+import {
+  evaluatePhase10Gate,
+  phase10ExpectedRun,
+  type EvaluationObservation
+} from './release-gate.js';
 import { executePhase10Evaluation } from './runtime-evaluator.js';
 
 export type EvidenceParity = 'MATCH' | 'MISMATCH' | 'UNAVAILABLE';
@@ -21,6 +25,7 @@ export function assessPhase10(
   // converted to technical success by its empty projection; unknown IDs stay visible.
   const runtime = evaluatePhase10Gate({
     cases: phase10GoldenDataset.cases,
+    expected_run: phase10ExpectedRun,
     observations: input.observations,
     findings: registry.findings
   });

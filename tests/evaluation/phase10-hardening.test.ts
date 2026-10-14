@@ -17,6 +17,7 @@ import { phase10GoldenDataset } from './datasets/pilot-agents/v1.0.0.js';
 import {
   criticalGateNames,
   evaluatePhase10Gate,
+  evaluationEvidenceHash,
   measurementEvidenceSchema,
   phase10QualityTargets,
   summarizeDeterministicMeasurement,
@@ -218,6 +219,9 @@ describe('Phase 10 hardening gate', () => {
         tool_version: caseItem.expected_tool?.tool_version,
         input_schema_id: caseItem.expected_tool?.input_schema_id
       });
+      expect(record?.tool_execution?.expected_input_hash).toBe(
+        evaluationEvidenceHash(caseItem.expected_tool?.input)
+      );
       expect(record?.tool_execution?.observed_input_hash).toBe(
         record?.tool_execution?.expected_input_hash
       );

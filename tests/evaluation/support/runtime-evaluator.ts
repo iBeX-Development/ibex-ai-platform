@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { pilotAgentProfiles } from '../../../agents/index.js';
 import {
@@ -35,13 +34,15 @@ import {
 } from '../datasets/pilot-agents/v1.0.0.js';
 import {
   evaluationObservationSchema,
+  evaluationEvidenceHash as evidenceHash,
+  phase10ExpectedRun,
   qualityMetricSchema,
   type CriticalGateName,
   type EvaluationObservation,
   type QualityMetric
 } from './release-gate.js';
 
-export const phase10EvaluationRunId = 'phase10-runtime-evaluation-v1.0.0';
+export const phase10EvaluationRunId = phase10ExpectedRun.evaluation_run_id;
 
 function profileFor(caseItem: GoldenEvaluationCase): PilotAgentProfile {
   const profile = pilotAgentProfiles.find((candidate) => candidate.agent_id === caseItem.agent_id);
@@ -68,20 +69,6 @@ const metricByCategory: Readonly<Partial<Record<GoldenEvaluationCase['category']
 
 function safeIdentifier(caseId: string): string {
   return caseId.toLowerCase().replaceAll(/[^a-z0-9-]/g, '-');
-}
-
-function canonicalJson(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map((item) => canonicalJson(item)).join(',')}]`;
-  if (value && typeof value === 'object')
-    return `{${Object.entries(value)
-      .sort(([left], [right]) => left.localeCompare(right))
-      .map(([key, item]) => `${JSON.stringify(key)}:${canonicalJson(item)}`)
-      .join(',')}}`;
-  return JSON.stringify(value);
-}
-
-function evidenceHash(value: unknown): string {
-  return `sha256:${createHash('sha256').update(canonicalJson(value)).digest('hex')}`;
 }
 
 function ragEvidenceFor(
