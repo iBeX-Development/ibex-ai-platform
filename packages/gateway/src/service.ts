@@ -203,8 +203,8 @@ export class AiGatewayService {
         stage = 'response_schema';
         const response = gatewayResponseEnvelopeSchema.parse({
           contract_version: '1.0',
-          request_id: trustedContext.request_id,
           ...platformResult,
+          request_id: trustedContext.request_id,
           sources: platformResult.sources ?? [],
           tools_used: platformResult.tools_used ?? [],
           warnings: platformResult.warnings ?? [],
