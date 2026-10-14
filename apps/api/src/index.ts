@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { loadConfig, type AppConfig } from '../../../packages/configuration/src/index.js';
+import { ConfigurationError } from '../../../packages/errors/src/index.js';
 import { createLogger } from '../../../packages/observability/src/index.js';
 import type { createGatewayHttpHandler } from './gateway.js';
 import { closeResponse, sendHttpError, sendJson } from './http-response.js';
@@ -19,6 +20,9 @@ export function startApi(
   gatewayHandler?: GatewayHttpHandler
 ) {
   const config = loadConfig(env);
+  if (config.features.aiPlatform && typeof gatewayHandler !== 'function') {
+    throw new ConfigurationError('Enabled AI platform requires a Gateway handler');
+  }
   const logger = createLogger(config);
   const handleRequest = async (
     request: Parameters<GatewayHttpHandler>[0],
