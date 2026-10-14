@@ -279,12 +279,23 @@ describe('mandatory findings registry integrity', () => {
       }
     ]
   ];
-  it.each(invalidCases)('rejects %s even with a synthetic authorizer', (_label, mutate) => {
+  it.each(invalidCases)('rejects %s even with a synthetic authorizer', (label, mutate) => {
     const registry = fixture();
     mutate(registry);
     const result = assess(registry);
     expect(result.status).toBe('FAIL');
     expect(result.findings.every((finding) => finding.status === 'unresolved')).toBe(true);
+    const knowledgeOnly = [
+      'incomplete inventory',
+      'unknown coverage',
+      'unreviewed registry',
+      'unknown severity'
+    ];
+    expect(result.technical_status).toBe(knowledgeOnly.includes(label) ? 'PASS' : 'FAIL');
+    if (!knowledgeOnly.includes(label))
+      expect(
+        result.issues.some((issue) => issue.kind === 'structural' || issue.kind === 'reference')
+      ).toBe(true);
   });
 
   it.each([
@@ -395,6 +406,24 @@ describe('mandatory findings registry integrity', () => {
     mutate(candidate);
     expect(assess(candidate, syntheticAuthority(current)).status).toBe('FAIL');
   });
+
+  it.each(['expired', 'revoked', 'unverifiable'])(
+    'keeps %s authority decisions unauthenticated',
+    (state) => {
+      const result = assess(fixture(), { verifyCurrent: () => ({ state, approved: true }) });
+      expect(result.status).toBe('FAIL');
+      expect(result.technical_status).toBe('PASS');
+      expect(result.issues).toContainEqual({
+        code: 'INVENTORY_NOT_AUTHENTICATED',
+        kind: 'authority'
+      });
+      expect(result.findings).toContainEqual({
+        finding_id: 'SYNTHETIC-1',
+        severity: 'high',
+        status: 'unresolved'
+      });
+    }
+  );
 
   it('rejects a nonboolean authorization result', () => {
     expect(assess(fixture(), { verifyCurrent: () => 'approved' }).status).toBe('FAIL');

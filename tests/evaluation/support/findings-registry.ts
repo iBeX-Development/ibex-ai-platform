@@ -95,7 +95,36 @@ export interface RegistryAuthority {
   ): unknown;
 }
 
+const diagnosticKinds = {
+  REGISTRY_MALFORMED: 'structural',
+  REGISTRY_UNREADABLE: 'structural',
+  DUPLICATE_ID: 'structural',
+  CONTRADICTORY_STATE: 'structural',
+  BROKEN_SOURCE_REFERENCE: 'reference',
+  BROKEN_EVIDENCE_REFERENCE: 'reference',
+  SCOPE_MISMATCH: 'binding',
+  SOURCE_COVERAGE_INCOMPLETE: 'coverage',
+  REGISTRY_UNREVIEWED: 'review',
+  FINDING_UNREVIEWED: 'review',
+  UNKNOWN_SEVERITY: 'classification',
+  INDEPENDENT_AUTHORITY_UNCONFIGURED: 'authority',
+  INVENTORY_NOT_AUTHENTICATED: 'authority',
+  CLASSIFICATION_NOT_AUTHENTICATED: 'authority',
+  CLOSURE_NOT_AUTHENTICATED: 'authority'
+} as const;
+export type RegistryDiagnosticCode = keyof typeof diagnosticKinds;
+export type RegistryIssue = {
+  [Code in RegistryDiagnosticCode]: Readonly<{
+    code: Code;
+    kind: (typeof diagnosticKinds)[Code];
+    finding_id?: string;
+  }>;
+}[RegistryDiagnosticCode];
+
 export interface RegistryAssessment {
+  readonly technical_status: 'PASS' | 'FAIL';
+  readonly issues: readonly RegistryIssue[];
+  readonly unknown_finding_ids: readonly string[];
   readonly status: 'PASS' | 'FAIL';
   readonly diagnostics: readonly string[];
   readonly content_sha256: string | null;
@@ -116,6 +145,29 @@ export function composePhase10Assessment(
           runtimeGate.blocking_findings.includes(finding.finding_id)
       )
       .map((finding) => finding.finding_id)
+  };
+}
+
+function registryAssessment(
+  issues: readonly RegistryIssue[],
+  content_sha256: string | null,
+  findings: readonly Finding[],
+  unknown_finding_ids: readonly string[]
+): RegistryAssessment {
+  return {
+    status: issues.length ? 'FAIL' : 'PASS',
+    technical_status: issues.some(
+      (issue) => issue.kind === 'structural' || issue.kind === 'reference'
+    )
+      ? 'FAIL'
+      : 'PASS',
+    issues,
+    diagnostics: issues.map((issue) =>
+      issue.finding_id ? `${issue.code}:${issue.finding_id}` : issue.code
+    ),
+    content_sha256,
+    findings,
+    unknown_finding_ids
   };
 }
 
@@ -184,16 +236,16 @@ export function assessFindingsRegistry(
   try {
     registry = findingsRegistrySchema.parse(parseUniqueJson(text));
   } catch {
-    return {
-      status: 'FAIL',
-      diagnostics: ['REGISTRY_MALFORMED'],
-      content_sha256: digest,
-      findings: []
-    };
+    return registryAssessment([{ code: 'REGISTRY_MALFORMED', kind: 'structural' }], digest, [], []);
   }
-  const diagnostics: string[] = [];
-  const problem = (message: string) => {
-    diagnostics.push(message);
+  const issues: RegistryIssue[] = [];
+  const problem = (code: RegistryDiagnosticCode, finding_id?: string) => {
+    // Code and kind are coupled by this closed mapping, never candidate input.
+    issues.push({
+      code,
+      kind: diagnosticKinds[code],
+      ...(finding_id ? { finding_id } : {})
+    } as RegistryIssue);
   };
   const unique = (values: readonly string[]) => new Set(values).size === values.length;
   if (
@@ -246,8 +298,8 @@ export function assessFindingsRegistry(
   if (!authorize('inventory')) problem('INVENTORY_NOT_AUTHENTICATED');
   const findings: Finding[] = [];
   for (const finding of registry.findings) {
-    const tag = (code: string) => {
-      problem(`${code}:${finding.finding_id}`);
+    const tag = (code: RegistryDiagnosticCode) => {
+      problem(code, finding.finding_id);
     };
     if (finding.severity === 'unknown') tag('UNKNOWN_SEVERITY');
     if (finding.status === 'unreviewed') tag('FINDING_UNREVIEWED');
@@ -289,15 +341,17 @@ export function assessFindingsRegistry(
       });
   }
   // No closure projection survives a structurally invalid or unauthenticated registry.
-  const assessedFindings = diagnostics.length
+  const assessedFindings = issues.length
     ? findings.map((finding) => ({ ...finding, status: 'unresolved' as const }))
     : findings;
-  return {
-    status: diagnostics.length ? 'FAIL' : 'PASS',
-    diagnostics,
-    content_sha256: digest,
-    findings: assessedFindings
-  };
+  return registryAssessment(
+    issues,
+    digest,
+    assessedFindings,
+    registry.findings
+      .filter((finding) => finding.severity === 'unknown')
+      .map((finding) => finding.finding_id)
+  );
 }
 
 export function readFindingsRegistry(path: string, scope: RegistryScope): RegistryAssessment {
@@ -305,12 +359,7 @@ export function readFindingsRegistry(path: string, scope: RegistryScope): Regist
   try {
     text = readFileSync(path, 'utf8');
   } catch {
-    return {
-      status: 'FAIL',
-      diagnostics: ['REGISTRY_UNREADABLE'],
-      content_sha256: null,
-      findings: []
-    };
+    return registryAssessment([{ code: 'REGISTRY_UNREADABLE', kind: 'structural' }], null, [], []);
   }
   // Production deliberately has no authority argument; fixtures cannot be selected here.
   return assessFindingsRegistry(text, scope);

@@ -225,8 +225,7 @@ Partial remediation is reported merged; full closure is explicitly not claimed. 
 ## Intake and failure behavior
 
 `tests/evaluation/support/findings-registry.ts` defines the strict version 1.0.0 schema.
-The fixed `registry.v1.json` path is mandatory for `evaluate:phase10`, including when run
-through `validate`. Missing/unreadable input, malformed or duplicate JSON keys (including
+The fixed `registry.v1.json` path is mandatory for both engineering and release commands. Missing/unreadable input, malformed or duplicate JSON keys (including
 escaped aliases), unknown fields/enums, duplicate IDs, broken internal references,
 contradictory states, unknown severity, incomplete inventory or unreviewed findings fail
 integrity. Every source and evidence reference must be a nonempty HTTPS URL; internal IDs
@@ -249,7 +248,7 @@ from actual classified findings: no synthetic finding or fabricated severity is 
 Only known-severity records enter the legacy projection, and every projected record remains
 unresolved when integrity fails. Unknown records remain in the registry and diagnostics.
 The CLI's `blocking_findings` contains only actual unresolved High/Critical policy findings.
-Overall evaluation fails if registry integrity fails OR the existing runtime gate fails,
+Release evaluation fails if registry integrity fails OR the existing runtime gate fails,
 even when the projection and `blocking_findings` are empty. The CLI emits separate
 `findings_integrity` diagnostics and `governance_status: BLOCKED` for integrity failure,
 and exits nonzero even when runtime safety and quality evidence passes.
@@ -288,11 +287,55 @@ It never edits or approves findings, changes their digest, grants authority or s
 failure. Normal runs continue checking the versioned runtime evidence byte-for-byte.
 Synthetic passing contract tests are not production approval evidence.
 
-The real candidate intentionally produces nonzero evaluation and aggregate validation.
-Independent format, lint, typecheck, full tests, build and scans can still be executed to
-assess the implementation. CI workflow order is unchanged: its evaluation step will fail,
-so subsequent tests, build, dependency audit, scans and dependent container job will be
-skipped there. This expected governance block must not be removed to obtain green CI.
+### Engineering checks and release admission
+
+The commands share one runtime evaluator and exact versioned evidence comparison:
+
+- `corepack pnpm validate:phase10:engineering` selects the engineering exit status only.
+- `corepack pnpm validate` retains formatting, lint, typecheck, all tests, build and all
+  five repository scans, then runs the engineering assessment.
+- `corepack pnpm evaluate:phase10:release` (also `evaluate:phase10`) is the separate,
+  mandatory fail-closed release command. It exits 1 while admission is unestablished.
+
+Output separates `engineering`, `findings_knowledge` and `release_admission`. The registry
+exposes typed issues: structural, reference, coverage, review, classification, authority
+and binding. Missing/unreadable or malformed input, duplicate identities, contradictory
+states and broken internal references fail engineering. Runtime Critical Safety and
+quality regressions, missing observations, invalid audit evidence, versioned evidence
+absence/mismatch and known unresolved High/Critical findings also fail engineering.
+There is no empty-findings fallback. Unknown findings retain explicit IDs and diagnostics;
+the known-severity projection being empty does not establish an empty backlog.
+
+A structurally valid incomplete/unreviewed inventory may coexist with engineering PASS
+only when all engineering checks pass. Coverage gaps, unknown severity, unreviewed
+findings, unestablished authority and scope mismatch remain visible and release-blocking.
+Historical labels are not operative classifications. Engineering PASS grants no finding
+closure, review, authority, artifact binding, merge permission or operational readiness.
+
+No independently authenticated release-artifact admission adapter exists in this package.
+`release_admission` therefore remains `BLOCKED` with
+`RELEASE_ARTIFACT_BINDING_UNESTABLISHED`, even for a synthetic registry authority PASS.
+The detached artifact comparator remains disconnected; equal claimed identities cannot
+supply approval. The current Git HEAD label is reported as observed, without parent-SHA
+substitution, commit equivalence or a claim that it identifies dirty working-tree bytes.
+
+Baseline 17 section 28 separates merge, staging and production gates. Baseline 16 section
+56 additionally requires agent evaluations, tool schema and prompt regressions; the full
+test suite remains required. Baseline 09 Critical Safety cannot be CONDITIONAL. All
+existing safety gates and quality thresholds are preserved. CI's `validate` job retains
+all original engineering steps, including dependency audit and the five scans. A separate
+`release-admission` job runs the release command without depending on `validate`, and
+`validate` does not depend on release. Release denial therefore cannot skip engineering
+regressions, build or scans. Neither job uses `continue-on-error` or suppresses exit codes.
+The existing offline, default-off container foundation job still depends on `validate`;
+its image, network, feature, permission and live-integration restrictions are unchanged.
+Overall CI is not claimed green: the release job remains visibly failing. Required-check
+settings are not changed, and this split does not authorize merge or deployment.
+
+`--write-evidence` retains evidence regeneration for the release command only, and a
+mismatch observed before writing still fails that invocation. The engineering CLI cannot
+write evidence or change release status via arguments or environment variables. Fixture
+verifiers remain test-only. Positive unit tests never activate authority in either CLI.
 
 ## Bounded prospective working inventory
 
@@ -333,7 +376,7 @@ Pinned fixtures and hashes are regression oracles, not independent trust anchors
 
 A structural `PASS` grants no authority, effective classification, closure, execution,
 deployment readiness or independent human review. This sidecar is not wired into Phase10;
-the existing CLI, checker, policy and fail-closed governance gate remain unchanged.
+the sidecar grants no authority to either CLI. The fail-closed release gate remains mandatory.
 Neither `main`, a copied owner message, candidate flags nor a structural result supplies
 an independent authority. Historical `Sent` and `Accepted` states are attributed source
 states, not newly verified delivery or personal approval.
