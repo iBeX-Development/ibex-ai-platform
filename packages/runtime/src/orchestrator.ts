@@ -53,6 +53,26 @@ export interface SharedAgentRuntimeDependencies {
 
 const maximumTraceIdLength = 256;
 
+// Server-owned reporting budget; independent of caller cancellation and attempt policy.
+const failureReportingBudgetMs = 1_000;
+
+async function awaitFailureReport(emit: () => Promise<void>): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error('Failure audit reporting timed out'));
+        }, failureReportingBudgetMs);
+      }),
+      // Observe late rejection/fulfillment even when the reporting budget expires.
+      Promise.resolve().then(emit)
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function readTraceId(request: unknown): unknown {
   if (typeof request !== 'object' || request === null || !('trace_id' in request)) return undefined;
   return request.trace_id;
@@ -417,15 +437,17 @@ export class SharedAgentRuntime {
         span.recordException(new Error('Orchestrator routing failed'));
         span.setStatus({ code: SpanStatusCode.ERROR });
         try {
-          await this.emitOutcome(
-            { trace_id: traceId, ...(trustedContext ? { context: trustedContext } : {}) },
-            outcome,
-            stage,
-            now,
-            classification,
-            selectedAgent,
-            promptHierarchy,
-            correlated.code
+          await awaitFailureReport(() =>
+            this.emitOutcome(
+              { trace_id: traceId, ...(trustedContext ? { context: trustedContext } : {}) },
+              outcome,
+              stage,
+              now,
+              classification,
+              selectedAgent,
+              promptHierarchy,
+              correlated.code
+            )
           );
         } catch {
           span.addEvent('orchestrator.audit.emission_failed');
