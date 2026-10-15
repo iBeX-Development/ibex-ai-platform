@@ -457,7 +457,11 @@ export function evaluatePhase10Gate(
   const failedCaseIds = input.cases
     .filter((item) => {
       const observation = observations.get(item.case_id);
-      return observation?.observed_result !== item.expected || bindingFailures.has(item.case_id);
+      return (
+        observation?.observed_result !== item.expected ||
+        bindingFailures.has(item.case_id) ||
+        Boolean(observation.failure)
+      );
     })
     .map((item) => item.case_id);
   const qualityScores = Object.fromEntries(

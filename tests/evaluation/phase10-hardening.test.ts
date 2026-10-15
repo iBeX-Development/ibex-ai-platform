@@ -293,7 +293,7 @@ describe('Phase 10 hardening gate', () => {
         expect(gate.critical_gates.audit_completeness).toBe(false);
         // Existing gate semantics reject failed records even though their audit events remain intact.
         expect(observed.audit_correlation).toEqual(baseline.audit_correlation);
-        expect(gate.failed_case_ids).toEqual([]);
+        expect(gate.failed_case_ids).toEqual([source.case_id]);
       } finally {
         spy.mockRestore();
       }
@@ -304,6 +304,116 @@ describe('Phase 10 hardening gate', () => {
     expect(observations.some((item) => item.observed_result === 'deny')).toBe(true);
     expect(observations.some((item) => item.observed_result === 'abstain')).toBe(true);
     for (const record of observations) expect(record.failure).toBeUndefined();
+  });
+
+  it.each(['critical', 'high', 'medium', 'low'] as const)(
+    'lists explicit %s failure with perfect scores without changing other gate fields',
+    (severity) => {
+      const first = observations[0];
+      if (!first) throw new Error('Expected an executed observation');
+      const failed = {
+        ...first,
+        failure: { code: 'TEST_FAILURE', detail: 'Synthetic failure', severity }
+      };
+      const evaluate = (record: EvaluationObservation) =>
+        evaluatePhase10Gate({
+          cases: phase10GoldenDataset.cases,
+          observations: [record, ...observations.slice(1)],
+          findings: []
+        });
+      // An outcome mismatch already lists this failed record under the existing predicate.
+      const alreadyListed = evaluate({
+        ...failed,
+        observed_result: first.observed_result === 'deny' ? 'allow' : 'deny'
+      });
+      const result = evaluate(failed);
+      expect(result).toEqual(alreadyListed);
+      expect(result.failed_case_ids).toEqual([first.case_id]);
+      expect(result.status).toBe('FAIL');
+      expect(Object.values(result.quality_scores)).toEqual(expect.arrayContaining([1]));
+      expect(result.quality_scores).toEqual(evaluate(first).quality_scores);
+    }
+  );
+
+  it('keeps case order and lists overlapping failure reasons only once for unique cases', () => {
+    const first = observations[0];
+    const second = observations[1];
+    const firstCase = phase10GoldenDataset.cases[0];
+    const secondCase = phase10GoldenDataset.cases[1];
+    if (!first || !second || !firstCase || !secondCase) throw new Error('Expected two cases');
+    const failure = { code: 'TEST_FAILURE', detail: 'Synthetic failure', severity: 'low' as const };
+    const result = evaluatePhase10Gate({
+      cases: [secondCase, firstCase, ...phase10GoldenDataset.cases.slice(2)],
+      observations: [
+        { ...first, failure, observed_result: 'deny', agent_id: 'binding-mismatch' },
+        { ...second, failure },
+        ...observations.slice(2)
+      ],
+      findings: []
+    });
+    expect(result.failed_case_ids).toEqual([second.case_id, first.case_id]);
+    expect(result.blocking_findings).toContain('EVALUATION_EVIDENCE_INTEGRITY');
+  });
+
+  it('does not diagnose fractional scores or correct negative outcomes as explicit failures', () => {
+    const records = observations.map((record) => ({
+      ...record,
+      metric_scores: Object.fromEntries(
+        Object.keys(record.metric_scores).map((metric) => [metric, 0.99])
+      )
+    }));
+    expect(records.some((record) => record.observed_result === 'deny')).toBe(true);
+    expect(records.some((record) => record.observed_result === 'abstain')).toBe(true);
+    const result = evaluatePhase10Gate({
+      cases: phase10GoldenDataset.cases,
+      observations: records,
+      findings: []
+    });
+    expect(result.status).toBe('PASS');
+    expect(result.failed_case_ids).toEqual([]);
+    for (const score of Object.values(result.quality_scores)) expect(score).toBeCloseTo(0.99);
+  });
+
+  it('preserves missing, malformed, unknown, binding and duplicate evidence handling', () => {
+    const first = observations[0];
+    const firstCase = phase10GoldenDataset.cases[0];
+    if (!first || !firstCase) throw new Error('Expected an executed case');
+    const failure = { code: 'TEST_FAILURE', detail: 'Synthetic failure', severity: 'low' as const };
+    const failed = { ...first, failure };
+    const malformed = { ...failed, failure: { ...failure, detail: '' } };
+    const unknown = {
+      ...first,
+      case_id: 'unknown-case',
+      expected_result_reference: { ...first.expected_result_reference, case_id: 'unknown-case' }
+    };
+    const scenarios: readonly [readonly EvaluationObservation[], readonly string[]][] = [
+      [observations.slice(1), [first.case_id]],
+      [[malformed, ...observations.slice(1)], [first.case_id]],
+      [[...observations, unknown], []],
+      [[{ ...first, agent_id: 'binding-mismatch' }, ...observations.slice(1)], [first.case_id]],
+      [[failed, ...observations], []],
+      [[...observations, failed], [first.case_id]],
+      [[...observations, malformed], []]
+    ];
+    for (const [records, ids] of scenarios) {
+      const result = evaluatePhase10Gate({
+        cases: phase10GoldenDataset.cases,
+        observations: records,
+        findings: []
+      });
+      expect(result.status).toBe('FAIL');
+      expect(result.blocking_findings).toContain('EVALUATION_EVIDENCE_INTEGRITY');
+      expect(result.failed_case_ids).toEqual(ids);
+    }
+    // Invalid duplicate case input retains its existing repeated-ID behavior.
+    const duplicateCases = evaluatePhase10Gate({
+      cases: [...phase10GoldenDataset.cases, firstCase],
+      observations: [failed, ...observations.slice(1)],
+      findings: []
+    });
+    expect(duplicateCases.failed_case_ids).toEqual([first.case_id, first.case_id]);
+    expect(duplicateCases.status).toBe('FAIL');
+    expect(duplicateCases.blocking_findings).toContain('EVALUATION_EVIDENCE_INTEGRITY');
   });
 
   it('keeps expected Tool labels out of runtime selection and input execution', async () => {
