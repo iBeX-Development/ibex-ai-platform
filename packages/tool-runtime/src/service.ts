@@ -199,6 +199,55 @@ class AdmissionError extends PlatformError {}
 // Server-owned reporting budget; independent of caller cancellation and attempt policy.
 const failureReportingBudgetMs = 1_000;
 
+async function awaitAttemptErrorAudit(
+  emit: () => Promise<void>,
+  signal?: AbortSignal
+): Promise<void> {
+  assertActive(signal);
+  const started = performance.now();
+  const deadline = started + failureReportingBudgetMs;
+  let lastObserved = started;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const checkDeadline = () => {
+    assertActive(signal);
+    const current = performance.now();
+    if (
+      !Number.isFinite(started) ||
+      started < 0 ||
+      !Number.isFinite(deadline) ||
+      deadline <= started ||
+      !Number.isFinite(current) ||
+      current < lastObserved ||
+      current >= deadline
+    )
+      throw new Error('Attempt error audit deadline is unavailable or expired');
+    lastObserved = current;
+  };
+  try {
+    checkDeadline();
+    await awaitActive(
+      () =>
+        Promise.race([
+          new Promise<never>((_resolve, reject) => {
+            timer = setTimeout(() => {
+              reject(new Error('Attempt error audit timed out'));
+            }, deadline - lastObserved);
+          }),
+          // Observe both late outcomes; the sink itself cannot be cancelled here.
+          Promise.resolve().then(() => {
+            checkDeadline();
+            return emit();
+          })
+        ]),
+      signal
+    );
+    // A delayed timer or synchronously blocking sink must not authorize a late retry.
+    checkDeadline();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function awaitFailureReport(emit: () => Promise<void>): Promise<void> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
@@ -518,23 +567,29 @@ export class ToolRuntimeService {
             assertActive(options.signal);
             const normalized =
               error instanceof PlatformError ? error : normalizedAdapterError(error);
-            await awaitActive(
-              () =>
-                this.emitAudit({
-                  traceId,
-                  context: trustedRequest.context,
-                  request: trustedRequest,
-                  registration: selectedRegistration,
-                  outcome: 'error',
-                  stage,
-                  timestamp: now,
-                  permissionDecision: activePermissionDecision,
-                  attempt: currentAttempt,
-                  latencyMs: this.clock() - startedAt,
-                  errorCode: normalized.code
-                }),
-              options.signal
-            );
+            try {
+              await awaitAttemptErrorAudit(
+                () =>
+                  this.emitAudit({
+                    traceId,
+                    context: trustedRequest.context,
+                    request: trustedRequest,
+                    registration: selectedRegistration,
+                    outcome: 'error',
+                    stage,
+                    timestamp: now,
+                    permissionDecision: activePermissionDecision,
+                    attempt: currentAttempt,
+                    latencyMs: this.clock() - startedAt,
+                    errorCode: normalized.code
+                  }),
+                options.signal
+              );
+            } catch {
+              span.addEvent('tool_runtime.audit.emission_failed');
+              assertActive(options.signal);
+              throw normalized;
+            }
             assertActive(options.signal);
             if (!shouldRetry(normalized, selectedRegistration, currentAttempt)) throw normalized;
             await waitBackoff(metadata.retry_policy.backoff_ms, options.signal);

@@ -79,3 +79,30 @@ baseline 13 section 15 (required rate_limit metadata); technical design section 
 (trusted tenant identity and no caller override). Approved baselines, findings,
 stock mutation restrictions and live capability blocks are unchanged. This
 foundation does not close AQ04 or establish full production rate-limit compliance.
+
+## Per-attempt error audit wait
+
+After an adapter or admission error, the existing sanitized error audit event has
+a server-owned 1,000 ms acknowledgement ceiling. The runtime checks the monotonic
+deadline before invoking the sink and after observing settlement. Acknowledgement
+at or after the deadline, an invalid/backward clock, rejection or synchronous
+throw stops retry and preserves the original normalized Tool/admission error and
+correlation. Active caller cancellation takes precedence while waiting. Only a
+timely acknowledgement with an active caller permits the existing safe-read retry
+policy to proceed. Audit failures record the sanitized span event
+`tool_runtime.audit.emission_failed`; no sink error details are exposed.
+
+The wait timer and cancellation listener are cleaned up. Late fulfillment or
+rejection is observed without any retry, admission, adapter or success continuation.
+Timeout stops waiting; it cannot cancel the sink, undo its writes, or prevent late
+pipeline persistence/export. A synchronously blocking sink cannot be preempted;
+the monotonic post-settlement check prevents its late result authorizing retry.
+
+Terminal failure reporting retains its separate 1,000 ms ceiling. If both waits
+hang, the reporting tail can therefore reach two seconds, subject to event-loop
+scheduling and synchronous blocking. This is not a whole-request deadline:
+primary started/proposed/succeeded audit waits are unchanged. Persistence,
+export, durability and retention contracts are unchanged; this repair supplies
+no durability proof or F07 closure. Traceability: baseline 05 sections 18, 19 and
+22 (bounded safe retries, timeout uncertainty and sanitized audit), and baseline
+08 section 41 (explicit audit failure handling).
