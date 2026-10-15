@@ -457,6 +457,8 @@ export class RagRuntimeService {
                 document_id: metadata.document_id,
                 document_version: metadata.document_version,
                 title: metadata.title,
+                source_owner: metadata.source_owner,
+                document_created_at: metadata.created_at,
                 document_updated_at: metadata.updated_at,
                 tenant_scope: metadata.tenant_scope,
                 ...(metadata.tenant_id ? { tenant_id: metadata.tenant_id } : {}),

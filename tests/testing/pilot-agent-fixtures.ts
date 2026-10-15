@@ -102,6 +102,8 @@ export function groundedChunk(
     document_id: 'document-1',
     document_version: '1.0',
     title: 'Approved test document',
+    source_owner: 'synthetic-test-document-owner',
+    document_created_at: '2026-09-01T00:00:00.000Z',
     document_updated_at: '2026-09-24T00:00:00.000Z',
     tenant_scope: 'tenant_private' as const,
     tenant_id: 'tenant-a',
