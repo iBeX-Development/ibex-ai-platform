@@ -23,9 +23,22 @@ import {
 describe('Gate P5 Tool Runtime', () => {
   it('executes an authorized tenant-bound read with validated response and audit', async () => {
     const audits: AuditRecord[] = [];
-    const runtime = createToolRuntime(audits);
+    const adapter = successfulToolAdapter();
+    const invoke = vi.fn<ToolAdapter['invoke']>((request) => adapter.invoke(request));
+    const runtime = createToolRuntime(audits, {
+      adapters: [{ ...successfulToolAdapter(), invoke }]
+    });
 
     const response = await runtime.execute(toolRequest(), {}, toolValidationTime);
+
+    expect(invoke).toHaveBeenCalledOnce();
+    const invocation = invoke.mock.calls[0]?.[0];
+    expect(invocation?.tool).toMatchObject({
+      registration_version: '2.0',
+      error_model: 'ibex.tool-error.v1',
+      version: '1.0'
+    });
+    expect(Object.isFrozen(invocation?.tool)).toBe(true);
 
     expect(response).toMatchObject({
       status: 'success',

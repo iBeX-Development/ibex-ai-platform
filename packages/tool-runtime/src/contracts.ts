@@ -13,6 +13,8 @@ export const toolApprovalPolicySchema = z.enum([
 
 export const toolMetadataSchema = z
   .object({
+    registration_version: z.literal('2.0'),
+    error_model: z.literal('ibex.tool-error.v1'),
     tool_id: nonEmpty,
     tool_name: nonEmpty,
     version: nonEmpty,

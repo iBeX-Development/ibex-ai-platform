@@ -27,6 +27,8 @@ export const toolContext = createTrustedRequestContext({
 });
 
 export const readToolMetadata: ToolMetadata = {
+  registration_version: '2.0',
+  error_model: 'ibex.tool-error.v1',
   tool_id: 'asset.asset.get.v1',
   tool_name: 'Get asset',
   version: '1.0',
@@ -63,6 +65,8 @@ export const readToolRegistration: ToolRegistration = {
 };
 
 export const proposalToolMetadata: ToolMetadata = {
+  registration_version: '2.0',
+  error_model: 'ibex.tool-error.v1',
   tool_id: 'maintenance.wo.create_draft.v1',
   tool_name: 'Draft work order request',
   version: '1.0',

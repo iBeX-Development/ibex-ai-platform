@@ -131,6 +131,8 @@ async function executeDeterministicTool(
   let observedInput: unknown;
   const registration: ToolRegistration = {
     metadata: {
+      registration_version: '2.0',
+      error_model: 'ibex.tool-error.v1',
       tool_id: toolRequest.capability_class,
       tool_name: `Phase 10 deterministic ${toolRequest.capability_class}`,
       version: contract.version,
