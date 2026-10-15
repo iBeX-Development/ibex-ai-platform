@@ -4,9 +4,11 @@ import {
   providerDefinitionSchema,
   type ConfidentialityClass,
   type ModelDefinition,
+  type ModelPayloadType,
   type ModelGatewayRequest,
   type ProviderDefinition
 } from './contracts.js';
+import { LocalModelSchemaCatalog } from './schema-catalog.js';
 
 export interface ModelCandidate {
   readonly provider: ProviderDefinition;
@@ -33,9 +35,18 @@ function freezeProvider(provider: ProviderDefinition): ProviderDefinition {
   });
 }
 
+function freezePayloadType(type: ModelPayloadType): ModelPayloadType {
+  return Object.freeze({
+    modalities: Object.freeze([...type.modalities]),
+    schema: Object.freeze({ ...type.schema })
+  });
+}
+
 function freezeModel(model: ModelDefinition): ModelDefinition {
   return Object.freeze({
     ...model,
+    input_type: freezePayloadType(model.input_type),
+    output_type: freezePayloadType(model.output_type),
     capabilities: Object.freeze([...model.capabilities]),
     required_entitlements: Object.freeze([...model.required_entitlements]),
     approved_environments: Object.freeze([...model.approved_environments])
@@ -74,7 +85,18 @@ export class ModelRegistry {
   private readonly providers: ReadonlyMap<string, ProviderDefinition>;
   private readonly models: readonly ModelDefinition[];
 
-  constructor(providerRecords: readonly unknown[], modelRecords: readonly unknown[]) {
+  constructor(
+    providerRecords: readonly unknown[],
+    modelRecords: readonly unknown[],
+    schemaCatalog: LocalModelSchemaCatalog
+  ) {
+    if (!(schemaCatalog instanceof LocalModelSchemaCatalog)) {
+      throw new PlatformError(
+        'CONFIGURATION_ERROR',
+        'A local model schema catalog is required',
+        500
+      );
+    }
     const providers = providerRecords.map((record) =>
       freezeProvider(providerDefinitionSchema.parse(record))
     );
@@ -88,6 +110,10 @@ export class ModelRegistry {
     this.providers = new Map(providers.map((provider) => [provider.provider_id, provider]));
 
     const models = modelRecords.map((record) => freezeModel(modelDefinitionSchema.parse(record)));
+    for (const model of models) {
+      schemaCatalog.resolve(model.input_type.schema);
+      schemaCatalog.resolve(model.output_type.schema);
+    }
     const modelKeys = models.map(
       (model) => `${model.provider_id}\u0000${model.model_id}\u0000${model.model_version}`
     );

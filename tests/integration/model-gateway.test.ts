@@ -10,6 +10,7 @@ import {
   type ProviderInvocationRequest
 } from '../../packages/model-gateway/src/index.js';
 import {
+  modelSchemaCatalog,
   createModelGateway,
   fallbackModel,
   fallbackProvider,
@@ -22,6 +23,29 @@ import {
 } from '../testing/model-gateway-fixtures.js';
 
 describe('Gate P4 Model Gateway', () => {
+  it('forwards output_schema_id unchanged independently of registration payload schema references', async () => {
+    const adapter = successfulAdapter(primaryProvider.adapter_id);
+    const invoke = vi.fn((request: ProviderInvocationRequest) => adapter.invoke(request));
+    const gateway = createModelGateway([], [], {
+      adapters: [{ adapter_id: primaryProvider.adapter_id, invoke }]
+    });
+    await gateway.invoke(
+      modelGatewayRequest({
+        requires_structured_output: true,
+        output_schema_id: 'workflow.unregistered.output.v17'
+      }),
+      {},
+      modelGatewayValidationTime
+    );
+    expect(invoke).toHaveBeenCalledOnce();
+    expect(invoke.mock.calls[0]?.[0]).toMatchObject({
+      output_schema_id: 'workflow.unregistered.output.v17',
+      requires_structured_output: true,
+      requires_tool_use: false,
+      model: { output_type: primaryModel.output_type }
+    });
+  });
+
   it('returns a provider-neutral response with complete audit and usage metrics', async () => {
     const auditEvents: AuditRecord[] = [];
     const metrics: ModelUsageMetric[] = [];
@@ -94,7 +118,8 @@ describe('Gate P4 Model Gateway', () => {
           { ...primaryProvider, fallback_priority: 1 },
           { ...fallbackProvider, fallback_priority: 0 }
         ],
-        [primaryModel, fallbackModel]
+        [primaryModel, fallbackModel],
+        modelSchemaCatalog
       )
     });
     const secondResponse = await second.invoke(request, {}, modelGatewayValidationTime);
@@ -176,7 +201,8 @@ describe('Gate P4 Model Gateway', () => {
     const gateway = createModelGateway(auditEvents, [], {
       registry: new ModelRegistry(
         [primaryProvider, { ...fallbackProvider, maximum_confidentiality: 'INTERNAL' }],
-        [primaryModel, { ...fallbackModel, maximum_confidentiality: 'INTERNAL' }]
+        [primaryModel, { ...fallbackModel, maximum_confidentiality: 'INTERNAL' }],
+        modelSchemaCatalog
       ),
       adapters: [
         { adapter_id: 'adapter-primary', invoke: primaryInvoke },
@@ -263,7 +289,7 @@ describe('Gate P4 Model Gateway', () => {
   it('normalizes provider timeout without replaying an uncertain accounting liability', async () => {
     const invoke = vi.fn(() => Promise.reject(new ProviderAdapterError('timeout')));
     const gateway = createModelGateway([], [], {
-      registry: new ModelRegistry([primaryProvider], [primaryModel]),
+      registry: new ModelRegistry([primaryProvider], [primaryModel], modelSchemaCatalog),
       adapters: [{ adapter_id: 'adapter-primary', invoke }],
       policy: {
         version: 'model-policy-1.0',
@@ -286,7 +312,7 @@ describe('Gate P4 Model Gateway', () => {
   it('enforces the configured provider invocation timeout', async () => {
     const invoke = vi.fn(() => new Promise<ProviderResult>(() => undefined));
     const gateway = createModelGateway([], [], {
-      registry: new ModelRegistry([primaryProvider], [primaryModel]),
+      registry: new ModelRegistry([primaryProvider], [primaryModel], modelSchemaCatalog),
       adapters: [{ adapter_id: 'adapter-primary', invoke }],
       policy: {
         version: 'model-policy-1.0',
@@ -370,7 +396,8 @@ describe('Gate P4 Model Gateway', () => {
     const gateway = createModelGateway(auditEvents, [], {
       registry: new ModelRegistry(
         [liveProvider],
-        [{ ...primaryModel, provider_id: liveProvider.provider_id }]
+        [{ ...primaryModel, provider_id: liveProvider.provider_id }],
+        modelSchemaCatalog
       ),
       adapters: [adapter],
       secretProvider: { getSecret: () => Promise.resolve(injectedSecret) }
@@ -401,7 +428,8 @@ describe('Gate P4 Model Gateway', () => {
     const gateway = createModelGateway([], [], {
       registry: new ModelRegistry(
         [liveProvider],
-        [{ ...primaryModel, provider_id: liveProvider.provider_id }]
+        [{ ...primaryModel, provider_id: liveProvider.provider_id }],
+        modelSchemaCatalog
       ),
       adapters: [{ adapter_id: 'live-adapter', invoke }]
     });

@@ -1,7 +1,9 @@
+import { z } from 'zod';
 import type { AuditRecord } from '../../packages/audit/src/index.js';
 import {
   ModelGatewayService,
   ModelRegistry,
+  LocalModelSchemaCatalog,
   type ModelDefinition,
   type ModelGatewayDependencies,
   type ModelProviderAdapter,
@@ -51,10 +53,27 @@ export const fallbackProvider: ProviderDefinition = {
   fallback_priority: 1
 };
 
+const messagePayloadSchema = z.object({ message: z.string() }).strict();
+const stringPayloadSchema = z.string();
+export const messagePayloadReference = { schema_id: 'test.message', schema_version: '1.0.0' };
+export const stringPayloadReference = { schema_id: 'test.string', schema_version: '1.0.0' };
+export const modelSchemaCatalog = new LocalModelSchemaCatalog([
+  {
+    reference: messagePayloadReference,
+    validate: (payload: unknown) => messagePayloadSchema.safeParse(payload).success
+  },
+  {
+    reference: stringPayloadReference,
+    validate: (payload: unknown) => stringPayloadSchema.safeParse(payload).success
+  }
+]);
+
 export const primaryModel: ModelDefinition = {
   provider_id: 'provider-primary',
   model_id: 'general-primary',
   model_version: '2026-09',
+  input_type: { modalities: ['text'], schema: messagePayloadReference },
+  output_type: { modalities: ['text'], schema: messagePayloadReference },
   capabilities: ['MG-GENERAL'],
   context_limit: 8_192,
   structured_output: true,
@@ -78,6 +97,16 @@ export const fallbackModel: ModelDefinition = {
   model_version: '2026-08',
   cost_class: 'low',
   quality_rank: 7
+};
+
+// Accounting adapters return strings; preserve identities and prices while declaring that shape.
+export const stringOutputPrimaryModel: ModelDefinition = {
+  ...primaryModel,
+  output_type: { modalities: ['text'], schema: stringPayloadReference }
+};
+export const stringOutputFallbackModel: ModelDefinition = {
+  ...fallbackModel,
+  output_type: { modalities: ['text'], schema: stringPayloadReference }
 };
 
 export function successfulAdapter(adapterId: string): ModelProviderAdapter {
@@ -119,7 +148,11 @@ export function createModelGateway(
 ): ModelGatewayService {
   const dependencies: ModelGatewayDependencies = {
     featureControls: enabledTestFeatureControls,
-    registry: new ModelRegistry([primaryProvider, fallbackProvider], [primaryModel, fallbackModel]),
+    registry: new ModelRegistry(
+      [primaryProvider, fallbackProvider],
+      [primaryModel, fallbackModel],
+      modelSchemaCatalog
+    ),
     adapters: [
       successfulAdapter(primaryProvider.adapter_id),
       successfulAdapter(fallbackProvider.adapter_id)
