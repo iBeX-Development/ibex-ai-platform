@@ -94,17 +94,26 @@ function containsProtectedContextKey(value: unknown, seen = new Set<object>()): 
 }
 
 function normalizedAdapterError(error: unknown): PlatformError {
-  if (!(error instanceof ToolAdapterError)) {
-    return new PlatformError('DEPENDENCY_ERROR', 'Tool dependency request failed', 502);
+  const mapping: Readonly<Record<ToolAdapterError['kind'], readonly [ErrorCode, string, number]>> =
+    {
+      timeout: ['UPSTREAM_TIMEOUT', 'Tool dependency timed out', 504],
+      transient: ['SERVICE_UNAVAILABLE', 'Tool dependency is unavailable', 503],
+      unavailable: ['SERVICE_UNAVAILABLE', 'Tool dependency is unavailable', 503],
+      invalid_response: ['INVALID_RESPONSE', 'Tool dependency response is invalid', 502],
+      permanent: ['DEPENDENCY_ERROR', 'Tool dependency request failed', 502]
+    };
+  let failure = mapping.permanent;
+  try {
+    if (error instanceof ToolAdapterError) {
+      const kind: unknown = error.kind;
+      if (typeof kind === 'string' && Object.hasOwn(mapping, kind)) {
+        failure = mapping[kind as keyof typeof mapping];
+      }
+    }
+  } catch {
+    // Malformed adapter errors retain the generic dependency failure.
   }
-  const mapping: Readonly<Record<typeof error.kind, readonly [ErrorCode, string, number]>> = {
-    timeout: ['UPSTREAM_TIMEOUT', 'Tool dependency timed out', 504],
-    transient: ['SERVICE_UNAVAILABLE', 'Tool dependency is unavailable', 503],
-    unavailable: ['SERVICE_UNAVAILABLE', 'Tool dependency is unavailable', 503],
-    invalid_response: ['INVALID_RESPONSE', 'Tool dependency response is invalid', 502],
-    permanent: ['DEPENDENCY_ERROR', 'Tool dependency request failed', 502]
-  };
-  const [code, message, status] = mapping[error.kind];
+  const [code, message, status] = failure;
   return new PlatformError(code, message, status);
 }
 
@@ -606,7 +615,7 @@ export class ToolRuntimeService {
       return result;
     } catch (error) {
       assertActive(externalSignal);
-      throw error;
+      throw normalizedAdapterError(error);
     } finally {
       clearTimeout(timer);
       externalSignal?.removeEventListener('abort', cancel);
