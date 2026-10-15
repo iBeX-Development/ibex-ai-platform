@@ -429,7 +429,9 @@ export async function executeEvaluationCase(
       .map((candidate) => [candidate, metricPassed ? 1 : 0])
   );
   const passed =
-    outcome === caseItem.expected && (!expectedTool || (selectedToolMatches && parametersMatch));
+    metricPassed &&
+    outcome === caseItem.expected &&
+    (!expectedTool || (selectedToolMatches && parametersMatch));
   const validatedControls = new Set<CriticalGateName>();
   if (auditEvidence.length > 0) validatedControls.add('audit_completeness');
   const hasAudit = (input: {

@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { PilotAgentRuntime } from '../../packages/pilot-agents/src/index.js';
 import { pilotAgentProfiles } from '../../agents/index.js';
 import { featureControls, loadConfig } from '../../packages/configuration/src/index.js';
 import { PlatformError } from '../../packages/errors/src/index.js';
@@ -236,6 +237,73 @@ describe('Phase 10 hardening gate', () => {
         )
       ).toBe(true);
     }
+  });
+
+  it.each([
+    ['routing', 'agent_routing_accuracy'],
+    ['rag', 'rag_groundedness'],
+    ['citation', 'citation_correctness']
+  ] as const)(
+    'records failure evidence for a matching outcome with failed %s quality',
+    async (category, metric) => {
+      const index = phase10GoldenDataset.cases.findIndex((item) => item.category === category);
+      const source = phase10GoldenDataset.cases[index];
+      const baseline = observations[index];
+      if (!source || !baseline) throw new Error('Expected an executed quality case');
+      expect(baseline.failure).toBeUndefined();
+      expect(baseline.metric_scores).toEqual({ [metric]: 1 });
+      // The original method is called below with the intercepted runtime as its explicit receiver.
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      const execute = PilotAgentRuntime.prototype.execute;
+      const spy = vi
+        .spyOn(PilotAgentRuntime.prototype, 'execute')
+        .mockImplementation(async function (
+          this: PilotAgentRuntime,
+          ...args: Parameters<typeof execute>
+        ) {
+          // Execute the real boundary and audit path before corrupting only its returned observation.
+          const response = await execute.apply(this, args);
+          return category === 'routing'
+            ? { ...response, agent_id: 'private-observation-fault' }
+            : { ...response, citations: [] };
+        });
+      try {
+        const observed = await executeEvaluationCase(source, index);
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(observed).toEqual({
+          ...baseline,
+          metric_scores: { [metric]: 0 },
+          failure: {
+            code: 'RUNTIME_MISMATCH',
+            detail:
+              'Observed runtime evidence did not match the versioned expected-result reference',
+            severity: 'high'
+          }
+        });
+        expect(JSON.stringify(observed)).not.toContain('private-observation-fault');
+        expect(observed.audit_correlation.events.length).toBeGreaterThan(0);
+        const gate = evaluatePhase10Gate({
+          cases: phase10GoldenDataset.cases,
+          observations: observations.map((record, recordIndex) =>
+            recordIndex === index ? observed : record
+          ),
+          findings: []
+        });
+        expect(gate.status).toBe('FAIL');
+        expect(gate.critical_gates.audit_completeness).toBe(false);
+        // Existing gate semantics reject failed records even though their audit events remain intact.
+        expect(observed.audit_correlation).toEqual(baseline.audit_correlation);
+        expect(gate.failed_case_ids).toEqual([]);
+      } finally {
+        spy.mockRestore();
+      }
+    }
+  );
+
+  it('does not add failures to correct negative outcomes or successful deterministic cases', () => {
+    expect(observations.some((item) => item.observed_result === 'deny')).toBe(true);
+    expect(observations.some((item) => item.observed_result === 'abstain')).toBe(true);
+    for (const record of observations) expect(record.failure).toBeUndefined();
   });
 
   it('keeps expected Tool labels out of runtime selection and input execution', async () => {
