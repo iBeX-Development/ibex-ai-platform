@@ -17,6 +17,7 @@ import {
 import { createTrustedRequestContext } from '../../security/src/index.js';
 import { tracer } from '../../observability/src/index.js';
 import { toolExecutionResponseSchema } from '../../tool-runtime/src/index.js';
+import { warehouseReadResponseSchema, type WarehouseReadResponse } from './warehouse-read.js';
 import {
   pilotAgentExecutionRequestSchema,
   pilotAgentProfileSchema,
@@ -133,6 +134,51 @@ export class PilotAgentRuntime {
   }
 
   async execute(rawRequest: unknown, now = new Date()): Promise<PilotAgentResponse> {
+    return this.#execute(rawRequest, now);
+  }
+
+  async executeWarehouseRead(
+    rawRequest: unknown,
+    now = new Date()
+  ): Promise<WarehouseReadResponse> {
+    const unavailable = () =>
+      new PlatformError('VALIDATION_ERROR', 'Warehouse read response is unavailable', 400);
+    if (this.profile.agent_id !== 'warehouse' || this.profile.domain !== 'warehouse') {
+      throw unavailable();
+    }
+    // Do not accept a caller-supplied response or dispatch through overridable execute.
+    const response = await this.#execute(rawRequest, now);
+    const informational =
+      response.intent === 'WAREHOUSE_KNOWLEDGE_QUERY' && response.response_type === 'knowledge';
+    const analysis =
+      (response.intent === 'INVENTORY_QUERY' && response.response_type === 'operational') ||
+      (response.intent === 'WORK_ORDER_MATERIAL_QUERY' && response.response_type === 'analysis');
+    if (
+      response.agent_id !== 'warehouse' ||
+      (!informational && !analysis) ||
+      response.evidence_status !== 'sufficient' ||
+      response.approval_required
+    ) {
+      throw unavailable();
+    }
+    const projected = warehouseReadResponseSchema.safeParse({
+      agent: 'warehouse',
+      response_type: informational ? 'informational' : 'analysis',
+      risk_level: informational ? 'R0' : 'R1',
+      answer: response.answer,
+      evidence_status: 'Sufficient',
+      sources: response.citations.filter((citation) => citation.source_type === 'rag'),
+      tools_used: response.citations.filter((citation) => citation.source_type === 'tool'),
+      proposed_action: null,
+      approval_required: false,
+      warnings: [],
+      limitations: response.limitations
+    });
+    if (!projected.success) throw unavailable();
+    return projected.data;
+  }
+
+  async #execute(rawRequest: unknown, now: Date): Promise<PilotAgentResponse> {
     const boundary = createBoundaryIdentity(this.options.boundaryIdentityFactory);
     return tracer.startActiveSpan('pilot-agent.execute', async (span) => {
       span.setAttributes({
