@@ -79,6 +79,26 @@ export interface GatewayServiceDependencies {
   readonly clock?: () => number;
 }
 
+// Server-owned reporting budget; independent of caller cancellation and attempt policy.
+const failureReportingBudgetMs = 1_000;
+
+async function awaitFailureReport(emit: () => Promise<void>): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error('Failure audit reporting timed out'));
+        }, failureReportingBudgetMs);
+      }),
+      // Observe late rejection/fulfillment even when the reporting budget expires.
+      Promise.resolve().then(emit)
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function freezeResponse(result: GatewayResponseEnvelope): GatewayResponseEnvelope {
   return Object.freeze({
     ...result,
@@ -254,17 +274,19 @@ export class AiGatewayService {
         span.recordException(new Error('Gateway request rejected'));
         span.setStatus({ code: SpanStatusCode.ERROR });
         try {
-          await this.dependencies.audit.emit(
-            createGatewaySecurityAuditEvent({
-              traceId,
-              service: this.dependencies.service,
-              environment: this.dependencies.environment,
-              outcome,
-              stage,
-              timestamp: now,
-              errorCode: correlatedError.code,
-              ...(trustedContext ? { context: trustedContext } : {})
-            })
+          await awaitFailureReport(() =>
+            this.dependencies.audit.emit(
+              createGatewaySecurityAuditEvent({
+                traceId,
+                service: this.dependencies.service,
+                environment: this.dependencies.environment,
+                outcome,
+                stage,
+                timestamp: now,
+                errorCode: correlatedError.code,
+                ...(trustedContext ? { context: trustedContext } : {})
+              })
+            )
           );
         } catch {
           span.addEvent('gateway.audit.emission_failed');
