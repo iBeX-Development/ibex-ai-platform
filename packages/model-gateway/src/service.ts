@@ -120,6 +120,51 @@ function snapshotInput(
   return { input: freezeAccounting(snapshot.input), estimate: Math.max(1, Math.ceil(bytes / 4)) };
 }
 
+function invalidResponse(): PlatformError {
+  return new PlatformError('INVALID_RESPONSE', 'Model provider response is invalid', 502);
+}
+
+function validatedProviderResult(value: unknown): ProviderResult {
+  try {
+    return providerResultSchema.parse(value);
+  } catch {
+    // Neither schema diagnostics nor exceptions from provider properties are public errors.
+    throw invalidResponse();
+  }
+}
+
+/** Copy JSON data without invoking accessors/toJSON or dropping unsupported values.
+ * Only owned copies are frozen; the provider retains ownership of its objects. */
+function snapshotOutput(value: unknown, ancestors = new Set<object>()): unknown {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value !== 'object' || ancestors.has(value)) throw invalidResponse();
+  const array = Array.isArray(value);
+  const prototype: unknown = Object.getPrototypeOf(value);
+  if (array ? prototype !== Array.prototype : prototype !== Object.prototype && prototype !== null)
+    throw invalidResponse();
+  const keys = Reflect.ownKeys(value);
+  if (keys.some((key) => typeof key !== 'string')) throw invalidResponse();
+  if (array && keys.length !== value.length + 1) throw invalidResponse();
+  ancestors.add(value);
+  try {
+    const copy: Record<string, unknown> | unknown[] = array ? [] : {};
+    const fields = array ? Array.from({ length: value.length }, (_, index) => String(index)) : keys;
+    for (const key of fields) {
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (!descriptor?.enumerable || !('value' in descriptor)) throw invalidResponse();
+      const child: unknown = descriptor.value;
+      Object.defineProperty(copy, key, {
+        value: snapshotOutput(child, ancestors),
+        enumerable: true
+      });
+    }
+    return Object.freeze(copy);
+  } finally {
+    ancestors.delete(value);
+  }
+}
+
 function normalizedProviderError(error: unknown): PlatformError {
   if (!(error instanceof ProviderAdapterError)) {
     return new PlatformError('PROVIDER_ERROR', 'Model provider request failed', 502);
@@ -399,25 +444,59 @@ export class ModelGatewayService {
               );
               assertActive(options.signal);
               stage = 'response_validation';
-              const result = providerResultSchema.safeParse(providerResult);
-              if (!result.success) throw new ProviderAdapterError('invalid_response');
+              const result = validatedProviderResult(providerResult);
               if (
-                result.data.input_tokens > reservation.command.attempt.input_tokens ||
-                result.data.output_tokens > reservation.command.attempt.output_tokens
+                !Number.isSafeInteger(result.input_tokens) ||
+                !Number.isSafeInteger(result.output_tokens) ||
+                result.input_tokens > reservation.command.attempt.input_tokens ||
+                result.output_tokens > reservation.command.attempt.output_tokens
               )
-                throw new ProviderAdapterError('invalid_response');
+                throw invalidResponse();
+              // The complete envelope and bounded usage are trusted before output inspection.
+              // Snapshot/predicate failure cannot erase known usage; cancellation still wins.
+              let output: ProviderResult | undefined;
+              let outputFailure: PlatformError | undefined;
+              try {
+                output = Object.freeze({
+                  ...result,
+                  result: snapshotOutput(result.result),
+                  ...(result.structured_output !== undefined
+                    ? { structured_output: snapshotOutput(result.structured_output) }
+                    : {}),
+                  policy_flags: Object.freeze([...result.policy_flags])
+                });
+              } catch {
+                outputFailure = invalidResponse();
+              }
+              assertActive(options.signal);
+              if (output) {
+                try {
+                  this.dependencies.registry.validateOutput(candidate.model, output.result);
+                } catch (error) {
+                  outputFailure =
+                    error instanceof PlatformError && error.code === 'INVALID_RESPONSE'
+                      ? invalidResponse()
+                      : new PlatformError(
+                          'CONFIGURATION_ERROR',
+                          'Model output validator failed',
+                          500
+                        );
+                } finally {
+                  assertActive(options.signal);
+                }
+              }
               stage = 'accounting';
               const cost = quoteCost(
                 budget,
                 reservation.command.attempt,
-                result.data.input_tokens,
-                result.data.output_tokens
+                result.input_tokens,
+                result.output_tokens
               );
               const settlementBody = {
                 reservation: reservation.command,
                 usage: {
-                  input_tokens: result.data.input_tokens,
-                  output_tokens: result.data.output_tokens,
+                  input_tokens: result.input_tokens,
+                  output_tokens: result.output_tokens,
                   cost_units: cost
                 }
               };
@@ -431,11 +510,15 @@ export class ModelGatewayService {
                 options.signal
               );
               accounting = snapshotAccountingReceipt(settled, settlement, 'settled');
+              stage = 'response_validation';
+              assertActive(options.signal);
+              if (outputFailure) throw outputFailure;
+              if (!output) throw invalidResponse();
               const latencyMs = Math.max(0, Math.round(this.clock() - startedAt));
               const response = this.response(
                 request,
                 candidate,
-                result.data,
+                output,
                 latencyMs,
                 fallbackUsed,
                 cost / budget.units_per_cost
@@ -484,8 +567,19 @@ export class ModelGatewayService {
                   throw budgetDenied();
                 throw accountingError();
               }
+              if (stage === 'response_validation') {
+                if (error instanceof PlatformError && error.code === 'CONFIGURATION_ERROR')
+                  throw new PlatformError(
+                    'CONFIGURATION_ERROR',
+                    'Model output validator failed',
+                    500
+                  );
+                throw invalidResponse();
+              }
               if (error instanceof PlatformError) throw error;
               const providerError = normalizedProviderError(error);
+              // Invalid output terminates directly through the bounded outer failure reporter.
+              if (providerError.code === 'INVALID_RESPONSE') throw providerError;
               lastError = providerError;
               const latencyMs = Math.max(0, Math.round(this.clock() - startedAt));
               await awaitActive(

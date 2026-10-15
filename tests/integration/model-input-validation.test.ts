@@ -69,7 +69,7 @@ function fixture(
     order.push('fallback-validate');
     return (options.fallbackValidate ?? valid)(input);
   });
-  const output = vi.fn(() => false);
+  const output = vi.fn((payload: unknown) => typeof payload === 'string');
   const otherVersion = vi.fn(() => false);
   const catalog = new LocalModelSchemaCatalog([
     { reference: reference('input'), validate },
@@ -244,7 +244,7 @@ describe('Model exact input gate', () => {
     expect(response.result).toBe(result.result);
     expect(h.validate).toHaveBeenCalledOnce();
     expect(resolve).not.toHaveBeenCalled();
-    expect(h.output).not.toHaveBeenCalled();
+    expect(h.output).toHaveBeenCalledExactlyOnceWith(result.result);
     expect(h.otherVersion).not.toHaveBeenCalled();
     expect(h.fallbackValidate).not.toHaveBeenCalled();
   });

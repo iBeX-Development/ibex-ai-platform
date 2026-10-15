@@ -173,22 +173,32 @@ describe('Gate P4 Model Gateway', () => {
     ]);
   });
 
-  it('normalizes an invalid provider response before using an approved fallback', async () => {
+  it('terminates on a malformed provider envelope without retry or fallback', async () => {
     const auditEvents: AuditRecord[] = [];
     const invalidInvoke = vi.fn(() =>
       Promise.resolve({ result: { unsafe: true }, input_tokens: -1 } as unknown as ProviderResult)
     );
+    const fallbackInvoke = vi.fn(() =>
+      Promise.resolve({
+        result: { message: 'unused fallback' },
+        input_tokens: 1,
+        output_tokens: 1,
+        finish_reason: 'stop',
+        policy_flags: []
+      })
+    );
     const gateway = createModelGateway(auditEvents, [], {
       adapters: [
         { adapter_id: 'adapter-primary', invoke: invalidInvoke },
-        successfulAdapter('adapter-fallback')
+        { adapter_id: 'adapter-fallback', invoke: fallbackInvoke }
       ]
     });
 
-    const response = await gateway.invoke(modelGatewayRequest(), {}, modelGatewayValidationTime);
-
-    expect(response.provider_id).toBe('provider-fallback');
-    expect(response.fallback_used).toBe(true);
+    await expect(
+      gateway.invoke(modelGatewayRequest(), {}, modelGatewayValidationTime)
+    ).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+    expect(invalidInvoke).toHaveBeenCalledOnce();
+    expect(fallbackInvoke).not.toHaveBeenCalled();
     expect(auditEvents[0]).toEqual(
       expect.objectContaining({ error_code: 'INVALID_RESPONSE', outcome: 'error' })
     );

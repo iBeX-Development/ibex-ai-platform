@@ -85,6 +85,7 @@ export class ModelRegistry {
   private readonly providers: ReadonlyMap<string, ProviderDefinition>;
   private readonly models: readonly ModelDefinition[];
   readonly #inputValidators = new WeakMap<ModelDefinition, ModelPayloadValidator>();
+  readonly #outputValidators = new WeakMap<ModelDefinition, ModelPayloadValidator>();
 
   constructor(
     providerRecords: readonly unknown[],
@@ -113,7 +114,7 @@ export class ModelRegistry {
     const models = modelRecords.map((record) => freezeModel(modelDefinitionSchema.parse(record)));
     for (const model of models) {
       this.#inputValidators.set(model, schemaCatalog.resolve(model.input_type.schema).validate);
-      schemaCatalog.resolve(model.output_type.schema);
+      this.#outputValidators.set(model, schemaCatalog.resolve(model.output_type.schema).validate);
     }
     const modelKeys = models.map(
       (model) => `${model.provider_id}\u0000${model.model_id}\u0000${model.model_version}`
@@ -145,6 +146,25 @@ export class ModelRegistry {
     }
     if (!accepted) {
       throw new PlatformError('VALIDATION_ERROR', 'Model input is invalid', 400);
+    }
+  }
+
+  /** Output bindings are independent of input schemas and workflow output_schema_id. */
+  validateOutput(model: ModelDefinition, output: unknown): void {
+    let accepted: unknown;
+    try {
+      const validate = this.#outputValidators.get(model);
+      if (!validate) throw new Error('Missing registered output validator');
+      accepted = validate(output);
+      if (accepted !== true && accepted !== false) {
+        void Promise.resolve(accepted).catch(() => undefined);
+        throw new Error('Invalid output validator result');
+      }
+    } catch {
+      throw new PlatformError('CONFIGURATION_ERROR', 'Model output validator failed', 500);
+    }
+    if (!accepted) {
+      throw new PlatformError('INVALID_RESPONSE', 'Model provider response is invalid', 502);
     }
   }
 
