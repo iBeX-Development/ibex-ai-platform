@@ -211,6 +211,10 @@ describe('Model exact input gate', () => {
         throw new Error('must not re-resolve');
       });
     const input = { message: 'private-input-marker', nested: { values: ['original'] } };
+    h.invoke.mockResolvedValue({
+      ...result,
+      structured_output: { message: 'synthetic workflow output' }
+    });
     h.getSecret.mockImplementation(() => {
       input.message = 'changed';
       input.nested.values.push('changed');
@@ -221,7 +225,7 @@ describe('Model exact input gate', () => {
         input,
         requires_structured_output: true,
         requires_tool_use: true,
-        output_schema_id: 'workflow.unregistered.v17'
+        output_schema_id: 'synthetic.workflow.message'
       }),
       {},
       modelGatewayValidationTime
@@ -239,7 +243,7 @@ describe('Model exact input gate', () => {
       expect(request).toMatchObject({
         requires_structured_output: true,
         requires_tool_use: true,
-        output_schema_id: 'workflow.unregistered.v17'
+        output_schema_id: 'synthetic.workflow.message'
       });
     expect(response.result).toBe(result.result);
     expect(h.validate).toHaveBeenCalledOnce();

@@ -33,6 +33,7 @@ import {
 } from './contracts.js';
 import type { ModelMetricsSink, ModelUsageMetric } from './metrics.js';
 import type { ModelCandidate, ModelRegistry } from './registry.js';
+import { WorkflowOutputCatalog, type WorkflowOutputBinding } from './workflow-output-catalog.js';
 import {
   accountingError,
   accountingHash,
@@ -53,6 +54,7 @@ import {
 export interface ModelGatewayDependencies {
   readonly featureControls: FeatureControls;
   readonly registry: ModelRegistry;
+  readonly workflowOutputs?: WorkflowOutputCatalog | undefined;
   readonly adapters: readonly ModelProviderAdapter[];
   readonly audit: AuditEventSink;
   readonly metrics: ModelMetricsSink;
@@ -261,8 +263,20 @@ export class ModelGatewayService {
   private readonly clock: () => number;
   private readonly monotonicClock: () => number;
   private readonly policy: ModelGatewayPolicy;
+  readonly #workflowOutputs: WorkflowOutputCatalog | undefined;
 
   constructor(private readonly dependencies: ModelGatewayDependencies) {
+    if (
+      dependencies.workflowOutputs !== undefined &&
+      !(dependencies.workflowOutputs instanceof WorkflowOutputCatalog)
+    ) {
+      throw new PlatformError(
+        'CONFIGURATION_ERROR',
+        'Workflow output configuration is invalid',
+        500
+      );
+    }
+    this.#workflowOutputs = dependencies.workflowOutputs;
     const adapterIds = dependencies.adapters.map((adapter) => adapter.adapter_id);
     if (
       new Set(adapterIds).size !== adapterIds.length ||
@@ -335,7 +349,8 @@ export class ModelGatewayService {
         }
 
         stage = 'request_validation';
-        const parsed = modelGatewayRequestSchema.safeParse({ ...inbound, context });
+        const requestRecord = { ...inbound, context };
+        const parsed = modelGatewayRequestSchema.safeParse(requestRecord);
         if (!parsed.success) {
           throw new PlatformError('VALIDATION_ERROR', 'Model request is invalid', 400);
         }
@@ -364,6 +379,25 @@ export class ModelGatewayService {
         );
         if (candidates.length === 0) {
           throw new PlatformError('MODEL_NOT_ALLOWED', 'Model policy denied the request', 403);
+        }
+        let workflowBinding: WorkflowOutputBinding | undefined;
+        if (request.requires_structured_output) {
+          stage = 'request_validation';
+          try {
+            if (!this.#workflowOutputs) {
+              throw new PlatformError(
+                'CONFIGURATION_ERROR',
+                'Workflow output configuration is invalid',
+                500
+              );
+            }
+            // Resolve the exact wire value, not the request schema's trimmed identifier.
+            workflowBinding = this.#workflowOutputs.resolve(
+              readField(requestRecord, 'output_schema_id')
+            );
+          } finally {
+            assertActive(options.signal);
+          }
         }
         stage = 'accounting';
         const budget = parseBudgetPolicy(this.dependencies.accounting?.policy);
@@ -472,6 +506,8 @@ export class ModelGatewayService {
               if (output) {
                 try {
                   this.dependencies.registry.validateOutput(candidate.model, output.result);
+                  assertActive(options.signal);
+                  workflowBinding?.validate(output.structured_output);
                 } catch (error) {
                   outputFailure =
                     error instanceof PlatformError && error.code === 'INVALID_RESPONSE'

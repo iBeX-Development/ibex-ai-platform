@@ -211,7 +211,7 @@ describe('Model output validation and accounting', () => {
     const response = await h.gateway.invoke(
       modelGatewayRequest({
         requires_structured_output: true,
-        output_schema_id: 'workflow.unregistered.v17'
+        output_schema_id: 'synthetic.workflow.tool-args'
       }),
       {},
       modelGatewayValidationTime

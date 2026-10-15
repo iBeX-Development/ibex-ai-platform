@@ -23,7 +23,7 @@ import {
 } from '../testing/model-gateway-fixtures.js';
 
 describe('Gate P4 Model Gateway', () => {
-  it('forwards output_schema_id unchanged independently of registration payload schema references', async () => {
+  it('forwards an explicitly bound workflow ID independently of registration payload schemas', async () => {
     const adapter = successfulAdapter(primaryProvider.adapter_id);
     const invoke = vi.fn((request: ProviderInvocationRequest) => adapter.invoke(request));
     const gateway = createModelGateway([], [], {
@@ -32,14 +32,14 @@ describe('Gate P4 Model Gateway', () => {
     await gateway.invoke(
       modelGatewayRequest({
         requires_structured_output: true,
-        output_schema_id: 'workflow.unregistered.output.v17'
+        output_schema_id: 'synthetic.workflow.message'
       }),
       {},
       modelGatewayValidationTime
     );
     expect(invoke).toHaveBeenCalledOnce();
     expect(invoke.mock.calls[0]?.[0]).toMatchObject({
-      output_schema_id: 'workflow.unregistered.output.v17',
+      output_schema_id: 'synthetic.workflow.message',
       requires_structured_output: true,
       requires_tool_use: false,
       model: { output_type: primaryModel.output_type }

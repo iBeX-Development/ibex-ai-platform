@@ -4,6 +4,7 @@ import {
   ModelGatewayService,
   ModelRegistry,
   LocalModelSchemaCatalog,
+  WorkflowOutputCatalog,
   type ModelDefinition,
   type ModelGatewayDependencies,
   type ModelProviderAdapter,
@@ -68,6 +69,31 @@ export const modelSchemaCatalog = new LocalModelSchemaCatalog([
   }
 ]);
 
+// Explicit synthetic workflow bindings; no production domain schemas or permissions.
+export const syntheticWorkflowOutputs = new WorkflowOutputCatalog(
+  [
+    { output_schema_id: 'synthetic.workflow.message', reference: messagePayloadReference },
+    {
+      output_schema_id: 'synthetic.workflow.tool-args',
+      reference: { schema_id: 'test.workflow.args', schema_version: '1.0.0' }
+    }
+  ],
+  new LocalModelSchemaCatalog([
+    {
+      reference: messagePayloadReference,
+      validate: (payload: unknown) => messagePayloadSchema.safeParse(payload).success
+    },
+    {
+      reference: { schema_id: 'test.workflow.args', schema_version: '1.0.0' },
+      validate: (payload: unknown) =>
+        z
+          .object({ tool: z.object({ args: z.array(z.string()) }).strict() })
+          .strict()
+          .safeParse(payload).success
+    }
+  ])
+);
+
 export const primaryModel: ModelDefinition = {
   provider_id: 'provider-primary',
   model_id: 'general-primary',
@@ -112,9 +138,12 @@ export const stringOutputFallbackModel: ModelDefinition = {
 export function successfulAdapter(adapterId: string): ModelProviderAdapter {
   return {
     adapter_id: adapterId,
-    invoke: () =>
+    invoke: (request) =>
       Promise.resolve({
         result: { message: 'safe model result' },
+        ...(request.requires_structured_output
+          ? { structured_output: { message: 'synthetic workflow output' } }
+          : {}),
         input_tokens: 10,
         output_tokens: 5,
         finish_reason: 'stop',
@@ -148,6 +177,7 @@ export function createModelGateway(
 ): ModelGatewayService {
   const dependencies: ModelGatewayDependencies = {
     featureControls: enabledTestFeatureControls,
+    workflowOutputs: syntheticWorkflowOutputs,
     registry: new ModelRegistry(
       [primaryProvider, fallbackProvider],
       [primaryModel, fallbackModel],

@@ -15,6 +15,29 @@ Live adapters require an approved HTTPS endpoint, a credential reference, an inj
 `SecretProvider`, and an explicitly registered adapter implementation. The repository supplies no
 production provider SDK or credential.
 
+## Structured workflow output compatibility
+
+Requests with `requires_structured_output: true` now require an exact opaque
+`output_schema_id` in the injected server-owned `WorkflowOutputCatalog`. Each binding
+explicitly names a local `schema_id` and `schema_version`; wire ID suffixes are never
+interpreted, and schemas are never fetched or loaded dynamically. Configuration copies
+and freezes bindings and captures their predicates. Duplicate, malformed, or unresolved
+bindings fail with sanitized configuration errors. No production workflow schemas are supplied.
+
+The gateway resolves one binding after trusted policy/model eligibility checks and before
+secrets, counting, reservation, or dispatch. It validates the owned frozen `structured_output`
+separately from the ModelRegistry predicate for `result`. Missing/null structured output
+and predicate false reject the response. Throwing, nonboolean, or async predicates fail as
+configuration faults; late promises are observed without awaiting them. Predicates must be
+reviewed synchronous, deterministic, side-effect-free code; freezing cannot freeze closure
+state or preempt blocking code. Invalid output is terminal, with known bounded usage settled
+once; cancellation retains precedence and uncertain liability remains unresolved.
+
+Unstructured requests retain their behavior: an advisory `output_schema_id` does not resolve
+a binding or activate workflow validation. Repository structured test callers use explicit
+synthetic bindings. The wire contracts, model registration schemas, permissions, live
+integration blocks, historical evaluation evidence, and release blockers are unchanged.
+
 ## Accounting foundation (F09 remains open)
 
 Provider dispatch now requires an injected, server-controlled `ModelAccountingPolicyInput`:
