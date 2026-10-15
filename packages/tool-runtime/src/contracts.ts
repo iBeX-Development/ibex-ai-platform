@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import type { TrustedRequestContext } from '../../security/src/index.js';
 
+import { toolRateLimitReferenceSchema } from './rate-limit.js';
+
 const nonEmpty = z.string().trim().min(1);
 
 export const toolApprovalPolicySchema = z.enum([
@@ -13,7 +15,8 @@ export const toolApprovalPolicySchema = z.enum([
 
 export const toolMetadataSchema = z
   .object({
-    registration_version: z.literal('2.0'),
+    registration_version: z.literal('3.0'),
+    rate_limit: toolRateLimitReferenceSchema,
     error_model: z.literal('ibex.tool-error.v1'),
     tool_id: nonEmpty,
     tool_name: nonEmpty,

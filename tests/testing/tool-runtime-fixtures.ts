@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import type { AuditRecord } from '../../packages/audit/src/index.js';
 import {
+  ToolRateLimitCatalog,
+  InMemoryToolRateLimiter,
   ToolRegistry,
   ToolRuntimeService,
   type ToolAdapter,
@@ -27,7 +29,8 @@ export const toolContext = createTrustedRequestContext({
 });
 
 export const readToolMetadata: ToolMetadata = {
-  registration_version: '2.0',
+  registration_version: '3.0',
+  rate_limit: { policy_id: 'synthetic-tool-rate', version: '1' },
   error_model: 'ibex.tool-error.v1',
   tool_id: 'asset.asset.get.v1',
   tool_name: 'Get asset',
@@ -65,7 +68,8 @@ export const readToolRegistration: ToolRegistration = {
 };
 
 export const proposalToolMetadata: ToolMetadata = {
-  registration_version: '2.0',
+  registration_version: '3.0',
+  rate_limit: { policy_id: 'synthetic-tool-rate', version: '1' },
   error_model: 'ibex.tool-error.v1',
   tool_id: 'maintenance.wo.create_draft.v1',
   tool_name: 'Draft work order request',
@@ -140,6 +144,14 @@ export function createToolRuntime(
   return new ToolRuntimeService({
     featureControls: enabledTestFeatureControls,
     registry: new ToolRegistry([readToolRegistration, proposalToolRegistration]),
+    rateLimitPolicies: new ToolRateLimitCatalog([
+      {
+        reference: { policy_id: 'synthetic-tool-rate', version: '1' },
+        limit: 1000,
+        window_ms: 60000
+      }
+    ]),
+    rateLimiter: new InMemoryToolRateLimiter(() => 100),
     adapters: [successfulToolAdapter()],
     authorization: {
       authorize: () => Promise.resolve({ allowed: true, decision_id: 'decision-tool-1' })

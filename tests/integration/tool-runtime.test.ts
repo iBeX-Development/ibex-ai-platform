@@ -34,7 +34,7 @@ describe('Gate P5 Tool Runtime', () => {
     expect(invoke).toHaveBeenCalledOnce();
     const invocation = invoke.mock.calls[0]?.[0];
     expect(invocation?.tool).toMatchObject({
-      registration_version: '2.0',
+      registration_version: '3.0',
       error_model: 'ibex.tool-error.v1',
       version: '1.0'
     });

@@ -14,53 +14,68 @@ composition root after those integration contracts are approved.
 Action tools never call an adapter. They return an approval-required proposal;
 authoritative execution and Human Approval Runtime are outside Phase 5.
 
-## Registration format 2.0 migration
+## Registration format 3.0 and rate admission
 
-Tool registration metadata now requires these exact literals:
+This breaking major registration format requires exact `registration_version: '3.0'`,
+retains `error_model: 'ibex.tool-error.v1'`, and adds required `rate_limit` metadata:
 
 ```ts
-metadata: {
-  registration_version: '2.0',
-  error_model: 'ibex.tool-error.v1',
-  // Existing Tool metadata, including its own version, follows.
-}
+rate_limit: { policy_id: 'server-owned-policy-id', version: 'explicit-version' }
 ```
 
-`registration_version` identifies the registration schema's new major format.
-It is distinct from `metadata.version`, which identifies an individual Tool and
-remains part of the registry key, and from the `v1` error-model identifier.
-The execution response's `contract_version: '1.0'` is unchanged.
+The reference is an immutable, exact ASCII token pair (1–128 characters each;
+letters/digits followed by letters/digits, dot, underscore, colon or hyphen).
+No trimming, coercion, caller override, legacy 2.0 fallback, default quota or
+unlimited fallback is supported. Tool version, registration version and policy
+version are separate. The public response contract remains 1.0 and the existing
+error model and audit schema remain unchanged.
 
-`ibex.tool-error.v1` is the sole supported error model. It names the existing
-standardized error envelope (`error.code`, `error.message`, and trusted
-`trace_id`/`request_id` when available) implemented by `packages/errors` and the
-Tool Runtime's sanitized error boundary. It does not introduce error categories,
-configure adapter mappings, or grant retry authority. Authorization, tenant
-isolation, cancellation, proposal-only execution, and audit behavior remain intact.
+The server composition root must inject a `ToolRateLimitCatalog` and a
+`ToolRateLimiter`. Catalog construction copies and freezes strict versioned
+policies; duplicate references or malformed policies fail configuration closed.
+Unknown references fail with sanitized `CONFIGURATION_ERROR`. Each policy
+explicitly supplies an integer `limit` (1 through Number.MAX_SAFE_INTEGER) and
+integer `window_ms` (1 through 2,147,483,647). These are representation bounds,
+not recommended production quotas. Policy changes require a new reference version.
+Only explicitly synthetic quotas exist in test fixtures and evaluation support.
+Existing repository-owned registrations and composition roots are migrated
+explicitly; external 2.0 registrations need a reviewed policy before migrating.
 
-This is a breaking registration-format change, not backward compatibility with
-the previous unversioned shape. Migrate each registration explicitly by adding
-both literals to its metadata after verifying that it uses the existing error
-contract. There is no default, coercion, whitespace normalization, or legacy
-fallback for either field. Missing or unsupported values fail closed at the
-registry boundary with sanitized `CONFIGURATION_ERROR` (500),
-`Tool registry configuration is invalid`. Supplying an individual Tool version
-does not opt an old registration into the new format.
+After schema, server authorization and ownership validation, every read adapter
+attempt (including retries) consumes one admission before invocation. Proposal
+creation consumes once and never calls a write adapter. Invalid, unauthorized,
+disabled and ownership-denied requests do not consume. Exhaustion alone returns
+`RATE_LIMITED` (429). Malformed, throwing, rejected or timed-out limiter outcomes
+return sanitized `SERVICE_UNAVAILABLE` (503), without retrying uncertain admission.
+Caller cancellation retains `TIMEOUT_ERROR`. No admitted/uncertain consumption
+is refunded, including cancellation, adapter errors or subsequent audit failures.
+Adapter errors retain the existing retry policy; limiter uncertainty never retries.
 
-Repository-owned read and proposal fixtures in
-`tests/testing/tool-runtime-fixtures.ts` and registrations constructed by the
-deterministic evaluation support helper `runtime-evaluator.ts` are explicitly migrated together.
-Registrations derived from these fixtures inherit the explicit new metadata.
-There are no production registrations or live-adapter migrations in this package.
+Admission shares the existing per-attempt timeout budget with the read adapter;
+proposal admission uses that Tool timeout budget too. Abort signals and late
+promise outcomes are observed, with timer/listener cleanup. A late allow cannot
+invoke an adapter after cancellation or deadline. This bounds waiting, not a
+synchronously blocking injected dependency or remote execution. A limiter must
+honor the atomic check-and-consume interface and is trusted server code.
 
-Requirement traceability:
+`InMemoryToolRateLimiter` is a deterministic nonproduction adapter: consumption
+is synchronous before returning its promise, atomic only within one instance in
+one JavaScript isolate. Its collision-safe tuple key includes trusted tenant ID,
+Tool ID/version, captured server environment, policy identity/version and policy
+values. Caller input cannot choose quota, environment or bucket. A window starts
+on first admission and resets at elapsed >= window_ms. Invalid or backward clock
+readings fail closed without consumption; the high-water clock reading is retained
+until time catches up. The clock is injected explicitly.
 
-- Baseline 13, section 15: supplies the required `error_model` metadata.
-- Baseline 05, section 20: identifies the existing standardized, sanitized error
-  contract without changing its public failure taxonomy.
-- Baseline 05, sections 39–40: marks the required-field change as a new major
-  registration format and documents explicit migration and legacy rejection.
+There is no persistence, cross-process/distributed coordination, restart continuity,
+or production activation. Buckets live for the instance lifetime with no automatic
+eviction; this adapter is intended only for bounded deterministic tests. Production
+quota decisions, durable/distributed enforcement, memory lifecycle, clock trust,
+user/agent/endpoint dimensions and live integration require separate approval.
 
-This bounded AQ04 package does not close AQ04. `rate_limit` metadata/enforcement,
-production quota decisions, and approved live integration contracts remain
-outside this change. Approved baselines and governance findings are unchanged.
+Traceability: baseline 05 sections 20 (sanitized error taxonomy), 24 and 43
+(rate controls and retry-loop protection), 39–40 (explicit major migration);
+baseline 13 section 15 (required rate_limit metadata); technical design section 6
+(trusted tenant identity and no caller override). Approved baselines, findings,
+stock mutation restrictions and live capability blocks are unchanged. This
+foundation does not close AQ04 or establish full production rate-limit compliance.

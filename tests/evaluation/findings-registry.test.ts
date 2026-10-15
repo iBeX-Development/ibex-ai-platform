@@ -641,7 +641,9 @@ describe('mandatory findings registry integrity', () => {
           })
             .split('\0')
             .filter(Boolean);
-          for (const file of files) {
+          // The reviewed admission module may still be unstaged during local validation.
+          // Keep the isolated writing fixture complete without mutating the Git index.
+          for (const file of new Set([...files, 'packages/tool-runtime/src/rate-limit.ts'])) {
             const destination = resolve(fixtureRoot, file);
             mkdirSync(dirname(destination), { recursive: true });
             copyFileSync(resolve(root, file), destination);

@@ -15,7 +15,7 @@ describe('Phase 5 Tool Registry', () => {
     const registration = registry.resolve(readToolMetadata.tool_id, readToolMetadata.version);
 
     expect(registration?.metadata).toMatchObject({
-      registration_version: '2.0',
+      registration_version: '3.0',
       error_model: 'ibex.tool-error.v1',
       tool_id: 'asset.asset.get.v1',
       version: '1.0',
@@ -49,7 +49,7 @@ describe('Phase 5 Tool Registry', () => {
       expect(
         registry.resolve(source.metadata.tool_id, source.metadata.version)?.metadata
       ).toMatchObject({
-        registration_version: '2.0',
+        registration_version: '3.0',
         error_model: 'ibex.tool-error.v1',
         version: '1.0'
       });
@@ -63,8 +63,9 @@ describe('Phase 5 Tool Registry', () => {
     ['empty', ''],
     ['whitespace', ' \t '],
     ['legacy major', '1.0'],
+    ['previous major', '2.0'],
     ['unsupported minor', '2.1'],
-    ['unsupported major', '3.0'],
+    ['unsupported major', '4.0'],
     ['unsupported error model', 'ibex.tool-error.v2'],
     ['padded registration version', ' 2.0 '],
     ['padded error model', ' ibex.tool-error.v1 '],

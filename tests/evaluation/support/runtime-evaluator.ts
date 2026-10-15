@@ -13,6 +13,8 @@ import type {
 } from '../../../packages/pilot-agents/src/index.js';
 import { enabledTestFeatureControls } from '../../../packages/testing/src/index.js';
 import {
+  ToolRateLimitCatalog,
+  InMemoryToolRateLimiter,
   ToolRegistry,
   ToolRuntimeService,
   type ToolAdapter,
@@ -131,7 +133,8 @@ async function executeDeterministicTool(
   let observedInput: unknown;
   const registration: ToolRegistration = {
     metadata: {
-      registration_version: '2.0',
+      registration_version: '3.0',
+      rate_limit: { policy_id: 'synthetic-tool-rate', version: '1' },
       error_model: 'ibex.tool-error.v1',
       tool_id: toolRequest.capability_class,
       tool_name: `Phase 10 deterministic ${toolRequest.capability_class}`,
@@ -201,6 +204,14 @@ async function executeDeterministicTool(
   const runtime = new ToolRuntimeService({
     featureControls: enabledTestFeatureControls,
     registry: new ToolRegistry([registration]),
+    rateLimitPolicies: new ToolRateLimitCatalog([
+      {
+        reference: { policy_id: 'synthetic-tool-rate', version: '1' },
+        limit: 1000,
+        window_ms: 60000
+      }
+    ]),
+    rateLimiter: new InMemoryToolRateLimiter(() => 100),
     adapters: [adapter],
     authorization: {
       authorize: () =>

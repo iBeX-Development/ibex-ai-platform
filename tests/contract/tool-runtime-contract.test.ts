@@ -16,7 +16,7 @@ describe('Gate P5 Tool Runtime contracts', () => {
     for (const metadata of [readToolMetadata, proposalToolMetadata]) {
       const parsed = toolMetadataSchema.parse(metadata);
       expect(parsed).toMatchObject({
-        registration_version: '2.0',
+        registration_version: '3.0',
         error_model: 'ibex.tool-error.v1',
         version: '1.0'
       });
