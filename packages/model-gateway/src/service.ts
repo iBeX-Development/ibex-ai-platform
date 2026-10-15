@@ -294,7 +294,7 @@ export class ModelGatewayService {
         if (!parsed.success) {
           throw new PlatformError('VALIDATION_ERROR', 'Model request is invalid', 400);
         }
-        // Snapshot once: token certification and dispatch see identical immutable input.
+        // Snapshot once: schema validation, token certification and dispatch share this input.
         const snapshot = snapshotInput(parsed.data.input, this.policy.maximum_input_bytes);
         request = Object.freeze({ ...parsed.data, input: snapshot.input, context });
         assertActive(options.signal);
@@ -343,17 +343,27 @@ export class ModelGatewayService {
           if (!adapter) {
             throw new PlatformError('CONFIGURATION_ERROR', 'Model adapter is unavailable', 500);
           }
-          const liveAccess = await awaitActive(
-            () => this.liveAccess(candidate.provider),
-            options.signal
-          );
-          assertActive(options.signal);
+          let liveAccess: LiveProviderAccess | undefined;
 
           for (let retryIndex = 0; retryIndex <= this.policy.max_retries; retryIndex += 1) {
             assertActive(options.signal);
             const currentAttempt = retryIndex + 1;
             attempt = currentAttempt;
+            stage = 'request_validation';
+            try {
+              this.dependencies.registry.validateInput(candidate.model, request.input);
+            } finally {
+              assertActive(options.signal);
+            }
+            // Gate every attempt before new side effects or clearing prior liability.
             stage = 'accounting';
+            if (retryIndex === 0) {
+              liveAccess = await awaitActive(
+                () => this.liveAccess(candidate.provider),
+                options.signal
+              );
+            }
+            assertActive(options.signal);
             const startedAt = this.clock();
             try {
               accounting = undefined;

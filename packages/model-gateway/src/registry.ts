@@ -8,7 +8,7 @@ import {
   type ModelGatewayRequest,
   type ProviderDefinition
 } from './contracts.js';
-import { LocalModelSchemaCatalog } from './schema-catalog.js';
+import { LocalModelSchemaCatalog, type ModelPayloadValidator } from './schema-catalog.js';
 
 export interface ModelCandidate {
   readonly provider: ProviderDefinition;
@@ -84,6 +84,7 @@ function compareCandidates(
 export class ModelRegistry {
   private readonly providers: ReadonlyMap<string, ProviderDefinition>;
   private readonly models: readonly ModelDefinition[];
+  readonly #inputValidators = new WeakMap<ModelDefinition, ModelPayloadValidator>();
 
   constructor(
     providerRecords: readonly unknown[],
@@ -111,7 +112,7 @@ export class ModelRegistry {
 
     const models = modelRecords.map((record) => freezeModel(modelDefinitionSchema.parse(record)));
     for (const model of models) {
-      schemaCatalog.resolve(model.input_type.schema);
+      this.#inputValidators.set(model, schemaCatalog.resolve(model.input_type.schema).validate);
       schemaCatalog.resolve(model.output_type.schema);
     }
     const modelKeys = models.map(
@@ -125,6 +126,26 @@ export class ModelRegistry {
       );
     }
     this.models = Object.freeze(models);
+  }
+
+  /** Only registry-owned model identities can use their registration-time input binding. */
+  validateInput(model: ModelDefinition, input: unknown): void {
+    let accepted: unknown;
+    try {
+      const validate = this.#inputValidators.get(model);
+      if (!validate) throw new Error('Missing registered input validator');
+      accepted = validate(input);
+      if (accepted !== true && accepted !== false) {
+        // Observe faulty async predicates without awaiting or accepting their result.
+        void Promise.resolve(accepted).catch(() => undefined);
+        throw new Error('Invalid input validator result');
+      }
+    } catch {
+      throw new PlatformError('CONFIGURATION_ERROR', 'Model input validator failed', 500);
+    }
+    if (!accepted) {
+      throw new PlatformError('VALIDATION_ERROR', 'Model input is invalid', 400);
+    }
   }
 
   candidates(

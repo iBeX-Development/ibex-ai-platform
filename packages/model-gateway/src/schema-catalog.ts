@@ -24,7 +24,9 @@ function key(reference: ModelPayloadSchemaReference): string {
 
 /** Server-owned, explicitly constructed local catalog; never fetches or loads schema code.
  * Entries are copied and frozen. Validator functions retain their own closure state.
- * Registration checks function shape only; payload validation at dispatch is out of scope.
+ * Validators must be reviewed synchronous, deterministic, side-effect-free predicates.
+ * Registration checks function shape only. Invocation requires literal true; this contract
+ * does not sandbox code, guarantee termination/purity, or freeze validator closure state.
  */
 export class LocalModelSchemaCatalog {
   readonly #entries: ReadonlyMap<string, LocalModelSchemaEntry>;
