@@ -272,9 +272,11 @@ describe('real commands and independent CI jobs', () => {
       const harness = `
       import fs from 'node:fs';
       import { syncBuiltinESMExports } from 'node:module';
+      import { resolve } from 'node:path';
+      const evidencePath = ${JSON.stringify(resolve(root, 'tests/evaluation/evidence/phase10-runtime-evidence-v1.0.0.json'))};
       const read = fs.readFileSync;
       fs.readFileSync = function(path, ...args) {
-        if (String(path).endsWith('/evidence/phase10-runtime-evidence-v1.0.0.json')) {
+        if (typeof path === 'string' && resolve(path) === evidencePath) {
           if (${JSON.stringify(parity)} === 'UNAVAILABLE') throw new Error('Synthetic missing evidence');
           return '{}';
         }

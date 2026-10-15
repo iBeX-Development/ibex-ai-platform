@@ -1,7 +1,7 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { basename, dirname, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   assessFindingsRegistry,
@@ -620,49 +620,97 @@ describe('mandatory findings registry integrity', () => {
       );
       const registryBefore = readFileSync(registryPath, 'utf8');
       const evidenceBefore = readFileSync(evidencePath, 'utf8');
-      const result = spawnSync(
-        process.execPath,
-        ['--import', 'tsx', 'scripts/phase10-evaluate.ts', ...args],
-        {
-          cwd: root,
-          encoding: 'utf8',
-          timeout: 20_000,
-          env: selectionAttempt
-            ? {
-                ...process.env,
-                IBEX_FINDINGS_FIXTURE: 'synthetic',
-                IBEX_FINDINGS_AUTHORITY: 'synthetic'
-              }
-            : process.env
+      // Keep the writing CLI in a private fixture. Its ancestor node_modules
+      // supplies the installed dependencies without copying or installing them.
+      const fixtureParent = resolve(root, 'node_modules');
+      const fixtureRoot = args.includes('--write-evidence')
+        ? mkdtempSync(resolve(fixtureParent, '.ibex-phase10-'))
+        : undefined;
+      if (
+        fixtureRoot &&
+        (dirname(fixtureRoot) !== fixtureParent ||
+          !basename(fixtureRoot).startsWith('.ibex-phase10-'))
+      ) {
+        throw new Error('Unexpected evidence fixture path');
+      }
+      try {
+        if (fixtureRoot) {
+          const files = execFileSync('git', ['ls-files', '-z'], {
+            cwd: root,
+            encoding: 'utf8'
+          })
+            .split('\0')
+            .filter(Boolean);
+          for (const file of files) {
+            const destination = resolve(fixtureRoot, file);
+            mkdirSync(dirname(destination), { recursive: true });
+            copyFileSync(resolve(root, file), destination);
+          }
         }
-      );
-      expect(result.error).toBeUndefined();
-      expect(result.status).toBe(1);
-      const output = JSON.parse(result.stdout) as {
-        status: string;
-        governance_status: string;
-        critical_safety_gate: string;
-        findings_integrity: { status: string; diagnostics: string[] };
-        observation_count: number;
-        blocking_findings: string[];
-      };
-      expect(output).toMatchObject({
-        status: 'FAIL',
-        governance_status: 'BLOCKED',
-        critical_safety_gate: 'PASS',
-        observation_count: 44,
-        findings_integrity: { status: 'FAIL' },
-        blocking_findings: []
-      });
-      expect(output.findings_integrity.diagnostics).toContain('INDEPENDENT_AUTHORITY_UNCONFIGURED');
-      expect(readFileSync(registryPath, 'utf8')).toBe(registryBefore);
-      expect(readFileSync(evidencePath, 'utf8')).toBe(evidenceBefore);
-      expect(
-        execFileSync('git', ['diff', '--', 'tests/evaluation/evidence'], {
-          cwd: root,
-          encoding: 'utf8'
-        })
-      ).toBe('');
+        const result = spawnSync(
+          process.execPath,
+          ['--import', 'tsx', 'scripts/phase10-evaluate.ts', ...args],
+          {
+            cwd: fixtureRoot ?? root,
+            encoding: 'utf8',
+            timeout: 20_000,
+            env: selectionAttempt
+              ? {
+                  ...process.env,
+                  IBEX_FINDINGS_FIXTURE: 'synthetic',
+                  IBEX_FINDINGS_AUTHORITY: 'synthetic'
+                }
+              : process.env
+          }
+        );
+        expect(result.error).toBeUndefined();
+        expect(result.status).toBe(1);
+        const output = JSON.parse(result.stdout) as {
+          status: string;
+          governance_status: string;
+          critical_safety_gate: string;
+          findings_integrity: { status: string; diagnostics: string[] };
+          observation_count: number;
+          blocking_findings: string[];
+        };
+        expect(output).toMatchObject({
+          status: 'FAIL',
+          governance_status: 'BLOCKED',
+          critical_safety_gate: 'PASS',
+          observation_count: 44,
+          findings_integrity: { status: 'FAIL' },
+          blocking_findings: []
+        });
+        expect(output.findings_integrity.diagnostics).toContain(
+          'INDEPENDENT_AUTHORITY_UNCONFIGURED'
+        );
+        expect(readFileSync(registryPath, 'utf8')).toBe(registryBefore);
+        expect(readFileSync(evidencePath, 'utf8')).toBe(evidenceBefore);
+        if (fixtureRoot) {
+          expect(
+            readFileSync(resolve(fixtureRoot, 'docs/evaluation/findings/registry.v1.json'), 'utf8')
+          ).toBe(registryBefore);
+          expect(
+            readFileSync(
+              resolve(
+                fixtureRoot,
+                'tests/evaluation/evidence/phase10-runtime-evidence-v1.0.0.json'
+              ),
+              'utf8'
+            )
+          ).toBe(evidenceBefore);
+        }
+        expect(
+          execFileSync('git', ['diff', '--', 'tests/evaluation/evidence'], {
+            cwd: root,
+            encoding: 'utf8'
+          })
+        ).toBe('');
+      } finally {
+        if (fixtureRoot) {
+          rmSync(fixtureRoot, { recursive: true, force: true });
+        }
+      }
     },
     30_000
   );
