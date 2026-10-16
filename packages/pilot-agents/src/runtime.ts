@@ -16,7 +16,10 @@ import {
 } from '../../rag-runtime/src/index.js';
 import { createTrustedRequestContext } from '../../security/src/index.js';
 import { tracer } from '../../observability/src/index.js';
-import { toolExecutionResponseSchema } from '../../tool-runtime/src/index.js';
+import {
+  toolExecutionResponseSchema,
+  type ToolBindingCatalog
+} from '../../tool-runtime/src/index.js';
 import { warehouseReadResponseSchema, type WarehouseReadResponse } from './warehouse-read.js';
 import {
   pilotAgentExecutionRequestSchema,
@@ -58,6 +61,7 @@ export interface PilotAgentRuntimeOptions {
   readonly environment: string;
   readonly promptHierarchy: PromptHierarchyAuditEvidence;
   readonly allowDeterministicTestAdapters?: boolean;
+  readonly toolEvidenceBindings?: ToolBindingCatalog;
   readonly boundaryIdentityFactory?: () => Readonly<{
     trace_id: string;
     request_id: string;
@@ -507,12 +511,32 @@ export class PilotAgentRuntime {
     const citations: AgentCitation[] = [];
     for (const raw of evidence.tool_responses) {
       const response = toolExecutionResponseSchema.parse(raw);
+      const bindings = this.options.toolEvidenceBindings;
+      const matches = bindings
+        ? request.requested_tool_capabilities.filter((capability) => {
+            if (!policy.tool_capability_classes.includes(capability)) return false;
+            const binding = bindings.resolve({
+              agent_id: request.agent_id,
+              agent_version: request.agent_version,
+              domain: request.domain,
+              intent: request.intent,
+              conceptual_capability: capability
+            });
+            return (
+              this.options.environment === 'test' &&
+              this.options.allowDeterministicTestAdapters === true &&
+              binding?.mode === 'deterministic_test' &&
+              binding.concrete_tool.tool_id === response.tool_id &&
+              binding.concrete_tool.tool_version === response.tool_version
+            );
+          }).length === 1
+        : policy.tool_capability_classes.includes(response.tool_id) &&
+          request.requested_tool_capabilities.includes(response.tool_id);
       if (
         response.request_id !== context.request_id ||
         response.correlation_id !== context.correlation_id ||
         response.trace_id !== request.trace_id ||
-        !policy.tool_capability_classes.includes(response.tool_id) ||
-        !request.requested_tool_capabilities.includes(response.tool_id)
+        !matches
       )
         throw new Error('Tool evidence binding mismatch');
       if (response.status !== 'success')

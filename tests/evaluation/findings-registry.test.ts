@@ -641,9 +641,14 @@ describe('mandatory findings registry integrity', () => {
           })
             .split('\0')
             .filter(Boolean);
-          // The reviewed admission module may still be unstaged during local validation.
+          // Reviewed admission and binding modules may still be unstaged during validation.
           // Keep the isolated writing fixture complete without mutating the Git index.
-          for (const file of new Set([...files, 'packages/tool-runtime/src/rate-limit.ts'])) {
+          for (const file of new Set([
+            ...files,
+            'packages/tool-runtime/src/rate-limit.ts',
+            'packages/tool-runtime/src/bindings.ts',
+            'packages/runtime/src/dispatch.ts'
+          ])) {
             const destination = resolve(fixtureRoot, file);
             mkdirSync(dirname(destination), { recursive: true });
             copyFileSync(resolve(root, file), destination);
@@ -665,8 +670,17 @@ describe('mandatory findings registry integrity', () => {
               : process.env
           }
         );
-        expect(result.error).toBeUndefined();
-        expect(result.status).toBe(1);
+        const cliDiagnostic = JSON.stringify({
+          args,
+          status: result.status,
+          signal: result.signal,
+          stderr: result.stderr,
+          error: result.error?.message
+        });
+        expect(result.error, cliDiagnostic).toBeUndefined();
+        expect(result.status, cliDiagnostic).toBe(1);
+        expect(result.signal, cliDiagnostic).toBeNull();
+        expect(result.stdout.trim(), cliDiagnostic).not.toBe('');
         const output = JSON.parse(result.stdout) as {
           status: string;
           governance_status: string;
