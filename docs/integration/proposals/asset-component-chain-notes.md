@@ -1,41 +1,52 @@
-# Synthetic structured-tools component composition
+# Inactive dispatcher and synthetic Core component composition
 
-This test fixture executes actual Gateway service, SharedAgentRuntime routing,
-PilotAgentRuntime, Tool Runtime, existing offline Asset adapter and SyntheticAssetCore.
-It is not natural-language lookup, production dispatch, real Core authentication,
-HTTP integration or a full-system acceptance result. No Model Gateway/provider,
-RAG runtime, external service, listener or new dependency is used.
+This test fixture executes the actual Gateway service, InactiveToolDispatcher,
+SharedAgentRuntime routing, PilotAgentRuntime, Tool Runtime, existing offline Asset
+adapter and stateful SyntheticAssetCore. Gateway forwards its existing structured
+`tools` payload to the published dispatcher, which routes before invoking Pilot.
+The fixture no longer implements its own payload parser, grounding closure, Pilot
+construction or response projection. No production source is changed by this
+composition increment.
 
-`tests/testing/asset-component-chain.ts` supplies deterministic routing/policy ports
-and a dispatcher, not a production application container. Existing routing still
-performs its model-policy selection guard using fixture policy metadata; no model
-inference or retrieval is executed. Prompt registry approval labels and Gateway
-identity handles are explicitly synthetic fixture data, not governance approval or
-credentials. Existing feature/authorization/ownership/audit guards run unchanged.
+`tests/testing/asset-component-chain.ts` supplies deterministic routing/policy ports,
+two synthetic authenticated identities and Core users/sessions/assets. One registry
+instance is shared by Tool Runtime, ToolBindingCatalog and dispatcher. Routing and
+the fixture Pilot policy use conceptual `asset.get`; an exact server-owned test
+descriptor binds agent/version/domain/ASSET_LOOKUP/capability to concrete
+`asset.asset.get.v1` / `0.1.0-proposed` and the registered input/output schema IDs.
+The exported production Asset profile and offline registration stay blocked/disabled.
+Only the fixture's local copies authorize this single read intent.
 
-Structured `tools` payload preserves `input.asset_id`; the fixture validates the
-fixed concrete ID/version and exact minimal input before routing. It never treats
-a trimmed chat message as a canonical Asset identifier. Each forward call owns an
-immutable captured argument object and a new grounding closure. No shared mutable
-current-request slot supplies Tool input. The actual routed decision selects the
-Asset pilot; grounding invokes Tool Runtime only after pilot authorization.
+The dispatcher owns per-request immutable arguments and full captured trusted
+context. Tool responses are observed without replacing their identity or content;
+Pilot citations retain concrete Tool ID/version/source. Answers confirm only the
+synthetic returned Asset ID. The Core simulator independently rechecks current
+session, tenant, user, permission, entitlement, resource and field grants; a Platform
+allow decision does not override those checks.
 
-The fixture authorizes only ASSET_LOOKUP in a local profile copy, explicitly binding
-it to `asset.asset.get.v1` / `0.1.0-proposed`. Production Asset profile and exported
-offline registration remain blocked/disabled. The conceptual-to-concrete binding
-and general request/argument dispatch contract are still unresolved for production.
-No capability alias or forged evidence is used: the exact ToolExecutionResponse
-object becomes grounding evidence, and pilot citations derive from its actual
-tool/version/source. Answer text confirms only the returned synthetic Asset ID.
+Combined-path tests cover success for both tenants, exact evidence/correlated audit
+order, Gateway denial and identity spoofing, ownership denial in both directions,
+Core session/permission/field revocation, unavailable or malformed/oversized/wrong-ID/
+overbroad Core results, inactive/empty mappings, disabled registration, blocked
+production policy, forged binding configuration and concrete selection broadening.
+Two tenants also complete overlapping requests in reverse order with separate
+immutable inputs, identities, Tool evidence, citations, audits and Core completedReads.
+Faulty Core output can record an authorized simulated Core read, but is discarded
+before a successful Tool response or operational answer is released. Dependency and
+validation failures retain existing Tool error audit events and Pilot abstention;
+Gateway returns partial status with no citations. No new error envelope is invented.
 
-Tests exercise both tenants, Gateway denial/spoofing, Platform ownership denial,
-Core revocation, structured-input broadening, blocked production policy and overlapping
-requests with reverse completion. Nonvacuous service-event counts/order and trusted
-request/correlation/trace are checked. Tool/Core failures become existing pilot
-abstention; the fixture Gateway projection uses partial status and no operational
-answer/citations, rather than inventing a new runtime error envelope.
+This implements existing baseline 05 sections 58-59 (trust and ownership), technical
+design 16 sections 7, 17-19 and 21 (routing, conceptual mapping and Core final
+authority), and implementation plan 17 Phase 5. It changes no approved architecture,
+baseline, general plan, public wire contract or production bootstrap. Existing
+legacy no-binding compatibility tests remain intact.
 
-Real identity/delegation, actual application dispatch/binding, endpoint/error mapping,
-durable audit, transport/deadlines and real-case operational acceptance remain open.
-This composition closes no governance finding and activates no proposed security or
-deployment decision. See the existing Core proposal and simulator limitations.
+This is synthetic integration evidence, not natural-language lookup, real Core
+authentication/HTTP integration or full-system acceptance. No Model Gateway/provider,
+RAG, external service, listener, secret or new dependency is used. Routing model-policy
+selection and prompt approval labels are synthetic metadata, not model inference or
+human governance approval. Core identity/delegation, actual permission/field mapping,
+transport/deadlines, durable audit, deployment and eventual real-case operational
+verification remain open. The proposed Core decisions D01-D09 and existing release
+governance gates are not closed by these tests; no live service is enabled.

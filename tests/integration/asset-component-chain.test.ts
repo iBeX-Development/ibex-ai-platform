@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { createTrustedRequestContext } from '../../packages/security/src/index.js';
+import { toolExecutionRequestSchema } from '../../packages/tool-runtime/src/index.js';
 import type { AuditRecord } from '../../packages/audit/src/index.js';
 import { assetAgentProfile } from '../../agents/asset/src/index.js';
 import { offlineAssetRegistration } from '../testing/core-asset-offline-prototype.js';
@@ -7,6 +9,25 @@ import { chainIdentity, createAssetComponentChain } from '../testing/asset-compo
 function boundEvents(audits: readonly AuditRecord[], requestId: string) {
   return audits.filter((event) => 'request_id' in event && event.request_id === requestId);
 }
+function toolRequests(h: ReturnType<typeof createAssetComponentChain>) {
+  return h.toolExecute.mock.calls.map(([raw]) => {
+    const request = toolExecutionRequestSchema.parse(raw);
+    return { ...request, context: createTrustedRequestContext(request.context) };
+  });
+}
+function safeAbstention(response: unknown) {
+  expect(response).toMatchObject({
+    status: 'partial',
+    response: {
+      response_type: 'abstain',
+      evidence_status: 'insufficient',
+      citations: [],
+      approval_required: false
+    },
+    tools_used: []
+  });
+  expect(JSON.stringify(response)).not.toMatch(/asset-[ab]|private-|healthy|revoked/);
+}
 function deferred() {
   let resolve!: () => void;
   const promise = new Promise<void>((done) => {
@@ -14,7 +35,7 @@ function deferred() {
   });
   return { promise, resolve };
 }
-describe('synthetic structured-tools component chain (not production dispatch)', () => {
+describe('inactive dispatcher and stateful synthetic Core component chain', () => {
   it.each(['a', 'b'] as const)(
     'executes all actual components for tenant %s with unchanged Tool evidence',
     async (tenant) => {
@@ -51,27 +72,15 @@ describe('synthetic structured-tools component chain (not production dispatch)',
           }
         ]
       });
-      for (const call of [
-        h.forward,
-        h.route,
-        h.pilotExecute,
-        h.ground,
-        h.toolExecute,
-        h.invoke,
-        h.transport
-      ])
+      for (const call of [h.forward, h.route, h.toolExecute, h.invoke, h.transport])
         expect(call).toHaveBeenCalledOnce();
       expect(h.order).toEqual([
         `route:${identity.request_id}`,
-        `pilot:${identity.request_id}`,
-        `ground:${identity.request_id}`,
         `ownership:${assetId}`,
         `adapter:${identity.request_id}`,
         `core:${identity.request_id}`
       ]);
       expect(h.actualToolResponses).toHaveLength(1);
-      expect(h.evidences).toHaveLength(1);
-      expect(h.evidences[0]?.tool_responses[0]).toBe(h.actualToolResponses[0]);
       expect(h.actualToolResponses[0]).toMatchObject({
         output: { asset_id: assetId },
         request_id: identity.request_id,
@@ -85,7 +94,7 @@ describe('synthetic structured-tools component chain (not production dispatch)',
         'chain-routing',
         'chain-tool',
         'chain-tool',
-        'chain-pilot',
+        'inactive-tool-dispatch',
         'chain-gateway'
       ]);
       expect(events.map((e) => ('outcome' in e ? e.outcome : undefined))).toEqual([
@@ -109,7 +118,7 @@ describe('synthetic structured-tools component chain (not production dispatch)',
         { tenant_id: identity.tenant_id, user_id: identity.user_id, asset_id: assetId }
       ]);
       expect(JSON.stringify({ response, audits: h.audits })).not.toMatch(
-        /private-tenant|available|healthy|active/
+        /private-tenant|\b(?:available|healthy|active)\b/
       );
     }
   );
@@ -118,15 +127,7 @@ describe('synthetic structured-tools component chain (not production dispatch)',
     await expect(h.execute(chainIdentity('a'), { asset_id: 'asset-a' })).rejects.toMatchObject({
       code: 'PERMISSION_DENIED'
     });
-    for (const call of [
-      h.forward,
-      h.route,
-      h.pilotExecute,
-      h.ground,
-      h.toolExecute,
-      h.invoke,
-      h.transport
-    ])
+    for (const call of [h.forward, h.route, h.toolExecute, h.invoke, h.transport])
       expect(call).not.toHaveBeenCalled();
     expect(h.audits).toEqual([
       expect.objectContaining({
@@ -152,40 +153,44 @@ describe('synthetic structured-tools component chain (not production dispatch)',
     ]);
     expect(h.core.completedReads()).toEqual([]);
   });
-  it('Platform ownership denial produces safe pilot abstention without adapter/Core', async () => {
-    const h = createAssetComponentChain();
-    const identity = chainIdentity('a');
-    const response = await h.execute(identity, { asset_id: 'asset-b' });
-    expect(response).toMatchObject({
-      status: 'partial',
-      response: {
-        response_type: 'abstain',
-        evidence_status: 'insufficient',
-        citations: [],
-        approval_required: false
-      },
-      tools_used: []
-    });
-    expect(h.toolExecute).toHaveBeenCalledOnce();
-    expect(h.ownership).toHaveBeenCalledExactlyOnceWith({ type: 'asset', id: 'asset-b' });
-    expect(h.invoke).not.toHaveBeenCalled();
-    expect(h.transport).not.toHaveBeenCalled();
-    expect(h.core.completedReads()).toEqual([]);
-    const events = boundEvents(h.audits, identity.request_id);
-    expect(events.map((e) => ('outcome' in e ? e.outcome : undefined))).toEqual([
-      'accepted',
-      'routed',
-      'rejected',
-      'fallback',
-      'accepted'
-    ]);
-    expect(events[2]).toMatchObject({
-      service: 'chain-tool',
-      stage: 'tenant_ownership',
-      error_code: 'PERMISSION_DENIED'
-    });
-    expect(JSON.stringify({ response, audits: events })).not.toContain('tenant-b');
-  });
+  it.each(['a', 'b'] as const)(
+    'Platform ownership denial for tenant %s stops before adapter/Core',
+    async (tenant) => {
+      const h = createAssetComponentChain();
+      const identity = chainIdentity(tenant);
+      const other = tenant === 'a' ? 'b' : 'a';
+      const response = await h.execute(identity, { asset_id: `asset-${other}` });
+      expect(response).toMatchObject({
+        status: 'partial',
+        response: {
+          response_type: 'abstain',
+          evidence_status: 'insufficient',
+          citations: [],
+          approval_required: false
+        },
+        tools_used: []
+      });
+      expect(h.toolExecute).toHaveBeenCalledOnce();
+      expect(h.ownership).toHaveBeenCalledExactlyOnceWith({ type: 'asset', id: `asset-${other}` });
+      expect(h.invoke).not.toHaveBeenCalled();
+      expect(h.transport).not.toHaveBeenCalled();
+      expect(h.core.completedReads()).toEqual([]);
+      const events = boundEvents(h.audits, identity.request_id);
+      expect(events.map((e) => ('outcome' in e ? e.outcome : undefined))).toEqual([
+        'accepted',
+        'routed',
+        'rejected',
+        'fallback',
+        'accepted'
+      ]);
+      expect(events[2]).toMatchObject({
+        service: 'chain-tool',
+        stage: 'tenant_ownership',
+        error_code: 'PERMISSION_DENIED'
+      });
+      expect(JSON.stringify({ response, audits: events })).not.toContain(`tenant-${other}`);
+    }
+  );
   it('current Core revocation cannot become a successful operational answer', async () => {
     const h = createAssetComponentChain();
     h.core.revokeSession(chainIdentity('a').session_id);
@@ -233,9 +238,108 @@ describe('synthetic structured-tools component chain (not production dispatch)',
     expect(JSON.stringify(response)).not.toMatch(/asset-a|private-|revoked/);
   });
   it.each([
+    ['permission', { permissions: [] }],
+    ['field', { fields: [] }]
+  ] as const)(
+    'Core %s revocation overrides unchanged Platform authorization and earlier success',
+    async (_reason, changed) => {
+      const h = createAssetComponentChain();
+      const initial = chainIdentity('a');
+      expect((await h.execute(initial, { asset_id: 'asset-a' })).status).toBe('success');
+      h.core.replaceUser({
+        tenant_id: initial.tenant_id,
+        user_id: initial.user_id,
+        enabled: true,
+        permissions: ['fixture:core:asset:read'],
+        entitlements: ['fixture:core:asset-tools'],
+        resources: ['asset-a'],
+        fields: ['asset_id'],
+        ...changed
+      });
+      const next = chainIdentity('a', 'after-core-change');
+      const response = await h.execute(next, { asset_id: 'asset-a' });
+      safeAbstention(response);
+      expect(h.transport).toHaveBeenCalledTimes(2);
+      expect(h.actualToolResponses).toHaveLength(1);
+      expect(h.core.completedReads()).toEqual([
+        { tenant_id: 'tenant-a', user_id: initial.user_id, asset_id: 'asset-a' }
+      ]);
+      expect(
+        boundEvents(h.audits, next.request_id).map((e) => ('outcome' in e ? e.outcome : undefined))
+      ).toEqual(['accepted', 'routed', 'started', 'error', 'error', 'fallback', 'accepted']);
+      expect(toolRequests(h)[1]?.context.permissions).toEqual(initial.permissions);
+    }
+  );
+  it.each(['unavailable', 'malformed', 'oversized', 'mismatched', 'extra-field'] as const)(
+    'discards %s Core output through the real dispatcher without operational evidence',
+    async (fault) => {
+      const h = createAssetComponentChain();
+      if (fault === 'unavailable') h.core.setAvailable(false);
+      else h.core.setResponseFault(fault);
+      const response = await h.execute(chainIdentity('a'), { asset_id: 'asset-a' });
+      safeAbstention(response);
+      expect(h.transport).toHaveBeenCalledOnce();
+      expect(h.actualToolResponses).toEqual([]);
+      expect(h.core.completedReads()).toHaveLength(fault === 'unavailable' ? 0 : 1);
+      expect(
+        h.audits.filter(
+          (e) =>
+            'error_code' in e &&
+            e.error_code === (fault === 'unavailable' ? 'SERVICE_UNAVAILABLE' : 'INVALID_RESPONSE')
+        )
+      ).toHaveLength(2);
+    }
+  );
+  it.each([
+    { bindingMode: 'empty' as const },
+    { bindingMode: 'inactive' as const },
+    { disabledRegistration: true }
+  ])('mapping/registration %j never reaches Tool execution or Core', async (options) => {
+    const h = createAssetComponentChain(options);
+    await expect(h.execute(chainIdentity('a'), { asset_id: 'asset-a' })).rejects.toMatchObject({
+      code: 'PERMISSION_DENIED'
+    });
+    expect(h.route).toHaveBeenCalledOnce();
+    expect(h.toolExecute).not.toHaveBeenCalled();
+    expect(h.invoke).not.toHaveBeenCalled();
+    expect(h.transport).not.toHaveBeenCalled();
+    expect(h.core.completedReads()).toEqual([]);
+  });
+  it.each([{ tool_id: 'asset.search' }, { tool_version: '9.0.0' }])(
+    'concrete selection %j cannot expand the trusted conceptual route',
+    async (selection) => {
+      const h = createAssetComponentChain();
+      await expect(
+        h.execute(chainIdentity('a'), { asset_id: 'asset-a' }, selection)
+      ).rejects.toMatchObject({ code: 'PERMISSION_DENIED' });
+      expect(h.route).toHaveBeenCalledOnce();
+      const routed: unknown = await h.route.mock.results[0]?.value;
+      expect(routed).toMatchObject({
+        status: 'routed',
+        decision: { tool_candidates: ['asset.get'], required_capabilities: ['asset.get'] }
+      });
+      expect(h.toolExecute).not.toHaveBeenCalled();
+      expect(h.transport).not.toHaveBeenCalled();
+      expect(h.core.completedReads()).toEqual([]);
+    }
+  );
+  it('Gateway rejects caller-forged binding configuration before dispatcher execution', async () => {
+    const h = createAssetComponentChain();
+    await expect(
+      h.execute(
+        chainIdentity('a'),
+        { asset_id: 'asset-a' },
+        { bindings: { mode: 'deterministic_test', conceptual_capability: 'asset.search' } }
+      )
+    ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
+    expect(h.forward).not.toHaveBeenCalled();
+    expect(h.route).not.toHaveBeenCalled();
+    expect(h.transport).not.toHaveBeenCalled();
+    expect(h.core.completedReads()).toEqual([]);
+  });
+  it.each([
     [{ asset_id: 'asset-a\n' }, {}, 'INVALID_INPUT'],
     [{ asset_id: 'asset-a', tenant_id: 'tenant-b' }, {}, 'INVALID_INPUT'],
-    [{ asset_id: 'asset-a' }, { tool_id: 'asset.search' }, 'INVALID_INPUT'],
     [{ asset_id: 'asset-a' }, { extra: true }, 'VALIDATION_ERROR']
   ])(
     'blocks malformed or broadened structured request %# before routing',
@@ -245,7 +349,7 @@ describe('synthetic structured-tools component chain (not production dispatch)',
         code
       });
       expect(h.route).not.toHaveBeenCalled();
-      expect(h.ground).not.toHaveBeenCalled();
+      expect(h.toolExecute).not.toHaveBeenCalled();
       expect(h.invoke).not.toHaveBeenCalled();
       expect(h.core.completedReads()).toEqual([]);
     }
@@ -256,8 +360,7 @@ describe('synthetic structured-tools component chain (not production dispatch)',
     await expect(h.execute(chainIdentity('a'), { asset_id: 'asset-a' })).rejects.toMatchObject({
       code: 'PERMISSION_DENIED'
     });
-    expect(h.pilotExecute).toHaveBeenCalledOnce();
-    expect(h.ground).not.toHaveBeenCalled();
+    expect(h.route).toHaveBeenCalledOnce();
     expect(h.toolExecute).not.toHaveBeenCalled();
     expect(JSON.stringify(assetAgentProfile)).toBe(before);
     expect(offlineAssetRegistration.metadata.enabled).toBe(false);
@@ -283,11 +386,13 @@ describe('synthetic structured-tools component chain (not production dispatch)',
     const completions: string[] = [];
     const a = chainIdentity('a'),
       b = chainIdentity('b');
-    const pendingA = h.execute(a, { asset_id: 'asset-a' }).then((r) => {
+    const inputA = { asset_id: 'asset-a' },
+      inputB = { asset_id: 'asset-b' };
+    const pendingA = h.execute(a, inputA).then((r) => {
       completions.push('a');
       return r;
     });
-    const pendingB = h.execute(b, { asset_id: 'asset-b' }).then((r) => {
+    const pendingB = h.execute(b, inputB).then((r) => {
       completions.push('b');
       return r;
     });
@@ -296,6 +401,8 @@ describe('synthetic structured-tools component chain (not production dispatch)',
       await Promise.all([enteredA.promise, enteredB.promise]);
       expect(completions).toEqual([]);
       expect(h.transport).toHaveBeenCalledTimes(2);
+      inputA.asset_id = 'caller-changed-a';
+      inputB.asset_id = 'caller-changed-b';
       releaseB.resolve();
       const responseB = await pendingB;
       expect(completions).toEqual(['b']);
@@ -316,16 +423,48 @@ describe('synthetic structured-tools component chain (not production dispatch)',
             trace_id: response.trace_id
           }
         });
-        const calls = h.toolExecute.mock.calls.filter(
-          ([r]) => r.context.request_id === identity.request_id
-        );
+        const calls = toolRequests(h).filter((r) => r.context.request_id === identity.request_id);
         expect(calls).toHaveLength(1);
-        expect(calls[0]?.[0].input).toEqual({ asset_id: assetId });
-        expect(Object.isFrozen(calls[0]?.[0].input)).toBe(true);
-        expect(calls[0]?.[0].context).toMatchObject({
+        expect(calls[0]?.input).toEqual({ asset_id: assetId });
+        expect(Object.isFrozen(calls[0]?.input)).toBe(true);
+        expect(calls[0]?.context).toMatchObject({
           tenant_id: identity.tenant_id,
           user_id: identity.user_id,
-          session_id: identity.session_id
+          role: identity.role,
+          permissions: identity.permissions,
+          entitlements: identity.entitlements,
+          session_id: identity.session_id,
+          request_id: identity.request_id,
+          correlation_id: identity.correlation_id,
+          channel: identity.channel,
+          locale: identity.locale
+        });
+        expect(calls[0]?.trace_id).toBe(response.trace_id);
+        const coreCalls = h.transport.mock.calls.filter(
+          ([r]) => r.context.request_id === identity.request_id
+        );
+        expect(coreCalls).toHaveLength(1);
+        expect(coreCalls[0]?.[0].context).toEqual(calls[0]?.context);
+        expect(coreCalls[0]?.[0].input).toEqual({ asset_id: assetId });
+        expect(Object.isFrozen(coreCalls[0]?.[0].input)).toBe(true);
+        const actual = h.actualToolResponses.find((r) => r.request_id === identity.request_id);
+        expect(actual).toMatchObject({
+          tool_id: offlineAssetRegistration.metadata.tool_id,
+          tool_version: offlineAssetRegistration.metadata.version,
+          request_id: identity.request_id,
+          correlation_id: identity.correlation_id,
+          trace_id: response.trace_id,
+          output: { asset_id: assetId }
+        });
+        expect(response.response).toMatchObject({
+          citations: [
+            {
+              source_type: 'tool',
+              source_id: offlineAssetRegistration.metadata.tool_id,
+              source_version: offlineAssetRegistration.metadata.version,
+              source_reference: `synthetic:${assetId}`
+            }
+          ]
         });
         const events = boundEvents(h.audits, identity.request_id);
         expect(events).toHaveLength(6);

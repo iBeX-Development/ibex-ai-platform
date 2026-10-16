@@ -1,21 +1,14 @@
-import { z } from 'zod';
 import { assetAgentProfile, assetPrompt } from '../../agents/asset/src/index.js';
 import type { AuditRecord } from '../../packages/audit/src/index.js';
-import { PlatformError } from '../../packages/errors/src/index.js';
 import {
   AiGatewayService,
   FixedWindowGatewayRateLimiter,
   type GatewayPlatformRequest
 } from '../../packages/gateway/src/index.js';
-import {
-  PilotAgentRuntime,
-  pilotAgentProfileSchema,
-  type PilotAgentGroundingPort,
-  type PilotAgentResponse,
-  type PilotGroundingEvidence
-} from '../../packages/pilot-agents/src/index.js';
+import { pilotAgentProfileSchema } from '../../packages/pilot-agents/src/index.js';
 import {
   AgentRegistry,
+  InactiveToolDispatcher,
   PromptRegistry,
   SharedAgentRuntime,
   type AgentDefinition
@@ -27,14 +20,13 @@ import {
 import { enabledTestFeatureControls } from '../../packages/testing/src/index.js';
 import {
   ToolRegistry,
-  type ToolExecutionRequest,
+  ToolBindingCatalog,
   type ToolExecutionResponse
 } from '../../packages/tool-runtime/src/index.js';
 import { vi } from 'vitest';
 import {
   createOfflineAssetAdapter,
   offlineAssetRegistration,
-  offlineAssetSchema,
   type OfflineAssetRead
 } from './core-asset-offline-prototype.js';
 import { SyntheticAssetCore, syntheticCoreRead } from './core-asset-simulator.js';
@@ -81,12 +73,12 @@ const fixtureProfile = pilotAgentProfileSchema.parse({
       ...lookup,
       authorization_status: 'approved',
       required_entitlements: ['pilot:test'],
-      tool_capability_classes: [toolId]
+      tool_capability_classes: ['asset.get']
     }
   ],
   tool_allowlist: [
     {
-      capability_class: toolId,
+      capability_class: 'asset.get',
       classification: 'read',
       enabled: true,
       live_binding: 'deterministic_test_adapter'
@@ -100,7 +92,7 @@ const selectedAgent: AgentDefinition = {
   supported_intents: ['ASSET_LOOKUP'],
   capabilities: ['asset.get'],
   prompt_version: assetAgentProfile.versions.prompt,
-  allowed_tools: [toolId],
+  allowed_tools: ['asset.get'],
   allowed_rag_scopes: [],
   required_permissions: ['asset.get'],
   required_entitlements: ['pilot:test'],
@@ -108,18 +100,12 @@ const selectedAgent: AgentDefinition = {
   evaluation_profile: 'fixture-only-component-chain',
   status: 'active'
 };
-const payloadSchema = z
-  .object({
-    tool_id: z.literal(toolId),
-    tool_version: z.literal(toolVersion),
-    input: offlineAssetSchema
-  })
-  .strict();
-
 export function createAssetComponentChain(
   options: Readonly<{
     denyGateway?: boolean;
     productionProfile?: boolean;
+    bindingMode?: 'empty' | 'inactive';
+    disabledRegistration?: boolean;
     beforeCore?: (request: Parameters<OfflineAssetRead>[0]) => Promise<void>;
   }> = {}
 ) {
@@ -175,21 +161,48 @@ export function createAssetComponentChain(
         : null
     );
   });
+  const registry = new ToolRegistry([
+    {
+      ...offlineAssetRegistration,
+      metadata: { ...offlineAssetRegistration.metadata, enabled: !options.disabledRegistration }
+    }
+  ]);
+  const bindings = new ToolBindingCatalog(
+    registry,
+    options.bindingMode === 'empty'
+      ? []
+      : [
+          {
+            binding_id: 'fixture.asset.component-chain',
+            binding_version: '1.0.0',
+            agent_id: 'asset',
+            agent_version: fixtureProfile.versions.agent,
+            domain: 'asset',
+            intent: 'ASSET_LOOKUP',
+            conceptual_capability: 'asset.get',
+            mode: options.bindingMode === 'inactive' ? 'inactive' : 'deterministic_test',
+            concrete_tool: {
+              tool_id: toolId,
+              tool_version: toolVersion,
+              input_schema_id: offlineAssetRegistration.metadata.input_schema_id,
+              output_schema_id: offlineAssetRegistration.metadata.output_schema_id
+            }
+          }
+        ]
+  );
   const tools = createToolRuntime(audits, {
     service: 'chain-tool',
     audit,
-    registry: new ToolRegistry([
-      {
-        ...offlineAssetRegistration,
-        metadata: { ...offlineAssetRegistration.metadata, enabled: true }
-      }
-    ]),
+    registry,
     adapters: [{ ...adapter, invoke }],
     ownership: { resolveTenantId: ownership }
   });
-  const toolExecute = vi.fn((request: ToolExecutionRequest) =>
-    tools.execute(request, {}, validationTime)
-  );
+  const actualToolResponses: ToolExecutionResponse[] = [];
+  const toolExecute = vi.fn(async (request: unknown) => {
+    const response = await tools.execute(request, {}, validationTime);
+    actualToolResponses.push(response);
+    return response;
+  });
   const prompts = new PromptRegistry([
     ...approvedPrompts.slice(0, 2),
     {
@@ -221,7 +234,7 @@ export function createAssetComponentChain(
       toolPlanning: {
         plan: () =>
           Promise.resolve({
-            candidates: [toolId],
+            candidates: ['asset.get'],
             action_class: 'read',
             risk_class: 'low',
             approval_required: false
@@ -234,126 +247,21 @@ export function createAssetComponentChain(
       }
     })
   );
-  const route = vi.fn(routing.route.bind(routing));
-  const actualToolResponses: ToolExecutionResponse[] = [];
-  const evidences: PilotGroundingEvidence[] = [];
-  const pilotResponses: PilotAgentResponse[] = [];
-  const ground = vi.fn(
-    async (
-      request: Parameters<PilotAgentGroundingPort['resolve']>[0],
-      captured: Readonly<{ asset_id: string }>,
-      binding: GatewayPlatformRequest
-    ) => {
-      if (
-        request.context.request_id !== binding.context.request_id ||
-        request.context.correlation_id !== binding.context.correlation_id ||
-        request.context.tenant_id !== binding.context.tenant_id ||
-        request.trace_id !== binding.trace_id
-      )
-        throw new Error('Fixture request binding mismatch');
-      order.push(`ground:${request.context.request_id}`);
-      const response = await toolExecute({
-        context: request.context,
-        trace_id: request.trace_id,
-        agent_id: request.agent_id,
-        prompt_version: assetAgentProfile.versions.prompt,
-        tool_id: toolId,
-        tool_version: toolVersion,
-        input: captured
-      });
-      actualToolResponses.push(response);
-      if (response.status !== 'success') throw new Error('Fixture requires read evidence');
-      const output = offlineAssetSchema.parse(response.output);
-      const evidence: PilotGroundingEvidence = Object.freeze({
-        answer: `Synthetic lookup returned Asset ID ${output.asset_id}.`,
-        tool_responses: Object.freeze([response]),
-        rag: Object.freeze([])
-      });
-      evidences.push(evidence);
-      return evidence;
-    }
-  );
-  const pilotExecute = vi.fn(
-    async (
-      binding: GatewayPlatformRequest,
-      captured: Readonly<{ asset_id: string }>,
-      decision: Awaited<ReturnType<typeof routing.route>>
-    ) => {
-      if (
-        decision.status !== 'routed' ||
-        decision.decision.selected_agent !== 'asset' ||
-        decision.decision.tool_candidates.length !== 1 ||
-        decision.decision.tool_candidates[0] !== toolId
-      )
-        throw new Error('Fixture route is unavailable');
-      const hierarchy = decision.decision.prompt_hierarchy.layers;
-      const pilot = new PilotAgentRuntime(
-        options.productionProfile ? assetAgentProfile : fixtureProfile,
-        { resolve: (request) => ground(request, captured, binding) },
-        audit,
-        {
-          featureControls: enabledTestFeatureControls,
-          service: 'chain-pilot',
-          environment: 'test',
-          allowDeterministicTestAdapters: true,
-          boundaryIdentityFactory: () => ({
-            trace_id: binding.trace_id,
-            request_id: binding.context.request_id,
-            correlation_id: binding.context.correlation_id
-          }),
-          promptHierarchy: {
-            master_policy: hierarchy[0],
-            orchestrator_prompt: hierarchy[1],
-            domain_prompt: hierarchy[2]
-          }
-        }
-      );
-      order.push(`pilot:${binding.context.request_id}`);
-      const result = await pilot.execute(
-        {
-          context: binding.context,
-          trace_id: binding.trace_id,
-          agent_id: 'asset',
-          agent_version: decision.decision.agent_version,
-          domain: 'asset',
-          intent: decision.decision.intent,
-          requested_rag_scopes: [],
-          requested_tool_capabilities: decision.decision.tool_candidates
-        },
-        validationTime
-      );
-      pilotResponses.push(result);
-      return result;
-    }
-  );
-  const forward = vi.fn(async (binding: GatewayPlatformRequest) => {
-    // Capture validated arguments in this invocation, not a shared current-request slot.
-    const parsed = payloadSchema.safeParse(binding.payload);
-    if (binding.endpoint !== 'tools' || !parsed.success)
-      throw new PlatformError('INVALID_INPUT', 'Tool input is invalid', 400);
-    const captured = parsed.data.input;
-    order.push(`route:${binding.context.request_id}`);
-    const decision = await route(
-      {
-        context: binding.context,
-        trace_id: binding.trace_id,
-        input: parsed.data,
-        requested_agent: 'asset'
-      },
-      validationTime
-    );
-    const result = await pilotExecute(binding, captured, decision);
-    return {
-      status: result.response_type === 'abstain' ? ('partial' as const) : ('success' as const),
-      response: result,
-      agent: result.agent_id,
-      action_type: 'informational' as const,
-      approval_required: result.approval_required,
-      tools_used: result.citations
-        .filter((c) => c.source_type === 'tool')
-        .map((c) => ({ tool_id: c.source_id, version: c.source_version }))
-    };
+  const route = vi.fn((...args: Parameters<typeof routing.route>) => {
+    order.push(`route:${args[0].context.request_id}`);
+    return routing.route(...args);
   });
+  const dispatcher = new InactiveToolDispatcher({
+    environment: 'test',
+    featureControls: enabledTestFeatureControls,
+    routing: { route },
+    registry,
+    tools: { execute: toolExecute },
+    audit,
+    profile: options.productionProfile ? assetAgentProfile : fixtureProfile,
+    bindings
+  });
+  const forward = vi.fn((request: GatewayPlatformRequest) => dispatcher.forward(request));
   const authenticatedFixtures = new Map<string, AuthenticatedGatewayIdentity>();
   let trace = 0;
   const gateway = new AiGatewayService({
@@ -422,14 +330,12 @@ export function createAssetComponentChain(
     order,
     route,
     forward,
-    pilotExecute,
-    ground,
     toolExecute,
     invoke,
     ownership,
     transport,
     actualToolResponses,
-    evidences,
-    pilotResponses
+    bindings,
+    registry
   };
 }
