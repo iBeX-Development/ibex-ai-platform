@@ -16,7 +16,7 @@ import { executePhase10Evaluation } from './support/runtime-evaluator.js';
 import { phase10GoldenDataset } from './datasets/pilot-agents/v1.0.0.js';
 
 const scope: RegistryScope = {
-  repository: 'gt7719/ibex-ai-platform',
+  repository: 'iBeX-Development/ibex-ai-platform',
   phase: 'phase10',
   evaluated_commit: 'a'.repeat(40)
 };
@@ -25,7 +25,7 @@ function fixture(): FindingsRegistry {
     schema_version: '1.0.0',
     registry_id: 'synthetic-only',
     revision: 2,
-    repository: 'gt7719/ibex-ai-platform',
+    repository: 'iBeX-Development/ibex-ai-platform',
     phase: 'phase10',
     evaluated_commit: scope.evaluated_commit,
     completeness: 'complete',

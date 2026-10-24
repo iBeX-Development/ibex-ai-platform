@@ -9,7 +9,7 @@ import { executePhase10Evaluation } from './support/runtime-evaluator.js';
 
 const root = resolve(import.meta.dirname, '../..');
 const scope = {
-  repository: 'gt7719/ibex-ai-platform',
+  repository: 'iBeX-Development/ibex-ai-platform',
   phase: 'phase10',
   evaluated_commit: 'a'.repeat(40)
 };
@@ -19,7 +19,7 @@ function fixture(): FindingsRegistry {
     registry_id: 'synthetic',
     revision: 1,
     ...scope,
-    repository: 'gt7719/ibex-ai-platform',
+    repository: 'iBeX-Development/ibex-ai-platform',
     phase: 'phase10',
     completeness: 'unknown',
     review_state: 'unreviewed',

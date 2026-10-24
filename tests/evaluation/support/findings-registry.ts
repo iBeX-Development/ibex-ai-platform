@@ -37,7 +37,7 @@ export const findingsRegistrySchema = z
     schema_version: z.literal('1.0.0'),
     registry_id: id,
     revision,
-    repository: z.literal('gt7719/ibex-ai-platform'),
+    repository: z.literal('iBeX-Development/ibex-ai-platform'),
     phase: z.literal('phase10'),
     evaluated_commit: z.string().regex(/^[a-f0-9]{40}$/),
     completeness: z.enum(['unknown', 'incomplete', 'complete']),

@@ -82,7 +82,7 @@ export async function runPhase10Command(
   const registry = readFindingsRegistry(
     resolve(root, 'docs/evaluation/findings/registry.v1.json'),
     {
-      repository: 'gt7719/ibex-ai-platform',
+      repository: 'iBeX-Development/ibex-ai-platform',
       phase: 'phase10',
       evaluated_commit: evaluatedCommit
     }

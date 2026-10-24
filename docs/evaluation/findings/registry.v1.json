@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "registry_id": "ibex-unified-findings",
   "revision": 2,
-  "repository": "gt7719/ibex-ai-platform",
+  "repository": "iBeX-Development/ibex-ai-platform",
   "phase": "phase10",
   "evaluated_commit": "529951f9818c301aae67d94e980deafe7495391f",
   "completeness": "unknown",
