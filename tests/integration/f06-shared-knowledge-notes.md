@@ -7,6 +7,7 @@ Ready for independent review. This is not an official OE-10 execution, F06 findi
 Requirement: docs/baseline/06-rag-architecture-v1.0.md:890, Data Leakage Tests, explicitly lists Tenant A to global restricted content and unauthorized role to restricted document.
 
 Existing tests inspected and preserved:
+
 - tests/tenant/rag-runtime-isolation.test.ts:108 has a global_approved/internal positive and wrong-domain empty response; it lacks the restricted classification, six independent dimensions, malicious-store matrix and complete disclosure/call observations.
 - tests/contract/rag-runtime-contract.test.ts:57 rejects tenant identity on shared metadata; this is schema evidence, not retrieval authorization.
 - tests/integration/rag-runtime.test.ts:500 changes tenant scope without matching integrity evidence; this is tamper rejection, not valid domain-restricted candidate authorization.
@@ -22,11 +23,11 @@ Non-private document fixtures are authored with tenant_scope set from creation, 
 
 The six denied dimensions are document permission, document entitlement, role, allowed agent, domain, and knowledge scope. Only access metadata changes per case. These fields do not alter the runtime's content/chunk/citation integrity hashes, and malicious returns must reach TENANT_SCOPE_VIOLATION rather than integrity INVALID_RESPONSE.
 
-| Stage | Expected calls (store / embedding / ranker / upsert) | Outcome |
-| --- | --- | --- |
-| Compliant deterministic store filtering, each denied dimension | 1 / 0 / 0 / 0 | Complete empty success response; no restricted canaries in complete response or audits |
-| Malicious store returns valid inaccessible candidate, each dimension | 1 / 0 / 0 / 0 | Exact public 403 TENANT_SCOPE_VIOLATION envelope; no restricted canaries in public error or audits; rejected/security_filter audit |
-| Authorized shared restricted control, both scopes | 1 / 1 / 1 / 0 | Exactly one result, exact candidate passed to ranker, trusted tenant/role/grants/agent/domain/scope filter checked |
+| Stage                                                                | Expected calls (store / embedding / ranker / upsert) | Outcome                                                                                                                            |
+| -------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Compliant deterministic store filtering, each denied dimension       | 1 / 0 / 0 / 0                                        | Complete empty success response; no restricted canaries in complete response or audits                                             |
+| Malicious store returns valid inaccessible candidate, each dimension | 1 / 0 / 0 / 0                                        | Exact public 403 TENANT_SCOPE_VIOLATION envelope; no restricted canaries in public error or audits; rejected/security_filter audit |
+| Authorized shared restricted control, both scopes                    | 1 / 1 / 1 / 0                                        | Exactly one result, exact candidate passed to ranker, trusted tenant/role/grants/agent/domain/scope filter checked                 |
 
 All observers are spies around existing deterministic delegates. No zero-store assertion is claimed for candidate filtering. Zero pre-store dependencies remain the separate accepted authorization package's evidence. Both complete public error envelopes and serialized audit arrays are tested. Negative canaries include content, document ID, title, source URI, owner, chunk ID, content hash and citation evidence hash. Authorized controls intentionally return authorized content; raw content and owner remain absent from audits, and owner is absent from public response.
 
@@ -45,6 +46,7 @@ Pinned direct Node 22.23.3; runner reported Vitest 4.1.11. Existing dependencies
 ```
 
 SHA-256:
+
 - tests/integration/f06-shared-knowledge.test.ts: 74C167FC24855B5C1A4A95603F09A07001930E4E7028E32B85B198D8F88F7CF1
 - tests/integration/f06-shared-knowledge.tsconfig.json: C46720DFE2E56D29CD4DE3BA3CD2960E9184EBAB8D35E2CE0716D9607D189FFB
 
@@ -55,4 +57,3 @@ Initial inventory: 24 dirty/new entries and 43 refs; hashes matched the accepted
 All prior files, production code, architecture, baselines, governance evidence, manifests and lockfiles are preserved. No installs, live access, credentials, permission changes or Git mutations.
 
 Remaining: independent review of this package; actual authoritative shared publishing/ownership and role/agent/domain/scope policies; production store/filter adapter and identity enforcement; deployment non-disclosure and timing evidence. These local canary checks are not exhaustive noninterference, a production release decision, or official immutable OE-10 evidence. Existing cache-isolation and other broader baseline requirements are not claimed covered by this finite package.
-

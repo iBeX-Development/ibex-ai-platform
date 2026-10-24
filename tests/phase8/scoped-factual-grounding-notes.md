@@ -55,15 +55,15 @@ Review remediation established raw evidence comparison before shared-schema norm
 
 These hashes were supplied as identities of retained original artifacts. They were **not recomputed from the conversation transcription**, and this task does not claim access to the original external artifacts.
 
-| Historical artifact | Supplied SHA-256 |
-| --- | --- |
+| Historical artifact                                          | Supplied SHA-256                                                   |
+| ------------------------------------------------------------ | ------------------------------------------------------------------ |
 | `semantic-assurance-spec-v1.0.1/contract-specification.json` | `1794d0796a34527ebe981ff3911b7ac025633ddf6ddc1bcf674cf1bf44991325` |
-| `semantic-assurance-52-case-plan/case-plan.json` | `c8c0d7bfb3edcd224a473fdc33656983f1b6f056046a5972c0e87ded50325281` |
-| Parent specification v1.0.0 | `9da1f9fcd59250a02b86c6162bac004b40c2397f9f8d4a2cf7497557788f6100` |
-| Decision package | `a7b12b276545de78d548bb9cb75d5bc328584b069b948c9cdecefa5fb98c4045` |
-| Nine-case execution receipt | `a48d101f2612c893e3c53f28763def408d8dc40a2dd32f72f0a340184aec0997` |
-| Acceptance manifest | `f4b9b48e0782e57580f68645bed3483aeec00998e1d1d4f0fe2b75e38b288f69` |
-| Historical 1719-test toolchain receipt, not a binary hash | `ef971dc58c3ae43be0d7da99c6ff6e8bd051d0dedba0ef0d4a67724cce297bf1` |
+| `semantic-assurance-52-case-plan/case-plan.json`             | `c8c0d7bfb3edcd224a473fdc33656983f1b6f056046a5972c0e87ded50325281` |
+| Parent specification v1.0.0                                  | `9da1f9fcd59250a02b86c6162bac004b40c2397f9f8d4a2cf7497557788f6100` |
+| Decision package                                             | `a7b12b276545de78d548bb9cb75d5bc328584b069b948c9cdecefa5fb98c4045` |
+| Nine-case execution receipt                                  | `a48d101f2612c893e3c53f28763def408d8dc40a2dd32f72f0a340184aec0997` |
+| Acceptance manifest                                          | `f4b9b48e0782e57580f68645bed3483aeec00998e1d1d4f0fe2b75e38b288f69` |
+| Historical 1719-test toolchain receipt, not a binary hash    | `ef971dc58c3ae43be0d7da99c6ff6e8bd051d0dedba0ef0d4a67724cce297bf1` |
 
 The supplied 13 historical clause/context rows retain mapping status `UNKNOWN` and baseline commit `529951f9818c301aae67d94e980deafe7495391f`. This work does not change their authority, population or status.
 
@@ -75,19 +75,19 @@ Preserved HEAD: `028934845591b3e569a1c5d639f81df7c72ca8ac`.
 
 All original nine modified and two untracked files were preserved with matching before/after SHA-256 hashes:
 
-| Original file | Preserved SHA-256 |
-| --- | --- |
-| `.github/workflows/ci.yml` | `2D2DBD7D4C126E1450D316324C45F19F415360A7F31328CA447C969293892742` |
-| `docs/evaluation/findings/registry.v1.json` | `C1B4044E724460A450BD4F8EF867A2C3F99A843861BAE5D8385EE10749829FC2` |
-| `docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md` | `A1C04647A705A1430FCD0C4740C64D901EC24180F331FDC84A6D3D656869B307` |
-| `docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md` | `BB5A551EE4E3B20BF705EC040931D01BD17A238F77025605B4072508BA2BDA4F` |
+| Original file                                                                              | Preserved SHA-256                                                  |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `.github/workflows/ci.yml`                                                                 | `2D2DBD7D4C126E1450D316324C45F19F415360A7F31328CA447C969293892742` |
+| `docs/evaluation/findings/registry.v1.json`                                                | `C1B4044E724460A450BD4F8EF867A2C3F99A843861BAE5D8385EE10749829FC2` |
+| `docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md`                       | `A1C04647A705A1430FCD0C4740C64D901EC24180F331FDC84A6D3D656869B307` |
+| `docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md`                          | `BB5A551EE4E3B20BF705EC040931D01BD17A238F77025605B4072508BA2BDA4F` |
 | `docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md` | `2F4EF5598D62C5131324A6F52067364E274CBD180B01B69915804FF6105ED15E` |
-| `docs/integration/proposals/asset-component-chain-notes.md` | `957D26F559326CB0F7CAC543C3ED4E31A4ACFECD869AB760835AFB94D0471912` |
-| `packages/model-gateway/src/service.ts` | `8315F351BC5BE7D763C19AA071C748C1C72BFC767F5936337087A964BDDEF0E6` |
-| `tests/evaluation/evidence/phase10-runtime-evidence-v1.0.0.json` | `4ED10E5C98611A3F2A50FF1B98AD929B3B1950F73836D874BDF42F5A0D7FEC64` |
-| `tests/testing/asset-component-chain.ts` | `3C2848B393DF9750EDED91396706FCCD1C6F3BB92E8927BD2000521888FAA079` |
-| `tests/integration/api-asset-composition.test.ts` | `28C45C59819891BC0B682E3A3C9E84840C19DD64D0AB5BA6BDF2C4FC7972FFF5` |
-| `tests/integration/model-gateway-timeout-audit.test.ts` | `1C2CDF2BD7F59663CE223542538D67F04567CFCC0EB401998C47DEA9FF3DBE14` |
+| `docs/integration/proposals/asset-component-chain-notes.md`                                | `957D26F559326CB0F7CAC543C3ED4E31A4ACFECD869AB760835AFB94D0471912` |
+| `packages/model-gateway/src/service.ts`                                                    | `8315F351BC5BE7D763C19AA071C748C1C72BFC767F5936337087A964BDDEF0E6` |
+| `tests/evaluation/evidence/phase10-runtime-evidence-v1.0.0.json`                           | `4ED10E5C98611A3F2A50FF1B98AD929B3B1950F73836D874BDF42F5A0D7FEC64` |
+| `tests/testing/asset-component-chain.ts`                                                   | `3C2848B393DF9750EDED91396706FCCD1C6F3BB92E8927BD2000521888FAA079` |
+| `tests/integration/api-asset-composition.test.ts`                                          | `28C45C59819891BC0B682E3A3C9E84840C19DD64D0AB5BA6BDF2C4FC7972FFF5` |
+| `tests/integration/model-gateway-timeout-audit.test.ts`                                    | `1C2CDF2BD7F59663CE223542538D67F04567CFCC0EB401998C47DEA9FF3DBE14` |
 
 Work-package additions are limited to the three `tests/testing/scoped-factual-grounding*.ts` files, the focused test, its no-emit TypeScript configuration, and this notes file. Production code, existing documentation, manifests, lockfiles and approved baselines were not changed by this package.
 

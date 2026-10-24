@@ -7,12 +7,13 @@ Ready for independent review. Owner direction authorizes local contract/adapter 
 Inspected packages/rag-runtime/src/ports.ts: KnowledgeGovernancePort authorizes ingestion with allowed/decision_id; KnowledgeStorePort filters metadata; neither supplies a complete source-admission lifecycle record.
 
 Inspected docs/governance/sir-02/controls/SIR-02-KNOWLEDGE-MANAGEMENT-LIFECYCLE-CONTROL-BASELINE-v1.0.md:
+
 - invariants 1–10 (:61 onwards): ingestion remains disabled, unknown/conflicting authority denies, exact version required, no implicit reopening;
 - canonical record (:74 onwards): source/version/owner/tenant/scope/classification/provenance/checksum/lifecycle and event evidence;
 - ownership and approval (:108 onwards): authoritative ownership verification, authorized human approval of each exact source version and checksum;
 - version/supersession/withdrawal (:125 onwards, especially :157): no inherited approval; withdrawal immediately removes active eligibility;
 - reconciliation and deletion remain mandatory and are not implemented by this minimal projection.
-Gate-A proposed fixture schema :91–117 separately identifies these evidence domains and is documentation-only, not a runtime migration.
+  Gate-A proposed fixture schema :91–117 separately identifies these evidence domains and is documentation-only, not a runtime migration.
 
 This candidate does not replace that full record. It is a minimal decision projection consumed by an isolated retrieval adapter, with explicit synthetic references to underlying ownership, human approval and full lifecycle evidence. It tests fail-closed mechanics while actual evidence validation remains a production prerequisite. No architecture, baseline, governance record or production port was changed. The local exact-read interface is deliberately separate from the production KnowledgeStorePort.
 
@@ -36,6 +37,7 @@ Existing RagRuntimeService still performs authorization, routing-scope resolutio
 ## Synthetic consistency ordering
 
 This is a single JavaScript-agent authority fixture:
+
 1. Admission synchronously reads the exact current record/revision and registers a lease.
 2. Each store/embedding/ranker boundary checks lease validity before call and after awaited completion.
 3. Withdrawal synchronously changes record revision/state, increments epoch and aborts all active leases. No timer, TTL or delayed invalidation.
@@ -49,6 +51,7 @@ The helper is disabled unless enabled is explicitly true and environment exactly
 ## Test inventory
 
 60 cases:
+
 - 1 exact positive control, including identity/issuer/decision/revision/context arguments observed at readExact;
 - 3 disabled/non-test gates;
 - 15 unknown, unverified, malformed, foreign-tenant or inactive authority cases;
@@ -78,6 +81,7 @@ Recovery on 2026-10-24 verified the corrected code hashes and established that t
 ```
 
 SHA-256:
+
 - tests/testing/source-admission.ts: 0ECA4B5EBD1032D7E7452D69C9C451ECD232D0C3E166F4195E5791D3AF2599D6
 - tests/integration/source-admission.test.ts: D6CC5C7E5DA73262A0ABA6A4E33CCA5683BD05E892BC4CD9E527F90110642191
 - tests/integration/source-admission.tsconfig.json: 0055DFE768C9AF725E25E2C4E33826588C38183F943ED915FF0A5C2B117474C7
@@ -111,4 +115,3 @@ Initial 31 dirty/new entries, 43 refs; branch codex/local-model-typing-recovery;
 Four additions only: helper, test, focused config and these notes. Production packages/apps, accepted tests, baselines, governance, manifests and lockfiles remain unchanged. No installs, network/live calls, credentials, permissions changes or Git mutations.
 
 Before production: approve full canonical record mapping and checksum representation, authenticate real ownership and exact-version human approval authority, implement lifecycle/reconciliation/deletion and revision monotonicity across authoritative updates, implement exact-store semantics and distributed revocation/cancellation, and establish deployment/operational controls. This candidate deliberately provides no approve/reopen/replace transition. Strict OE-10 requirements and production activation remain open. Independent review pending; no official evidence run or finding closure.
-

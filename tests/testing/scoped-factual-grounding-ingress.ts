@@ -16,11 +16,13 @@ export function structuredSnapshot(value: unknown, limits: IngressLimits): unkno
     if (Array.isArray(item)) {
       if (prototype !== Array.prototype || Reflect.ownKeys(item).length !== item.length + 1)
         throw new Error('array shape');
-      return Object.freeze(Array.from({ length: item.length }, (_, index) => {
-        const d = descriptors[String(index)];
-        if (!d || !('value' in d) || !d.enumerable) throw new Error('array property');
-        return copy(d.value, depth + 1);
-      }));
+      return Object.freeze(
+        Array.from({ length: item.length }, (_, index) => {
+          const d = descriptors[String(index)];
+          if (!d || !('value' in d) || !d.enumerable) throw new Error('array property');
+          return copy(d.value, depth + 1);
+        })
+      );
     }
     if (prototype !== Object.prototype && prototype !== null) throw new Error('prototype');
     const result: Record<string, unknown> = {};
@@ -42,12 +44,17 @@ export function rawJsonSnapshot(bytes: Uint8Array, limits: IngressLimits): unkno
   if (bytes.byteLength > limits.bytes) throw new Error('size');
   const text = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
   let offset = 0;
-  const ws = () => { while (/[\x20\t\r\n]/.test(text[offset] ?? '') && offset < text.length) offset++; };
+  const ws = () => {
+    while (/[\x20\t\r\n]/.test(text[offset] ?? '') && offset < text.length) offset++;
+  };
   function stringToken(): string {
     const start = offset++;
     while (offset < text.length) {
       const ch = text[offset++];
-      if (ch === '\\') { offset++; continue; }
+      if (ch === '\\') {
+        offset++;
+        continue;
+      }
       if (ch === '"') {
         const value: unknown = JSON.parse(text.slice(start, offset));
         if (typeof value !== 'string') throw new Error('string');
@@ -60,29 +67,43 @@ export function rawJsonSnapshot(bytes: Uint8Array, limits: IngressLimits): unkno
     if (depth > limits.depth) throw new Error('depth');
     ws();
     const ch = text[offset];
-    if (ch === '"') { stringToken(); return; }
+    if (ch === '"') {
+      stringToken();
+      return;
+    }
     if (ch === '{') {
-      offset++; ws();
+      offset++;
+      ws();
       const keys = new Set<string>();
-      if (text[offset] === '}') { offset++; return; }
+      if (text[offset] === '}') {
+        offset++;
+        return;
+      }
       for (;;) {
         ws();
         if (text[offset] !== '"') throw new Error('member');
         const key = stringToken();
         if (keys.has(key)) throw new Error('duplicate member');
-        keys.add(key); ws();
+        keys.add(key);
+        ws();
         if (text[offset++] !== ':') throw new Error('colon');
-        value(depth + 1); ws();
+        value(depth + 1);
+        ws();
         const separator = text[offset++];
         if (separator === '}') return;
         if (separator !== ',') throw new Error('object separator');
       }
     }
     if (ch === '[') {
-      offset++; ws();
-      if (text[offset] === ']') { offset++; return; }
+      offset++;
+      ws();
+      if (text[offset] === ']') {
+        offset++;
+        return;
+      }
       for (;;) {
-        value(depth + 1); ws();
+        value(depth + 1);
+        ws();
         const separator = text[offset++];
         if (separator === ']') return;
         if (separator !== ',') throw new Error('array separator');
@@ -96,7 +117,8 @@ export function rawJsonSnapshot(bytes: Uint8Array, limits: IngressLimits): unkno
     const parsed: unknown = JSON.parse(token);
     if (typeof parsed === 'number' && !Number.isFinite(parsed)) throw new Error('nonfinite');
   }
-  value(0); ws();
+  value(0);
+  ws();
   if (offset !== text.length) throw new Error('trailing input');
   const decoded: unknown = JSON.parse(text);
   return structuredSnapshot(decoded, limits);

@@ -7,6 +7,7 @@ Ready for independent review. No production RAG activation, ToolDispatcher chang
 Approved architecture references: docs/baseline/03-agent-architecture-v1.0.md:27–28 (Intent -> Domain -> Agent -> Tool/RAG), :76–95 (Orchestrator capability routing, permission and RAG/tool selection), :151–154 (capability manifest, RAG scope, permission requirements); docs/baseline/06-rag-architecture-v1.0.md:175–205 (trusted identity and scope).
 
 Actual implementation authority exercised:
+
 - packages/runtime/src/orchestrator.ts:296 calls AgentRegistry.authorize; registry.ts:81 checks agent permissions/entitlements and classifier-required capabilities.
 - Orchestrator :329 verifies planned RAG scopes are a subset of selected agent scopes, and denies required RAG when disabled; :377 constructs the actual routing decision.
 - runtime/src/contracts.ts:173 defines decision fields. Decision carries agent/version/domain/scopes, required capabilities, request/correlation and trace, but no routing decision ID, tenant or user.
@@ -30,6 +31,7 @@ Returned binding, scope, scope arrays, actual capabilities and resolved scopes r
 ## Evidence inventory
 
 24 tests:
+
 - 1 successful actual Orchestrator -> bound port -> RAG retrieval, exact decision-derived scope and store/embed/ranker observations.
 - 8 changed scalar context fields.
 - 2 changed grant arrays with required grants retained.
@@ -54,6 +56,7 @@ First run: 24 PASS, zero skipped. Scoped lint and typecheck exit 0. No correctio
 ```
 
 SHA-256:
+
 - tests/testing/rag-routing-binding.ts: F01C419A1DD76C09E10EC794ACC346268B0DD4D9C16F649B03F366B744C83E3C
 - tests/integration/rag-routing-binding.test.ts: 9BFD0B06236C0FDBABC307CD814B2E10BEC05F809DF66A4839B6EB186230699F
 - tests/integration/rag-routing-binding.tsconfig.json: AB4E91164AD8D715376A9658E4BAB4D899D656CD4939BECFEEFADFE8C4C4108E
@@ -63,4 +66,3 @@ SHA-256:
 Initial 27 dirty/new entries and 43 refs captured. Branch codex/local-model-typing-recovery; HEAD 028934845591b3e569a1c5d639f81df7c72ca8ac. Four isolated additions only, including these notes. Existing accepted files, production packages/apps, ToolDispatcher, governance and baselines remain untouched. Final hash/status/ref comparison accompanies the completion message.
 
 No cache, TTL, installs, network/live calls, permissions changes, commits or Git mutations. Independent review pending. This proves local routing binding only; ownership admission, authoritative production wiring, strict OE-10 all-dimensions zero-store requirement and production activation remain open. No finding closure or official OE-10 run.
-

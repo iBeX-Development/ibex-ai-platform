@@ -9,6 +9,7 @@ Scope: one immediate parent ID for one authorized Asset. No root classification,
 ## Gateway contract and Core independence
 
 All Core–AI Platform information flows traverse AI Gateway:
+
 - Core-facing request -> AI Gateway -> Platform orchestration.
 - Platform -> Tool Runtime -> gateway-only adapter -> AI Gateway -> synthetic Core API.
 - Synthetic Core API -> AI Gateway -> Platform.
@@ -118,6 +119,7 @@ tests/testing/scoped-factual-grounding.ts
 The session identity, company partition, source records, dispatch controls and Core operations are in-memory stubs. They are not security credentials, actual Core mapping authority, real startup/business-continuity evidence, or network controls. Timing equivalence is unproven. No timeouts, retention policy or live freshness values were invented.
 
 Before any separately authorized live integration:
+
 1. Approve the deployed Core source contract and mapping, including identity/company boundaries, parent cardinality/disclosure, null/missing/deleted/dangling semantics and approved provenance.
 2. Establish actual authenticated delegation and Gateway-only transport enforcement; demonstrate rejection of direct Core access and absence of bypass/fallback.
 3. Verify real Core startup, login, representative business operations and background jobs during Gateway outage, Platform outage and both outages; verify bounded optional-AI unavailability.
@@ -125,4 +127,3 @@ Before any separately authorized live integration:
 5. Complete the required live-integration acceptance evidence and separate activation decision.
 
 The target-contract and test-only approvals are resolved. No production activation or governance closure is implied.
-

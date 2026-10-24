@@ -9,6 +9,7 @@ Workspace C:\Users\gantu\Documents\Codex\2026-10-15\task\ibex-local-recovery; re
 No Git index lock or additional overlapping writer was observed. App inventory showed the current delegated recovery task active, prior semantic reviewer idle and the separate Core workspace active; it is not an exhaustive OS writer lock. New filenames were absent before creation. Before/after hash and ref inventories provide bounded preservation evidence; final result is reported with this candidate.
 
 Only new files:
+
 - tests/integration/f06-rag-authorization.test.ts
 - tests/integration/f06-rag-authorization.tsconfig.json
 - tests/integration/f06-rag-authorization-notes.md
@@ -16,22 +17,23 @@ Only new files:
 ## Requirement and stage mapping
 
 Authority references remain unchanged:
+
 - docs/baseline/06-rag-architecture-v1.0.md:175 (trusted tenant context), :198 (retrieval scopes), :438 (filter sequence), :483 (retrieval flow), :353 (ingestion tenant ownership verification).
 - docs/baseline/02-tenant-security-contract-v1.0.md:394 (resource ownership validation).
 - docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-EXECUTION-PLAN-v1.0.md:253, especially :257–264, names tenant, permission, entitlement, role, ownership, agent, domain and scope and expects authorization negatives before store/ranker access. This package does not certify that stronger requirement.
 
 Runtime locations: packages/rag-runtime/src/service.ts (service), packages/rag-runtime/src/access.ts (predicate), packages/security/src/authorization.ts (authorization); test locations below refer to the new test file.
 
-| Dimension | Actual runtime stage/check | Evidence and remaining gap |
-| --- | --- | --- |
-| Tenant | service:626 parses trusted context; :693 compares resolved tenant/user/request/correlation/routing identity before store; :708 constructs filter; predicate:14 checks private chunk tenant; service:769 repeats predicate after store | New :75 five conflicting scope bindings, :92 caller override; :114 and :126 tenant candidate cases; :152 mixed store. Context authenticity is upstream authority, not established by shape parsing. |
-| Permission | service:653 invokes authorization; authorization:48 checks required retrieval permissions before policy; predicate:25 checks document permissions | New :59 missing retrieval permission has zero store/embed/rank/upsert calls; :114/:126 document-permission negatives have one store call, zero embed/rank. Document metadata checks are not pre-store proof. |
-| Entitlement | authorization:49 and predicate:26, same stage distinction | New :59 missing retrieval entitlement; :114/:126 document entitlement. Authoritative policy source remains outside this fixture. |
-| Role | trusted context requires nonempty role; passed to server policy and filter; predicate:27–28 enforces document allowed_roles | New :114/:126 role negatives prove filtering/post-store rejection before semantic work, not role-specific pre-store policy. No approved role authority is invented. |
-| Ownership | service:361 calls ingestion governance, :382 tenant binding; source_owner is required provenance in contracts.ts and stored at service:460 | Existing rag-runtime.test.ts:29, :114, :147 verify provenance/required fields, :207 governance denial. Retrieval does not compare source_owner with trusted ownership authority. Explicit gap: authoritative ownership semantics and evidence; generic server policy denial is not ownership proof. |
-| Agent | resolved approved scope from port at service:663; filter at :708; predicate:23 | New :92 rejects caller override; :114/:126 candidate agent mismatch. Scope port contract requires rejecting stale/foreign/widened scope, but fixture is not proof of actual resolver policy. |
-| Domain | same scope port/filter; predicate:22 | New :92 override; :114/:126 domain mismatch. Actual approved domain selection authority remains an external evidence gap. |
-| Knowledge scope | same scope port/filter; predicate:24 uses any overlap | New :92 override; :114/:126 disjoint scope. Existing semantics are overlap, not an invented all-scopes requirement; multiple-scope policy authority is not established here. |
+| Dimension       | Actual runtime stage/check                                                                                                                                                                                                            | Evidence and remaining gap                                                                                                                                                                                                                                                                          |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tenant          | service:626 parses trusted context; :693 compares resolved tenant/user/request/correlation/routing identity before store; :708 constructs filter; predicate:14 checks private chunk tenant; service:769 repeats predicate after store | New :75 five conflicting scope bindings, :92 caller override; :114 and :126 tenant candidate cases; :152 mixed store. Context authenticity is upstream authority, not established by shape parsing.                                                                                                 |
+| Permission      | service:653 invokes authorization; authorization:48 checks required retrieval permissions before policy; predicate:25 checks document permissions                                                                                     | New :59 missing retrieval permission has zero store/embed/rank/upsert calls; :114/:126 document-permission negatives have one store call, zero embed/rank. Document metadata checks are not pre-store proof.                                                                                        |
+| Entitlement     | authorization:49 and predicate:26, same stage distinction                                                                                                                                                                             | New :59 missing retrieval entitlement; :114/:126 document entitlement. Authoritative policy source remains outside this fixture.                                                                                                                                                                    |
+| Role            | trusted context requires nonempty role; passed to server policy and filter; predicate:27–28 enforces document allowed_roles                                                                                                           | New :114/:126 role negatives prove filtering/post-store rejection before semantic work, not role-specific pre-store policy. No approved role authority is invented.                                                                                                                                 |
+| Ownership       | service:361 calls ingestion governance, :382 tenant binding; source_owner is required provenance in contracts.ts and stored at service:460                                                                                            | Existing rag-runtime.test.ts:29, :114, :147 verify provenance/required fields, :207 governance denial. Retrieval does not compare source_owner with trusted ownership authority. Explicit gap: authoritative ownership semantics and evidence; generic server policy denial is not ownership proof. |
+| Agent           | resolved approved scope from port at service:663; filter at :708; predicate:23                                                                                                                                                        | New :92 rejects caller override; :114/:126 candidate agent mismatch. Scope port contract requires rejecting stale/foreign/widened scope, but fixture is not proof of actual resolver policy.                                                                                                        |
+| Domain          | same scope port/filter; predicate:22                                                                                                                                                                                                  | New :92 override; :114/:126 domain mismatch. Actual approved domain selection authority remains an external evidence gap.                                                                                                                                                                           |
+| Knowledge scope | same scope port/filter; predicate:24 uses any overlap                                                                                                                                                                                 | New :92 override; :114/:126 disjoint scope. Existing semantics are overlap, not an invented all-scopes requirement; multiple-scope policy authority is not established here.                                                                                                                        |
 
 Pre-store authorization: service:653; resolved-scope checks :663–701; strict request contract contracts.ts:267. Store filtering: service:745 invokes the port with complete filter. Post-store validation: service:749 parses, :755 checks integrity, :769 checks security predicate; post-ranking repeat at :851. Do not relabel candidate post-store rejection as zero-store proof.
 
@@ -40,6 +42,7 @@ Existing tests inspected, not rerun here: tests/integration/rag-runtime.test.ts:
 ## Test inventory and proof limits
 
 32 cases:
+
 - 16 pre-store: 2 missing retrieval grants, 3 server-policy denial/failure/malformed decisions, 5 resolved identity mismatches, 2 scope denial/failure, 4 caller overrides.
 - 7 compliant-store candidate filtering cases: tenant, document permission, document entitlement, role, agent, domain, knowledge scope.
 - 7 malicious-store candidate post-validation cases for the same dimensions, with valid recomputed integrity.
@@ -66,6 +69,7 @@ Final result: 32 passed, zero skipped; focused test, scoped lint and scoped type
 ```
 
 Final code SHA-256:
+
 - test: 2006D65832EB832EC905E383B02406B35CC067F63915C1017872B8FFBCA2BBFF
 - tsconfig: 5005D86EDF6A6C791A10646E184DA16193314D2D06BEA0E145E96EC25FB380B5
 
@@ -135,4 +139,3 @@ tests/testing/scoped-factual-grounding-ingress.ts
 tests/testing/scoped-factual-grounding.ts
 3B20E09738F0D243393898D242AE9BAD56DBE1C9CA08E9B4B1C994D197E79621
 ```
-
