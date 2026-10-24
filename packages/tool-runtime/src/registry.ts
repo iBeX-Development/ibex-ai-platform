@@ -17,6 +17,7 @@ function isRuntimeSchema(value: unknown): value is ToolRegistration['input_schem
 function freezeMetadata(metadata: ToolMetadata): ToolMetadata {
   return Object.freeze({
     ...metadata,
+    rate_limit: Object.freeze({ ...metadata.rate_limit }),
     required_permissions: Object.freeze([...metadata.required_permissions]),
     required_entitlements: Object.freeze([...metadata.required_entitlements]),
     timeout_policy: Object.freeze({ ...metadata.timeout_policy }),
@@ -25,12 +26,20 @@ function freezeMetadata(metadata: ToolMetadata): ToolMetadata {
   });
 }
 
+function parseMetadata(record: ToolRegistration): ReturnType<typeof toolMetadataSchema.safeParse> {
+  try {
+    return toolMetadataSchema.safeParse(record.metadata);
+  } catch {
+    throw new PlatformError('CONFIGURATION_ERROR', 'Tool registry configuration is invalid', 500);
+  }
+}
+
 export class ToolRegistry {
   private readonly registrations: ReadonlyMap<string, ToolRegistration>;
 
   constructor(records: readonly ToolRegistration[]) {
     const entries = records.map((record): readonly [string, ToolRegistration] => {
-      const parsed = toolMetadataSchema.safeParse(record.metadata);
+      const parsed = parseMetadata(record);
       if (
         !parsed.success ||
         !isRuntimeSchema(record.input_schema) ||

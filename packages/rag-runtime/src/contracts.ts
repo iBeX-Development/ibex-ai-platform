@@ -157,6 +157,8 @@ export const knowledgeChunkSchema = z
     document_id: nonEmpty,
     document_version: nonEmpty,
     title: nonEmpty,
+    source_owner: nonEmpty,
+    document_created_at: z.string().datetime(),
     document_updated_at: z.string().datetime(),
     tenant_scope: z.enum(['global_approved', 'domain_approved', 'tenant_private']),
     tenant_id: nonEmpty.optional(),
@@ -179,7 +181,16 @@ export const knowledgeChunkSchema = z
     embedding: embeddingEvidenceSchema
   })
   .strict()
-  .readonly();
+  .readonly()
+  .superRefine((value, context) => {
+    if (Date.parse(value.document_updated_at) < Date.parse(value.document_created_at)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['document_updated_at'],
+        message: 'Knowledge update time cannot precede creation time'
+      });
+    }
+  });
 
 export type KnowledgeChunk = Readonly<z.infer<typeof knowledgeChunkSchema>>;
 

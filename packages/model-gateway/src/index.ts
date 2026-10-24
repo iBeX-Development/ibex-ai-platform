@@ -3,4 +3,6 @@ export * from './accounting.js';
 export * from './contracts.js';
 export * from './metrics.js';
 export * from './registry.js';
+export * from './schema-catalog.js';
+export * from './workflow-output-catalog.js';
 export * from './service.js';

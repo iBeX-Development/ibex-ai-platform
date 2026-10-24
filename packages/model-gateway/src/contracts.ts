@@ -68,11 +68,35 @@ export const providerDefinitionSchema = z
   .readonly();
 export type ProviderDefinition = Readonly<z.infer<typeof providerDefinitionSchema>>;
 
+// Exact local identifiers: no trimming, wildcard references, URLs, or implicit versions.
+const schemaToken = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._:-]*$/);
+export const modelPayloadSchemaReferenceSchema = z
+  .object({ schema_id: schemaToken, schema_version: schemaToken })
+  .strict()
+  .readonly();
+export type ModelPayloadSchemaReference = z.infer<typeof modelPayloadSchemaReferenceSchema>;
+
+export const modelContentModalitySchema = z.enum(['text', 'image', 'audio', 'video']);
+export const modelPayloadTypeSchema = z
+  .object({
+    modalities: z
+      .array(modelContentModalitySchema)
+      .min(1)
+      .refine((values) => new Set(values).size === values.length, 'Duplicate content modality')
+      .readonly(),
+    schema: modelPayloadSchemaReferenceSchema
+  })
+  .strict()
+  .readonly();
+export type ModelPayloadType = z.infer<typeof modelPayloadTypeSchema>;
+
 export const modelDefinitionSchema = z
   .object({
     provider_id: nonEmpty,
     model_id: nonEmpty,
     model_version: nonEmpty,
+    input_type: modelPayloadTypeSchema,
+    output_type: modelPayloadTypeSchema,
     capabilities: z.array(modelCapabilitySchema).min(1).readonly(),
     context_limit: z.number().int().positive(),
     structured_output: z.boolean(),

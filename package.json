@@ -21,6 +21,8 @@
     "test:contract": "vitest run tests/contract",
     "test:security": "vitest run tests/security tests/tenant",
     "test:phase10": "vitest run tests/evaluation tests/phase8 tests/security tests/tenant",
+    "validate:phase10:engineering": "tsx scripts/phase10-validate-engineering.ts",
+    "evaluate:phase10:release": "tsx scripts/phase10-evaluate.ts",
     "evaluate:phase10": "tsx scripts/phase10-evaluate.ts",
     "evaluate:phase10:update": "tsx scripts/phase10-evaluate.ts --write-evidence",
     "scan:dependency": "corepack pnpm audit --audit-level high",
@@ -30,7 +32,7 @@
     "scan:evaluation-leakage": "node scripts/phase10-scan.mjs evaluation-leakage",
     "scan:phase11-scope": "node scripts/phase10-scan.mjs phase11-scope",
     "scan:phase10": "node scripts/phase10-scan.mjs secret && node scripts/phase10-scan.mjs direct-core-db && node scripts/phase10-scan.mjs provider-coupling && node scripts/phase10-scan.mjs evaluation-leakage && node scripts/phase10-scan.mjs phase11-scope",
-    "validate": "corepack pnpm format:check && corepack pnpm lint && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build && corepack pnpm scan:phase10"
+    "validate": "corepack pnpm format:check && corepack pnpm lint && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build && corepack pnpm scan:phase10 && corepack pnpm validate:phase10:engineering"
   },
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",

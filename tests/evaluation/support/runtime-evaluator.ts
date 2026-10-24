@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { pilotAgentProfiles } from '../../../agents/index.js';
 import {
@@ -14,6 +13,8 @@ import type {
 } from '../../../packages/pilot-agents/src/index.js';
 import { enabledTestFeatureControls } from '../../../packages/testing/src/index.js';
 import {
+  ToolRateLimitCatalog,
+  InMemoryToolRateLimiter,
   ToolRegistry,
   ToolRuntimeService,
   type ToolAdapter,
@@ -35,13 +36,15 @@ import {
 } from '../datasets/pilot-agents/v1.0.0.js';
 import {
   evaluationObservationSchema,
+  evaluationEvidenceHash as evidenceHash,
+  phase10ExpectedRun,
   qualityMetricSchema,
   type CriticalGateName,
   type EvaluationObservation,
   type QualityMetric
 } from './release-gate.js';
 
-export const phase10EvaluationRunId = 'phase10-runtime-evaluation-v1.0.0';
+export const phase10EvaluationRunId = phase10ExpectedRun.evaluation_run_id;
 
 function profileFor(caseItem: GoldenEvaluationCase): PilotAgentProfile {
   const profile = pilotAgentProfiles.find((candidate) => candidate.agent_id === caseItem.agent_id);
@@ -68,20 +71,6 @@ const metricByCategory: Readonly<Partial<Record<GoldenEvaluationCase['category']
 
 function safeIdentifier(caseId: string): string {
   return caseId.toLowerCase().replaceAll(/[^a-z0-9-]/g, '-');
-}
-
-function canonicalJson(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map((item) => canonicalJson(item)).join(',')}]`;
-  if (value && typeof value === 'object')
-    return `{${Object.entries(value)
-      .sort(([left], [right]) => left.localeCompare(right))
-      .map(([key, item]) => `${JSON.stringify(key)}:${canonicalJson(item)}`)
-      .join(',')}}`;
-  return JSON.stringify(value);
-}
-
-function evidenceHash(value: unknown): string {
-  return `sha256:${createHash('sha256').update(canonicalJson(value)).digest('hex')}`;
 }
 
 function ragEvidenceFor(
@@ -144,6 +133,9 @@ async function executeDeterministicTool(
   let observedInput: unknown;
   const registration: ToolRegistration = {
     metadata: {
+      registration_version: '3.0',
+      rate_limit: { policy_id: 'synthetic-tool-rate', version: '1' },
+      error_model: 'ibex.tool-error.v1',
       tool_id: toolRequest.capability_class,
       tool_name: `Phase 10 deterministic ${toolRequest.capability_class}`,
       version: contract.version,
@@ -212,6 +204,14 @@ async function executeDeterministicTool(
   const runtime = new ToolRuntimeService({
     featureControls: enabledTestFeatureControls,
     registry: new ToolRegistry([registration]),
+    rateLimitPolicies: new ToolRateLimitCatalog([
+      {
+        reference: { policy_id: 'synthetic-tool-rate', version: '1' },
+        limit: 1000,
+        window_ms: 60000
+      }
+    ]),
+    rateLimiter: new InMemoryToolRateLimiter(() => 100),
     adapters: [adapter],
     authorization: {
       authorize: () =>
@@ -442,7 +442,9 @@ export async function executeEvaluationCase(
       .map((candidate) => [candidate, metricPassed ? 1 : 0])
   );
   const passed =
-    outcome === caseItem.expected && (!expectedTool || (selectedToolMatches && parametersMatch));
+    metricPassed &&
+    outcome === caseItem.expected &&
+    (!expectedTool || (selectedToolMatches && parametersMatch));
   const validatedControls = new Set<CriticalGateName>();
   if (auditEvidence.length > 0) validatedControls.add('audit_completeness');
   const hasAudit = (input: {

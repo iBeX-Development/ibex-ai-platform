@@ -16,7 +16,11 @@ import {
 } from '../../rag-runtime/src/index.js';
 import { createTrustedRequestContext } from '../../security/src/index.js';
 import { tracer } from '../../observability/src/index.js';
-import { toolExecutionResponseSchema } from '../../tool-runtime/src/index.js';
+import {
+  toolExecutionResponseSchema,
+  type ToolBindingCatalog
+} from '../../tool-runtime/src/index.js';
+import { warehouseReadResponseSchema, type WarehouseReadResponse } from './warehouse-read.js';
 import {
   pilotAgentExecutionRequestSchema,
   pilotAgentProfileSchema,
@@ -31,12 +35,33 @@ import {
 
 const ABSTENTION = 'Insufficient approved evidence is available for this request.';
 
+// Server-owned reporting budget; independent of caller cancellation and attempt policy.
+const failureReportingBudgetMs = 1_000;
+
+async function awaitFailureReport(emit: () => Promise<void>): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    await Promise.race([
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error('Failure audit reporting timed out'));
+        }, failureReportingBudgetMs);
+      }),
+      // Observe late rejection/fulfillment even when the reporting budget expires.
+      Promise.resolve().then(emit)
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export interface PilotAgentRuntimeOptions {
   readonly featureControls: FeatureControls;
   readonly service: string;
   readonly environment: string;
   readonly promptHierarchy: PromptHierarchyAuditEvidence;
   readonly allowDeterministicTestAdapters?: boolean;
+  readonly toolEvidenceBindings?: ToolBindingCatalog;
   readonly boundaryIdentityFactory?: () => Readonly<{
     trace_id: string;
     request_id: string;
@@ -113,6 +138,51 @@ export class PilotAgentRuntime {
   }
 
   async execute(rawRequest: unknown, now = new Date()): Promise<PilotAgentResponse> {
+    return this.#execute(rawRequest, now);
+  }
+
+  async executeWarehouseRead(
+    rawRequest: unknown,
+    now = new Date()
+  ): Promise<WarehouseReadResponse> {
+    const unavailable = () =>
+      new PlatformError('VALIDATION_ERROR', 'Warehouse read response is unavailable', 400);
+    if (this.profile.agent_id !== 'warehouse' || this.profile.domain !== 'warehouse') {
+      throw unavailable();
+    }
+    // Do not accept a caller-supplied response or dispatch through overridable execute.
+    const response = await this.#execute(rawRequest, now);
+    const informational =
+      response.intent === 'WAREHOUSE_KNOWLEDGE_QUERY' && response.response_type === 'knowledge';
+    const analysis =
+      (response.intent === 'INVENTORY_QUERY' && response.response_type === 'operational') ||
+      (response.intent === 'WORK_ORDER_MATERIAL_QUERY' && response.response_type === 'analysis');
+    if (
+      response.agent_id !== 'warehouse' ||
+      (!informational && !analysis) ||
+      response.evidence_status !== 'sufficient' ||
+      response.approval_required
+    ) {
+      throw unavailable();
+    }
+    const projected = warehouseReadResponseSchema.safeParse({
+      agent: 'warehouse',
+      response_type: informational ? 'informational' : 'analysis',
+      risk_level: informational ? 'R0' : 'R1',
+      answer: response.answer,
+      evidence_status: 'Sufficient',
+      sources: response.citations.filter((citation) => citation.source_type === 'rag'),
+      tools_used: response.citations.filter((citation) => citation.source_type === 'tool'),
+      proposed_action: null,
+      approval_required: false,
+      warnings: [],
+      limitations: response.limitations
+    });
+    if (!projected.success) throw unavailable();
+    return projected.data;
+  }
+
+  async #execute(rawRequest: unknown, now: Date): Promise<PilotAgentResponse> {
     const boundary = createBoundaryIdentity(this.options.boundaryIdentityFactory);
     return tracer.startActiveSpan('pilot-agent.execute', async (span) => {
       span.setAttributes({
@@ -345,14 +415,28 @@ export class PilotAgentRuntime {
       );
       throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
     }
-    if (request.requested_rag_scopes.length > 0 && !this.options.featureControls.rag) {
-      throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
-    }
-    if (request.requested_tool_capabilities.length > 0 && !this.options.featureControls.tools) {
-      throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
-    }
-    if (policy.proposal_only && !this.options.featureControls.actionTools) {
-      throw new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
+    if (
+      (request.requested_rag_scopes.length > 0 && !this.options.featureControls.rag) ||
+      (request.requested_tool_capabilities.length > 0 && !this.options.featureControls.tools) ||
+      (policy.proposal_only && !this.options.featureControls.actionTools)
+    ) {
+      const denial = new PlatformError('PERMISSION_DENIED', 'Access denied', 403);
+      try {
+        await awaitFailureReport(() =>
+          this.emitAudit(
+            context,
+            request.trace_id,
+            'rejected',
+            'authorization',
+            denial.code,
+            policy.intent,
+            now
+          )
+        );
+      } catch {
+        span.addEvent('pilot-agent.audit.emission_failed');
+      }
+      throw denial;
     }
 
     if (policy.tool_capability_classes.length > 0) {
@@ -427,12 +511,32 @@ export class PilotAgentRuntime {
     const citations: AgentCitation[] = [];
     for (const raw of evidence.tool_responses) {
       const response = toolExecutionResponseSchema.parse(raw);
+      const bindings = this.options.toolEvidenceBindings;
+      const matches = bindings
+        ? request.requested_tool_capabilities.filter((capability) => {
+            if (!policy.tool_capability_classes.includes(capability)) return false;
+            const binding = bindings.resolve({
+              agent_id: request.agent_id,
+              agent_version: request.agent_version,
+              domain: request.domain,
+              intent: request.intent,
+              conceptual_capability: capability
+            });
+            return (
+              this.options.environment === 'test' &&
+              this.options.allowDeterministicTestAdapters === true &&
+              binding?.mode === 'deterministic_test' &&
+              binding.concrete_tool.tool_id === response.tool_id &&
+              binding.concrete_tool.tool_version === response.tool_version
+            );
+          }).length === 1
+        : policy.tool_capability_classes.includes(response.tool_id) &&
+          request.requested_tool_capabilities.includes(response.tool_id);
       if (
         response.request_id !== context.request_id ||
         response.correlation_id !== context.correlation_id ||
         response.trace_id !== request.trace_id ||
-        !policy.tool_capability_classes.includes(response.tool_id) ||
-        !request.requested_tool_capabilities.includes(response.tool_id)
+        !matches
       )
         throw new Error('Tool evidence binding mismatch');
       if (response.status !== 'success')

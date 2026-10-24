@@ -125,6 +125,46 @@ describe('Gate P2 AI Gateway pipeline', () => {
     ]);
   });
 
+  it('preserves trusted request correlation when the platform returns a conflicting request ID', async () => {
+    const fixture = createDependencies();
+    fixture.forward.mockImplementation(() =>
+      Promise.resolve({
+        status: 'success' as const,
+        response: { accepted: true },
+        action_type: 'informational' as const,
+        approval_required: false,
+        request_id: 'conflicting-platform-request'
+      })
+    );
+    const response = await new AiGatewayService(fixture.dependencies).execute(
+      request('chat'),
+      validationTime
+    );
+
+    expect(response).toMatchObject({
+      status: 'success',
+      response: { accepted: true },
+      request_id: 'request-1',
+      trace_id: 'gateway-trace-1'
+    });
+    expect(fixture.forward).toHaveBeenCalledTimes(1);
+    expect(fixture.forward.mock.calls[0]?.[0].context).toMatchObject({
+      request_id: 'request-1',
+      correlation_id: 'correlation-1'
+    });
+    expect(fixture.auditEvents).toHaveLength(2);
+    for (const event of fixture.auditEvents) {
+      expect(event).toMatchObject({
+        request_id: response.request_id,
+        correlation_id: 'correlation-1',
+        trace_id: response.trace_id,
+        outcome: 'accepted'
+      });
+    }
+    expect(JSON.stringify(fixture.auditEvents)).not.toContain('conflicting-platform-request');
+    expect(Object.isFrozen(response)).toBe(true);
+  });
+
   it('rejects an invalid endpoint payload before authorization or forwarding', async () => {
     const fixture = createDependencies();
     const service = new AiGatewayService(fixture.dependencies);

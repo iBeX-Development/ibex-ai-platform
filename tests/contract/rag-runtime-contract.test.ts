@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
+  knowledgeChunkSchema,
   knowledgeMetadataSchema,
   ragIngestionRequestSchema,
   ragRetrievalRequestSchema,
   ragRetrievalResponseSchema
 } from '../../packages/rag-runtime/src/index.js';
 import {
+  indexedChunk,
   ingestionRequest,
   makeDocument,
   ragContext,
@@ -13,6 +15,40 @@ import {
 } from '../testing/rag-runtime-fixtures.js';
 
 describe('Gate P6 RAG Runtime contracts', () => {
+  it('requires stored provenance and rejects invalid chronology without defaulting legacy records', async () => {
+    const chunk = await indexedChunk();
+    expect(knowledgeChunkSchema.parse(chunk)).toMatchObject({
+      source_owner: makeDocument().metadata.source_owner,
+      document_created_at: makeDocument().metadata.created_at,
+      document_updated_at: makeDocument().metadata.updated_at
+    });
+    for (const field of ['source_owner', 'document_created_at', 'document_updated_at'] as const) {
+      const missing: Record<string, unknown> = { ...chunk };
+      Reflect.deleteProperty(missing, field);
+      expect(knowledgeChunkSchema.safeParse(missing).success).toBe(false);
+      for (const value of [undefined, null, '', ' \t ', 123, {}, []]) {
+        expect(knowledgeChunkSchema.safeParse({ ...chunk, [field]: value }).success).toBe(false);
+      }
+    }
+    for (const field of ['document_created_at', 'document_updated_at'] as const) {
+      for (const value of ['not-a-date', '2025-13-01T00:00:00.000Z']) {
+        expect(knowledgeChunkSchema.safeParse({ ...chunk, [field]: value }).success).toBe(false);
+      }
+    }
+    expect(
+      knowledgeChunkSchema.safeParse({
+        ...chunk,
+        document_created_at: '2026-02-01T00:00:00.000Z'
+      }).success
+    ).toBe(false);
+    expect(
+      knowledgeChunkSchema.safeParse({
+        ...chunk,
+        document_created_at: chunk.document_updated_at
+      }).success
+    ).toBe(true);
+  });
+
   it('requires an explicit tenant for tenant-private knowledge', () => {
     const metadata = { ...makeDocument().metadata, tenant_id: undefined };
     expect(knowledgeMetadataSchema.safeParse(metadata).success).toBe(false);

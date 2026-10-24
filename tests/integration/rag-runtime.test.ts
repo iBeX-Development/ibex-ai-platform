@@ -1,4 +1,6 @@
+import type { Span } from '@opentelemetry/api';
 import { describe, expect, it, vi } from 'vitest';
+import { tracer } from '../../packages/observability/src/index.js';
 import type { AuditRecord } from '../../packages/audit/src/index.js';
 import type {
   EmbeddingPort,
@@ -7,6 +9,7 @@ import type {
   RetrievalRankerPort
 } from '../../packages/rag-runtime/src/index.js';
 import {
+  calculateDocumentChecksum,
   citationEvidenceHashForStoredChunk,
   stableChunkIdForStoredChunk
 } from '../../packages/rag-runtime/src/index.js';
@@ -23,6 +26,150 @@ import {
 } from '../testing/rag-runtime-fixtures.js';
 
 describe('Gate P6 RAG Runtime', () => {
+  it('retains parent provenance across chunks without changing integrity or exposing it publicly', async () => {
+    const span = {
+      setAttribute: vi.fn(),
+      setAttributes: vi.fn(),
+      setStatus: vi.fn(),
+      recordException: vi.fn(),
+      end: vi.fn()
+    };
+    const tracing = vi.spyOn(tracer, 'startActiveSpan').mockImplementation((...args) => {
+      const callback = args.at(-1) as (active: Span) => unknown;
+      return callback(span as unknown as Span);
+    });
+    try {
+      const original = makeDocument({
+        source_owner: 'private-provenance-owner',
+        created_at: '2025-11-02T03:04:05.000Z',
+        updated_at: '2025-12-03T04:05:06.000Z'
+      });
+      const sections = [
+        ...original.sections,
+        {
+          location: { section: '7 Inspection', reference: 'section-7', ordinal: 1 },
+          content: 'Record bearing vibration after lubrication.'
+        }
+      ];
+      const document = {
+        ...original,
+        sections,
+        metadata: {
+          ...original.metadata,
+          checksum: calculateDocumentChecksum({ ...original, sections })
+        }
+      };
+      const audits: AuditRecord[] = [];
+      const store = new DeterministicKnowledgeStore();
+      const runtime = createRagRuntime(audits, { store });
+      const ingested = await runtime.ingest(ingestionRequest({ document }), {}, ragValidationTime);
+      expect(store.chunks).toHaveLength(2);
+      for (const chunk of store.chunks) {
+        expect(chunk).toMatchObject({
+          source_owner: document.metadata.source_owner,
+          document_created_at: document.metadata.created_at,
+          document_updated_at: document.metadata.updated_at
+        });
+        expect(Object.isFrozen(chunk)).toBe(true);
+        const differentProvenance = {
+          ...chunk,
+          source_owner: 'another-declared-owner',
+          document_created_at: '2025-01-01T00:00:00.000Z',
+          document_updated_at: '2025-02-01T00:00:00.000Z'
+        };
+        expect(stableChunkIdForStoredChunk(differentProvenance)).toBe(chunk.chunk_id);
+        expect(citationEvidenceHashForStoredChunk(differentProvenance)).toBe(
+          chunk.citation_evidence_hash
+        );
+      }
+      const retrieved = await runtime.retrieve(retrievalRequest(), {}, ragValidationTime);
+      expect(retrieved.results).toHaveLength(2);
+      expect(retrieved.results.map(({ citation }) => citation.chunk_id).sort()).toEqual(
+        [...ingested.chunk_ids].sort()
+      );
+      const publicEvidence = JSON.stringify({
+        ingested,
+        retrieved,
+        audits,
+        attributes: span.setAttributes.mock.calls,
+        attribute: span.setAttribute.mock.calls,
+        statuses: span.setStatus.mock.calls,
+        exceptions: span.recordException.mock.calls
+      });
+      for (const value of [
+        document.metadata.source_owner,
+        document.metadata.created_at,
+        document.metadata.updated_at,
+        'source_owner',
+        'document_created_at',
+        'document_updated_at'
+      ]) {
+        expect(publicEvidence).not.toContain(value);
+      }
+    } finally {
+      tracing.mockRestore();
+    }
+  });
+
+  it.each([
+    ['source_owner', undefined],
+    ['source_owner', '   '],
+    ['created_at', undefined],
+    ['created_at', 'invalid-date'],
+    ['created_at', '2027-01-01T00:00:00.000Z']
+  ])(
+    'rejects invalid parent provenance %s before embedding or storing (%s)',
+    async (field, value) => {
+      const document = makeDocument();
+      const embed = vi.fn<EmbeddingPort['embed']>();
+      const upsert = vi.fn<KnowledgeStorePort['upsert']>();
+      const runtime = createRagRuntime([], {
+        embeddings: { embed },
+        store: { upsert, filter: () => Promise.resolve([]) }
+      });
+      await expect(
+        runtime.ingest(
+          ingestionRequest({
+            document: {
+              ...document,
+              metadata: { ...document.metadata, [field]: value }
+            }
+          }),
+          {},
+          ragValidationTime
+        )
+      ).rejects.toMatchObject({ code: 'INVALID_INPUT' });
+      expect(embed).not.toHaveBeenCalled();
+      expect(upsert).not.toHaveBeenCalled();
+    }
+  );
+
+  it.each([
+    ['source_owner', undefined],
+    ['source_owner', '   '],
+    ['document_created_at', undefined],
+    ['document_created_at', 'invalid-date'],
+    ['document_updated_at', undefined],
+    ['document_updated_at', 'invalid-date'],
+    ['document_created_at', '2027-01-01T00:00:00.000Z']
+  ])('rejects legacy or invalid stored provenance %s before ranking (%s)', async (field, value) => {
+    const chunk = await indexedChunk();
+    const raw: Record<string, unknown> = { ...chunk, [field]: value };
+    if (value === undefined) Reflect.deleteProperty(raw, field);
+    const rank = vi.fn<RetrievalRankerPort['rank']>();
+    const runtime = createRagRuntime([], {
+      store: { upsert: () => Promise.resolve(), filter: () => Promise.resolve([raw]) },
+      ranker: { rank }
+    });
+    await expect(runtime.retrieve(retrievalRequest(), {}, ragValidationTime)).rejects.toMatchObject(
+      {
+        code: 'INVALID_RESPONSE',
+        publicMessage: 'Knowledge store response is invalid'
+      }
+    );
+    expect(rank).not.toHaveBeenCalled();
+  });
+
   it('ingests an approved structured document with stable traceability and integrity evidence', async () => {
     const audits: AuditRecord[] = [];
     const store = new DeterministicKnowledgeStore();

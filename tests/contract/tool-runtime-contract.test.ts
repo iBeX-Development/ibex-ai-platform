@@ -13,8 +13,25 @@ import {
 
 describe('Gate P5 Tool Runtime contracts', () => {
   it('accepts approved read and proposal registry metadata', () => {
-    expect(toolMetadataSchema.safeParse(readToolMetadata).success).toBe(true);
-    expect(toolMetadataSchema.safeParse(proposalToolMetadata).success).toBe(true);
+    for (const metadata of [readToolMetadata, proposalToolMetadata]) {
+      const parsed = toolMetadataSchema.parse(metadata);
+      expect(parsed).toMatchObject({
+        registration_version: '3.0',
+        error_model: 'ibex.tool-error.v1',
+        version: '1.0'
+      });
+      expect(Object.isFrozen(parsed)).toBe(true);
+    }
+  });
+
+  it('does not infer registration format from an individual Tool version', () => {
+    const legacy: Record<string, unknown> = { ...readToolMetadata, version: '2.0' };
+    delete legacy.registration_version;
+    delete legacy.error_model;
+    expect(toolMetadataSchema.safeParse(legacy).success).toBe(false);
+    expect(toolMetadataSchema.safeParse({ ...readToolMetadata, version: '3.1' }).success).toBe(
+      true
+    );
   });
 
   it('keeps tenant context separate from tool input', () => {

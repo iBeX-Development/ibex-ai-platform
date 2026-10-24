@@ -27,11 +27,18 @@ import {
   type ToolExecutionResponse,
   type ToolRegistration
 } from './contracts.js';
+import {
+  ToolRateLimitCatalog,
+  type ToolRateLimiter,
+  type ToolRateLimitPolicy
+} from './rate-limit.js';
 import { toolKey, type ToolRegistry } from './registry.js';
 
 export interface ToolRuntimeDependencies {
   readonly featureControls: FeatureControls;
   readonly registry: ToolRegistry;
+  readonly rateLimitPolicies: ToolRateLimitCatalog;
+  readonly rateLimiter: ToolRateLimiter;
   readonly adapters: readonly ToolAdapter[];
   readonly authorization: ServerAuthorizationPolicy;
   readonly ownership: ResourceOwnershipResolver;
@@ -94,17 +101,26 @@ function containsProtectedContextKey(value: unknown, seen = new Set<object>()): 
 }
 
 function normalizedAdapterError(error: unknown): PlatformError {
-  if (!(error instanceof ToolAdapterError)) {
-    return new PlatformError('DEPENDENCY_ERROR', 'Tool dependency request failed', 502);
+  const mapping: Readonly<Record<ToolAdapterError['kind'], readonly [ErrorCode, string, number]>> =
+    {
+      timeout: ['UPSTREAM_TIMEOUT', 'Tool dependency timed out', 504],
+      transient: ['SERVICE_UNAVAILABLE', 'Tool dependency is unavailable', 503],
+      unavailable: ['SERVICE_UNAVAILABLE', 'Tool dependency is unavailable', 503],
+      invalid_response: ['INVALID_RESPONSE', 'Tool dependency response is invalid', 502],
+      permanent: ['DEPENDENCY_ERROR', 'Tool dependency request failed', 502]
+    };
+  let failure = mapping.permanent;
+  try {
+    if (error instanceof ToolAdapterError) {
+      const kind: unknown = error.kind;
+      if (typeof kind === 'string' && Object.hasOwn(mapping, kind)) {
+        failure = mapping[kind as keyof typeof mapping];
+      }
+    }
+  } catch {
+    // Malformed adapter errors retain the generic dependency failure.
   }
-  const mapping: Readonly<Record<typeof error.kind, readonly [ErrorCode, string, number]>> = {
-    timeout: ['UPSTREAM_TIMEOUT', 'Tool dependency timed out', 504],
-    transient: ['SERVICE_UNAVAILABLE', 'Tool dependency is unavailable', 503],
-    unavailable: ['SERVICE_UNAVAILABLE', 'Tool dependency is unavailable', 503],
-    invalid_response: ['INVALID_RESPONSE', 'Tool dependency response is invalid', 502],
-    permanent: ['DEPENDENCY_ERROR', 'Tool dependency request failed', 502]
-  };
-  const [code, message, status] = mapping[error.kind];
+  const [code, message, status] = failure;
   return new PlatformError(code, message, status);
 }
 
@@ -169,6 +185,7 @@ function shouldRetry(
   attempt: number
 ): boolean {
   return (
+    !(error instanceof AdmissionError) &&
     registration.metadata.read_write_class === 'read' &&
     registration.metadata.safe_idempotent &&
     attempt < registration.metadata.retry_policy.max_attempts &&
@@ -176,8 +193,60 @@ function shouldRetry(
   );
 }
 
+// Kept distinct internally so limiter uncertainty never enters the adapter retry path.
+class AdmissionError extends PlatformError {}
+
 // Server-owned reporting budget; independent of caller cancellation and attempt policy.
 const failureReportingBudgetMs = 1_000;
+
+async function awaitAttemptErrorAudit(
+  emit: () => Promise<void>,
+  signal?: AbortSignal
+): Promise<void> {
+  assertActive(signal);
+  const started = performance.now();
+  const deadline = started + failureReportingBudgetMs;
+  let lastObserved = started;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const checkDeadline = () => {
+    assertActive(signal);
+    const current = performance.now();
+    if (
+      !Number.isFinite(started) ||
+      started < 0 ||
+      !Number.isFinite(deadline) ||
+      deadline <= started ||
+      !Number.isFinite(current) ||
+      current < lastObserved ||
+      current >= deadline
+    )
+      throw new Error('Attempt error audit deadline is unavailable or expired');
+    lastObserved = current;
+  };
+  try {
+    checkDeadline();
+    await awaitActive(
+      () =>
+        Promise.race([
+          new Promise<never>((_resolve, reject) => {
+            timer = setTimeout(() => {
+              reject(new Error('Attempt error audit timed out'));
+            }, deadline - lastObserved);
+          }),
+          // Observe both late outcomes; the sink itself cannot be cancelled here.
+          Promise.resolve().then(() => {
+            checkDeadline();
+            return emit();
+          })
+        ]),
+      signal
+    );
+    // A delayed timer or synchronously blocking sink must not authorize a late retry.
+    checkDeadline();
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 async function awaitFailureReport(emit: () => Promise<void>): Promise<void> {
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -217,8 +286,25 @@ export class ToolRuntimeService {
   private readonly adapters: ReadonlyMap<string, ToolAdapter>;
   private readonly approvedLiveTools: ReadonlySet<string>;
   private readonly clock: () => number;
+  readonly #environment: string;
+  readonly #policies: ToolRateLimitCatalog;
+  readonly #consume: ToolRateLimiter['consume'];
 
   constructor(private readonly dependencies: ToolRuntimeDependencies) {
+    try {
+      if (
+        !(dependencies.rateLimitPolicies instanceof ToolRateLimitCatalog) ||
+        typeof dependencies.environment !== 'string' ||
+        !dependencies.environment.trim() ||
+        typeof dependencies.rateLimiter.consume !== 'function'
+      )
+        throw new Error('Invalid admission configuration');
+      this.#environment = dependencies.environment;
+      this.#policies = dependencies.rateLimitPolicies;
+      this.#consume = dependencies.rateLimiter.consume.bind(dependencies.rateLimiter);
+    } catch {
+      throw new PlatformError('CONFIGURATION_ERROR', 'Tool admission is not configured', 500);
+    }
     const entries = dependencies.adapters.map(
       (adapter) => [toolKey(adapter.tool_id, adapter.tool_version), adapter] as const
     );
@@ -310,7 +396,7 @@ export class ToolRuntimeService {
           'ibex.tool.id': metadata.tool_id,
           'ibex.tool.version': metadata.version
         });
-        if (!metadata.enabled || !metadata.environments.includes(this.dependencies.environment)) {
+        if (!metadata.enabled || !metadata.environments.includes(this.#environment)) {
           throw new PlatformError('TOOL_DISABLED', 'Tool is not available', 403);
         }
         if (
@@ -381,6 +467,9 @@ export class ToolRuntimeService {
           );
         }
 
+        // Resolve only after input, authorization and ownership checks, before side effects.
+        const ratePolicy = this.#policies.resolve(metadata.rate_limit);
+
         stage = 'audit';
         await awaitActive(
           () =>
@@ -398,6 +487,8 @@ export class ToolRuntimeService {
         );
 
         if (metadata.read_write_class === 'proposal') {
+          stage = 'execution';
+          await this.admitProposal(context, selectedRegistration, ratePolicy, options.signal);
           assertActive(options.signal);
           const response = toolExecutionResponseSchema.parse({
             contract_version: '1.0',
@@ -411,6 +502,7 @@ export class ToolRuntimeService {
             approval_required: true,
             approval_policy: metadata.approval_policy
           });
+          stage = 'audit';
           await awaitActive(
             () =>
               this.emitAudit({
@@ -449,6 +541,7 @@ export class ToolRuntimeService {
               context,
               selectedRegistration,
               parsedInput.data,
+              ratePolicy,
               options.signal
             );
             assertActive(options.signal);
@@ -474,23 +567,29 @@ export class ToolRuntimeService {
             assertActive(options.signal);
             const normalized =
               error instanceof PlatformError ? error : normalizedAdapterError(error);
-            await awaitActive(
-              () =>
-                this.emitAudit({
-                  traceId,
-                  context: trustedRequest.context,
-                  request: trustedRequest,
-                  registration: selectedRegistration,
-                  outcome: 'error',
-                  stage,
-                  timestamp: now,
-                  permissionDecision: activePermissionDecision,
-                  attempt: currentAttempt,
-                  latencyMs: this.clock() - startedAt,
-                  errorCode: normalized.code
-                }),
-              options.signal
-            );
+            try {
+              await awaitAttemptErrorAudit(
+                () =>
+                  this.emitAudit({
+                    traceId,
+                    context: trustedRequest.context,
+                    request: trustedRequest,
+                    registration: selectedRegistration,
+                    outcome: 'error',
+                    stage,
+                    timestamp: now,
+                    permissionDecision: activePermissionDecision,
+                    attempt: currentAttempt,
+                    latencyMs: this.clock() - startedAt,
+                    errorCode: normalized.code
+                  }),
+                options.signal
+              );
+            } catch {
+              span.addEvent('tool_runtime.audit.emission_failed');
+              assertActive(options.signal);
+              throw normalized;
+            }
             assertActive(options.signal);
             if (!shouldRetry(normalized, selectedRegistration, currentAttempt)) throw normalized;
             await waitBackoff(metadata.retry_policy.backoff_ms, options.signal);
@@ -569,11 +668,71 @@ export class ToolRuntimeService {
     });
   }
 
+  private async consumeAdmission(
+    context: TrustedRequestContext,
+    registration: ToolRegistration,
+    policy: ToolRateLimitPolicy,
+    signal: AbortSignal
+  ): Promise<void> {
+    let allowed: boolean;
+    try {
+      const raw: unknown = await awaitActive(
+        () =>
+          this.#consume(
+            Object.freeze({
+              tenant_id: context.tenant_id,
+              tool_id: registration.metadata.tool_id,
+              tool_version: registration.metadata.version,
+              environment: this.#environment,
+              policy,
+              signal
+            })
+          ),
+        signal,
+        () => new Error('Admission deadline')
+      );
+      // Copy only a literal decision; accept no extra fields, getters or malformed envelopes.
+      if (typeof raw !== 'object' || raw === null || Reflect.ownKeys(raw).length !== 1)
+        throw new Error('Invalid admission response');
+      const descriptor = Object.getOwnPropertyDescriptor(raw, 'allowed');
+      if (!descriptor || !('value' in descriptor) || typeof descriptor.value !== 'boolean')
+        throw new Error('Invalid admission decision');
+      allowed = descriptor.value;
+      assertActive(signal);
+    } catch {
+      throw new AdmissionError('SERVICE_UNAVAILABLE', 'Tool admission is unavailable', 503);
+    }
+    if (!allowed) throw new AdmissionError('RATE_LIMITED', 'Tool rate limit exceeded', 429);
+  }
+
+  private async admitProposal(
+    context: TrustedRequestContext,
+    registration: ToolRegistration,
+    policy: ToolRateLimitPolicy,
+    externalSignal?: AbortSignal
+  ): Promise<void> {
+    assertActive(externalSignal);
+    const controller = new AbortController();
+    const cancel = () => {
+      controller.abort();
+    };
+    externalSignal?.addEventListener('abort', cancel, { once: true });
+    const timer = setTimeout(cancel, registration.metadata.timeout_policy.timeout_ms);
+    try {
+      await this.consumeAdmission(context, registration, policy, controller.signal);
+      assertActive(externalSignal);
+    } finally {
+      clearTimeout(timer);
+      externalSignal?.removeEventListener('abort', cancel);
+    }
+  }
+
   private async invokeAdapter(
     adapter: ToolAdapter,
     context: TrustedRequestContext,
     registration: ToolRegistration,
     input: unknown,
+    policy: ToolRateLimitPolicy,
     externalSignal?: AbortSignal
   ): Promise<ToolAdapterResult> {
     assertActive(externalSignal);
@@ -587,6 +746,7 @@ export class ToolRuntimeService {
       controller.abort();
     }, registration.metadata.timeout_policy.timeout_ms);
     try {
+      await this.consumeAdmission(context, registration, policy, controller.signal);
       const result = await awaitActive(
         () => {
           assertActive(externalSignal);
@@ -606,7 +766,8 @@ export class ToolRuntimeService {
       return result;
     } catch (error) {
       assertActive(externalSignal);
-      throw error;
+      if (error instanceof AdmissionError) throw error;
+      throw normalizedAdapterError(error);
     } finally {
       clearTimeout(timer);
       externalSignal?.removeEventListener('abort', cancel);
@@ -630,7 +791,7 @@ export class ToolRuntimeService {
       createToolRuntimeAuditEvent({
         traceId: input.traceId,
         service: this.dependencies.service,
-        environment: this.dependencies.environment,
+        environment: this.#environment,
         outcome: input.outcome,
         stage: input.stage,
         timestamp: input.timestamp,

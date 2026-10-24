@@ -1,0 +1,786 @@
+{
+  "schema_version": "1.0.0",
+  "inventory_id": "ibex-bounded-working-inventory",
+  "purpose": "prospective-working-scope-only",
+  "project_completeness": "unknown",
+  "authority_status": "not-activated",
+  "scope_acceptance": {
+    "date": "2026-10-14",
+    "reported_message_id": "Sentinel_d2d954f3771081919ed81abf29b77d93",
+    "meaning": "scope-only-not-exact-content-approval"
+  },
+  "source_snapshot_commit": "529951f9818c301aae67d94e980deafe7495391f",
+  "source_snapshots": [
+    {
+      "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+      "sha256": "bb5a551ee4e3b20bf705ec040931d01bd17a238f77025605b4072508ba2bda4f",
+      "external_locator": "https://github.com/gt7719/ibex-ai-platform/blob/529951f9818c301aae67d94e980deafe7495391f/docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md"
+    },
+    {
+      "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+      "sha256": "a1c04647a705a1430fcd0c4740c64d901ec24180f331fdc84a6d3d656869b307",
+      "external_locator": "https://github.com/gt7719/ibex-ai-platform/blob/529951f9818c301aae67d94e980deafe7495391f/docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md"
+    },
+    {
+      "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+      "sha256": "2f4ef5598d62c5131324a6f52067364e274cbd180b01b69915804ff6105ed15e",
+      "external_locator": "https://github.com/gt7719/ibex-ai-platform/blob/529951f9818c301aae67d94e980deafe7495391f/docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md"
+    }
+  ],
+  "finding_registry": {
+    "path": "docs/evaluation/findings/registry.v1.json",
+    "sha256": "c1b4044e724460a450bd4f8ef867a2c3f99a843861bae5d8385ee10749829fc2"
+  },
+  "finding_references": [
+    {
+      "record_type": "finding_reference",
+      "finding_id": "F01"
+    },
+    {
+      "record_type": "finding_reference",
+      "finding_id": "F02"
+    },
+    {
+      "record_type": "finding_reference",
+      "finding_id": "F03"
+    },
+    {
+      "record_type": "finding_reference",
+      "finding_id": "F04"
+    },
+    {
+      "record_type": "finding_reference",
+      "finding_id": "F05"
+    },
+    {
+      "record_type": "finding_reference",
+      "finding_id": "F06"
+    },
+    {
+      "record_type": "finding_reference",
+      "finding_id": "F07"
+    },
+    {
+      "record_type": "finding_reference",
+      "finding_id": "F08"
+    },
+    {
+      "record_type": "finding_reference",
+      "finding_id": "F09"
+    },
+    {
+      "record_type": "finding_reference",
+      "finding_id": "F10"
+    },
+    {
+      "record_type": "finding_reference",
+      "finding_id": "F11"
+    },
+    {
+      "record_type": "finding_reference",
+      "finding_id": "F12"
+    }
+  ],
+  "owner_assignments": [
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Product",
+      "evidence_id": "SIR02-GOV-01",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 30
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 20
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Product",
+      "evidence_id": "SIR02-GOV-02",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 31
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 21
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Product",
+      "evidence_id": "SIR02-CFG-02",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 32
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 22
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Product",
+      "evidence_id": "SIR02-CFG-03",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 33
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 23
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Product",
+      "evidence_id": "SIR02-CFG-04",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 34
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 24
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Product",
+      "evidence_id": "SIR02-CFG-06",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 35
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 25
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Product",
+      "evidence_id": "SIR02-CFG-07",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 36
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 26
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Product",
+      "evidence_id": "SIR02-DEF-03",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 37
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 27
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "RAG Architecture",
+      "evidence_id": "SIR02-GOV-01",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 38
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 35
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "RAG Architecture",
+      "evidence_id": "SIR02-GOV-03",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 39
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 36
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "RAG Architecture",
+      "evidence_id": "SIR02-CFG-02",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 40
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 37
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "RAG Architecture",
+      "evidence_id": "SIR02-CFG-03",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 41
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 38
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "RAG Architecture",
+      "evidence_id": "SIR02-CFG-04",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 42
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 39
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "RAG Architecture",
+      "evidence_id": "SIR02-CFG-07",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 43
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 40
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "RAG Architecture",
+      "evidence_id": "SIR02-DEF-01",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 44
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 41
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "RAG Architecture",
+      "evidence_id": "SIR02-DEF-02",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 45
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 42
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Security",
+      "evidence_id": "SIR02-GOV-01",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 46
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 50
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Security",
+      "evidence_id": "SIR02-GOV-04",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 47
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 51
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Security",
+      "evidence_id": "SIR02-CFG-04",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 48
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 52
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Security",
+      "evidence_id": "SIR02-DEF-01",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 49
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 53
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Data Governance",
+      "evidence_id": "SIR02-GOV-01",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 50
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 61
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Data Governance",
+      "evidence_id": "SIR02-GOV-05",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 51
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 62
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Data Governance",
+      "evidence_id": "SIR02-DEF-01",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 52
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 63
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Data Governance",
+      "evidence_id": "SIR02-DEF-03",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 53
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 64
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Platform Operations",
+      "evidence_id": "SIR02-CFG-05",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 54
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 72
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Platform Operations",
+      "evidence_id": "SIR02-CFG-06",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 55
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 73
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Knowledge Management",
+      "evidence_id": "SIR02-DEF-01",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 56
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 81
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Knowledge Management",
+      "evidence_id": "SIR02-DEF-02",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 57
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 82
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Missing",
+        "review_status": "Not Reviewed"
+      }
+    },
+    {
+      "record_type": "owner_assignment",
+      "owner_group": "Knowledge Management",
+      "evidence_id": "SIR02-DEF-03",
+      "dispatch_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-DISPATCH-TRACKER-v1.0.md",
+        "line": 58
+      },
+      "collection_ref": {
+        "path": "docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md",
+        "line": 83
+      },
+      "historical_state": {
+        "request_status": "Sent",
+        "evidence_status": "Ready for Review",
+        "review_status": "Accepted"
+      }
+    }
+  ],
+  "operational_requirements": [
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-01",
+      "evidence_item": "Approved source registration sample",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 38
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-02",
+      "evidence_item": "Source owner and tenant binding",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 39
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-03",
+      "evidence_item": "Source approval record",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 40
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-04",
+      "evidence_item": "Source version and lineage evidence",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 41
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-05",
+      "evidence_item": "Provenance trace",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 42
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-06",
+      "evidence_item": "Supersession test",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 43
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-07",
+      "evidence_item": "Stale-content quarantine test",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 44
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-08",
+      "evidence_item": "Retention/deletion test",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 45
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-09",
+      "evidence_item": "Source reconciliation test",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 46
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-10",
+      "evidence_item": "Permission and tenant-isolation test",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 47
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-11",
+      "evidence_item": "Missing approval/version/provenance fail-closed",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 48
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-12",
+      "evidence_item": "Lifecycle audit evidence",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 49
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-13",
+      "evidence_item": "Duplicate/conflict handling test",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 50
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-14",
+      "evidence_item": "Re-ingestion/re-indexing idempotency test",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 51
+      }
+    },
+    {
+      "record_type": "operational_requirement",
+      "requirement_id": "SIR02-KM-OE-15",
+      "evidence_item": "Controlled reopening test",
+      "historical_execution_status": "Not Executed",
+      "matrix_ref": {
+        "path": "docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md",
+        "line": 52
+      }
+    }
+  ],
+  "historical_gaps": [
+    {
+      "record_type": "unresolved_historical_population",
+      "prospective_population_key": "after-config-scope",
+      "reported_count": 32,
+      "detailed_identities": "unavailable",
+      "obligation_state": "unresolved",
+      "overlap": "unknown"
+    },
+    {
+      "record_type": "unresolved_historical_population",
+      "prospective_population_key": "final-sign-off",
+      "reported_count": 11,
+      "detailed_identities": "unavailable",
+      "obligation_state": "unresolved",
+      "overlap": "unknown"
+    },
+    {
+      "record_type": "unresolved_historical_population",
+      "prospective_population_key": "parent-sir",
+      "reported_count": null,
+      "detailed_identities": "unavailable",
+      "obligation_state": "unresolved",
+      "overlap": "unknown"
+    }
+  ]
+}

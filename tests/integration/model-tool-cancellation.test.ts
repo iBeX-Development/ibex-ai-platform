@@ -6,6 +6,7 @@ import { ModelRegistry, ProviderAdapterError } from '../../packages/model-gatewa
 import { tracer } from '../../packages/observability/src/index.js';
 import { ToolAdapterError, ToolRegistry } from '../../packages/tool-runtime/src/index.js';
 import {
+  modelSchemaCatalog,
   createModelGateway,
   modelContext,
   fallbackModel,
@@ -192,7 +193,8 @@ function harness(
               },
               fallbackProvider
             ],
-            [primaryModel, fallbackModel]
+            [primaryModel, fallbackModel],
+            modelSchemaCatalog
           ),
           secretProvider: { getSecret: () => step('preparation', 'synthetic-unused-credential') },
           adapters: [

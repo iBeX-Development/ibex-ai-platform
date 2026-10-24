@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { PilotAgentRuntime } from '../../packages/pilot-agents/src/index.js';
 import { pilotAgentProfiles } from '../../agents/index.js';
 import { featureControls, loadConfig } from '../../packages/configuration/src/index.js';
 import { PlatformError } from '../../packages/errors/src/index.js';
@@ -10,6 +11,7 @@ import {
 } from '../../packages/testing/src/index.js';
 import {
   createPilotHarness,
+  pilotContext,
   pilotRequest,
   pilotValidationTime
 } from '../testing/pilot-agent-fixtures.js';
@@ -17,6 +19,7 @@ import { phase10GoldenDataset } from './datasets/pilot-agents/v1.0.0.js';
 import {
   criticalGateNames,
   evaluatePhase10Gate,
+  evaluationEvidenceHash,
   measurementEvidenceSchema,
   phase10QualityTargets,
   summarizeDeterministicMeasurement,
@@ -218,6 +221,9 @@ describe('Phase 10 hardening gate', () => {
         tool_version: caseItem.expected_tool?.tool_version,
         input_schema_id: caseItem.expected_tool?.input_schema_id
       });
+      expect(record?.tool_execution?.expected_input_hash).toBe(
+        evaluationEvidenceHash(caseItem.expected_tool?.input)
+      );
       expect(record?.tool_execution?.observed_input_hash).toBe(
         record?.tool_execution?.expected_input_hash
       );
@@ -231,6 +237,183 @@ describe('Phase 10 hardening gate', () => {
         )
       ).toBe(true);
     }
+  });
+
+  it.each([
+    ['routing', 'agent_routing_accuracy'],
+    ['rag', 'rag_groundedness'],
+    ['citation', 'citation_correctness']
+  ] as const)(
+    'records failure evidence for a matching outcome with failed %s quality',
+    async (category, metric) => {
+      const index = phase10GoldenDataset.cases.findIndex((item) => item.category === category);
+      const source = phase10GoldenDataset.cases[index];
+      const baseline = observations[index];
+      if (!source || !baseline) throw new Error('Expected an executed quality case');
+      expect(baseline.failure).toBeUndefined();
+      expect(baseline.metric_scores).toEqual({ [metric]: 1 });
+      // The original method is called below with the intercepted runtime as its explicit receiver.
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      const execute = PilotAgentRuntime.prototype.execute;
+      const spy = vi
+        .spyOn(PilotAgentRuntime.prototype, 'execute')
+        .mockImplementation(async function (
+          this: PilotAgentRuntime,
+          ...args: Parameters<typeof execute>
+        ) {
+          // Execute the real boundary and audit path before corrupting only its returned observation.
+          const response = await execute.apply(this, args);
+          return category === 'routing'
+            ? { ...response, agent_id: 'private-observation-fault' }
+            : { ...response, citations: [] };
+        });
+      try {
+        const observed = await executeEvaluationCase(source, index);
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(observed).toEqual({
+          ...baseline,
+          metric_scores: { [metric]: 0 },
+          failure: {
+            code: 'RUNTIME_MISMATCH',
+            detail:
+              'Observed runtime evidence did not match the versioned expected-result reference',
+            severity: 'high'
+          }
+        });
+        expect(JSON.stringify(observed)).not.toContain('private-observation-fault');
+        expect(observed.audit_correlation.events.length).toBeGreaterThan(0);
+        const gate = evaluatePhase10Gate({
+          cases: phase10GoldenDataset.cases,
+          observations: observations.map((record, recordIndex) =>
+            recordIndex === index ? observed : record
+          ),
+          findings: []
+        });
+        expect(gate.status).toBe('FAIL');
+        expect(gate.critical_gates.audit_completeness).toBe(false);
+        // Existing gate semantics reject failed records even though their audit events remain intact.
+        expect(observed.audit_correlation).toEqual(baseline.audit_correlation);
+        expect(gate.failed_case_ids).toEqual([source.case_id]);
+      } finally {
+        spy.mockRestore();
+      }
+    }
+  );
+
+  it('does not add failures to correct negative outcomes or successful deterministic cases', () => {
+    expect(observations.some((item) => item.observed_result === 'deny')).toBe(true);
+    expect(observations.some((item) => item.observed_result === 'abstain')).toBe(true);
+    for (const record of observations) expect(record.failure).toBeUndefined();
+  });
+
+  it.each(['critical', 'high', 'medium', 'low'] as const)(
+    'lists explicit %s failure with perfect scores without changing other gate fields',
+    (severity) => {
+      const first = observations[0];
+      if (!first) throw new Error('Expected an executed observation');
+      const failed = {
+        ...first,
+        failure: { code: 'TEST_FAILURE', detail: 'Synthetic failure', severity }
+      };
+      const evaluate = (record: EvaluationObservation) =>
+        evaluatePhase10Gate({
+          cases: phase10GoldenDataset.cases,
+          observations: [record, ...observations.slice(1)],
+          findings: []
+        });
+      // An outcome mismatch already lists this failed record under the existing predicate.
+      const alreadyListed = evaluate({
+        ...failed,
+        observed_result: first.observed_result === 'deny' ? 'allow' : 'deny'
+      });
+      const result = evaluate(failed);
+      expect(result).toEqual(alreadyListed);
+      expect(result.failed_case_ids).toEqual([first.case_id]);
+      expect(result.status).toBe('FAIL');
+      expect(Object.values(result.quality_scores)).toEqual(expect.arrayContaining([1]));
+      expect(result.quality_scores).toEqual(evaluate(first).quality_scores);
+    }
+  );
+
+  it('keeps case order and lists overlapping failure reasons only once for unique cases', () => {
+    const first = observations[0];
+    const second = observations[1];
+    const firstCase = phase10GoldenDataset.cases[0];
+    const secondCase = phase10GoldenDataset.cases[1];
+    if (!first || !second || !firstCase || !secondCase) throw new Error('Expected two cases');
+    const failure = { code: 'TEST_FAILURE', detail: 'Synthetic failure', severity: 'low' as const };
+    const result = evaluatePhase10Gate({
+      cases: [secondCase, firstCase, ...phase10GoldenDataset.cases.slice(2)],
+      observations: [
+        { ...first, failure, observed_result: 'deny', agent_id: 'binding-mismatch' },
+        { ...second, failure },
+        ...observations.slice(2)
+      ],
+      findings: []
+    });
+    expect(result.failed_case_ids).toEqual([second.case_id, first.case_id]);
+    expect(result.blocking_findings).toContain('EVALUATION_EVIDENCE_INTEGRITY');
+  });
+
+  it('does not diagnose fractional scores or correct negative outcomes as explicit failures', () => {
+    const records = observations.map((record) => ({
+      ...record,
+      metric_scores: Object.fromEntries(
+        Object.keys(record.metric_scores).map((metric) => [metric, 0.99])
+      )
+    }));
+    expect(records.some((record) => record.observed_result === 'deny')).toBe(true);
+    expect(records.some((record) => record.observed_result === 'abstain')).toBe(true);
+    const result = evaluatePhase10Gate({
+      cases: phase10GoldenDataset.cases,
+      observations: records,
+      findings: []
+    });
+    expect(result.status).toBe('PASS');
+    expect(result.failed_case_ids).toEqual([]);
+    for (const score of Object.values(result.quality_scores)) expect(score).toBeCloseTo(0.99);
+  });
+
+  it('preserves missing, malformed, unknown, binding and duplicate evidence handling', () => {
+    const first = observations[0];
+    const firstCase = phase10GoldenDataset.cases[0];
+    if (!first || !firstCase) throw new Error('Expected an executed case');
+    const failure = { code: 'TEST_FAILURE', detail: 'Synthetic failure', severity: 'low' as const };
+    const failed = { ...first, failure };
+    const malformed = { ...failed, failure: { ...failure, detail: '' } };
+    const unknown = {
+      ...first,
+      case_id: 'unknown-case',
+      expected_result_reference: { ...first.expected_result_reference, case_id: 'unknown-case' }
+    };
+    const scenarios: readonly [readonly EvaluationObservation[], readonly string[]][] = [
+      [observations.slice(1), [first.case_id]],
+      [[malformed, ...observations.slice(1)], [first.case_id]],
+      [[...observations, unknown], []],
+      [[{ ...first, agent_id: 'binding-mismatch' }, ...observations.slice(1)], [first.case_id]],
+      [[failed, ...observations], []],
+      [[...observations, failed], [first.case_id]],
+      [[...observations, malformed], []]
+    ];
+    for (const [records, ids] of scenarios) {
+      const result = evaluatePhase10Gate({
+        cases: phase10GoldenDataset.cases,
+        observations: records,
+        findings: []
+      });
+      expect(result.status).toBe('FAIL');
+      expect(result.blocking_findings).toContain('EVALUATION_EVIDENCE_INTEGRITY');
+      expect(result.failed_case_ids).toEqual(ids);
+    }
+    // Invalid duplicate case input retains its existing repeated-ID behavior.
+    const duplicateCases = evaluatePhase10Gate({
+      cases: [...phase10GoldenDataset.cases, firstCase],
+      observations: [failed, ...observations.slice(1)],
+      findings: []
+    });
+    expect(duplicateCases.failed_case_ids).toEqual([first.case_id, first.case_id]);
+    expect(duplicateCases.status).toBe('FAIL');
+    expect(duplicateCases.blocking_findings).toContain('EVALUATION_EVIDENCE_INTEGRITY');
   });
 
   it('keeps expected Tool labels out of runtime selection and input execution', async () => {
@@ -344,6 +527,7 @@ describe('Phase 10 hardening gate', () => {
         profile: warehouse,
         controls: featureControls({ ...enabledTestFeatureControls, tools: false }),
         request: pilotRequest(warehouse, {
+          context: pilotContext({ permissions: ['inventory.stock'] }),
           intent: 'INVENTORY_QUERY',
           requested_tool_capabilities: ['inventory.stock']
         })
@@ -352,15 +536,27 @@ describe('Phase 10 hardening gate', () => {
         profile: warehouse,
         controls: featureControls({ ...enabledTestFeatureControls, actionTools: false }),
         request: pilotRequest(warehouse, {
+          context: pilotContext({ permissions: ['inventory.prepare_issue'] }),
           intent: 'ISSUE_DRAFT_ACTION',
           requested_tool_capabilities: ['inventory.prepare_issue']
         })
       }
     ];
     for (const item of cases) {
-      const { runtime } = createPilotHarness(item.profile, { featureControls: item.controls });
+      const { runtime, audits } = createPilotHarness(item.profile, {
+        featureControls: item.controls
+      });
       await expect(runtime.execute(item.request, pilotValidationTime)).rejects.toMatchObject({
         code: 'PERMISSION_DENIED'
+      });
+      expect(audits).toHaveLength(1);
+      expect(audits[0]).toMatchObject({
+        outcome: 'rejected',
+        stage: 'authorization',
+        error_code: 'PERMISSION_DENIED',
+        request_id: item.request.context.request_id,
+        correlation_id: item.request.context.correlation_id,
+        trace_id: item.request.trace_id
       });
     }
   });

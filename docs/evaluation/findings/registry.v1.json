@@ -1,0 +1,434 @@
+{
+  "schema_version": "1.0.0",
+  "registry_id": "ibex-unified-findings",
+  "revision": 2,
+  "repository": "iBeX-Development/ibex-ai-platform",
+  "phase": "phase10",
+  "evaluated_commit": "529951f9818c301aae67d94e980deafe7495391f",
+  "completeness": "unknown",
+  "review_state": "unreviewed",
+  "sources": [
+    {
+      "source_id": "historical-audit-20261009",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=28ad761e-f676-4f2c-b966-0b69416937de",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "f06-followup-20261012",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=45c0726e-70fe-4c6a-ad0b-6b05a4d085df",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "f07-pr36-report-20261013",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=33b983eb-e11c-40d8-b4e0-ee0f8425e776",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "f08-ai-recommendation-20261013",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=cf8b3f86-cd9e-5565-8f51-281e06264b91",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "f09-foundation-report-20261012",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=cabba6cf-1360-4317-b183-cea74762bdf6",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "original-pdf-announcement",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=7dddafab-dce6-5acf-91cc-2b3df3baaf57",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "f01-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/26",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "f02-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/27",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "f03-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/29",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "f04-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/30",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "f05-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/31",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "f10-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/13",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "f11-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/13",
+      "coverage": "partial"
+    },
+    {
+      "source_id": "f12-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/34",
+      "coverage": "partial"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "f06-historical-report",
+      "source_id": "historical-audit-20261009",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=28ad761e-f676-4f2c-b966-0b69416937de"
+    },
+    {
+      "evidence_id": "f06-oe10-plan",
+      "source_id": "historical-audit-20261009",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/blob/a60ad7fd0188e7a4bf31e367b3710157171cf1a2/docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-EXECUTION-PLAN-v1.0.md#L253"
+    },
+    {
+      "evidence_id": "f06-rag-service",
+      "source_id": "historical-audit-20261009",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/blob/a60ad7fd0188e7a4bf31e367b3710157171cf1a2/packages/rag-runtime/src/service.ts#L627"
+    },
+    {
+      "evidence_id": "f06-later-report",
+      "source_id": "f06-followup-20261012",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=45c0726e-70fe-4c6a-ad0b-6b05a4d085df"
+    },
+    {
+      "evidence_id": "f07-historical-report",
+      "source_id": "historical-audit-20261009",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=28ad761e-f676-4f2c-b966-0b69416937de"
+    },
+    {
+      "evidence_id": "f07-audit-pipeline",
+      "source_id": "historical-audit-20261009",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/blob/a60ad7fd0188e7a4bf31e367b3710157171cf1a2/packages/audit/src/pipeline.ts#L697"
+    },
+    {
+      "evidence_id": "f07-later-report",
+      "source_id": "f07-pr36-report-20261013",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=33b983eb-e11c-40d8-b4e0-ee0f8425e776"
+    },
+    {
+      "evidence_id": "f08-historical-report",
+      "source_id": "historical-audit-20261009",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=28ad761e-f676-4f2c-b966-0b69416937de"
+    },
+    {
+      "evidence_id": "f08-api-entrypoint",
+      "source_id": "historical-audit-20261009",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/blob/a60ad7fd0188e7a4bf31e367b3710157171cf1a2/apps/api/src/index.ts#L16"
+    },
+    {
+      "evidence_id": "f08-worker-scope",
+      "source_id": "historical-audit-20261009",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/blob/a60ad7fd0188e7a4bf31e367b3710157171cf1a2/apps/worker/README.md"
+    },
+    {
+      "evidence_id": "f08-later-report",
+      "source_id": "f08-ai-recommendation-20261013",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=cf8b3f86-cd9e-5565-8f51-281e06264b91"
+    },
+    {
+      "evidence_id": "f09-historical-report",
+      "source_id": "historical-audit-20261009",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=28ad761e-f676-4f2c-b966-0b69416937de"
+    },
+    {
+      "evidence_id": "f09-implementation-plan",
+      "source_id": "historical-audit-20261009",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/blob/a60ad7fd0188e7a4bf31e367b3710157171cf1a2/docs/baseline/17-implementation-plan-v1.0.md#L1270"
+    },
+    {
+      "evidence_id": "f09-later-report",
+      "source_id": "f09-foundation-report-20261012",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=cabba6cf-1360-4317-b183-cea74762bdf6"
+    },
+    {
+      "evidence_id": "f01-pdf-record",
+      "source_id": "original-pdf-announcement",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=7dddafab-dce6-5acf-91cc-2b3df3baaf57"
+    },
+    {
+      "evidence_id": "f01-pr26",
+      "source_id": "f01-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/26"
+    },
+    {
+      "evidence_id": "f01-pr26-commit",
+      "source_id": "f01-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/commit/e87fea8791be986053cb9a5946db05bd41f9711f"
+    },
+    {
+      "evidence_id": "f02-pdf-record",
+      "source_id": "original-pdf-announcement",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=7dddafab-dce6-5acf-91cc-2b3df3baaf57"
+    },
+    {
+      "evidence_id": "f02-pr27",
+      "source_id": "f02-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/27"
+    },
+    {
+      "evidence_id": "f02-pr27-commit",
+      "source_id": "f02-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/commit/17c6c10e6b6d51ea10601f57c5ee2d399f1ccf45"
+    },
+    {
+      "evidence_id": "f03-pdf-record",
+      "source_id": "original-pdf-announcement",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=7dddafab-dce6-5acf-91cc-2b3df3baaf57"
+    },
+    {
+      "evidence_id": "f03-pr29",
+      "source_id": "f03-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/29"
+    },
+    {
+      "evidence_id": "f03-pr29-commit",
+      "source_id": "f03-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/commit/ae7d2d1d5225c7ca4709a55f4900c29ed183f2b9"
+    },
+    {
+      "evidence_id": "f04-pdf-record",
+      "source_id": "original-pdf-announcement",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=7dddafab-dce6-5acf-91cc-2b3df3baaf57"
+    },
+    {
+      "evidence_id": "f04-pr30",
+      "source_id": "f04-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/30"
+    },
+    {
+      "evidence_id": "f04-pr30-commit",
+      "source_id": "f04-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/commit/b7a6939d4e6b674e49692b69a82b9c224e10c6e6"
+    },
+    {
+      "evidence_id": "f05-pdf-record",
+      "source_id": "original-pdf-announcement",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=7dddafab-dce6-5acf-91cc-2b3df3baaf57"
+    },
+    {
+      "evidence_id": "f05-pr31",
+      "source_id": "f05-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/31"
+    },
+    {
+      "evidence_id": "f05-pr31-commit",
+      "source_id": "f05-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/commit/9bb2b2850402f88180236ac70d2a3a1e798ad74c"
+    },
+    {
+      "evidence_id": "f10-pdf-record",
+      "source_id": "original-pdf-announcement",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=7dddafab-dce6-5acf-91cc-2b3df3baaf57"
+    },
+    {
+      "evidence_id": "f10-pr13",
+      "source_id": "f10-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/13"
+    },
+    {
+      "evidence_id": "f10-pr13-commit",
+      "source_id": "f10-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/commit/48022460ca16559af2bf973034f0355dc274c20c"
+    },
+    {
+      "evidence_id": "f11-pdf-record",
+      "source_id": "original-pdf-announcement",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=7dddafab-dce6-5acf-91cc-2b3df3baaf57"
+    },
+    {
+      "evidence_id": "f11-pr13",
+      "source_id": "f11-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/13"
+    },
+    {
+      "evidence_id": "f11-pr13-commit",
+      "source_id": "f11-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/commit/48022460ca16559af2bf973034f0355dc274c20c"
+    },
+    {
+      "evidence_id": "f12-pdf-record",
+      "source_id": "original-pdf-announcement",
+      "reference": "https://chatgpt.com/c/6ab99ded-c868-83ee-8e64-f49d8b4d1fe5?messageId=7dddafab-dce6-5acf-91cc-2b3df3baaf57"
+    },
+    {
+      "evidence_id": "f12-pr32",
+      "source_id": "f12-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/32"
+    },
+    {
+      "evidence_id": "f12-pr32-commit",
+      "source_id": "f12-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/commit/e79f1d96a16a83081fbca9991d4021d1483508da"
+    },
+    {
+      "evidence_id": "f12-pr33",
+      "source_id": "f12-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/33"
+    },
+    {
+      "evidence_id": "f12-pr33-commit",
+      "source_id": "f12-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/commit/0bc36d4d1fa3ca520682d24f255606b8b675694f"
+    },
+    {
+      "evidence_id": "f12-pr34",
+      "source_id": "f12-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/pull/34"
+    },
+    {
+      "evidence_id": "f12-pr34-commit",
+      "source_id": "f12-reported-pr-reconciliation",
+      "reference": "https://github.com/gt7719/ibex-ai-platform/commit/fdb4b0afaaa91557f48d2591be879d58cfc5585b"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "F06",
+      "revision": 1,
+      "severity": "unknown",
+      "status": "unreviewed",
+      "source_refs": ["historical-audit-20261009", "f06-followup-20261012"],
+      "evidence_refs": [
+        "f06-historical-report",
+        "f06-oe10-plan",
+        "f06-rag-service",
+        "f06-later-report"
+      ],
+      "remediation_refs": [],
+      "verification_refs": []
+    },
+    {
+      "finding_id": "F07",
+      "revision": 1,
+      "severity": "unknown",
+      "status": "unreviewed",
+      "source_refs": ["historical-audit-20261009", "f07-pr36-report-20261013"],
+      "evidence_refs": ["f07-historical-report", "f07-audit-pipeline", "f07-later-report"],
+      "remediation_refs": [],
+      "verification_refs": []
+    },
+    {
+      "finding_id": "F08",
+      "revision": 1,
+      "severity": "unknown",
+      "status": "unreviewed",
+      "source_refs": ["historical-audit-20261009", "f08-ai-recommendation-20261013"],
+      "evidence_refs": [
+        "f08-historical-report",
+        "f08-api-entrypoint",
+        "f08-worker-scope",
+        "f08-later-report"
+      ],
+      "remediation_refs": [],
+      "verification_refs": []
+    },
+    {
+      "finding_id": "F09",
+      "revision": 1,
+      "severity": "unknown",
+      "status": "unreviewed",
+      "source_refs": ["historical-audit-20261009", "f09-foundation-report-20261012"],
+      "evidence_refs": ["f09-historical-report", "f09-implementation-plan", "f09-later-report"],
+      "remediation_refs": [],
+      "verification_refs": []
+    },
+    {
+      "finding_id": "F01",
+      "revision": 1,
+      "severity": "unknown",
+      "status": "unreviewed",
+      "source_refs": ["original-pdf-announcement", "f01-reported-pr-reconciliation"],
+      "evidence_refs": ["f01-pdf-record", "f01-pr26", "f01-pr26-commit"],
+      "remediation_refs": [],
+      "verification_refs": []
+    },
+    {
+      "finding_id": "F02",
+      "revision": 1,
+      "severity": "unknown",
+      "status": "unreviewed",
+      "source_refs": ["original-pdf-announcement", "f02-reported-pr-reconciliation"],
+      "evidence_refs": ["f02-pdf-record", "f02-pr27", "f02-pr27-commit"],
+      "remediation_refs": [],
+      "verification_refs": []
+    },
+    {
+      "finding_id": "F03",
+      "revision": 1,
+      "severity": "unknown",
+      "status": "unreviewed",
+      "source_refs": ["original-pdf-announcement", "f03-reported-pr-reconciliation"],
+      "evidence_refs": ["f03-pdf-record", "f03-pr29", "f03-pr29-commit"],
+      "remediation_refs": [],
+      "verification_refs": []
+    },
+    {
+      "finding_id": "F04",
+      "revision": 1,
+      "severity": "unknown",
+      "status": "unreviewed",
+      "source_refs": ["original-pdf-announcement", "f04-reported-pr-reconciliation"],
+      "evidence_refs": ["f04-pdf-record", "f04-pr30", "f04-pr30-commit"],
+      "remediation_refs": [],
+      "verification_refs": []
+    },
+    {
+      "finding_id": "F05",
+      "revision": 1,
+      "severity": "unknown",
+      "status": "unreviewed",
+      "source_refs": ["original-pdf-announcement", "f05-reported-pr-reconciliation"],
+      "evidence_refs": ["f05-pdf-record", "f05-pr31", "f05-pr31-commit"],
+      "remediation_refs": [],
+      "verification_refs": []
+    },
+    {
+      "finding_id": "F10",
+      "revision": 1,
+      "severity": "unknown",
+      "status": "unreviewed",
+      "source_refs": ["original-pdf-announcement", "f10-reported-pr-reconciliation"],
+      "evidence_refs": ["f10-pdf-record", "f10-pr13", "f10-pr13-commit"],
+      "remediation_refs": [],
+      "verification_refs": []
+    },
+    {
+      "finding_id": "F11",
+      "revision": 1,
+      "severity": "unknown",
+      "status": "unreviewed",
+      "source_refs": ["original-pdf-announcement", "f11-reported-pr-reconciliation"],
+      "evidence_refs": ["f11-pdf-record", "f11-pr13", "f11-pr13-commit"],
+      "remediation_refs": [],
+      "verification_refs": []
+    },
+    {
+      "finding_id": "F12",
+      "revision": 1,
+      "severity": "unknown",
+      "status": "unreviewed",
+      "source_refs": ["original-pdf-announcement", "f12-reported-pr-reconciliation"],
+      "evidence_refs": [
+        "f12-pdf-record",
+        "f12-pr32",
+        "f12-pr32-commit",
+        "f12-pr33",
+        "f12-pr33-commit",
+        "f12-pr34",
+        "f12-pr34-commit"
+      ],
+      "remediation_refs": [],
+      "verification_refs": []
+    }
+  ]
+}

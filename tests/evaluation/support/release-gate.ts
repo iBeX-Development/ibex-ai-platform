@@ -1,5 +1,29 @@
+import { createHash } from 'node:crypto';
 import { z } from 'zod';
-import type { GoldenEvaluationCase } from '../datasets/pilot-agents/v1.0.0.js';
+import {
+  phase10GoldenDataset,
+  type GoldenEvaluationCase
+} from '../datasets/pilot-agents/v1.0.0.js';
+
+export const phase10ExpectedRun = Object.freeze({
+  evaluation_run_id: 'phase10-runtime-evaluation-v1.0.0',
+  dataset_id: phase10GoldenDataset.dataset_id,
+  dataset_version: phase10GoldenDataset.version
+});
+
+function canonicalJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map((item) => canonicalJson(item)).join(',')}]`;
+  if (value && typeof value === 'object')
+    return `{${Object.entries(value)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, item]) => `${JSON.stringify(key)}:${canonicalJson(item)}`)
+      .join(',')}}`;
+  return JSON.stringify(value);
+}
+
+export function evaluationEvidenceHash(value: unknown): string {
+  return `sha256:${createHash('sha256').update(canonicalJson(value)).digest('hex')}`;
+}
 
 export const qualityMetricSchema = z.enum([
   'agent_routing_accuracy',
@@ -339,11 +363,63 @@ function deriveCriticalEvidence(
   );
 }
 
+function hasExpectedBinding(
+  item: GoldenEvaluationCase,
+  observation: EvaluationObservation,
+  expectedRun: typeof phase10ExpectedRun
+): boolean {
+  const reference = observation.expected_result_reference;
+  if (
+    observation.evaluation_run_id !== expectedRun.evaluation_run_id ||
+    reference.dataset_id !== expectedRun.dataset_id ||
+    reference.dataset_version !== expectedRun.dataset_version ||
+    reference.case_id !== item.case_id ||
+    observation.case_id !== item.case_id ||
+    observation.agent_id !== item.agent_id
+  )
+    return false;
+  const execution = observation.tool_execution;
+  const toolEvents = observation.audit_correlation.events.filter(
+    (event) => event.event_type === 'tool_runtime.execution.outcome'
+  );
+  if (!item.expected_tool) return execution === undefined && toolEvents.length === 0;
+  const expected = item.expected_tool;
+  const hash = evaluationEvidenceHash(expected.input);
+  if (
+    !execution ||
+    execution.tool_id !== expected.tool_id ||
+    execution.tool_version !== expected.tool_version ||
+    execution.input_schema_id !== expected.input_schema_id ||
+    execution.expected_input_hash !== hash ||
+    execution.observed_input_hash !== hash
+  )
+    return false;
+  // Resolve within this case, not against the global collection of audit IDs.
+  const refs = execution.audit_event_ids;
+  const events = new Map(toolEvents.map((event) => [event.event_id, event]));
+  if (refs.length !== 2 || new Set(refs).size !== refs.length || events.size !== 2) return false;
+  const resolved = refs.map((id) => events.get(id));
+  return (
+    resolved.every(
+      (event) =>
+        event !== undefined &&
+        event.context_status === 'trusted' &&
+        event.tool_id === expected.tool_id &&
+        event.tool_version === expected.tool_version
+    ) &&
+    resolved.filter((event) => event?.outcome === 'started' && event.stage === 'execution')
+      .length === 1 &&
+    resolved.filter((event) => event?.outcome === 'succeeded' && event.stage === 'audit').length ===
+      1
+  );
+}
+
 export function evaluatePhase10Gate(
   input: Readonly<{
     cases: readonly GoldenEvaluationCase[];
     observations: readonly EvaluationObservation[];
     findings: readonly Finding[];
+    expected_run?: typeof phase10ExpectedRun;
   }>
 ): Phase10GateResult {
   const parsedObservations = input.observations.map((item) =>
@@ -359,7 +435,18 @@ export function evaluatePhase10Gate(
   );
   const caseIdSet = new Set(caseIds);
   const observationIdSet = new Set(observationIds);
+  const expectedRun = input.expected_run ?? phase10ExpectedRun;
+  const cases = new Map(input.cases.map((item) => [item.case_id, item]));
+  const bindingFailures = new Set(
+    validObservations
+      .filter((observation) => {
+        const item = cases.get(observation.case_id);
+        return !item || !hasExpectedBinding(item, observation, expectedRun);
+      })
+      .map((observation) => observation.case_id)
+  );
   const evaluationIntegrityFailure =
+    bindingFailures.size > 0 ||
     parsedObservations.some((item) => !item.success) ||
     caseIdSet.size !== caseIds.length ||
     observationIdSet.size !== observationIds.length ||
@@ -370,14 +457,10 @@ export function evaluatePhase10Gate(
   const failedCaseIds = input.cases
     .filter((item) => {
       const observation = observations.get(item.case_id);
-      if (observation?.observed_result !== item.expected) return true;
-      if (!item.expected_tool) return false;
       return (
-        observation.tool_execution?.tool_id !== item.expected_tool.tool_id ||
-        observation.tool_execution.tool_version !== item.expected_tool.tool_version ||
-        observation.tool_execution.input_schema_id !== item.expected_tool.input_schema_id ||
-        observation.tool_execution.expected_input_hash !==
-          observation.tool_execution.observed_input_hash
+        observation?.observed_result !== item.expected ||
+        bindingFailures.has(item.case_id) ||
+        Boolean(observation.failure)
       );
     })
     .map((item) => item.case_id);

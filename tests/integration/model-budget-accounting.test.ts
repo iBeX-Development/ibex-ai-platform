@@ -1,11 +1,15 @@
 import { getEventListeners } from 'node:events';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createModelGateway, modelGatewayRequest } from '../testing/model-gateway-fixtures.js';
 import {
-  fallbackModel,
+  modelSchemaCatalog,
+  createModelGateway,
+  modelGatewayRequest
+} from '../testing/model-gateway-fixtures.js';
+import {
+  stringOutputFallbackModel as fallbackModel,
   fallbackProvider,
   modelContext,
-  primaryModel,
+  stringOutputPrimaryModel as primaryModel,
   primaryProvider
 } from '../testing/model-gateway-fixtures.js';
 import {
@@ -62,7 +66,7 @@ function fixture(
   const invoke = vi.fn(() => Promise.resolve(result));
   const audits: AuditRecord[] = [];
   const gateway = createModelGateway(audits, [], {
-    registry: new ModelRegistry([primaryProvider], [primaryModel]),
+    registry: new ModelRegistry([primaryProvider], [primaryModel], modelSchemaCatalog),
     adapters: [{ adapter_id: 'adapter-primary', invoke }],
     policy: gatewayPolicy,
     accounting: { policy, port: port ?? ledger },
@@ -140,7 +144,8 @@ describe('Model accounting admission regressions', () => {
       const h = fixture(syntheticBudgetPolicy, port, {
         registry: new ModelRegistry(
           [primaryProvider, fallbackProvider],
-          [primaryModel, fallbackModel]
+          [primaryModel, fallbackModel],
+          modelSchemaCatalog
         ),
         metrics: { emit: metrics },
         adapters: [
@@ -315,6 +320,7 @@ describe('Model accounting admission regressions', () => {
       })
     );
     const gateway = createModelGateway([], [], {
+      registry: new ModelRegistry([primaryProvider], [primaryModel], modelSchemaCatalog),
       accounting: undefined,
       adapters: [{ adapter_id: 'adapter-primary', invoke }]
     });
@@ -391,7 +397,11 @@ describe('Model accounting admission regressions', () => {
       adapters: [adapter],
       ...(mode === 'context'
         ? {
-            registry: new ModelRegistry([primaryProvider], [{ ...primaryModel, context_limit: 80 }])
+            registry: new ModelRegistry(
+              [primaryProvider],
+              [{ ...primaryModel, context_limit: 80 }],
+              modelSchemaCatalog
+            )
           }
         : {})
     });
@@ -531,7 +541,8 @@ describe('Model accounting admission regressions', () => {
       const h = fixture(syntheticBudgetPolicy, undefined, {
         registry: new ModelRegistry(
           [primaryProvider, fallbackProvider],
-          [primaryModel, fallbackModel]
+          [primaryModel, fallbackModel],
+          modelSchemaCatalog
         ),
         adapters: [
           { adapter_id: 'adapter-primary', invoke },
@@ -617,7 +628,8 @@ describe('Model accounting admission regressions', () => {
       const h = fixture(syntheticBudgetPolicy, undefined, {
         registry: new ModelRegistry(
           [primaryProvider, fallbackProvider],
-          [primaryModel, fallbackModel]
+          [primaryModel, fallbackModel],
+          modelSchemaCatalog
         ),
         adapters: [
           { adapter_id: 'adapter-primary', invoke },
