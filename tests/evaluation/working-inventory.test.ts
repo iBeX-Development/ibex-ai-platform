@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -9,9 +10,18 @@ const inventoryText = readFileSync(
   'utf8'
 );
 const readLocal = (path: string) => readFileSync(resolve(root, path), 'utf8');
+// Exact historical bytes from commit 028934845591b3e569a1c5d639f81df7c72ca8ac.
+// The operational repository rename does not rebind this historical inventory.
+const registryPath = 'docs/evaluation/findings/registry.v1.json';
+const historicalRegistry = readFileSync(
+  resolve(import.meta.dirname, 'fixtures/registry-v2-historical.json'),
+  'utf8'
+);
+const readHistorical = (path: string) =>
+  path === registryPath ? historicalRegistry : readLocal(path);
 const fixture = () => JSON.parse(inventoryText) as WorkingInventory;
 const assess = (value: WorkingInventory) =>
-  assessWorkingInventory(JSON.stringify(value), readLocal);
+  assessWorkingInventory(JSON.stringify(value), readHistorical);
 function first<T>(values: readonly T[]): T {
   const value = values[0];
   if (value === undefined) throw new Error('Missing fixture row');
@@ -92,6 +102,19 @@ const populations = [
 
 describe('bounded working inventory structure only', () => {
   afterEach(() => vi.unstubAllGlobals());
+
+  it('preserves the historical registry pin and rejects current operational bytes', () => {
+    expect(createHash('sha256').update(historicalRegistry).digest('hex')).toBe(
+      'c1b4044e724460a450bd4f8ef867a2c3f99a843861bae5d8385ee10749829fc2'
+    );
+    expect(readLocal(registryPath)).not.toBe(historicalRegistry);
+    expect(assessWorkingInventory(inventoryText, readLocal)).toEqual({
+      structural_status: 'FAIL',
+      authority_status: 'not-activated',
+      project_completeness: 'unknown',
+      diagnostics: ['LOCAL_SNAPSHOT_MISMATCH']
+    });
+  });
 
   it('matches exact source-backed sets and keeps three populations distinct', () => {
     const value = fixture();
@@ -254,7 +277,7 @@ describe('bounded working inventory structure only', () => {
       }).diagnostics
     ).toContain('LOCAL_REFERENCE_UNRESOLVED');
     expect(
-      assessWorkingInventory(inventoryText, (path) => readLocal(path) + '\n').diagnostics
+      assessWorkingInventory(inventoryText, (path) => readHistorical(path) + '\n').diagnostics
     ).toContain('LOCAL_SNAPSHOT_MISMATCH');
     const value = fixture();
     first(value.source_snapshots).sha256 = '0'.repeat(64);
