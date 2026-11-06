@@ -1,0 +1,28 @@
+{
+  "enabled": true,
+  "repository": "iBeX-Development/ibex-ai-platform",
+  "ref": "refs/heads/codex/contained-pilot-managed-20261106-v1",
+  "baseCommit": "529951f9818c301aae67d94e980deafe7495391f",
+  "image": "node:22.23.3-alpine3.24@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402",
+  "files": {
+    "canary.cjs": "23f1de05dd6af9c608df6d3b3716fd7b8596b1046e79baf57c92cbb4e07cf798",
+    "cleanup.py": "512c731de2ddc1e0aa4536b1b8e5eb09ce8c04a76b9a188f256cda5f55c8e83e",
+    "container.json": "687a00373e1a9b2cf49222bdf2f43f6abbcf11ad0360f5757a6f5a78d695ed62",
+    "empty.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mount-policy.json": "571a4c1cb95f86c718848b80e99be68659d27c64d76940e2e443d1de8140b077",
+    "parent_backend.py": "17e664a80419064787e67ea20f62af7403531430401a3fdf8c5b7c57ee82032d",
+    "runtime-support.json": "f7a0d4c0bda649e6c4f2e3d9d229933c8b52f32364071e1749acfa0ef64d1e25",
+    "seccomp.json": "574f9b15757ae785cb70914e779c15685d1f26fa364ba55cd57eaf7be7234406",
+    "supervisor.py": "28457955ed75409d68df269d6421f5b92704d3212fc39ea294c5f67cd93bdf32",
+    "control_helper.py": "459d821776ec74537e4bab0cb9759a7932a780c3807f7ead9a86112637e15058",
+    "independent_recovery.py": "450a75950f0d07f2f81074528a3da81605ef3e7ad28e9ececa6406199cefc9fb",
+    "bootstrap_requests.py": "73dfd20761183e6285e560e7333327846d5dbbc3d494cee8a4b902ff0badd5a1",
+    "stage_payload.py": "3b88ab31d8d60597acd80c56e2504554f9613bfad690c95958e1cf4175ce03bc",
+    "effective_properties.py": "aeb92c09d3285c2bc287c701c47bdaf0543601ddba8abf0d66c8b38c83b65577",
+    "evidence_budget.py": "7234fd26e31745a9507e76eed9315ff2336225672b191a050986d8c87f03fc1b",
+    "outer_capture.py": "a797c3751513f7c9df14f36e2d6ca2a2c31147ca3bcc39251a228977128c376a",
+    "pilot_driver.py": "4a834b6d09912c45826ae1739be1aba007c67ac5fea32f8a9cea56f5a2b61223"
+  },
+  "assuranceModel": "managed-runner-vendor-trust-v1",
+  "policyReviewSHA256": "3e0170a902a379c3254e21058a2ddfb6fb76c8f67e7bf1c52ddf01d79bd5d7d6"
+}

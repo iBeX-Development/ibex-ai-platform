@@ -1,0 +1,119 @@
+{
+  "executionAllowed": true,
+  "assuranceModel": "managed-runner-vendor-trust-v1",
+  "policyReviewSHA256": "3e0170a902a379c3254e21058a2ddfb6fb76c8f67e7bf1c52ddf01d79bd5d7d6",
+  "profiles": [
+    {
+      "assuranceModel": "managed-runner-vendor-trust-v1",
+      "policyReviewSHA256": "3e0170a902a379c3254e21058a2ddfb6fb76c8f67e7bf1c52ddf01d79bd5d7d6",
+      "profileSHA256": "d7660c66a3f70b64c038ce7a1220a14353bff89892c47860580fbb8c645d4561",
+      "reviewedControlPathSHA256": "d7660c66a3f70b64c038ce7a1220a14353bff89892c47860580fbb8c645d4561",
+      "busAddress": "unix:path=/run/dbus/system_bus_socket",
+      "pythonExecutable": "/usr/bin/python3.12",
+      "vendorBaseline": {
+        "imageVersion": "20261101.360.1",
+        "imageSourceCommit": "add4380b0d6685806e9192c33c37359ee0aa4023",
+        "identity": {
+          "kernelRelease": "7.0.0-1017-azure",
+          "systemdVersion": "255.4-1ubuntu8.18",
+          "dockerVersion": "28.0.4"
+        },
+        "pidEvents": "hierarchical-v6.12",
+        "memoryEvents": "hierarchical"
+      },
+      "fixedExecutableRules": {
+        "/usr/bin/busctl": {
+          "canonicalPath": "/usr/bin/busctl",
+          "uid": 0,
+          "forbidWriteMask": 18,
+          "regular": true
+        },
+        "/usr/bin/git": {
+          "canonicalPath": "/usr/bin/git",
+          "uid": 0,
+          "forbidWriteMask": 18,
+          "regular": true
+        },
+        "/usr/bin/docker": {
+          "canonicalPath": "/usr/bin/docker",
+          "uid": 0,
+          "forbidWriteMask": 18,
+          "regular": true
+        },
+        "/usr/bin/sudo": {
+          "canonicalPath": "/usr/bin/sudo",
+          "uid": 0,
+          "forbidWriteMask": 18,
+          "regular": true
+        },
+        "/usr/bin/timeout": {
+          "canonicalPath": "/usr/bin/timeout",
+          "uid": 0,
+          "forbidWriteMask": 18,
+          "regular": true
+        },
+        "/usr/bin/systemd-run": {
+          "canonicalPath": "/usr/bin/systemd-run",
+          "uid": 0,
+          "forbidWriteMask": 18,
+          "regular": true
+        },
+        "/usr/bin/systemctl": {
+          "canonicalPath": "/usr/bin/systemctl",
+          "uid": 0,
+          "forbidWriteMask": 18,
+          "regular": true
+        },
+        "/usr/bin/python3.12": {
+          "canonicalPath": "/usr/bin/python3.12",
+          "uid": 0,
+          "forbidWriteMask": 18,
+          "regular": true
+        }
+      },
+      "ownedSourcePins": {
+        "control_helper.py": "459d821776ec74537e4bab0cb9759a7932a780c3807f7ead9a86112637e15058",
+        "parent_backend.py": "17e664a80419064787e67ea20f62af7403531430401a3fdf8c5b7c57ee82032d",
+        "independent_recovery.py": "450a75950f0d07f2f81074528a3da81605ef3e7ad28e9ececa6406199cefc9fb",
+        "bootstrap_requests.py": "73dfd20761183e6285e560e7333327846d5dbbc3d494cee8a4b902ff0badd5a1",
+        "effective_properties.py": "aeb92c09d3285c2bc287c701c47bdaf0543601ddba8abf0d66c8b38c83b65577",
+        "evidence_budget.py": "7234fd26e31745a9507e76eed9315ff2336225672b191a050986d8c87f03fc1b"
+      }
+    }
+  ],
+  "reason": "Inactive local implementation only. Vendor trust is approved; no live runtime admission or execution authorization exists.",
+  "requiredProfileKeys": [
+    "assuranceModel",
+    "policyReviewSHA256",
+    "profileSHA256",
+    "reviewedControlPathSHA256",
+    "busAddress",
+    "pythonExecutable",
+    "vendorBaseline",
+    "fixedExecutableRules",
+    "ownedSourcePins"
+  ],
+  "ambientTrust": "Official GitHub/Ubuntu supply chain and host administration: kernel, loader, libraries, Python stdlib/extensions, service/daemon/runtime and sudo/PAM/NSS/plugins/config. Not independent byte verification.",
+  "retainedChecks": [
+    "exact owned input/source hashes and immutable staging",
+    "fixed executable canonical root-owned immutable metadata",
+    "fixed local command paths, environment and privileges",
+    "actual effective manager/container/cgroup/mount/network/resource/lifetime checks",
+    "identity-bound independent cleanup and terminal observations"
+  ],
+  "noLegacyFallback": true,
+  "profileSchema": {
+    "vendorBaseline": {
+      "imageVersion": "20261101.360.1",
+      "imageSourceCommit": "add4380b0d6685806e9192c33c37359ee0aa4023",
+      "identity": "exact reviewed kernelRelease/systemdVersion/dockerVersion; checked live",
+      "pidEvents": "hierarchical-v6.12",
+      "memoryEvents": "hierarchical"
+    },
+    "fixedExecutableRules": "exact seven /usr/bin clients + canonical versioned Python; each {canonicalPath:<same key>,uid:0,forbidWriteMask:18,regular:true}; no additional paths",
+    "ownedSourcePins": "exact six staged module basenames to reviewed SHA-256; derived only from admission.files; root stage receipt binds config/support/source-pins",
+    "policyReviewSHA256": "approved external proposal manifest identity; not runtime proof or self-hash",
+    "profileSHA256": "external review record identity; never self-hash",
+    "reviewedControlPathSHA256": "external reviewed closed-command/semantic compatibility record; not complete ambient byte closure"
+  }
+}
