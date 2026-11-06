@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "repository": "iBeX-Development/ibex-ai-platform",
+  "ref": "refs/heads/codex/contained-pilot-diagnostic-20261106-v1",
+  "baseCommit": "529951f9818c301aae67d94e980deafe7495391f",
+  "image": "node:22.23.3-alpine3.24@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402",
+  "files": {
+    "supervisor.py": "88a825d2e3490d00d5a994a1d86b2469aab2b7248cd6ee5564d00fd0ffc2d326",
+    "cleanup.py": "71035733731adef4f26527e718f31acfdc6c11cdaeb5010b5860440416e19a3b",
+    "canary.cjs": "e957c31d6403f96db7bbba746ffdd3cf9f50a1f3244d50cecc1fd25c90792baf",
+    "container.json": "687a00373e1a9b2cf49222bdf2f43f6abbcf11ad0360f5757a6f5a78d695ed62",
+    "seccomp.json": "574f9b15757ae785cb70914e779c15685d1f26fa364ba55cd57eaf7be7234406",
+    "empty.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mount-policy.json": "571a4c1cb95f86c718848b80e99be68659d27c64d76940e2e443d1de8140b077"
+  }
+}
