@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "repository": "iBeX-Development/ibex-ai-platform",
+  "ref": "refs/heads/codex/contained-pilot-20261106-v1",
+  "baseCommit": "529951f9818c301aae67d94e980deafe7495391f",
+  "image": "node:22.23.3-alpine3.24@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402",
+  "files": {
+    "supervisor.py": "2d534370bb280ed4860ea5d789d44d21ed9c452db5e884d5c0f46bd5901ebdfe",
+    "cleanup.py": "71035733731adef4f26527e718f31acfdc6c11cdaeb5010b5860440416e19a3b",
+    "canary.cjs": "cb5805df0bac9ef3e5296554de33dd146ed26b19dc4ca241fe6619d766db44ce",
+    "container.json": "687a00373e1a9b2cf49222bdf2f43f6abbcf11ad0360f5757a6f5a78d695ed62",
+    "seccomp.json": "574f9b15757ae785cb70914e779c15685d1f26fa364ba55cd57eaf7be7234406",
+    "empty.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mount-policy.json": "571a4c1cb95f86c718848b80e99be68659d27c64d76940e2e443d1de8140b077"
+  }
+}

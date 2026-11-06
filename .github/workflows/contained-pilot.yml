@@ -1,0 +1,35 @@
+# STATIC LOCAL PACKET: activation requires reviewed change to job if and admission.enabled.
+name: Synthetic containment pilot
+on:
+  push:
+    branches: [codex/contained-pilot-20261106-v1]
+permissions:
+  contents: read
+concurrency:
+  group: contained-pilot-20261106-v1
+  cancel-in-progress: false
+jobs:
+  synthetic-pilot:
+    if: ${{ github.repository == 'iBeX-Development/ibex-ai-platform' && github.ref == 'refs/heads/codex/contained-pilot-20261106-v1' && github.event_name == 'push' && github.run_attempt == 1 && github.event.created == true && github.event.deleted == false && github.event.before == '0000000000000000000000000000000000000000' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Pull only the pinned official toolchain image
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=5s 120s docker pull --platform linux/amd64 node:22.23.3-alpine3.24@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+      - name: Synthetic containment only
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=12s 620s python3 -I -B -S containment-pilot/supervisor.py
+      - name: Owned fallback cleanup, never grants PASS
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          timeout --signal=TERM --kill-after=2s 12s python3 -I -B -S containment-pilot/cleanup.py
