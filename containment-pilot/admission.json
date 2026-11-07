@@ -1,0 +1,28 @@
+{
+  "assuranceModel": "managed-runner-components-v1",
+  "baseCommit": "529951f9818c301aae67d94e980deafe7495391f",
+  "enabled": true,
+  "files": {
+    "bootstrap_requests.py": "a799fdd2481fc07dedca60268072338b7609096fcb97a859f0b2c0c60c7dea12",
+    "canary.cjs": "bbd4188d3f67bd2292eaeeacb316f7d1ebf694fabdd06fd979aa10a8da096448",
+    "cleanup.py": "83a8c79a79fa7884b3fab5cb89a2fea25cf9af154141a44a4ffc28c81891cb73",
+    "container.json": "687a00373e1a9b2cf49222bdf2f43f6abbcf11ad0360f5757a6f5a78d695ed62",
+    "control_helper.py": "6d874f14990ba7372913d6fe8d4ff84215103608ca3ec288aacccea26013f434",
+    "effective_properties.py": "aeb92c09d3285c2bc287c701c47bdaf0543601ddba8abf0d66c8b38c83b65577",
+    "empty.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "evidence_budget.py": "7234fd26e31745a9507e76eed9315ff2336225672b191a050986d8c87f03fc1b",
+    "independent_recovery.py": "be765fa09cc349fc98c11b70fc0e3f65d0fc5b3c5dfeeea854fb6c057b1b3068",
+    "mount-policy.json": "571a4c1cb95f86c718848b80e99be68659d27c64d76940e2e443d1de8140b077",
+    "outer_capture.py": "76170d84c2145baab4bcd6458f76a2ca0082a4ce72ce65d7de663462894cc63c",
+    "parent_backend.py": "57c2113fe94c32d0704d470c988bbdca3ab9850304ff1a95b31bf68447d29282",
+    "pilot_driver.py": "404b08ce1c1b1276ad57f685829a4cd3cda0580a4ad1db210956f52f6e47d248",
+    "runtime-support.json": "ee3b52ebf3149b74028ead3b09b3d177123ed43bbf4487ddcb2ec5ea0e2db545",
+    "seccomp.json": "574f9b15757ae785cb70914e779c15685d1f26fa364ba55cd57eaf7be7234406",
+    "stage_payload.py": "a5455a78bb4fdb21fdc5448837035ede0c19ca4b60e48571d5e2c35a77a16930",
+    "supervisor.py": "cc09c9813e0b146c477f85546eca5c908a605a1eae600e20a2189226973c32c6"
+  },
+  "image": "node:22.23.3-alpine3.24@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402",
+  "policyReviewSHA256": "5f0b365406a585112c1b93c9283174b13f2ec20a062f7afa69d87aeb13ac96fe",
+  "ref": "refs/heads/codex/contained-pilot-assertion-isolation-20261107-v1",
+  "repository": "iBeX-Development/ibex-ai-platform"
+}
