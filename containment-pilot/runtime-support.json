@@ -1,0 +1,135 @@
+{
+  "executionAllowed": true,
+  "assuranceModel": "managed-runner-components-v1",
+  "policyReviewSHA256": "5f0b365406a585112c1b93c9283174b13f2ec20a062f7afa69d87aeb13ac96fe",
+  "profiles": [
+    {
+      "assuranceModel": "managed-runner-components-v1",
+      "busAddress": "unix:path=/run/dbus/system_bus_socket",
+      "fixedExecutableRules": {
+        "/usr/bin/busctl": {
+          "canonicalPath": "/usr/bin/busctl",
+          "forbidWriteMask": 18,
+          "regular": true,
+          "uid": 0
+        },
+        "/usr/bin/docker": {
+          "canonicalPath": "/usr/bin/docker",
+          "forbidWriteMask": 18,
+          "regular": true,
+          "uid": 0
+        },
+        "/usr/bin/git": {
+          "canonicalPath": "/usr/bin/git",
+          "forbidWriteMask": 18,
+          "regular": true,
+          "uid": 0
+        },
+        "/usr/bin/python3.12": {
+          "canonicalPath": "/usr/bin/python3.12",
+          "forbidWriteMask": 18,
+          "regular": true,
+          "uid": 0
+        },
+        "/usr/bin/sudo": {
+          "canonicalPath": "/usr/bin/sudo",
+          "forbidWriteMask": 18,
+          "regular": true,
+          "uid": 0
+        },
+        "/usr/bin/systemctl": {
+          "canonicalPath": "/usr/bin/systemctl",
+          "forbidWriteMask": 18,
+          "regular": true,
+          "uid": 0
+        },
+        "/usr/bin/systemd-run": {
+          "canonicalPath": "/usr/bin/systemd-run",
+          "forbidWriteMask": 18,
+          "regular": true,
+          "uid": 0
+        },
+        "/usr/bin/timeout": {
+          "canonicalPath": "/usr/bin/timeout",
+          "forbidWriteMask": 18,
+          "regular": true,
+          "uid": 0
+        }
+      },
+      "ownedSourcePins": {
+        "bootstrap_requests.py": "a799fdd2481fc07dedca60268072338b7609096fcb97a859f0b2c0c60c7dea12",
+        "control_helper.py": "6d874f14990ba7372913d6fe8d4ff84215103608ca3ec288aacccea26013f434",
+        "effective_properties.py": "aeb92c09d3285c2bc287c701c47bdaf0543601ddba8abf0d66c8b38c83b65577",
+        "evidence_budget.py": "7234fd26e31745a9507e76eed9315ff2336225672b191a050986d8c87f03fc1b",
+        "independent_recovery.py": "be765fa09cc349fc98c11b70fc0e3f65d0fc5b3c5dfeeea854fb6c057b1b3068",
+        "parent_backend.py": "57c2113fe94c32d0704d470c988bbdca3ab9850304ff1a95b31bf68447d29282"
+      },
+      "policyReviewSHA256": "5f0b365406a585112c1b93c9283174b13f2ec20a062f7afa69d87aeb13ac96fe",
+      "profileSHA256": "8ae8cca5ed8c55c3431fb2040aca35f746762bc86e8b2c456dd03d98d8deea54",
+      "pythonExecutable": "/usr/bin/python3.12",
+      "reviewedControlPathSHA256": "8ae8cca5ed8c55c3431fb2040aca35f746762bc86e8b2c456dd03d98d8deea54",
+      "vendorBaseline": {
+        "schema": "ubuntu24-components-v1",
+        "kernelFamily": [
+          7,
+          0
+        ],
+        "kernelFlavours": [
+          "aws",
+          "azure"
+        ],
+        "systemdMajor": 255,
+        "dockerClient": "28.0.4",
+        "dockerServer": "28.0.4",
+        "dockerAPI": "1.48",
+        "pidEvents": "hierarchical-limit-events",
+        "memoryEvents": "hierarchical"
+      }
+    }
+  ],
+  "reason": "Inactive compatibility candidate. Policy review identity is bound; final profile/control acceptance and binding-delta review remain pending. Gates disabled and runtime profiles empty.",
+  "requiredProfileKeys": [
+    "assuranceModel",
+    "policyReviewSHA256",
+    "profileSHA256",
+    "reviewedControlPathSHA256",
+    "busAddress",
+    "pythonExecutable",
+    "vendorBaseline",
+    "fixedExecutableRules",
+    "ownedSourcePins"
+  ],
+  "ambientTrust": "Official GitHub/Ubuntu supply chain and host administration: kernel, loader, libraries, Python stdlib/extensions, service/daemon/runtime and sudo/PAM/NSS/plugins/config. Not independent byte verification.",
+  "retainedChecks": [
+    "exact owned input/source hashes and immutable staging",
+    "fixed executable canonical root-owned immutable metadata",
+    "fixed local command paths, environment and privileges",
+    "actual effective manager/container/cgroup/mount/network/resource/lifetime checks",
+    "identity-bound independent cleanup and terminal observations"
+  ],
+  "noLegacyFallback": true,
+  "profileSchema": {
+    "vendorBaseline": {
+      "schema": "ubuntu24-components-v1",
+      "kernelFamily": [
+        7,
+        0
+      ],
+      "kernelFlavours": [
+        "aws",
+        "azure"
+      ],
+      "systemdMajor": 255,
+      "dockerClient": "28.0.4",
+      "dockerServer": "28.0.4",
+      "dockerAPI": "1.48",
+      "pidEvents": "hierarchical-limit-events",
+      "memoryEvents": "hierarchical"
+    },
+    "fixedExecutableRules": "exact seven /usr/bin clients + canonical versioned Python; each {canonicalPath:<same key>,uid:0,forbidWriteMask:18,regular:true}; no additional paths",
+    "ownedSourcePins": "exact six staged module basenames to reviewed SHA-256; derived only from admission.files; root stage receipt binds config/support/source-pins",
+    "policyReviewSHA256": "External static policy review record identity; not final profile acceptance, runtime proof or self-hash",
+    "profileSHA256": "external review record identity; never self-hash",
+    "reviewedControlPathSHA256": "external reviewed closed-command/semantic compatibility record; not complete ambient byte closure"
+  }
+}

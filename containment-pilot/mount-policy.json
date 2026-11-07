@@ -1,0 +1,453 @@
+{
+  "requiredDestinations": [
+    "/",
+    "/pilot",
+    "/proc",
+    "/dev",
+    "/dev/pts",
+    "/dev/shm",
+    "/scratch",
+    "/sys",
+    "/sys/fs/cgroup",
+    "/etc/hosts",
+    "/etc/hostname",
+    "/etc/resolv.conf"
+  ],
+  "entries": {
+    "/": {
+      "types": [
+        "overlay"
+      ],
+      "source": [
+        "overlay"
+      ],
+      "required": [
+        "ro"
+      ],
+      "writable": false
+    },
+    "/pilot": {
+      "types": [
+        "ext4",
+        "xfs"
+      ],
+      "source": null,
+      "required": [
+        "ro"
+      ],
+      "writable": false
+    },
+    "/proc": {
+      "types": [
+        "proc"
+      ],
+      "source": [
+        "proc"
+      ],
+      "required": [
+        "rw",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "writable": true
+    },
+    "/dev": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "rw",
+        "nosuid"
+      ],
+      "writable": true,
+      "bytes": 67108864,
+      "forbidden": [
+        "nodev",
+        "noexec"
+      ],
+      "directory": {
+        "uid": 0,
+        "gid": 0,
+        "mode": 493
+      }
+    },
+    "/dev/pts": {
+      "types": [
+        "devpts"
+      ],
+      "source": [
+        "devpts"
+      ],
+      "required": [
+        "rw",
+        "nosuid",
+        "noexec"
+      ],
+      "writable": true,
+      "superRequired": [
+        "gid=5",
+        "mode=620",
+        "ptmxmode=666"
+      ],
+      "forbidden": [
+        "nodev"
+      ],
+      "directory": {
+        "uid": 0,
+        "gid": 0,
+        "mode": 493
+      }
+    },
+    "/dev/shm": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs",
+        "shm"
+      ],
+      "required": [
+        "rw",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "writable": true,
+      "bytes": 33554432,
+      "inodes": 8192
+    },
+    "/dev/mqueue": {
+      "types": [
+        "mqueue"
+      ],
+      "source": [
+        "mqueue"
+      ],
+      "required": [
+        "rw",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "writable": true
+    },
+    "/scratch": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "rw",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "writable": true,
+      "bytes": 234881024,
+      "inodes": 57344
+    },
+    "/sys": {
+      "types": [
+        "sysfs"
+      ],
+      "source": [
+        "sysfs"
+      ],
+      "required": [
+        "ro",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "writable": false
+    },
+    "/sys/fs/cgroup": {
+      "types": [
+        "cgroup2"
+      ],
+      "source": [
+        "cgroup"
+      ],
+      "required": [
+        "ro",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "writable": false
+    },
+    "/etc/hosts": {
+      "types": [
+        "ext4",
+        "xfs"
+      ],
+      "source": null,
+      "required": [
+        "ro"
+      ],
+      "writable": false
+    },
+    "/etc/hostname": {
+      "types": [
+        "ext4",
+        "xfs"
+      ],
+      "source": null,
+      "required": [
+        "ro"
+      ],
+      "writable": false
+    },
+    "/etc/resolv.conf": {
+      "types": [
+        "ext4",
+        "xfs"
+      ],
+      "source": null,
+      "required": [
+        "ro"
+      ],
+      "writable": false
+    },
+    "/proc/bus": {
+      "types": [
+        "proc"
+      ],
+      "source": [
+        "proc"
+      ],
+      "required": [
+        "ro",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "writable": false
+    },
+    "/proc/fs": {
+      "types": [
+        "proc"
+      ],
+      "source": [
+        "proc"
+      ],
+      "required": [
+        "ro",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "writable": false
+    },
+    "/proc/irq": {
+      "types": [
+        "proc"
+      ],
+      "source": [
+        "proc"
+      ],
+      "required": [
+        "ro",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "writable": false
+    },
+    "/proc/sys": {
+      "types": [
+        "proc"
+      ],
+      "source": [
+        "proc"
+      ],
+      "required": [
+        "ro",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "writable": false
+    },
+    "/proc/sysrq-trigger": {
+      "types": [
+        "proc"
+      ],
+      "source": [
+        "proc"
+      ],
+      "required": [
+        "ro",
+        "nosuid",
+        "nodev",
+        "noexec"
+      ],
+      "writable": false
+    },
+    "/proc/acpi": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "ro"
+      ],
+      "writable": false
+    },
+    "/proc/asound": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "ro"
+      ],
+      "writable": false
+    },
+    "/proc/scsi": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "ro"
+      ],
+      "writable": false
+    },
+    "/sys/firmware": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "ro"
+      ],
+      "writable": false
+    },
+    "/sys/devices/virtual/powercap": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "ro"
+      ],
+      "writable": false
+    },
+    "/proc/interrupts": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "rw",
+        "nosuid"
+      ],
+      "writable": true,
+      "deviceAlias": true
+    },
+    "/proc/kcore": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "rw",
+        "nosuid"
+      ],
+      "writable": true,
+      "deviceAlias": true
+    },
+    "/proc/keys": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "rw",
+        "nosuid"
+      ],
+      "writable": true,
+      "deviceAlias": true
+    },
+    "/proc/latency_stats": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "rw",
+        "nosuid"
+      ],
+      "writable": true,
+      "deviceAlias": true
+    },
+    "/proc/timer_list": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "rw",
+        "nosuid"
+      ],
+      "writable": true,
+      "deviceAlias": true
+    },
+    "/proc/timer_stats": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "rw",
+        "nosuid"
+      ],
+      "writable": true,
+      "deviceAlias": true
+    },
+    "/proc/sched_debug": {
+      "types": [
+        "tmpfs"
+      ],
+      "source": [
+        "tmpfs"
+      ],
+      "required": [
+        "rw",
+        "nosuid"
+      ],
+      "writable": true,
+      "deviceAlias": true
+    }
+  },
+  "accounting": "Scratch 224 MiB plus shm 32 MiB are user-mounted regular storage limits. Runtime-managed /dev must be a separate 64 MiB tmpfs, root-owned mode 0755, with usable /dev/null; no custom /dev mount or invented inode cap. Its observed inode count must be positive and is recorded only in failure/success inspection, not claimed configured. Nonroot cannot create regular files in /dev itself. devpts/PTY and device operations are not regular-file capacity; IPC creation syscalls remain denied. Anonymous and kernel memory accounting depends on verified 4 GiB cgroup memory/no-swap and actual platform support; this narrow synthetic pilot is not blanket containment proof. No cumulative-write or universal 256 MiB claim."
+}
