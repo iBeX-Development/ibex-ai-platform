@@ -1,0 +1,30 @@
+# STATIC LOCAL PACKET: activation requires reviewed change to job if and admission.enabled.
+name: Synthetic containment pilot
+on:
+  push:
+    branches: [codex/contained-pilot-components-20261107-v1]
+permissions:
+  contents: read
+concurrency:
+  group: contained-pilot-terminal-diagnostic-20261106-v1
+  cancel-in-progress: false
+jobs:
+  synthetic-pilot:
+    if: ${{ github.repository == 'iBeX-Development/ibex-ai-platform' && github.ref == 'refs/heads/codex/contained-pilot-components-20261107-v1' && github.event_name == 'push' && github.run_attempt == 1 && github.event.created == true && github.event.deleted == false && github.event.before == '0000000000000000000000000000000000000000' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Admitted one-shot bootstrap and synthetic sequence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -B -S containment-pilot/pilot_driver.py
+      - name: Reconcile exact prior operations and recover owned units
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          python3 -I -B -S containment-pilot/pilot_driver.py --finalize-only
