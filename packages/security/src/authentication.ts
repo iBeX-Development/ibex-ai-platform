@@ -50,10 +50,12 @@ export async function authenticateGatewayRequest(
     throw new PlatformError('AUTHENTICATION_ERROR', 'Authentication failed', 401);
   }
 
+  const validationTime = result.success ? now.getTime() : NaN;
   if (
     !result.success ||
-    Date.parse(result.data.authenticated_at) > now.getTime() ||
-    Date.parse(result.data.expires_at) <= now.getTime() ||
+    !Number.isFinite(validationTime) ||
+    Date.parse(result.data.authenticated_at) > validationTime ||
+    Date.parse(result.data.expires_at) <= validationTime ||
     Date.parse(result.data.authenticated_at) >= Date.parse(result.data.expires_at)
   ) {
     throw new PlatformError('AUTHENTICATION_ERROR', 'Authentication failed', 401);
