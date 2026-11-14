@@ -132,6 +132,110 @@ function chain(): readonly AuditRecord[] {
 }
 
 describe('Gate P7 request trace', () => {
+  it.each([0, 4, 5])('rejects an environment mismatch at boundary index %s', (changedIndex) => {
+    const events = chain().map((event, index) =>
+      normalizeAuditEvent(
+        index === changedIndex ? { ...event, environment: 'production' } : event,
+        `environment-event-${String(index)}`
+      )
+    );
+    expect(() => {
+      assertEndToEndAuditTrace(events);
+    }).toThrow('Audit trace context binding mismatch');
+    expect(() => reconstructAuditInteraction(events)).toThrow(
+      'Audit trace context binding mismatch'
+    );
+  });
+
+  it.each(['test', 'staging', 'production'])(
+    'reconstructs a consistently bound %s trace',
+    (environment) => {
+      const events = chain().map((event, index) =>
+        normalizeAuditEvent({ ...event, environment }, `environment-event-${String(index)}`)
+      );
+      expect(() => {
+        assertEndToEndAuditTrace(events);
+      }).not.toThrow();
+      expect(reconstructAuditInteraction(events)).toMatchObject({
+        tenant_id: context.tenant_id,
+        trace_id: traceId,
+        response_status: 'success'
+      });
+    }
+  );
+
+  it.each([
+    { document_ids: undefined, document_versions: ['1.0'] },
+    { document_ids: ['document-a'], document_versions: undefined },
+    { document_ids: ['document-a'], document_versions: [] },
+    { document_ids: [''], document_versions: ['1.0'] },
+    { document_ids: ['document-a'], document_versions: ['  '] }
+  ])('rejects incomplete RAG source evidence: %j', (evidence) => {
+    const events = chain()
+      .map(normalizeForTest)
+      .map((event) =>
+        event.event_type === 'rag_runtime.operation.outcome'
+          ? { ...event, evidence: { ...event.evidence, ...evidence } }
+          : event
+      );
+    expect(() => reconstructAuditInteraction(events)).toThrow(
+      'Audit interaction source evidence is invalid'
+    );
+  });
+
+  it.each([1, 2])('rejects retrieval count %i with empty source evidence', (resultCount) => {
+    const events = chain()
+      .map(normalizeForTest)
+      .map((event) =>
+        event.event_type === 'rag_runtime.operation.outcome'
+          ? {
+              ...event,
+              evidence: {
+                ...event.evidence,
+                document_ids: [],
+                document_versions: [],
+                result_count: resultCount
+              }
+            }
+          : event
+      );
+    expect(() => reconstructAuditInteraction(events)).toThrow(
+      'Audit interaction source evidence is invalid'
+    );
+  });
+
+  it('does not equate ranked result count with selected source count', () => {
+    const events = chain()
+      .map(normalizeForTest)
+      .map((event) =>
+        event.event_type === 'rag_runtime.operation.outcome'
+          ? { ...event, evidence: { ...event.evidence, result_count: 2 } }
+          : event
+      );
+    expect(reconstructAuditInteraction(events).sources_used).toEqual([
+      { source_id: 'document-a', version: '1.0' }
+    ]);
+  });
+
+  it('preserves a genuinely empty retrieval as empty source evidence', () => {
+    const events = chain()
+      .map(normalizeForTest)
+      .map((event) =>
+        event.event_type === 'rag_runtime.operation.outcome'
+          ? {
+              ...event,
+              evidence: {
+                ...event.evidence,
+                document_ids: [],
+                document_versions: [],
+                result_count: 0
+              }
+            }
+          : event
+      );
+    expect(reconstructAuditInteraction(events).sources_used).toEqual([]);
+  });
+
   it('reconstructs one request from Gateway through Agent, Tool/RAG, Model, and Response', async () => {
     const store = new InMemoryAuditEvidenceStore();
     let eventId = 0;

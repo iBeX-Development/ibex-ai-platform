@@ -842,6 +842,7 @@ export function assertEndToEndAuditTrace(events: readonly CanonicalAuditEvent[])
     }
     if (
       event.trace_id !== first.trace_id ||
+      event.environment !== first.environment ||
       event.request_id !== first.request_id ||
       event.correlation_id !== first.correlation_id ||
       event.context.tenant_id !== first.context.tenant_id ||
@@ -974,13 +975,27 @@ export function reconstructAuditInteraction(
         !Array.isArray(rawIds) ||
         !Array.isArray(rawVersions) ||
         rawIds.length !== rawVersions.length
-      )
-        return [];
+      ) {
+        throw new Error('Audit interaction source evidence is invalid');
+      }
       const ids: unknown[] = rawIds;
       const versions: unknown[] = rawVersions;
+      if (
+        event.evidence.operation === 'retrieve' &&
+        typeof event.evidence.result_count === 'number' &&
+        event.evidence.result_count > 0 &&
+        ids.length === 0
+      ) {
+        throw new Error('Audit interaction source evidence is invalid');
+      }
       return ids.map((sourceId, index) => {
         const version = versions[index];
-        if (typeof sourceId !== 'string' || typeof version !== 'string') {
+        if (
+          typeof sourceId !== 'string' ||
+          !sourceId.trim() ||
+          typeof version !== 'string' ||
+          !version.trim()
+        ) {
           throw new Error('Audit interaction source evidence is invalid');
         }
         return Object.freeze({ source_id: sourceId, version });
