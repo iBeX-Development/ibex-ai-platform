@@ -42,14 +42,14 @@ export async function authenticateGatewayRequest(
   request: InboundAuthenticationRequest,
   now: Date = new Date()
 ): Promise<AuthenticatedGatewayIdentity> {
-  let rawIdentity: unknown;
+  let result: ReturnType<typeof authenticatedGatewayIdentitySchema.safeParse>;
   try {
-    rawIdentity = await authenticator.authenticate(request);
+    const rawIdentity: unknown = await authenticator.authenticate(request);
+    result = authenticatedGatewayIdentitySchema.safeParse(rawIdentity);
   } catch {
     throw new PlatformError('AUTHENTICATION_ERROR', 'Authentication failed', 401);
   }
 
-  const result = authenticatedGatewayIdentitySchema.safeParse(rawIdentity);
   if (
     !result.success ||
     Date.parse(result.data.authenticated_at) > now.getTime() ||
