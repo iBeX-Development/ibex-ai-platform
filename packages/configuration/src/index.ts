@@ -1,3 +1,4 @@
+import { exactUrlSchema } from '../../contracts/src/validation.js';
 import { z } from 'zod';
 import { ConfigurationError } from '../../errors/src/index.js';
 import { featureControls } from './feature-controls.js';
@@ -15,28 +16,40 @@ const envSchema = z
     IBEX_PORT: z.coerce.number().int().min(1).max(65535),
     IBEX_LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
     IBEX_SECRET_SOURCE: z.enum(['environment', 'external']),
-    IBEX_SECRET_MANAGER_ENDPOINT: z.string().url().optional(),
-    IBEX_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
+    IBEX_SECRET_MANAGER_ENDPOINT: exactUrlSchema.optional(),
+    IBEX_REQUEST_TIMEOUT_MS: z.coerce
+      .number()
+      .refine(Number.isInteger, 'Expected integer')
+      .positive()
+      .default(30_000),
     IBEX_MAX_RETRIES: z.coerce.number().int().min(0).max(5).default(2),
-    IBEX_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(60),
-    IBEX_GATEWAY_MAX_PAYLOAD_BYTES: z.coerce.number().int().positive().default(1_048_576),
-    IBEX_AI_GATEWAY_BASE_URL: z.string().url().optional(),
-    IBEX_MODEL_GATEWAY_BASE_URL: z.string().url().optional(),
-    IBEX_RAG_SERVICE_BASE_URL: z.string().url().optional(),
-    IBEX_TOOL_SERVICE_BASE_URL: z.string().url().optional(),
-    IBEX_AUDIT_ENDPOINT: z.string().url().optional(),
-    IBEX_OTEL_EXPORTER_ENDPOINT: z.string().url().optional(),
-    IBEX_AI_PLATFORM_ENABLED: booleanString.default('false'),
-    IBEX_FEATURE_AGENTS_ENABLED: booleanString.default('false'),
-    IBEX_GENERAL_AGENT_ENABLED: booleanString.default('false'),
-    IBEX_MAINTENANCE_AGENT_ENABLED: booleanString.default('false'),
-    IBEX_ASSET_AGENT_ENABLED: booleanString.default('false'),
-    IBEX_WAREHOUSE_AGENT_ENABLED: booleanString.default('false'),
-    IBEX_FEATURE_RAG_ENABLED: booleanString.default('false'),
-    IBEX_FEATURE_TOOLS_ENABLED: booleanString.default('false'),
-    IBEX_ACTION_TOOLS_ENABLED: booleanString.default('false'),
-    IBEX_FEATURE_MODEL_GATEWAY_ENABLED: booleanString.default('false'),
-    IBEX_MODEL_FALLBACK_ENABLED: booleanString.default('false')
+    IBEX_RATE_LIMIT_PER_MINUTE: z.coerce
+      .number()
+      .refine(Number.isInteger, 'Expected integer')
+      .positive()
+      .default(60),
+    IBEX_GATEWAY_MAX_PAYLOAD_BYTES: z.coerce
+      .number()
+      .refine(Number.isInteger, 'Expected integer')
+      .positive()
+      .default(1_048_576),
+    IBEX_AI_GATEWAY_BASE_URL: exactUrlSchema.optional(),
+    IBEX_MODEL_GATEWAY_BASE_URL: exactUrlSchema.optional(),
+    IBEX_RAG_SERVICE_BASE_URL: exactUrlSchema.optional(),
+    IBEX_TOOL_SERVICE_BASE_URL: exactUrlSchema.optional(),
+    IBEX_AUDIT_ENDPOINT: exactUrlSchema.optional(),
+    IBEX_OTEL_EXPORTER_ENDPOINT: exactUrlSchema.optional(),
+    IBEX_AI_PLATFORM_ENABLED: booleanString.prefault('false'),
+    IBEX_FEATURE_AGENTS_ENABLED: booleanString.prefault('false'),
+    IBEX_GENERAL_AGENT_ENABLED: booleanString.prefault('false'),
+    IBEX_MAINTENANCE_AGENT_ENABLED: booleanString.prefault('false'),
+    IBEX_ASSET_AGENT_ENABLED: booleanString.prefault('false'),
+    IBEX_WAREHOUSE_AGENT_ENABLED: booleanString.prefault('false'),
+    IBEX_FEATURE_RAG_ENABLED: booleanString.prefault('false'),
+    IBEX_FEATURE_TOOLS_ENABLED: booleanString.prefault('false'),
+    IBEX_ACTION_TOOLS_ENABLED: booleanString.prefault('false'),
+    IBEX_FEATURE_MODEL_GATEWAY_ENABLED: booleanString.prefault('false'),
+    IBEX_MODEL_FALLBACK_ENABLED: booleanString.prefault('false')
   })
   .superRefine((value, context) => {
     if (
@@ -44,14 +57,14 @@ const envSchema = z
       value.IBEX_SECRET_SOURCE !== 'external'
     ) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['IBEX_SECRET_SOURCE'],
         message: 'staging and production require an external secret source'
       });
     }
     if (value.IBEX_SECRET_SOURCE === 'external' && !value.IBEX_SECRET_MANAGER_ENDPOINT) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['IBEX_SECRET_MANAGER_ENDPOINT'],
         message: 'external secret source requires an endpoint'
       });
@@ -111,7 +124,7 @@ export function loadConfig(source: NodeJS.ProcessEnv): AppConfig {
   if (!result.success)
     throw new ConfigurationError(
       'Invalid application configuration',
-      result.error.flatten().fieldErrors
+      z.flattenError(result.error).fieldErrors
     );
   return toConfig(result.data);
 }

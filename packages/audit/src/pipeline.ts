@@ -431,6 +431,9 @@ export function normalizeAuditEvent(
       ? Object.fromEntries(Object.entries(source).filter(([key]) => !untrustedContextKeys.has(key)))
       : { ...source };
   const evidence = immutableCopy(evidenceSource);
+  // Caller getters may change between the initial check and copying. Validate the
+  // detached immutable evidence that will actually reach persistence/export.
+  assertMinimized(evidence);
   const boundRequestId = context.status === 'trusted' ? requestId : boundaryRequestId;
   const boundCorrelationId = context.status === 'trusted' ? correlationId : boundaryCorrelationId;
   return Object.freeze({

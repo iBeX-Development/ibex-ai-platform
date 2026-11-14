@@ -18,7 +18,9 @@ const endpointPayloadSchemas = {
   chat: z.object({ message: nonEmpty }).strict(),
   agents: z.object({ message: nonEmpty, requested_agent: nonEmpty.optional() }).strict(),
   query: z.object({ query: nonEmpty }).strict(),
-  tools: z.object({ tool_id: nonEmpty, tool_version: nonEmpty, input: z.unknown() }).strict(),
+  tools: z
+    .object({ tool_id: nonEmpty, tool_version: nonEmpty, input: z.unknown().optional() })
+    .strict(),
   approvals: z.object({ approval_id: nonEmpty, payload: objectPayload }).strict(),
   feedback: z
     .object({

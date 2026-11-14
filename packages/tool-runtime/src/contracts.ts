@@ -1,3 +1,4 @@
+import { utcDateTimeSchema } from '../../contracts/src/validation.js';
 import { z } from 'zod';
 import type { TrustedRequestContext } from '../../security/src/index.js';
 
@@ -31,7 +32,10 @@ export const toolMetadataSchema = z
     required_permissions: z.array(nonEmpty).min(1).readonly(),
     required_entitlements: z.array(nonEmpty).readonly(),
     approval_policy: toolApprovalPolicySchema,
-    timeout_policy: z.object({ timeout_ms: z.number().int().positive() }).strict().readonly(),
+    timeout_policy: z
+      .object({ timeout_ms: z.number().refine(Number.isInteger, 'Expected integer').positive() })
+      .strict()
+      .readonly(),
     retry_policy: z
       .object({
         max_attempts: z.number().int().min(1).max(3),
@@ -54,14 +58,14 @@ export const toolMetadataSchema = z
     if (value.read_write_class === 'proposal') {
       if (!value.proposal_only || value.approval_policy === 'none') {
         context.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           path: ['proposal_only'],
           message: 'Action tools must remain approval-gated proposals'
         });
       }
       if (value.safe_idempotent || value.retry_policy.max_attempts !== 1) {
         context.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           path: ['retry_policy'],
           message: 'Action proposals cannot be retried'
         });
@@ -69,14 +73,14 @@ export const toolMetadataSchema = z
     } else {
       if (value.proposal_only || value.approval_policy !== 'none') {
         context.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           path: ['approval_policy'],
           message: 'Read tools cannot use action approval policy'
         });
       }
       if (!value.safe_idempotent && value.retry_policy.max_attempts !== 1) {
         context.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           path: ['retry_policy'],
           message: 'Only safe idempotent reads may be retried'
         });
@@ -88,8 +92,8 @@ export type ToolMetadata = Readonly<z.infer<typeof toolMetadataSchema>>;
 
 export interface ToolRegistration {
   readonly metadata: ToolMetadata;
-  readonly input_schema: z.ZodType<unknown>;
-  readonly output_schema: z.ZodType<unknown>;
+  readonly input_schema: z.ZodType;
+  readonly output_schema: z.ZodType;
   readonly resource_reference?: (validatedInput: unknown) => Readonly<{
     type: string;
     id: string;
@@ -98,13 +102,13 @@ export interface ToolRegistration {
 
 export const toolExecutionRequestSchema = z
   .object({
-    context: z.unknown(),
+    context: z.unknown().optional(),
     trace_id: nonEmpty.max(256),
     agent_id: nonEmpty,
     prompt_version: nonEmpty,
     tool_id: nonEmpty,
     tool_version: nonEmpty,
-    input: z.unknown()
+    input: z.unknown().optional()
   })
   .strict()
   .readonly();
@@ -123,9 +127,9 @@ const toolSourceSchema = z.object({ system: nonEmpty, reference: nonEmpty }).str
 
 export const toolAdapterResultSchema = z
   .object({
-    output: z.unknown(),
+    output: z.unknown().optional(),
     source: toolSourceSchema,
-    observed_at: z.string().datetime()
+    observed_at: utcDateTimeSchema
   })
   .strict()
   .readonly();
@@ -142,10 +146,10 @@ export const toolExecutionResponseSchema = z.union([
       trace_id: nonEmpty,
       tool_id: nonEmpty,
       tool_version: nonEmpty,
-      output: z.unknown(),
+      output: z.unknown().optional(),
       source: toolSourceSchema,
-      observed_at: z.string().datetime(),
-      attempts: z.number().int().positive()
+      observed_at: utcDateTimeSchema,
+      attempts: z.number().refine(Number.isInteger, 'Expected integer').positive()
     })
     .strict()
     .readonly(),
@@ -158,7 +162,7 @@ export const toolExecutionResponseSchema = z.union([
       trace_id: nonEmpty,
       tool_id: nonEmpty,
       tool_version: nonEmpty,
-      proposed_input: z.unknown(),
+      proposed_input: z.unknown().optional(),
       approval_required: z.literal(true),
       approval_policy: toolApprovalPolicySchema.exclude(['none'])
     })

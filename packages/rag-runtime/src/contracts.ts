@@ -1,3 +1,4 @@
+import { utcDateTimeSchema } from '../../contracts/src/validation.js';
 import { z } from 'zod';
 import type { TrustedRequestContext } from '../../security/src/index.js';
 
@@ -48,28 +49,28 @@ export const knowledgeMetadataSchema = z
     allowed_agents: nonEmptyList,
     classification: z.enum(['public', 'internal', 'tenant_confidential', 'restricted']),
     approval_status: knowledgeApprovalStatusSchema,
-    effective_date: z.string().datetime(),
-    expiry_date: z.string().datetime().optional(),
+    effective_date: utcDateTimeSchema,
+    expiry_date: utcDateTimeSchema.optional(),
     language: nonEmpty,
     source_uri: nonEmpty,
     checksum: sha256,
     access_scope: knowledgeAccessScopeSchema,
-    created_at: z.string().datetime(),
-    updated_at: z.string().datetime()
+    created_at: utcDateTimeSchema,
+    updated_at: utcDateTimeSchema
   })
   .strict()
   .readonly()
   .superRefine((value, context) => {
     if (value.tenant_scope === 'tenant_private' && !value.tenant_id) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['tenant_id'],
         message: 'Tenant-private knowledge requires an explicit tenant identifier'
       });
     }
     if (value.tenant_scope !== 'tenant_private' && value.tenant_id) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['tenant_id'],
         message: 'Shared knowledge cannot carry a tenant identifier'
       });
@@ -79,14 +80,14 @@ export const knowledgeMetadataSchema = z
       Date.parse(value.expiry_date) <= Date.parse(value.effective_date)
     ) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['expiry_date'],
         message: 'Knowledge expiry must follow its effective date'
       });
     }
     if (Date.parse(value.updated_at) < Date.parse(value.created_at)) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['updated_at'],
         message: 'Knowledge update time cannot precede creation time'
       });
@@ -99,8 +100,8 @@ export const sourceLocationSchema = z
   .object({
     section: nonEmpty,
     reference: nonEmpty,
-    page: z.number().int().positive().optional(),
-    ordinal: z.number().int().nonnegative()
+    page: z.number().refine(Number.isInteger, 'Expected integer').positive().optional(),
+    ordinal: z.number().refine(Number.isInteger, 'Expected integer').nonnegative()
   })
   .strict()
   .readonly();
@@ -131,7 +132,7 @@ export const knowledgeDocumentSchema = z
     );
     if (new Set(locations).size !== locations.length) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['sections'],
         message: 'Knowledge sections require unique stable source locations'
       });
@@ -144,7 +145,7 @@ export const embeddingEvidenceSchema = z
   .object({
     model_id: nonEmpty,
     model_version: nonEmpty,
-    vector: z.array(z.number().finite()).min(1).readonly()
+    vector: z.array(z.number()).min(1).readonly()
   })
   .strict()
   .readonly();
@@ -158,8 +159,8 @@ export const knowledgeChunkSchema = z
     document_version: nonEmpty,
     title: nonEmpty,
     source_owner: nonEmpty,
-    document_created_at: z.string().datetime(),
-    document_updated_at: z.string().datetime(),
+    document_created_at: utcDateTimeSchema,
+    document_updated_at: utcDateTimeSchema,
     tenant_scope: z.enum(['global_approved', 'domain_approved', 'tenant_private']),
     tenant_id: nonEmpty.optional(),
     domains: nonEmptyList,
@@ -167,8 +168,8 @@ export const knowledgeChunkSchema = z
     allowed_agents: nonEmptyList,
     classification: z.enum(['public', 'internal', 'tenant_confidential', 'restricted']),
     approval_status: knowledgeApprovalStatusSchema,
-    effective_date: z.string().datetime(),
-    expiry_date: z.string().datetime().optional(),
+    effective_date: utcDateTimeSchema,
+    expiry_date: utcDateTimeSchema.optional(),
     access_scope: knowledgeAccessScopeSchema,
     source_type: knowledgeSourceTypeSchema,
     source_uri: nonEmpty,
@@ -185,7 +186,7 @@ export const knowledgeChunkSchema = z
   .superRefine((value, context) => {
     if (Date.parse(value.document_updated_at) < Date.parse(value.document_created_at)) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['document_updated_at'],
         message: 'Knowledge update time cannot precede creation time'
       });
@@ -205,7 +206,7 @@ export const ragSecurityFilterSchema = z
     domain: nonEmpty,
     knowledge_scopes: nonEmptyList,
     approval_status: z.literal('approved'),
-    effective_at: z.string().datetime(),
+    effective_at: utcDateTimeSchema,
     latest_approved_only: z.literal(true)
   })
   .strict()
@@ -249,7 +250,7 @@ export const ragRetrievalScopeDecisionSchema = z.discriminatedUnion('allowed', [
 
 export const ragIngestionRequestSchema = z
   .object({
-    context: z.unknown(),
+    context: z.unknown().optional(),
     trace_id: nonEmpty.max(256),
     agent_id: nonEmpty,
     document: knowledgeDocumentSchema
@@ -266,7 +267,7 @@ export interface RagIngestionRequest {
 
 export const ragRetrievalRequestSchema = z
   .object({
-    context: z.unknown(),
+    context: z.unknown().optional(),
     trace_id: nonEmpty.max(256),
     routing_decision_id: nonEmpty,
     query: nonEmpty.max(4_000),
@@ -286,9 +287,9 @@ export interface RagRetrievalRequest {
 export const rankedChunkReferenceSchema = z
   .object({
     chunk_id: sha256,
-    score: z.number().finite().min(0).max(1),
-    semantic_score: z.number().finite().min(0).max(1),
-    keyword_score: z.number().finite().min(0).max(1)
+    score: z.number().min(0).max(1),
+    semantic_score: z.number().min(0).max(1),
+    keyword_score: z.number().min(0).max(1)
   })
   .strict()
   .readonly();
@@ -315,9 +316,9 @@ const retrievalResultSchema = z
     content: nonEmpty,
     content_trust: z.literal('untrusted_retrieved_content'),
     instruction_authority: z.literal('none'),
-    score: z.number().finite().min(0).max(1),
-    semantic_score: z.number().finite().min(0).max(1),
-    keyword_score: z.number().finite().min(0).max(1),
+    score: z.number().min(0).max(1),
+    semantic_score: z.number().min(0).max(1),
+    keyword_score: z.number().min(0).max(1),
     citation: citationSchema
   })
   .strict()

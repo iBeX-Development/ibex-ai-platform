@@ -38,19 +38,19 @@ export const pilotIntentPolicySchema = z
       value.required_entitlements.length === 0
     )
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['authorization_status'],
         message: 'Approved intents require an explicit authorization mapping'
       });
     if (value.evidence === 'rag' && value.rag_scopes.length === 0)
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['rag_scopes'],
         message: 'RAG evidence requires a scope'
       });
     if (value.evidence === 'tool' && value.tool_capability_classes.length === 0)
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['tool_capability_classes'],
         message: 'Tool evidence requires a capability class'
       });
@@ -59,13 +59,13 @@ export const pilotIntentPolicySchema = z
       (value.rag_scopes.length === 0 || value.tool_capability_classes.length === 0)
     )
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['evidence'],
         message: 'Combined evidence requires both RAG and Tool configuration'
       });
     if (value.response_type === 'proposed_action' && !value.proposal_only)
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['proposal_only'],
         message: 'Actions must remain proposals'
       });
@@ -135,13 +135,13 @@ export const pilotAgentProfileSchema = z
     for (const [index, intent] of value.intents.entries()) {
       if (intent.rag_scopes.some((scope) => !configuredScopes.has(scope)))
         context.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           path: ['intents', index, 'rag_scopes'],
           message: 'Intent scope is not allowlisted'
         });
       if (intent.tool_capability_classes.some((tool) => !configuredTools.has(tool)))
         context.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           path: ['intents', index, 'tool_capability_classes'],
           message: 'Intent tool capability is not allowlisted'
         });
@@ -151,7 +151,7 @@ export type PilotAgentProfile = Readonly<z.infer<typeof pilotAgentProfileSchema>
 
 export const pilotAgentExecutionRequestSchema = z
   .object({
-    context: z.unknown(),
+    context: z.unknown().optional(),
     trace_id: nonEmpty.max(256),
     agent_id: nonEmpty,
     agent_version: nonEmpty,

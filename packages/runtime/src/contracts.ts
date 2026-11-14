@@ -1,3 +1,4 @@
+import { utcDateTimeSchema } from '../../contracts/src/validation.js';
 import { z } from 'zod';
 import type { TrustedRequestContext } from '../../security/src/index.js';
 
@@ -37,7 +38,7 @@ const promptRecordShape = {
   agent_id: nonEmpty,
   layer: z.enum(['master', 'orchestrator', 'domain']),
   status: z.enum(['draft', 'testing', 'approved', 'retired']),
-  effective_date: z.string().datetime(),
+  effective_date: utcDateTimeSchema,
   content_hash: nonEmpty,
   created_by: nonEmpty,
   approved_by: nonEmpty.optional(),
@@ -106,7 +107,7 @@ export const ragPlanSchema = z
   .superRefine((value, context) => {
     if (!value.required && value.scopes.length > 0) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['scopes'],
         message: 'RAG scopes require an enabled RAG decision'
       });
@@ -127,7 +128,7 @@ export const toolPlanSchema = z
   .superRefine((value, context) => {
     if (value.action_class === 'proposed_action' && !value.approval_required) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['approval_required'],
         message: 'Proposed actions require approval'
       });
@@ -148,9 +149,9 @@ export type ModelPolicySelection = Readonly<z.infer<typeof modelPolicySelectionS
 
 export const runtimeControlPolicySchema = z
   .object({
-    timeout_ms: z.number().int().positive(),
-    max_context_bytes: z.number().int().positive(),
-    token_budget: z.number().int().positive(),
+    timeout_ms: z.number().refine(Number.isInteger, 'Expected integer').positive(),
+    max_context_bytes: z.number().refine(Number.isInteger, 'Expected integer').positive(),
+    token_budget: z.number().refine(Number.isInteger, 'Expected integer').positive(),
     retry_policy: z
       .object({ max_attempts: z.number().int().min(1).max(5) })
       .strict()

@@ -1,3 +1,4 @@
+import { utcDateTimeSchema } from './validation.js';
 import { z } from 'zod';
 
 export const contractVersionSchema = z.literal('1.0');
@@ -5,7 +6,7 @@ export const apiRequestEnvelopeSchema = z
   .object({
     contract_version: contractVersionSchema,
     request_id: z.string().min(1),
-    payload: z.unknown()
+    payload: z.unknown().optional()
   })
   .strict();
 
@@ -22,14 +23,14 @@ export const gatewayRequestEnvelopeSchema = z
     permissions: z.array(nonEmpty).readonly(),
     entitlements: z.array(nonEmpty).readonly(),
     session_id: nonEmpty,
-    timestamp: z.string().datetime(),
+    timestamp: utcDateTimeSchema,
     channel: z.enum(['web', 'mobile', 'system']),
     locale: nonEmpty,
     requested_capability: nonEmpty.optional(),
     source_module: nonEmpty.optional(),
     source_entity_type: nonEmpty.optional(),
     source_entity_id: nonEmpty.optional(),
-    payload: z.unknown()
+    payload: z.unknown().optional()
   })
   .strict()
   .readonly();
@@ -61,7 +62,7 @@ export const gatewayResponseEnvelopeSchema = z
   .superRefine((value, context) => {
     if (value.action_type === 'proposed_action' && !value.approval_required) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['approval_required'],
         message: 'proposed actions require approval'
       });
@@ -72,7 +73,7 @@ export const toolRequestSchema = z
   .object({
     contract_version: contractVersionSchema,
     tool_id: z.string().min(1),
-    input: z.unknown()
+    input: z.unknown().optional()
   })
   .strict();
 export const toolResponseSchema = z
@@ -87,7 +88,7 @@ export const modelRequestSchema = z
   .object({
     contract_version: contractVersionSchema,
     capability: z.string().min(1),
-    input: z.unknown(),
+    input: z.unknown().optional(),
     response_schema: z.unknown().optional()
   })
   .strict();
@@ -126,7 +127,7 @@ export const auditEventSchema = z
   .object({
     schema_version: z.literal('1.0'),
     event_type: z.string().min(1),
-    timestamp: z.string().datetime(),
+    timestamp: utcDateTimeSchema,
     trace_id: z.string().min(1),
     request_id: z.string().min(1),
     correlation_id: z.string().min(1),

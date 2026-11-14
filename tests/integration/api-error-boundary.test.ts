@@ -241,7 +241,7 @@ describe('API HTTP error boundaries through original modules', () => {
     handler: ReturnType<typeof createGatewayHttpHandler> | undefined,
     probe: ResponseProbe,
     url = '/chat',
-    env: NodeJS.ProcessEnv = validTestEnvironment
+    env: NodeJS.ProcessEnv = { ...validTestEnvironment, IBEX_AI_PLATFORM_ENABLED: 'true' }
   ) {
     const server = startApi(env, handler);
     const listener = server.listeners('request')[0] as RequestListener;
@@ -324,6 +324,20 @@ describe('API HTTP error boundaries through original modules', () => {
       ai_platform_enabled: false
     });
   });
+
+  it.each(['/chat', '/agents', '/query', '/tools', '/approvals', '/feedback'])(
+    'does not dispatch disabled platform route %s even with an injected handler',
+    async (url) => {
+      const handler = vi.fn().mockRejectedValue(new Error(privateDetail));
+      const probe = new ResponseProbe();
+      await dispatch(handler, probe, url, validTestEnvironment);
+      expect(handler).not.toHaveBeenCalled();
+      expect(probe.statusCode).toBe(404);
+      expect(JSON.parse(probe.bodies[0] ?? '')).toEqual({
+        error: { code: 'NOT_FOUND', message: 'Route not found' }
+      });
+    }
+  );
 
   it.each(['sync', 'async'])('contains unexpected %s dispatcher failure', async (mode) => {
     const handler = vi.fn(() => {
@@ -425,7 +439,7 @@ describe('API HTTP error boundaries through original modules', () => {
   it('preserves health and default no-Gateway 404 wiring', async () => {
     const handler = vi.fn().mockResolvedValue(false);
     const health = new ResponseProbe();
-    await dispatch(handler, health, '/health');
+    await dispatch(handler, health, '/health', validTestEnvironment);
     expect(health.statusCode).toBe(200);
     expect(JSON.parse(health.bodies[0] ?? '')).toEqual({
       status: 'disabled',
@@ -434,7 +448,7 @@ describe('API HTTP error boundaries through original modules', () => {
     });
     expect(handler).not.toHaveBeenCalled();
     const missing = new ResponseProbe();
-    await dispatch(undefined, missing);
+    await dispatch(undefined, missing, '/chat', validTestEnvironment);
     expect(missing.statusCode).toBe(404);
     expect(JSON.parse(missing.bodies[0] ?? '')).toEqual({
       error: { code: 'NOT_FOUND', message: 'Route not found' }
@@ -464,7 +478,10 @@ describe('API HTTP error boundaries through original modules', () => {
         response.write('{"partial":');
         return Promise.reject(new Error(privateDetail));
       };
-    const api = startApi(validTestEnvironment, handler);
+    const api = startApi(
+      { ...validTestEnvironment, IBEX_AI_PLATFORM_ENABLED: 'true' },
+      handler
+    );
     const server = http.createServer(api.listeners('request')[0] as RequestListener);
     api.removeAllListeners();
     let client: Http.ClientRequest | undefined;

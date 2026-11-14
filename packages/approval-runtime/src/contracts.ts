@@ -1,3 +1,4 @@
+import { utcDateTimeSchema } from '../../contracts/src/validation.js';
 import { z } from 'zod';
 import type { TrustedRequestContext } from '../../security/src/index.js';
 import { toolApprovalPolicySchema } from '../../tool-runtime/src/index.js';
@@ -25,7 +26,7 @@ export const approvalActionDefinitionSchema = z
     required_approval_entitlements: stringList,
     required_execution_permissions: z.array(nonEmpty).min(1).readonly(),
     required_execution_entitlements: stringList,
-    max_approval_ttl_ms: z.number().int().positive(),
+    max_approval_ttl_ms: z.number().refine(Number.isInteger, 'Expected integer').positive(),
     retry_policy: z
       .object({ max_attempts: z.literal(1) })
       .strict()
@@ -47,7 +48,7 @@ export const approvalActionDefinitionSchema = z
       (value.enabled || value.integration_status !== 'blocked_pending_approved_core_contract')
     ) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['enabled'],
         message: 'Live Core approval execution remains disabled without an approved contract'
       });
@@ -57,7 +58,7 @@ export const approvalActionDefinitionSchema = z
     );
     if (new Set(agentKeys).size !== agentKeys.length) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['allowed_agents'],
         message: 'Approval action agent bindings must be unique'
       });
@@ -68,7 +69,7 @@ export const approvalActionDefinitionSchema = z
         value.environments.some((environment) => environment !== 'test'))
     ) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['environments'],
         message: 'Deterministic approval execution is restricted to test environments'
       });
@@ -78,7 +79,7 @@ export type ApprovalActionDefinition = Readonly<z.infer<typeof approvalActionDef
 
 export const approvalProposalRequestSchema = z
   .object({
-    context: z.unknown(),
+    context: z.unknown().optional(),
     trace_id: nonEmpty.max(256),
     agent_id: nonEmpty,
     agent_version: nonEmpty,
@@ -87,7 +88,7 @@ export const approvalProposalRequestSchema = z
     target: resourceReferenceSchema,
     proposed_changes: z.record(z.string(), z.unknown()),
     reason: nonEmpty,
-    expires_at: z.string().datetime()
+    expires_at: utcDateTimeSchema
   })
   .strict()
   .readonly();
@@ -107,7 +108,7 @@ export interface ApprovalProposalRequest {
 
 export const approvalReferenceRequestSchema = z
   .object({
-    context: z.unknown(),
+    context: z.unknown().optional(),
     trace_id: nonEmpty.max(256),
     approval_id: nonEmpty
   })
@@ -136,7 +137,7 @@ export const approvalDecisionEvidenceSchema = z
     proposed_change_hash: evidenceHash,
     proposal_integrity_hash: evidenceHash,
     authorization_decision_id: nonEmpty,
-    decision_at: z.string().datetime()
+    decision_at: utcDateTimeSchema
   })
   .strict()
   .readonly();
@@ -156,7 +157,7 @@ export const actionExecutionReceiptSchema = z
   .object({
     execution_id: nonEmpty,
     source_reference: nonEmpty,
-    executed_at: z.string().datetime()
+    executed_at: utcDateTimeSchema
   })
   .strict()
   .readonly();
@@ -177,7 +178,7 @@ export type ApprovalStatus = z.infer<typeof approvalStatusSchema>;
 export const approvalRecordSchema = z
   .object({
     contract_version: z.literal('1.0'),
-    revision: z.number().int().nonnegative(),
+    revision: z.number().refine(Number.isInteger, 'Expected integer').nonnegative(),
     proposal_id: nonEmpty,
     approval_id: nonEmpty,
     action_id: nonEmpty,
@@ -200,12 +201,12 @@ export const approvalRecordSchema = z
     reason: nonEmpty,
     approval_policy: toolApprovalPolicySchema.exclude(['none']),
     status: approvalStatusSchema,
-    requested_at: z.string().datetime(),
-    expires_at: z.string().datetime(),
+    requested_at: utcDateTimeSchema,
+    expires_at: utcDateTimeSchema,
     approver_user_id: nonEmpty.optional(),
     approver_role: nonEmpty.optional(),
     authorization_decision_id: nonEmpty.optional(),
-    decision_at: z.string().datetime().optional(),
+    decision_at: utcDateTimeSchema.optional(),
     decision: z.enum(['approve', 'reject', 'cancel', 'revoke', 'expire']).optional(),
     decision_evidence_hash: evidenceHash.optional(),
     idempotency_key: nonEmpty.optional(),
@@ -226,14 +227,14 @@ export const approvalRecordSchema = z
         !value.decision_evidence_hash)
     ) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['status'],
         message: 'Decision evidence is required after an approval decision'
       });
     }
     if (value.status === 'rejected' && value.decision !== 'reject') {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['decision'],
         message: 'Rejected state requires a reject decision'
       });
@@ -244,7 +245,7 @@ export const approvalRecordSchema = z
       value.decision !== 'revoke'
     ) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['decision'],
         message: 'Cancelled state requires a cancel or revoke decision'
       });
@@ -254,7 +255,7 @@ export const approvalRecordSchema = z
       value.decision !== 'approve'
     ) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['decision'],
         message: 'Execution-capable state requires an approve decision'
       });
@@ -264,14 +265,14 @@ export const approvalRecordSchema = z
       !value.idempotency_key
     ) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['idempotency_key'],
         message: 'Execution states require an idempotency key'
       });
     }
     if (value.status === 'executed' && !value.execution_receipt) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['execution_receipt'],
         message: 'Executed approval requires a receipt'
       });
@@ -292,7 +293,7 @@ export const approvalProposalResponseSchema = z
     action_type: nonEmpty,
     approval_policy: toolApprovalPolicySchema.exclude(['none']),
     proposed_change_hash: evidenceHash,
-    expires_at: z.string().datetime()
+    expires_at: utcDateTimeSchema
   })
   .strict()
   .readonly();
@@ -308,7 +309,7 @@ export const approvalDecisionResponseSchema = z
     correlation_id: nonEmpty,
     trace_id: nonEmpty,
     status: z.enum(['approved', 'rejected', 'cancelled', 'expired']),
-    decision_at: z.string().datetime().optional()
+    decision_at: utcDateTimeSchema.optional()
   })
   .strict()
   .readonly();
@@ -326,7 +327,7 @@ export const approvalExecutionResponseSchema = z
     status: z.literal('executed'),
     execution_id: nonEmpty,
     source_reference: nonEmpty,
-    executed_at: z.string().datetime(),
+    executed_at: utcDateTimeSchema,
     idempotency_key: nonEmpty,
     duplicate: z.boolean()
   })

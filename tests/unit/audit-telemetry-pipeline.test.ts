@@ -513,6 +513,62 @@ describe('Phase 7 canonical audit pipeline', () => {
     );
   });
 
+  it.each([
+    ['trusted', 'root'],
+    ['trusted', 'nested'],
+    ['unavailable', 'root'],
+    ['unavailable', 'nested']
+  ] as const)(
+    'rejects prohibited evidence introduced during copying for %s context at %s',
+    async (contextStatus, placement) => {
+      const deps = dependencies();
+      const pipeline = new AuditTelemetryPipeline(deps);
+      const source = {
+        ...createGatewaySecurityAuditEvent({
+          traceId: 'trace-a',
+          service: 'ai-gateway',
+          environment: 'test',
+          outcome: 'accepted',
+          stage: 'response',
+          timestamp: now,
+          ...(contextStatus === 'trusted' ? { context } : {})
+        })
+      };
+      expect(source.context_status).toBe(contextStatus);
+      let reads = 0;
+      const changed = {
+        get value() {
+          reads += 1;
+          return reads === 1 ? { count: 1 } : { raw_prompt: 'copy-private-canary' };
+        }
+      };
+      const unsafe = Object.defineProperty(
+        source,
+        'copy_evidence',
+        placement === 'root'
+          ? { enumerable: true, get: () => changed.value }
+          : { enumerable: true, value: changed }
+      );
+
+      await expect(pipeline.emit(unsafe)).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
+      expect(reads).toBeGreaterThan(1);
+      const store = deps.evidenceStore as InMemoryAuditEvidenceStore;
+      expect(store.audits).toHaveLength(0);
+      expect(deps.auditExporter.export).not.toHaveBeenCalled();
+      expect(deps.metricsExporter.export).not.toHaveBeenCalled();
+      expect(store.health).toContainEqual(
+        expect.objectContaining({ reason_code: 'PROHIBITED_AUDIT_DATA' })
+      );
+      expect(JSON.stringify(store.health)).not.toContain('copy-private-canary');
+      expect(JSON.stringify(vi.mocked(deps.securityExporter.export).mock.calls)).not.toContain(
+        'copy-private-canary'
+      );
+      expect(JSON.stringify(vi.mocked(deps.healthExporter.export).mock.calls)).not.toContain(
+        'copy-private-canary'
+      );
+    }
+  );
+
   it('classifies security events with a sanitized severity and reason code', () => {
     const observation = securityObservationFor(normalizeAuditEvent(gatewayEvent('rejected')));
     expect(observation).toMatchObject({

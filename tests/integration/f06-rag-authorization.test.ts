@@ -151,13 +151,18 @@ describe('F06 local authorization stages (not OE-10)', () => {
       expect(JSON.stringify({ error, audits: h.audits })).not.toContain('foreign-binding-canary');
     }
   );
-  it.each(['deny', 'throw'] as const)(
+  it.each(['deny', 'throw', 'malformed'] as const)(
     'pre-store: scope %s blocks downstream calls',
     async (mode) => {
+      const approvedDecision = await approvedRetrievalScope().resolve(ragContext, 'routing-rag-1');
+      if (!approvedDecision.allowed) throw new Error('fixture setup');
       const h = observe([restricted], {
         retrievalScope: {
           resolve: () => {
             if (mode === 'throw') throw new Error('private-policy-canary');
+            if (mode === 'malformed') {
+              return Promise.resolve({ ...approvedDecision, decision_id: '' });
+            }
             return Promise.resolve({ allowed: false, reason: 'private-policy-canary' });
           }
         }

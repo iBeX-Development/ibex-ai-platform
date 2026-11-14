@@ -1,9 +1,10 @@
+import { exactUrlSchema } from '../../contracts/src/validation.js';
 import { z } from 'zod';
 import { trustedRequestContextSchema } from '../../security/src/index.js';
 
 const nonEmpty = z.string().trim().min(1);
-const nonNegativeInteger = z.number().int().nonnegative();
-const money = z.number().nonnegative().finite();
+const nonNegativeInteger = z.number().refine(Number.isInteger, 'Expected integer').nonnegative();
+const money = z.number().nonnegative();
 
 export const modelCapabilitySchema = z.enum([
   'MG-FAST',
@@ -29,7 +30,7 @@ export const providerDefinitionSchema = z
     provider_id: nonEmpty,
     adapter_id: nonEmpty,
     mode: z.enum(['test', 'live']),
-    endpoint: z.string().url().optional(),
+    endpoint: exactUrlSchema.optional(),
     credential_reference: nonEmpty.optional(),
     capabilities: z.array(modelCapabilitySchema).min(1).readonly(),
     maximum_confidentiality: confidentialityClassSchema,
@@ -43,7 +44,7 @@ export const providerDefinitionSchema = z
   .superRefine((provider, context) => {
     if (provider.mode === 'live' && (!provider.endpoint || !provider.credential_reference)) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Live providers require endpoint and credential reference'
       });
     }
@@ -53,14 +54,14 @@ export const providerDefinitionSchema = z
       !provider.endpoint.startsWith('https://')
     ) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['endpoint'],
         message: 'Live provider endpoints require HTTPS'
       });
     }
     if (provider.mode === 'test' && (provider.endpoint || provider.credential_reference)) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Test providers cannot declare live credentials or endpoints'
       });
     }
@@ -98,7 +99,7 @@ export const modelDefinitionSchema = z
     input_type: modelPayloadTypeSchema,
     output_type: modelPayloadTypeSchema,
     capabilities: z.array(modelCapabilitySchema).min(1).readonly(),
-    context_limit: z.number().int().positive(),
+    context_limit: z.number().refine(Number.isInteger, 'Expected integer').positive(),
     structured_output: z.boolean(),
     tool_use: z.boolean(),
     latency_class: z.enum(['low', 'standard', 'high']),
@@ -125,7 +126,7 @@ export const modelGatewayRequestSchema = z
     confidentiality_class: confidentialityClassSchema,
     prompt_version: nonEmpty,
     policy_version: nonEmpty,
-    input: z.unknown(),
+    input: z.unknown().optional(),
     requires_structured_output: z.boolean(),
     requires_tool_use: z.boolean(),
     latency_priority: z.enum(['low', 'standard']),
@@ -136,7 +137,7 @@ export const modelGatewayRequestSchema = z
   .superRefine((request, context) => {
     if (request.requires_structured_output && !request.output_schema_id) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['output_schema_id'],
         message: 'Structured output requires a versioned schema identifier'
       });
@@ -147,7 +148,7 @@ export type ModelGatewayRequest = Readonly<z.infer<typeof modelGatewayRequestSch
 
 export const providerResultSchema = z
   .object({
-    result: z.unknown(),
+    result: z.unknown().optional(),
     structured_output: z.unknown().optional(),
     input_tokens: nonNegativeInteger,
     output_tokens: nonNegativeInteger,
@@ -163,7 +164,7 @@ export const modelGatewayResponseSchema = z
     request_id: nonEmpty,
     correlation_id: nonEmpty,
     trace_id: nonEmpty,
-    result: z.unknown(),
+    result: z.unknown().optional(),
     structured_output: z.unknown().optional(),
     provider_id: nonEmpty,
     model_id: nonEmpty,
@@ -194,11 +195,13 @@ export const modelGatewayPolicySchema = z
   .object({
     version: nonEmpty,
     required_permission: nonEmpty,
-    agent_capabilities: z.record(z.array(modelCapabilitySchema).min(1).readonly()).readonly(),
-    timeout_ms: z.number().int().positive(),
+    agent_capabilities: z
+      .record(z.string(), z.array(modelCapabilitySchema).min(1).readonly())
+      .readonly(),
+    timeout_ms: z.number().refine(Number.isInteger, 'Expected integer').positive(),
     max_retries: z.number().int().min(0).max(5),
     fallback_enabled: z.boolean(),
-    maximum_input_bytes: z.number().int().positive()
+    maximum_input_bytes: z.number().refine(Number.isInteger, 'Expected integer').positive()
   })
   .strict()
   .readonly();

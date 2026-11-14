@@ -21,7 +21,11 @@ import {
 import type { SharedAgentRuntime } from './orchestrator.js';
 
 const payloadSchema = z
-  .object({ tool_id: z.string().min(1), tool_version: z.string().min(1), input: z.unknown() })
+  .object({
+    tool_id: z.string().min(1),
+    tool_version: z.string().min(1),
+    input: z.unknown().optional()
+  })
   .strict();
 const assetIdSchema = z
   .object({

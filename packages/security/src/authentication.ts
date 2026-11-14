@@ -1,3 +1,4 @@
+import { utcDateTimeSchema } from '../../contracts/src/validation.js';
 import { z } from 'zod';
 import { PlatformError } from '../../errors/src/index.js';
 
@@ -16,8 +17,8 @@ export const authenticatedGatewayIdentitySchema = z
     correlation_id: nonEmpty,
     channel: z.enum(['web', 'mobile', 'system']),
     locale: nonEmpty,
-    authenticated_at: z.string().datetime(),
-    expires_at: z.string().datetime()
+    authenticated_at: utcDateTimeSchema,
+    expires_at: utcDateTimeSchema
   })
   .strict()
   .readonly();

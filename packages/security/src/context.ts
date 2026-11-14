@@ -42,7 +42,7 @@ export function createTrustedRequestContext(serverSupplied: unknown): TrustedReq
       'TENANT_CONTEXT_ERROR',
       'Trusted request context is invalid',
       401,
-      result.error.flatten()
+      z.flattenError(result.error)
     );
   return Object.freeze({
     ...result.data,

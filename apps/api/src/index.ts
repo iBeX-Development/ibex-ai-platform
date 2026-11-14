@@ -32,7 +32,8 @@ export function startApi(
       sendJson(response, 200, runtimeHealth(config));
       return;
     }
-    if (gatewayHandler && (await gatewayHandler(request, response))) return;
+    if (config.features.aiPlatform && gatewayHandler && (await gatewayHandler(request, response)))
+      return;
     sendJson(response, 404, { error: { code: 'NOT_FOUND', message: 'Route not found' } });
   };
   const server = createServer((request, response) => {

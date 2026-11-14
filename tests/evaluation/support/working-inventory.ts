@@ -1,3 +1,4 @@
+import { exactUrlSchema } from '../../../packages/contracts/src/validation.js';
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 
@@ -64,18 +65,15 @@ const oeIds = [
 ];
 const historicalPopulations = ['after-config-scope', 'final-sign-off', 'parent-sir'];
 const localRef = (path: string) =>
-  z.object({ path: z.literal(path), line: z.number().int().positive().safe() }).strict();
-const httpsLocator = z
-  .string()
-  .url()
-  .refine((value) => {
-    try {
-      const url = new URL(value);
-      return url.protocol === 'https:' && !url.username && !url.password;
-    } catch {
-      return false;
-    }
-  });
+  z.object({ path: z.literal(path), line: z.number().int().positive().int() }).strict();
+const httpsLocator = exactUrlSchema.refine((value) => {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && !url.username && !url.password;
+  } catch {
+    return false;
+  }
+});
 const digest = z.string().regex(/^[a-f0-9]{64}$/);
 const schema = z
   .object({
@@ -143,7 +141,7 @@ const schema = z
             'final-sign-off',
             'parent-sir'
           ]),
-          reported_count: z.number().int().positive().safe().nullable(),
+          reported_count: z.number().int().positive().int().nullable(),
           detailed_identities: z.literal('unavailable'),
           obligation_state: z.literal('unresolved'),
           overlap: z.literal('unknown')

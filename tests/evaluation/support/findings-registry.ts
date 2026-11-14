@@ -1,17 +1,15 @@
+import { exactUrlSchema } from '../../../packages/contracts/src/validation.js';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { z } from 'zod';
 import type { Finding, Phase10GateResult } from './release-gate.js';
 
 const id = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/);
-const revision = z.number().int().positive().safe();
-const reference = z
-  .string()
-  .url()
-  .refine((value) => {
-    const url = new URL(value);
-    return url.protocol === 'https:' && !url.username && !url.password;
-  });
+const revision = z.number().int().positive().int();
+const reference = exactUrlSchema.refine((value) => {
+  const url = new URL(value);
+  return url.protocol === 'https:' && !url.username && !url.password;
+});
 const refs = z.array(id);
 const findingSchema = z
   .object({

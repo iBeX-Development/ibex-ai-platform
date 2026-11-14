@@ -1,3 +1,4 @@
+import { utcDateTimeSchema } from '../../../packages/contracts/src/validation.js';
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import {
@@ -58,8 +59,10 @@ export const criticalGateNames = Object.freeze([
 export type CriticalGateName = (typeof criticalGateNames)[number];
 
 const nonEmpty = z.string().trim().min(1);
+// Preserve the prior measurement parser domain; migration does not redefine release metrics.
+const nonNegativeMeasurement = z.union([z.number().nonnegative(), z.literal(Infinity)]);
 const outcomeSchema = z.enum(['allow', 'route', 'abstain', 'deny']);
-const metricScoresSchema = z.record(qualityMetricSchema, z.number().min(0).max(1));
+const metricScoresSchema = z.partialRecord(qualityMetricSchema, z.number().min(0).max(1));
 const normalizedAuditEvidenceSchema = z
   .object({
     event_id: nonEmpty,
@@ -86,13 +89,13 @@ const normalizedAuditEvidenceSchema = z
     const trustedFields = [value.tenant_id, value.user_id, value.role, value.session_id];
     if (value.context_status === 'trusted' && trustedFields.some((field) => !field))
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['context_status'],
         message: 'Trusted normalized audit evidence is missing mandatory context'
       });
     if (value.context_status === 'unavailable' && trustedFields.some(Boolean))
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['context_status'],
         message: 'Unavailable audit context cannot assert trusted identity fields'
       });
@@ -155,7 +158,7 @@ export const evaluationObservationSchema = z
       .strict()
       .readonly()
       .optional(),
-    timestamp: z.string().datetime(),
+    timestamp: utcDateTimeSchema,
     evaluator: z
       .object({ identity: nonEmpty, mechanism: nonEmpty, version: nonEmpty })
       .strict()
@@ -163,9 +166,9 @@ export const evaluationObservationSchema = z
     measurement: z
       .object({
         source: z.literal('deterministic_simulation'),
-        latency_ms: z.number().nonnegative(),
+        latency_ms: nonNegativeMeasurement,
         cost: z
-          .object({ unit: z.literal('synthetic_cost_unit'), total: z.number().nonnegative() })
+          .object({ unit: z.literal('synthetic_cost_unit'), total: nonNegativeMeasurement })
           .strict()
       })
       .strict()
@@ -189,14 +192,14 @@ export const evaluationObservationSchema = z
       value.trace_id !== value.audit_correlation.trace_id
     )
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['audit_correlation'],
         message: 'Evaluation audit binding is inconsistent'
       });
     const auditEvents = value.audit_correlation.events;
     if (new Set(auditEvents.map((event) => event.event_id)).size !== auditEvents.length)
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['audit_correlation', 'events'],
         message: 'Evaluation audit evidence contains duplicated events'
       });
@@ -209,14 +212,14 @@ export const evaluationObservationSchema = z
       )
     )
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['audit_correlation', 'events'],
         message: 'Normalized audit evidence binding is inconsistent'
       });
     const statuses = new Set(auditEvents.map((event) => event.context_status));
     if (statuses.size !== 1 || !statuses.has(value.test_scope.context_status))
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['test_scope', 'context_status'],
         message: 'Evaluation scope is inconsistent with normalized audit context'
       });
@@ -228,7 +231,7 @@ export const evaluationObservationSchema = z
         auditEvents.some((event) => event.tenant_id !== trustedTenant))
     )
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['test_scope', 'tenant_id'],
         message: 'Evaluation tenant scope is not bound to normalized audit evidence'
       });
@@ -247,19 +250,19 @@ export const evaluationObservationSchema = z
       )
     )
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['audit_correlation', 'events'],
         message: 'Normalized trusted audit identity or authorization context is inconsistent'
       });
     if (value.test_scope.context_status === 'unavailable' && value.test_scope.tenant_id)
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['test_scope', 'tenant_id'],
         message: 'Untrusted evaluation context cannot assert a tenant scope'
       });
     if (value.case_id !== value.expected_result_reference.case_id)
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['expected_result_reference'],
         message: 'Expected-result reference is inconsistent'
       });
@@ -505,15 +508,15 @@ export const measurementEvidenceSchema = z
     approval_reference: nonEmpty.optional(),
     latency_ms: z
       .object({
-        p50: z.number().nonnegative(),
-        p95: z.number().nonnegative(),
-        p99: z.number().nonnegative()
+        p50: nonNegativeMeasurement,
+        p95: nonNegativeMeasurement,
+        p99: nonNegativeMeasurement
       })
       .strict(),
     cost: z
       .object({
         unit: z.enum(['synthetic_cost_unit', 'approved_currency']),
-        total: z.number().nonnegative()
+        total: nonNegativeMeasurement
       })
       .strict()
   })
@@ -522,13 +525,13 @@ export const measurementEvidenceSchema = z
     const live = value.source !== 'deterministic_simulation';
     if (live && !value.approval_reference)
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['approval_reference'],
         message: 'Live measurements require an approved integration reference'
       });
     if (!live && value.cost.unit !== 'synthetic_cost_unit')
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['cost', 'unit'],
         message: 'Simulated measurements must use synthetic cost units'
       });
