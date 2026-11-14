@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { types } from 'node:util';
 import { PlatformError } from '../../errors/src/index.js';
 import { isSensitiveTelemetryKey } from '../../observability/src/index.js';
 import type { AuditEventSink, AuditRecord } from './index.js';
@@ -203,18 +204,44 @@ function assertMinimized(value: unknown, path = 'event'): void {
   }
 }
 
-function isNonEmptyStringArray(value: unknown): value is string[] {
-  return (
-    Array.isArray(value) &&
-    value.every((item: unknown) => typeof item === 'string' && item.trim().length > 0)
-  );
-}
-
 function requiredStrings(value: unknown, field: string): readonly string[] {
-  if (!isNonEmptyStringArray(value)) {
+  if (types.isProxy(value) || !Array.isArray(value)) {
     throw new PlatformError('VALIDATION_ERROR', `Audit ${field} is invalid`, 500);
   }
-  return Object.freeze([...value]);
+  const copy: string[] = [];
+  for (let index = 0; index < value.length; index += 1) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
+    const item: unknown = descriptor && 'value' in descriptor ? descriptor.value : undefined;
+    if (typeof item !== 'string' || item.trim().length === 0) {
+      throw new PlatformError('VALIDATION_ERROR', `Audit ${field} is invalid`, 500);
+    }
+    copy.push(item);
+  }
+  return Object.freeze(copy);
+}
+
+function snapshotReferenceFields(event: AuditRecord): AuditRecord {
+  if (types.isProxy(event)) {
+    throw new PlatformError('VALIDATION_ERROR', 'Audit reference context is invalid', 500);
+  }
+  const descriptors: Record<string, PropertyDescriptor> = Object.getOwnPropertyDescriptors(event);
+  // Unavailable context does not assert permission or entitlement evidence.
+  if (descriptors.context_status?.value === 'unavailable') return event;
+  for (const [key, field] of [
+    ['permission_refs', 'permission references'],
+    ['entitlement_refs', 'entitlement references']
+  ] as const) {
+    const descriptor = descriptors[key];
+    const value: unknown = descriptor && 'value' in descriptor ? descriptor.value : undefined;
+    descriptors[key] = {
+      value: requiredStrings(value, field),
+      enumerable: true,
+      writable: false,
+      configurable: false
+    };
+  }
+  // Replace references before generic traversal or evidence cloning can read them again.
+  return Object.defineProperties({}, descriptors) as AuditRecord;
 }
 
 function optionalString(value: unknown): string | undefined {
@@ -370,6 +397,7 @@ export function normalizeAuditEvent(
   eventId: string = randomUUID(),
   parentEventId?: string
 ): CanonicalAuditEvent {
+  event = snapshotReferenceFields(event);
   assertMinimized(event);
   const source = record(event);
   const eventType = optionalString(source.event_type);
