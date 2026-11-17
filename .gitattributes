@@ -4,3 +4,4 @@
 /docs/governance/sir-02/SIR-02-EVIDENCE-COLLECTION-REGISTER-v1.0.md text eol=lf
 /docs/governance/sir-02/controls/SIR-02-KM-OPERATIONAL-EVIDENCE-ACCEPTANCE-MATRIX-v1.0.md text eol=lf
 /docs/evaluation/findings/registry.v1.json text eol=lf
+/tests/evaluation/fixtures/registry-v2-historical.json text eol=lf
