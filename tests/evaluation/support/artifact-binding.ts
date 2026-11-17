@@ -56,19 +56,19 @@ const identitySchema = z
     const paths = value.inputs.map((input) => input.path.toLowerCase());
     if (new Set(paths).size !== paths.length) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Duplicate or case-ambiguous paths'
       });
     }
     const ordered = [...paths].sort();
     if (ordered.some((p, i) => ordered.slice(i + 1).some((other) => other.startsWith(p + '/')))) {
-      context.addIssue({ code: z.ZodIssueCode.custom, message: 'File/directory path collision' });
+      context.addIssue({ code: 'custom', message: 'File/directory path collision' });
     }
     if (
       new Set(value.ordered_parents).size !== value.ordered_parents.length ||
       value.ordered_parents.includes(value.evaluated_commit)
     ) {
-      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Duplicate or self parent' });
+      context.addIssue({ code: 'custom', message: 'Duplicate or self parent' });
     }
   });
 export type ArtifactIdentity = z.infer<typeof identitySchema>;

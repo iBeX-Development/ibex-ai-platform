@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { PlatformError } from '../../errors/src/index.js';
 
 const identity = z.string().trim().min(1).max(256);
-const count = z.number().int().nonnegative().safe();
+const count = z.number().int().nonnegative().int();
 const positive = count.positive();
 export const accountingScopes = [
   'global',
@@ -24,7 +24,7 @@ const limit = z
   .strict()
   .superRefine((value, context) => {
     if (value.warning_cost_units > value.cost_units)
-      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Warning exceeds hard limit' });
+      context.addIssue({ code: 'custom', message: 'Warning exceeds hard limit' });
   });
 
 /** Server-injected authority. No production values or unbounded/default policy exist. */
@@ -91,12 +91,12 @@ export const modelBudgetPolicySchema = z
       value.valid_from_ms >= value.valid_until_ms ||
       value.period.starts_at_ms >= value.period.ends_at_ms
     )
-      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Invalid policy interval' });
+      context.addIssue({ code: 'custom', message: 'Invalid policy interval' });
     const keys = value.pricing.map((p) =>
       JSON.stringify([p.provider_id, p.model_id, p.model_version])
     );
     if (new Set(keys).size !== keys.length)
-      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Duplicate tariff' });
+      context.addIssue({ code: 'custom', message: 'Duplicate tariff' });
   });
 export type ModelBudgetPolicy = Readonly<z.infer<typeof modelBudgetPolicySchema>>;
 export interface ModelAccountingPolicyInput {

@@ -56,7 +56,7 @@ export const goldenEvaluationCaseSchema = z
       toolMetricCase !== Boolean(value.tool_request)
     )
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['expected_tool'],
         message: 'Tool quality cases require one versioned expected Tool contract'
       });

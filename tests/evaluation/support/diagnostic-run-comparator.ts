@@ -40,12 +40,12 @@ const runSchema = z
             // Zod 3 record parsing drops this own key; reject before that parsing step.
             if (value !== null && typeof value === 'object' && Object.hasOwn(value, '__proto__'))
               context.addIssue({
-                code: z.ZodIssueCode.custom,
+                code: 'custom',
                 message: 'Configuration key __proto__ is unsupported'
               });
           })
           .pipe(
-            z.record(identity, z.union([z.string(), z.number().finite(), z.boolean(), z.null()]))
+            z.record(identity, z.union([z.string(), z.number(), z.boolean(), z.null()]))
           )
       })
       .strict(),
@@ -56,7 +56,7 @@ const runSchema = z
           .object({
             case_id: identity,
             metric_name: identity,
-            value: z.number().finite()
+            value: z.number()
           })
           .strict()
       )

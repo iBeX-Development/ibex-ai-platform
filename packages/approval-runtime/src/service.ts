@@ -716,7 +716,7 @@ export class ApprovalRuntime {
 
   private async establishBoundary(
     rawRequest: unknown,
-    schema: z.ZodType<unknown>,
+    schema: z.ZodType,
     operation: ApprovalRuntimeAuditEvent['operation'],
     boundary: BoundaryIdentity,
     now: Date
